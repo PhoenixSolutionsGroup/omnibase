@@ -30,7 +30,7 @@ export default function AuthLayout({
           <p className="text-9xl absolute -top-9 -left-5 text-primary-foreground/20">
             "
           </p>
-          <p className="font-bold text-2xl">
+          <p className="font-bold text-2xl text-background">
             Launch your app for free in less than 5 minutes. Everything you need
             is already included: real time storage, authentication, permissions
             and billing. No coding required.

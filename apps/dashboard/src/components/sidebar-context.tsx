@@ -1,5 +1,6 @@
 "use client";
 
+import { SIDEBAR_COOKIE } from "@/lib/sidebar-constant";
 import * as React from "react";
 
 interface SidebarContextValue {
@@ -8,34 +9,32 @@ interface SidebarContextValue {
   toggle: () => void;
 }
 
+interface SidebarProviderProps {
+  children: React.ReactNode;
+  defaultCollapsed?: boolean;
+}
+
 const SidebarContext = React.createContext<SidebarContextValue | null>(null);
 
-const STORAGE_KEY = "sidebar-collapsed";
+export function SidebarProvider({
+  children,
+  defaultCollapsed = false,
+}: SidebarProviderProps) {
+  const [isCollapsed, setIsCollapsedState] =
+    React.useState<boolean>(defaultCollapsed);
 
-export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [isCollapsed, setIsCollapsedState] = React.useState(false);
-  const [hydrated, setHydrated] = React.useState(false);
-
-  React.useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored !== null) {
-      setIsCollapsedState(stored === "true");
-    }
-    setHydrated(true);
-  }, []);
-
-  const setIsCollapsed = React.useCallback((collapsed: boolean) => {
+  const setIsCollapsed = React.useCallback((collapsed: boolean): void => {
     setIsCollapsedState(collapsed);
-    localStorage.setItem(STORAGE_KEY, String(collapsed));
+    document.cookie = `${SIDEBAR_COOKIE}=${collapsed}; path=/; max-age=31536000; samesite=lax`;
   }, []);
 
-  const toggle = React.useCallback(() => {
+  const toggle = React.useCallback((): void => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed, setIsCollapsed]);
 
-  const value = React.useMemo(
-    () => ({ isCollapsed: hydrated ? isCollapsed : false, setIsCollapsed, toggle }),
-    [isCollapsed, setIsCollapsed, toggle, hydrated]
+  const value = React.useMemo<SidebarContextValue>(
+    () => ({ isCollapsed, setIsCollapsed, toggle }),
+    [isCollapsed, setIsCollapsed, toggle],
   );
 
   return (
@@ -43,7 +42,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useSidebar() {
+export function useSidebar(): SidebarContextValue {
   const context = React.useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider");

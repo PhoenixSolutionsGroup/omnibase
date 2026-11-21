@@ -22,6 +22,7 @@ interface UnifiedLayoutClientProps {
   currentTenantId: string;
   projectData?: ProjectData;
   projects?: ProjectOption[];
+  defaultSidebarCollapsed?: boolean;
 }
 
 export function UnifiedLayoutClient({
@@ -30,10 +31,11 @@ export function UnifiedLayoutClient({
   currentTenantId,
   projectData,
   projects,
+  defaultSidebarCollapsed = false,
 }: UnifiedLayoutClientProps) {
   const router = useRouter();
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultCollapsed={defaultSidebarCollapsed}>
       <div className="flex h-screen flex-col overflow-hidden bg-background">
         <TopNavbar
           tenants={tenants}

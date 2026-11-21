@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Plus, Rocket } from "lucide-react";
+import { Building2, FolderKanban, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -46,35 +46,19 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
               Manage and monitor your projects
             </p>
           </div>
-          {projects.length > 0 && (
-            <Button
-              onClick={() => router.push("/projects/new")}
-              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="h-4 w-4" />
-              Create Project
-            </Button>
-          )}
+          <Button onClick={() => router.push("/projects/new")}>
+            <Plus className="h-4 w-4" />
+            Create Project
+          </Button>
         </div>
 
         {/* Projects Table or Empty State */}
         {projects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Rocket className="h-8 w-8 text-primary" />
-            </div>
-            <h2 className="mt-6 text-xl font-semibold">Get Started</h2>
-            <p className="my-2 max-w-sm text-center text-muted-foreground">
-              Create your first project to start building with OmniBase
+          <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-16 text-center">
+            <FolderKanban className="h-8 w-8 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              No projects yet. Use "Create Project" to get started.
             </p>
-            <Button
-              onClick={() => router.push("/projects/new")}
-              size="lg"
-              className="text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              Create Your First Project
-            </Button>
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card">

@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { formatTimestamp } from "@/lib/date";
+import { Loader2 } from "lucide-react";
+import { SeverityBadge } from "@/components/SeverityBadge";
 
 interface LogsProps {
   projectId: string;
@@ -41,40 +44,9 @@ export interface WorkerLogsResponse {
   };
 }
 
-type Severity = keyof typeof SEVERITIES;
-
-interface SeverityType {
-  color: string;
-  label: string;
-}
-
-const SEVERITIES = {
-  INFO: { color: "text-info", label: "INFO" },
-  ERROR: {
-    color: "text-destructive",
-    label: "ERROR",
-  },
-  DEBUG: {
-    color: "text-muted-foreground ",
-    label: "DEBUG",
-  },
-  WARNING: {
-    color: " text-warning",
-    label: "WARNING",
-  },
-  CRITICAL: {
-    color: "text-foreground",
-    label: "CRITICAL",
-  },
-} as const satisfies Record<string, SeverityType>;
-
-function isSeverity(value: string): value is Severity {
-  return Object.hasOwn(SEVERITIES, value);
-}
-
-function getSeverity(status: string): SeverityType {
-  const key = status.toUpperCase();
-  return isSeverity(key) ? SEVERITIES[key] : SEVERITIES.INFO;
+interface ApiResponse<T> {
+  status: number;
+  data: T;
 }
 
 async function fetchLogs(
@@ -107,16 +79,20 @@ export default function Logs({
 }: LogsProps) {
   const [logs, setLogs] = React.useState<LogEntry[]>([]);
   const [typeFilter, setTypeFilter] = React.useState<string>("all");
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     let cancelled = false;
-
+    setLoading(true);
     fetchLogs(projectId, workerName, { startTime, endTime })
       .then((res) => {
         if (!cancelled) setLogs(res.data.logs);
       })
       .catch(() => {
         if (!cancelled) setLogs([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
 
     return () => {
@@ -127,7 +103,7 @@ export default function Logs({
   return (
     <Card className="pt-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
-        <div className="grid flex-1 gap-1">
+        <div className="grid flex-1">
           <CardTitle>Logs</CardTitle>
           <CardDescription>Live tail of api-worker invocations</CardDescription>
         </div>
@@ -149,10 +125,22 @@ export default function Logs({
         </Select>
       </CardHeader>
       <Separator />
-      <CardContent className="p-0">
+      <CardContent className="p-0 max-h-96 overflow-scroll">
         <Table>
           <TableBody>
-            {logs.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="px-4 py-6 text-center text-muted-foreground"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <p>Loading logs...</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : logs.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={3}
@@ -168,16 +156,10 @@ export default function Logs({
                   className={`${log.severity === "CRITICAL" ? "bg-destructive/20 text-destructive" : ""}`}
                 >
                   <TableCell className="pl-4 text-muted-foreground">
-                    {new Date(log.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}
+                    {formatTimestamp(log.timestamp)}
                   </TableCell>
                   <TableCell className="font-medium text-start">
-                    <div className={getSeverity(log.severity).color}>
-                      {getSeverity(log.severity).label}
-                    </div>
+                    <SeverityBadge severity={log.severity} variant="badge" />
                   </TableCell>
 
                   <TableCell className="pr-4">{log.message}</TableCell>
