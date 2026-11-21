@@ -30,31 +30,16 @@ interface LogEntry {
   timestamp: string;
   severity: string;
   message: string;
-  source: string;
   labels: {
     source: string;
-    worker_name: string;
-    script_name: string;
-    [key: string]: string;
-  };
-  metadata: {
-    raw_line: string;
   };
 }
 
-interface WorkerLogsData {
-  worker: string;
-  script_name: string;
-  count: number;
-  logs: LogEntry[];
+export interface WorkerLogsResponse {
+  data: {
+    logs: LogEntry[];
+  };
 }
-
-interface ApiResponse<T> {
-  status: number;
-  data: T;
-}
-
-export type WorkerLogsResponse = ApiResponse<WorkerLogsData>;
 
 type Severity = keyof typeof SEVERITIES;
 
@@ -111,7 +96,7 @@ async function fetchLogs(
 
   const res = (await response.json()) as WorkerLogsResponse;
   const logs = res.data.logs.filter((l) => l.labels.source === "cloudflare");
-  return { ...res, data: { ...res.data, logs, count: logs.length } };
+  return { data: { logs } };
 }
 
 export default function Logs({
