@@ -81,7 +81,12 @@ func tierFlatAmount(tier *stripe.PriceTier) float64 {
 	return float64(tier.FlatAmount)
 }
 
-func (s *Service) promotionCodeDiscountAmount(ctx context.Context, price *stripe.Price, promotionCodeID string, amount int64) (int64, error) {
+type checkoutDiscountLine struct {
+	price  *stripe.Price
+	amount int64
+}
+
+func (s *Service) promotionCodeDiscountAmount(ctx context.Context, lines []checkoutDiscountLine, promotionCodeID string) (int64, error) {
 	params := &stripe.PromotionCodeRetrieveParams{
 		Expand: []*string{stripe.String("coupon")},
 	}
@@ -96,23 +101,40 @@ func (s *Service) promotionCodeDiscountAmount(ctx context.Context, price *stripe
 	}
 
 	coupon := promotionCode.Coupon
-	if coupon.AppliesTo != nil && len(coupon.AppliesTo.Products) > 0 {
-		if price.Product == nil || !containsString(coupon.AppliesTo.Products, price.Product.ID) {
-			return 0, nil
-		}
-	}
+	eligible := promotionCodeEligibleAmount(coupon, lines)
 
 	var discount int64
 	switch {
 	case coupon.PercentOff > 0:
-		discount = int64(math.Round(float64(amount) * coupon.PercentOff / 100))
-	case coupon.AmountOff > 0 && coupon.Currency == price.Currency:
+		discount = int64(math.Round(float64(eligible) * coupon.PercentOff / 100))
+	case coupon.AmountOff > 0:
 		discount = coupon.AmountOff
 	}
-	if discount > amount {
-		return amount, nil
+	if discount > eligible {
+		return eligible, nil
 	}
 	return discount, nil
+}
+
+func promotionCodeEligibleAmount(coupon *stripe.Coupon, lines []checkoutDiscountLine) int64 {
+	var total int64
+	for _, line := range lines {
+		if !promotionCodeAppliesToPrice(coupon, line.price) {
+			continue
+		}
+		if coupon.AmountOff > 0 && line.price.Currency != coupon.Currency {
+			continue
+		}
+		total += line.amount
+	}
+	return total
+}
+
+func promotionCodeAppliesToPrice(coupon *stripe.Coupon, price *stripe.Price) bool {
+	if coupon.AppliesTo == nil || len(coupon.AppliesTo.Products) == 0 {
+		return true
+	}
+	return price.Product != nil && containsString(coupon.AppliesTo.Products, price.Product.ID)
 }
 
 func containsString(values []string, target string) bool {
