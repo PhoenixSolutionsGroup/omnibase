@@ -306,7 +306,7 @@ Authentication schemes defined for the API:
 
 
 - **Type**: API key
-- **API key parameter name**: `ory_kratos_session`
+- **API key parameter name**: `omnibase_session_token`
 - **Location**: 
 <a id="ServiceKeyAuth"></a>
 #### ServiceKeyAuth
