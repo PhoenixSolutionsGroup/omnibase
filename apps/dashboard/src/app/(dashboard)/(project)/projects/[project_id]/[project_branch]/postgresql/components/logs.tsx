@@ -2,13 +2,7 @@
 
 import * as React from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -16,8 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { SeverityBadge } from "@/components/SeverityBadge";
 
 interface LogsProps {
   projectBranchId: string;
@@ -35,32 +37,6 @@ export interface PostgresLogsResponse {
   data: {
     logs: LogEntry[];
   };
-}
-
-type Severity = keyof typeof SEVERITIES;
-
-interface SeverityType {
-  color: string;
-  label: string;
-}
-
-const SEVERITIES = {
-  TRACE: { color: "text-muted-foreground", label: "TRACE" },
-  DEBUG: { color: "text-muted-foreground", label: "DEBUG" },
-  INFO: { color: "text-info", label: "INFO" },
-  WARN: { color: "text-warning", label: "WARN" },
-  WARNING: { color: "text-warning", label: "WARNING" },
-  ERROR: { color: "text-destructive", label: "ERROR" },
-  CRITICAL: { color: "text-foreground", label: "CRITICAL" },
-} as const satisfies Record<string, SeverityType>;
-
-function isSeverity(value: string): value is Severity {
-  return Object.hasOwn(SEVERITIES, value);
-}
-
-function getSeverity(status: string): SeverityType {
-  const key = status.toUpperCase();
-  return isSeverity(key) ? SEVERITIES[key] : SEVERITIES.INFO;
 }
 
 async function fetchLogs(
@@ -111,7 +87,7 @@ export default function Logs({
   }, [projectBranchId, startTime, endTime, typeFilter]);
 
   return (
-    <Card className="pt-0 gap-0">
+    <Card className="py-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle>Logs</CardTitle>
@@ -134,8 +110,15 @@ export default function Logs({
         </Select>
       </CardHeader>
       <Separator />
-      <CardContent className="p-0">
+      <CardContent className="p-0 ">
         <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-42 pl-4">Timestamp</TableHead>
+              <TableHead className="w-24">Severity</TableHead>
+              <TableHead>Message</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {logs.length === 0 ? (
               <TableRow>
@@ -156,7 +139,7 @@ export default function Logs({
                       : ""
                   }
                 >
-                  <TableCell className="pl-4 text-muted-foreground">
+                  <TableCell className="pl-3 text-muted-foreground">
                     {new Date(log.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -164,11 +147,9 @@ export default function Logs({
                     })}
                   </TableCell>
                   <TableCell className="font-medium text-start">
-                    <div className={getSeverity(log.severity).color}>
-                      {getSeverity(log.severity).label}
-                    </div>
+                    <SeverityBadge severity={log.severity} variant="badge" />
                   </TableCell>
-                  <TableCell className="pr-4">{log.message}</TableCell>
+                  <TableCell className="pr-3">{log.message}</TableCell>
                 </TableRow>
               ))
             )}
