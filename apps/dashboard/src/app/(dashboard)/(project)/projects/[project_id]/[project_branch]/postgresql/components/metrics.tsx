@@ -1,10 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TriangleExclamationPoint } from "lucide-react";
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { toast } from "sonner";
 
 type MetricName =
   | "up"
@@ -53,6 +52,13 @@ const KPI_METRICS: MetricName[] = [
   "database_size_bytes",
   "transactions_per_second",
 ];
+
+const KPI_HEADERS = [
+  "Connections",
+  "Cache hit ratio",
+  "Database size",
+  "Transactions",
+] as const;
 
 const HOUR_MS = 60 * 60 * 1000;
 const EMPTY = "-";
@@ -206,6 +212,7 @@ export function Metrics({ projectBranchId, startTime, endTime }: MetricsProps) {
     const endMs = Date.parse(endTime);
 
     setLoading(true);
+    setError(null);
 
     fetchMetrics(projectBranchId, {
       start: new Date(startMs).toISOString(),
@@ -218,8 +225,11 @@ export function Metrics({ projectBranchId, startTime, endTime }: MetricsProps) {
           setKpis(buildKpis(res.data, (endMs - startMs) / HOUR_MS > 48));
       })
       .catch((err) => {
-        if (!cancelled) setKpis([]);
-        setError(String(err));
+        if (!cancelled) {
+          setKpis([]);
+          setError(String(err));
+          toast.error("Failed to fetch metrics");
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -232,89 +242,34 @@ export function Metrics({ projectBranchId, startTime, endTime }: MetricsProps) {
 
   return (
     <div className="space-y-4">
-      {loading && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="flex flex-col p-4 rounded-lg">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-8 w-24" />
-                <Skeleton className="h-3 w-32" />
-              </Card>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-64 mt-2" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2 p-4 border rounded-lg">
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-64 mt-2" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2 p-4 border rounded-lg">
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <Card>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center p-8 gap-2">
-              <Image
-                src="/omnibase-logo-error.svg"
-                alt="Omnibase"
-                width={42}
-                height={42}
-                className="shrink-0 rounded-lg"
-                unoptimized
-              />
-              <p className="text-muted-foreground">{error}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {!loading && !error && kpis.length <= 0 && (
-        <Card>
-          <CardContent className="flex gap-2 items-center">
-            <TriangleExclamationPoint className="w-3 h-3" />
-            Failed to load postgreSQL metrics. Please try again
-          </CardContent>
-        </Card>
-      )}
-
-      {!loading && !error && kpis.length > 0 && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-          {kpis.map((kpi) => (
-            <Card key={kpi.header}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+        {KPI_HEADERS.map((header) => {
+          const kpi = kpis.find((k) => k.header === header);
+          return (
+            <Card key={header}>
               <CardContent className="flex flex-col">
-                <span>{kpi.header}</span>
-                <span className="text-xl">{kpi.title}</span>
-                {kpi.subtitle && <span>{kpi.subtitle}</span>}
+                <span>{header}</span>
+                {loading ? (
+                  <>
+                    <Skeleton className="my-1 h-7 w-20" />
+                    <Skeleton className="h-4 w-28" />
+                  </>
+                ) : error ? (
+                  <>
+                    <span className="text-xl">{EMPTY}</span>
+                    <span>{EMPTY}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl">{kpi?.title ?? EMPTY}</span>
+                    {kpi?.subtitle && <span>{kpi.subtitle}</span>}
+                  </>
+                )}
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
   );
 }
