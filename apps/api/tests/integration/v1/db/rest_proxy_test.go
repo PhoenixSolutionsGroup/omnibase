@@ -67,7 +67,7 @@ func TestPostgRESTProxy_InvalidSession(t *testing.T) {
 
 	req, err := http.NewRequest(http.MethodGet, proxyURL+"/api/v1/rest/", nil)
 	require.NoError(t, err)
-	req.AddCookie(&http.Cookie{Name: "ory_kratos_session", Value: "invalid"})
+	req.AddCookie(&http.Cookie{Name: "omnibase_session_token", Value: "invalid"})
 
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
