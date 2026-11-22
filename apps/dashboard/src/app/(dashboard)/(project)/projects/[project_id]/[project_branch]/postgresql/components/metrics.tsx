@@ -2,6 +2,22 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  EMPTY,
+  HOUR_MS,
+  avg,
+  buildMetricsParams,
+  first,
+  formatBytes,
+  formatPeakTime,
+  formatRate,
+  last,
+  peak,
+  pickStep,
+  type KPI,
+  type MetricPoint,
+  type MetricsQuery,
+} from "@/lib/metrics";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,11 +29,6 @@ type MetricName =
   | "database_size_bytes"
   | "transactions_per_second";
 
-interface MetricPoint {
-  timestamp: string;
-  value: number;
-}
-
 interface MetricsResponse {
   status: number;
   data: {
@@ -25,23 +36,10 @@ interface MetricsResponse {
   };
 }
 
-interface MetricsQuery {
-  start: string;
-  end: string;
-  step: string;
-  metrics: MetricName[];
-}
-
 interface MetricsProps {
   projectBranchId: string;
   startTime: string;
   endTime: string;
-}
-
-interface KPI {
-  header: string;
-  title: string;
-  subtitle?: string;
 }
 
 const KPI_METRICS: MetricName[] = [
@@ -60,91 +58,18 @@ const KPI_HEADERS = [
   "Transactions",
 ] as const;
 
-const HOUR_MS = 60 * 60 * 1000;
-const EMPTY = "-";
-
 async function fetchMetrics(
   projectBranchId: string,
-  query: MetricsQuery,
+  query: MetricsQuery<MetricName>,
 ): Promise<MetricsResponse> {
-  const params = new URLSearchParams({
-    start: query.start,
-    end: query.end,
-    step: query.step,
-    metrics: query.metrics.join(","),
-  });
   const response = await fetch(
-    `/api/project_branches/${projectBranchId}/postgresql/metrics?${params}`,
+    `/api/project_branches/${projectBranchId}/postgresql/metrics?${buildMetricsParams(query)}`,
     { credentials: "include" },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch metrics: ${response.status}`);
   }
   return (await response.json()) as MetricsResponse;
-}
-
-function pickStep(startMs: number, endMs: number): string {
-  const hours = (endMs - startMs) / HOUR_MS;
-  if (hours <= 6) return "60s";
-  if (hours <= 48) return "5m";
-  return "1h";
-}
-
-function avg(points: MetricPoint[]): number {
-  return points.length === 0
-    ? 0
-    : points.reduce((acc, p) => acc + p.value, 0) / points.length;
-}
-
-function last(points: MetricPoint[]): number | undefined {
-  return points.length === 0 ? undefined : points[points.length - 1].value;
-}
-
-function first(points: MetricPoint[]): number | undefined {
-  return points.length === 0 ? undefined : points[0].value;
-}
-
-function peak(points: MetricPoint[]): MetricPoint | undefined {
-  return points.reduce<MetricPoint | undefined>(
-    (best, p) => (best === undefined || p.value > best.value ? p : best),
-    undefined,
-  );
-}
-
-function formatBytes(bytes: number): string {
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  let value = Math.abs(bytes);
-  let i = 0;
-  while (value >= 1024 && i < units.length - 1) {
-    value /= 1024;
-    i += 1;
-  }
-  return `${bytes < 0 ? "-" : ""}${value.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
-}
-
-function formatRate(n: number): string {
-  const text =
-    n >= 10
-      ? Math.round(n).toLocaleString("en-US")
-      : n.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  return `${text}/s`;
-}
-
-function formatPeakTime(timestamp: string, showDate: boolean): string {
-  const date = new Date(timestamp);
-  return showDate
-    ? date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-    : date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
 }
 
 function buildKpis(data: MetricsResponse["data"], showDate: boolean): KPI[] {

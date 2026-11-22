@@ -20,6 +20,23 @@ import {
 } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  EMPTY,
+  HOUR_MS,
+  avg,
+  buildMetricsParams,
+  compact,
+  max,
+  pct,
+  pickStep,
+  sum,
+  type KPI,
+  type MetricPoint,
+  type MetricsQuery,
+} from "@/lib/metrics";
+
+// Re-exported so existing imports from this file keep working.
+export type { MetricPoint, MetricsQuery };
 
 export interface ApiResponse<T> {
   status: number;
@@ -36,11 +53,6 @@ export type MetricName =
   | "duration_p50_seconds"
   | "duration_p99_seconds";
 
-export interface MetricPoint {
-  timestamp: string;
-  value: number;
-}
-
 export interface MetricsData {
   period: { start: string; end: string }; // docs say {...}, shape is a guess
   step: string;
@@ -48,13 +60,6 @@ export interface MetricsData {
 }
 
 export type MetricsResponse = ApiResponse<MetricsData>;
-
-export interface MetricsQuery {
-  start: string; // RFC3339
-  end: string; // RFC3339
-  step: string; // "60s", "5m", "1h", ...
-  metrics: MetricName[];
-}
 
 export const ALL_METRICS: MetricName[] = [
   "requests",
@@ -74,12 +79,6 @@ interface MetricsProps {
   endTime: string;
 }
 
-interface KPI {
-  title: string;
-  subtitle: string;
-  header: string;
-}
-
 interface ChartPoint {
   date: string;
   requests: number;
@@ -88,58 +87,18 @@ interface ChartPoint {
 
 const KPI_HEADERS = ["Requests", "Errors", "CPU time", "Subrequests"] as const;
 
-const EMPTY = "-";
-
 async function fetchMetrics(
   projectId: string,
   workerName: string,
-  query: MetricsQuery,
+  query: MetricsQuery<MetricName>,
 ): Promise<MetricsResponse> {
-  const params = new URLSearchParams({
-    start: query.start,
-    end: query.end,
-    step: query.step,
-    metrics: query.metrics.join(","),
-  });
   const response = await fetch(
-    `/api/project_branches/${projectId}/workers/${workerName}/metrics?${params}`,
+    `/api/project_branches/${projectId}/workers/${workerName}/metrics?${buildMetricsParams(query)}`,
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch metrics: ${response.status}`);
   }
   return (await response.json()) as MetricsResponse;
-}
-
-const HOUR_MS = 60 * 60 * 1000;
-
-function pickStep(startMs: number, endMs: number): string {
-  const hours = (endMs - startMs) / HOUR_MS;
-  if (hours <= 6) return "60s";
-  if (hours <= 48) return "5m";
-  return "1h";
-}
-
-function sum(points: MetricPoint[]): number {
-  return points.reduce((acc, p) => acc + p.value, 0);
-}
-
-function avg(points: MetricPoint[]): number {
-  return points.length === 0 ? 0 : sum(points) / points.length;
-}
-
-function max(points: MetricPoint[]): number {
-  return points.reduce((acc, p) => Math.max(acc, p.value), 0);
-}
-
-function compact(n: number): string {
-  return new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(n);
-}
-
-function pct(n: number): string {
-  return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 }
 
 function buildKpis(
@@ -363,7 +322,7 @@ export default function Metrics({
     const spanMs = endMs - startMs;
     const step = pickStep(startMs, endMs);
 
-    const query = (from: number, to: number): MetricsQuery => ({
+    const query = (from: number, to: number): MetricsQuery<MetricName> => ({
       start: new Date(from).toISOString(),
       end: new Date(to).toISOString(),
       step,
