@@ -11,10 +11,11 @@ import (
 var (
 	CreateCheckoutSessionError      = errors.New("Failed to create checkout session")
 	CreateCheckoutSessionPriceFetch = errors.New("Failed to fetch price for checkout")
+	CheckoutLineItemModeError       = errors.New("cannot mix one-time and recurring checkout line items")
 )
 
 type CreateCheckoutSessionArgs struct {
-	StripePriceID       string
+	CheckoutLineItems   []CheckoutLineItem
 	SuccessURL          string
 	CancelURL           string
 	StripeCustomerID    string
@@ -23,23 +24,45 @@ type CreateCheckoutSessionArgs struct {
 	AllowPromotionCodes *bool
 }
 
+type CheckoutLineItem struct {
+	StripePriceID string
+	Quantity      int64
+}
+
 func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckoutSessionArgs) (*stripe.CheckoutSession, error) {
 	priceParams := &stripe.PriceRetrieveParams{}
 	s.stripe.ApplyAccount(priceParams)
-	priceObj, err := s.stripe.Stripe.V1Prices.Retrieve(ctx, args.StripePriceID, priceParams)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", CreateCheckoutSessionPriceFetch, err)
+
+	var mode stripe.CheckoutSessionMode
+	var paymentAmount int64
+	stripeLineItems := make([]*stripe.CheckoutSessionCreateLineItemParams, len(args.CheckoutLineItems))
+	discountLines := make([]checkoutDiscountLine, 0, len(args.CheckoutLineItems))
+	for i, item := range args.CheckoutLineItems {
+		priceObj, err := s.stripe.Stripe.V1Prices.Retrieve(ctx, item.StripePriceID, priceParams)
+		if err != nil {
+			return nil, fmt.Errorf("%w: %w", CreateCheckoutSessionPriceFetch, err)
+		}
+
+		itemMode := stripe.CheckoutSessionModePayment
+		if priceObj.Recurring != nil {
+			itemMode = stripe.CheckoutSessionModeSubscription
+		}
+		if i == 0 {
+			mode = itemMode
+		} else if itemMode != mode {
+			return nil, fmt.Errorf("%w: %s and %s", CheckoutLineItemModeError, mode, itemMode)
+		}
+
+		lineAmount := checkoutLineAmount(priceObj, item.Quantity)
+		paymentAmount += lineAmount
+		discountLines = append(discountLines, checkoutDiscountLine{price: priceObj, amount: lineAmount})
+		stripeLineItems[i] = &stripe.CheckoutSessionCreateLineItemParams{
+			Price: stripe.String(item.StripePriceID), Quantity: stripe.Int64(item.Quantity),
+		}
 	}
 
-	mode := stripe.CheckoutSessionModePayment
-	if priceObj.Recurring != nil {
-		mode = stripe.CheckoutSessionModeSubscription
-	}
-
-	const quantity int64 = 1
-	paymentAmount := checkoutLineAmount(priceObj, quantity)
 	if mode == stripe.CheckoutSessionModePayment && s.feeActive() && args.PromotionCode != nil && *args.PromotionCode != "" {
-		discount, err := s.promotionCodeDiscountAmount(ctx, priceObj, *args.PromotionCode, paymentAmount)
+		discount, err := s.promotionCodeDiscountAmount(ctx, discountLines, *args.PromotionCode)
 		if err != nil {
 			return nil, err
 		}
@@ -47,9 +70,7 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 	}
 
 	params := &stripe.CheckoutSessionCreateParams{
-		LineItems: []*stripe.CheckoutSessionCreateLineItemParams{
-			{Price: stripe.String(args.StripePriceID), Quantity: stripe.Int64(quantity)},
-		},
+		LineItems:  stripeLineItems,
 		Mode:       stripe.String(string(mode)),
 		SuccessURL: stripe.String(args.SuccessURL),
 		CancelURL:  stripe.String(args.CancelURL),

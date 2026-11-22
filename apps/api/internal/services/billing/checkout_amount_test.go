@@ -77,17 +77,56 @@ func TestPromotionCodeDiscountAmountUsesPercentOff(t *testing.T) {
 	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","percent_off":20}}`)
 	price := &stripe.Price{Currency: stripe.CurrencyUSD}
 
-	discount, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 1000)
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 1000}}, "promo_123")
 
 	require.NoError(t, err)
 	require.Equal(t, int64(200), discount)
+}
+
+func TestPromotionCodeDiscountAmountSumsAllLineItems(t *testing.T) {
+	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","percent_off":20}}`)
+	lines := []checkoutDiscountLine{
+		{price: &stripe.Price{Currency: stripe.CurrencyUSD}, amount: 1000},
+		{price: &stripe.Price{Currency: stripe.CurrencyUSD}, amount: 500},
+	}
+
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), lines, "promo_123")
+
+	require.NoError(t, err)
+	require.Equal(t, int64(300), discount)
+}
+
+func TestPromotionCodeDiscountAmountOnlySumsEligibleLineItems(t *testing.T) {
+	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","percent_off":20,"applies_to":{"products":["prod_eligible"]}}}`)
+	lines := []checkoutDiscountLine{
+		{price: &stripe.Price{Product: &stripe.Product{ID: "prod_eligible"}}, amount: 1000},
+		{price: &stripe.Price{Product: &stripe.Product{ID: "prod_other"}}, amount: 500},
+	}
+
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), lines, "promo_123")
+
+	require.NoError(t, err)
+	require.Equal(t, int64(200), discount)
+}
+
+func TestPromotionCodeDiscountAmountAppliesAmountOffOnceAcrossLineItems(t *testing.T) {
+	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","amount_off":300,"currency":"usd"}}`)
+	lines := []checkoutDiscountLine{
+		{price: &stripe.Price{Currency: stripe.CurrencyUSD}, amount: 1000},
+		{price: &stripe.Price{Currency: stripe.CurrencyUSD}, amount: 500},
+	}
+
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), lines, "promo_123")
+
+	require.NoError(t, err)
+	require.Equal(t, int64(300), discount)
 }
 
 func TestPromotionCodeDiscountAmountUsesAmountOff(t *testing.T) {
 	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","amount_off":300,"currency":"usd"}}`)
 	price := &stripe.Price{Currency: stripe.CurrencyUSD}
 
-	discount, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 1000)
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 1000}}, "promo_123")
 
 	require.NoError(t, err)
 	require.Equal(t, int64(300), discount)
@@ -97,7 +136,7 @@ func TestPromotionCodeDiscountAmountCapsAtPaymentAmount(t *testing.T) {
 	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","amount_off":300,"currency":"usd"}}`)
 	price := &stripe.Price{Currency: stripe.CurrencyUSD}
 
-	discount, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 200)
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 200}}, "promo_123")
 
 	require.NoError(t, err)
 	require.Equal(t, int64(200), discount)
@@ -107,7 +146,7 @@ func TestPromotionCodeDiscountAmountSkipsCurrencyMismatch(t *testing.T) {
 	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","amount_off":300,"currency":"eur"}}`)
 	price := &stripe.Price{Currency: stripe.CurrencyUSD}
 
-	discount, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 1000)
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 1000}}, "promo_123")
 
 	require.NoError(t, err)
 	require.Zero(t, discount)
@@ -117,7 +156,7 @@ func TestPromotionCodeDiscountAmountSkipsProductsOutsideAppliesTo(t *testing.T) 
 	service := promotionCodeService(t, `{"id":"promo_123","object":"promotion_code","coupon":{"id":"coupon_1","object":"coupon","percent_off":20,"applies_to":{"products":["prod_other"]}}}`)
 	price := &stripe.Price{Product: &stripe.Product{ID: "prod_current"}}
 
-	discount, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 1000)
+	discount, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 1000}}, "promo_123")
 
 	require.NoError(t, err)
 	require.Zero(t, discount)
@@ -132,7 +171,7 @@ func TestPromotionCodeDiscountAmountFailsWhenPromotionCodeCannotBeFetched(t *tes
 	service := New(Deps{Stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL})})
 	price := &stripe.Price{Currency: stripe.CurrencyUSD}
 
-	_, err := service.promotionCodeDiscountAmount(context.Background(), price, "promo_123", 1000)
+	_, err := service.promotionCodeDiscountAmount(context.Background(), []checkoutDiscountLine{{price: price, amount: 1000}}, "promo_123")
 
 	require.ErrorIs(t, err, CreateCheckoutSessionError)
 }

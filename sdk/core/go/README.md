@@ -237,6 +237,7 @@ Class | Method | HTTP request | Description
  - [IdentityName](docs/IdentityName.md)
  - [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
  - [InvoiceResponse](docs/InvoiceResponse.md)
+ - [LineItem](docs/LineItem.md)
  - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
  - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
  - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)
