@@ -50,6 +50,10 @@ func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string) {
 		}
 	}
 
+	if token := sessionTokenFromRequest(c.Request); token != "" {
+		req.Header.Set("X-Session-Token", token)
+	}
+
 	req.Header.Set("X-Forwarded-For", c.ClientIP())
 	req.Header.Set("X-Forwarded-Proto", c.Request.URL.Scheme)
 	if req.Header.Get("X-Forwarded-Proto") == "" {
@@ -85,6 +89,11 @@ func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string) {
 		"status", resp.StatusCode)
 }
 
+const (
+	proxyPathPrefix            = "/api/v1/auth/proxy"
+	omnibaseSessionTokenCookie = "omnibase_session_token"
+)
+
 func rewriteResponseHeader(key, value string) string {
 	if strings.EqualFold(key, "location") {
 		return rewriteLocationHeader(value)
@@ -99,11 +108,16 @@ func rewriteLocationHeader(location string) string {
 		return location
 	}
 
-	if !isKratosPath(locURL.Path) {
+	path := locURL.Path
+	if strings.HasPrefix(path, proxyPathPrefix+"/") {
+		path = strings.TrimPrefix(path, proxyPathPrefix)
+	}
+
+	if !isKratosPath(path) {
 		return location
 	}
 
-	rewritten := "/api/v1/auth/proxy" + locURL.Path
+	rewritten := proxyPathPrefix + path
 	if locURL.RawQuery != "" {
 		rewritten += "?" + locURL.RawQuery
 	}
@@ -118,6 +132,17 @@ func isKratosPath(path string) bool {
 		}
 	}
 	return false
+}
+
+func sessionTokenFromRequest(r *http.Request) string {
+	if token := strings.TrimSpace(r.Header.Get("X-Session-Token")); token != "" {
+		return token
+	}
+	cookie, err := r.Cookie(omnibaseSessionTokenCookie)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(cookie.Value)
 }
 
 func shouldForwardHeader(header string) bool {
