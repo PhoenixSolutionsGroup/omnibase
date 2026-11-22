@@ -10,7 +10,7 @@ export function Divider({ withText = false }: DividerProps) {
           <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-3 text-muted-foreground font-medium">
+          <span className="bg-card lg:bg-background px-3 text-muted-foreground font-medium">
             Or continue with
           </span>
         </div>

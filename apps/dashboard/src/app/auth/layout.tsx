@@ -1,4 +1,3 @@
-import { PulsingDots } from "@/components/plusing-dots";
 import Image from "next/image";
 
 export default function AuthLayout({
@@ -7,50 +6,45 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 h-full">
-      <div className="relative isolate col-span-3 bg-foreground md:flex justify-center items-center overflow-hidden hidden">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
-        <PulsingDots />
-        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-77.5 w-77.5 rounded-full bg-primary/20 opacity-20 blur-[100px]" />
+    <div className="relative grid grid-cols-1 lg:grid-cols-4 h-full">
+      {/* Background image: top half on mobile, left column on desktop */}
+      <div className="absolute inset-x-0 top-0 h-1/2 lg:static lg:col-span-2 lg:h-full lg:p-4">
+        <div className="relative isolate h-full w-full overflow-hidden rounded-b-xl lg:rounded-2xl">
+          <Image
+            src="/auth-background.jpg"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 768px) 60vw, 100vw"
+            className="object-cover"
+          />
 
-        <div className="fixed top-0 left-0 z-50 p-6">
-          <span className="flex items-center gap-2 text-background font-semibold text-lg">
-            <Image
-              src="/omnibase-logo.svg"
-              alt="Omnibase"
-              width={24}
-              height={24}
-              className="rounded-lg"
-              unoptimized
-            />
-            Omnibase
-          </span>
-        </div>
-        <div className="text-primary-foreground w-2/5 lex flex-col gap-4 relative ">
-          <p className="text-9xl absolute -top-9 -left-5 text-primary-foreground/20">
-            "
-          </p>
-          <p className="font-bold text-2xl text-background">
-            Launch your app for free in less than 5 minutes. Everything you need
-            is already included: real time storage, authentication, permissions
-            and billing. No coding required.
-          </p>
+          <div className="absolute top-0 left-0 z-10 p-6">
+            <span className="flex items-center text-background font-semibold text-lg">
+              <Image
+                src="/omnibase-logo-transparent.svg"
+                alt="Omnibase"
+                width={64}
+                height={64}
+                className="rounded-lg scale-25 -mr-4 block dark:hidden"
+                unoptimized
+              />
+              <Image
+                src="/omnibase-logo-transparent-dark.svg"
+                alt="Omnibase"
+                width={64}
+                height={64}
+                className="rounded-lg scale-25 -mr-4 hidden dark:block"
+                unoptimized
+              />
+              Omnibase
+            </span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center justify-center col-span-2">
-        <div className="fixed top-0 left-0 z-50 p-6 flex md:hidden">
-          <span className="flex items-center gap-2 font-semibold text-lg">
-            <Image
-              src="/omnibase-logo.svg"
-              alt="Omnibase"
-              width={24}
-              height={24}
-              className="rounded-lg"
-              unoptimized
-            />
-            Omnibase
-          </span>
-        </div>
+
+      {/* Content: overlaps the image on mobile */}
+      <div className="relative z-10 flex items-center justify-center lg:col-span-2">
         {children}
       </div>
     </div>
