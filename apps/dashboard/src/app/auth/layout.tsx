@@ -18,6 +18,7 @@ export default function AuthLayout({
             sizes="(min-width: 768px) 60vw, 100vw"
             className="object-cover"
           />
+
           <div className="absolute top-0 left-0 z-10 p-6">
             <span className="flex items-center text-background font-semibold text-lg">
               <Image
@@ -25,7 +26,15 @@ export default function AuthLayout({
                 alt="Omnibase"
                 width={64}
                 height={64}
-                className="rounded-lg scale-25 -mr-4"
+                className="rounded-lg scale-25 -mr-4 block dark:hidden"
+                unoptimized
+              />
+              <Image
+                src="/omnibase-logo-transparent-dark.svg"
+                alt="Omnibase"
+                width={64}
+                height={64}
+                className="rounded-lg scale-25 -mr-4 hidden dark:block"
                 unoptimized
               />
               Omnibase

@@ -38,7 +38,7 @@ export default function page({ params, searchParams }: any) {
                     </span>
                   </div>
                 }
-                className="shadow-xl lg:shadow-none"
+                className="shadow-xl lg:shadow-none bg-card lg:bg-transparent"
               />
             );
           },
@@ -56,7 +56,7 @@ export default function page({ params, searchParams }: any) {
                     </span>
                   </div>
                 }
-                className="shadow-xl lg:shadow-none"
+                className="shadow-xl lg:shadow-none bg-card lg:bg-transparent"
               />
             );
           },
