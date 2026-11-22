@@ -19,6 +19,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ApiResponse<T> {
   status: number;
@@ -85,6 +86,10 @@ interface ChartPoint {
   error: number;
 }
 
+const KPI_HEADERS = ["Requests", "Errors", "CPU time", "Subrequests"] as const;
+
+const EMPTY = "-";
+
 async function fetchMetrics(
   projectId: string,
   workerName: string,
@@ -105,9 +110,6 @@ async function fetchMetrics(
   return (await response.json()) as MetricsResponse;
 }
 
-// ---------------------------------------------------------------------------
-// Mapping helpers: API series -> UI
-// ---------------------------------------------------------------------------
 const HOUR_MS = 60 * 60 * 1000;
 
 function pickStep(startMs: number, endMs: number): string {
@@ -351,6 +353,8 @@ export default function Metrics({
   endTime,
 }: MetricsProps) {
   const [kpis, setKpis] = React.useState<Array<KPI>>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -366,6 +370,9 @@ export default function Metrics({
       metrics: ALL_METRICS,
     });
 
+    setLoading(true);
+    setError(false);
+
     Promise.all([
       fetchMetrics(projectId, workerName, query(startMs, endMs)),
       fetchMetrics(projectId, workerName, query(startMs - spanMs, startMs)),
@@ -375,7 +382,13 @@ export default function Metrics({
           setKpis(buildKpis(current.data, previous.data, startMs));
       })
       .catch(() => {
-        if (!cancelled) setKpis([]);
+        if (!cancelled) {
+          setKpis([]);
+          setError(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
 
     return () => {
@@ -387,25 +400,32 @@ export default function Metrics({
     <div className="space-y-4">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-        {kpis.length <= 0
-          ? [0, 1, 2, 3].map((i) => (
-              <Card key={i}>
-                <CardContent className="flex flex-col">
-                  <span>-</span>
-                  <span className="text-xl">-</span>
-                  <span>-</span>
-                </CardContent>
-              </Card>
-            ))
-          : kpis.map((kpi) => (
-              <Card key={kpi.header}>
-                <CardContent className="flex flex-col">
-                  <span>{kpi.header}</span>
-                  <span className="text-xl">{kpi.title}</span>
-                  <span>{kpi.subtitle}</span>
-                </CardContent>
-              </Card>
-            ))}
+        {KPI_HEADERS.map((header) => {
+          const kpi = kpis.find((k) => k.header === header);
+          return (
+            <Card key={header}>
+              <CardContent className="flex flex-col">
+                <span>{header}</span>
+                {loading ? (
+                  <>
+                    <Skeleton className="my-1 h-7 w-20" />
+                    <Skeleton className="h-4 w-28" />
+                  </>
+                ) : error ? (
+                  <>
+                    <span className="text-xl">{EMPTY}</span>
+                    <span>{EMPTY}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl">{kpi?.title ?? EMPTY}</span>
+                    <span>{kpi?.subtitle ?? EMPTY}</span>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
       {/* Chart */}
       <ChartAreaInteractive
