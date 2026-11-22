@@ -28,7 +28,7 @@ type AuthMiddleware struct {
 	sessionCache  *sessioncache.Cache
 }
 
-const kratosSessionCookie = "ory_kratos_session"
+const omnibaseSessionTokenCookie = "omnibase_session_token"
 
 type activeTenant struct {
 	TenantID string
@@ -78,30 +78,6 @@ func (m *AuthMiddleware) validateSessionWithToken(ctx context.Context, sessionTo
 	return session, nil
 }
 
-// validateSessionWithCookie validates a session using cookie header
-func (m *AuthMiddleware) validateSessionWithCookie(ctx context.Context, cookieHeader string) (*kratos.Session, error) {
-	logger.Logger.Debug("Validating session with cookie")
-
-	toSessionReq := m.kratosClient.FrontendAPI.ToSession(ctx).Cookie(cookieHeader)
-	session, res, err := toSessionReq.Execute()
-
-	if err != nil {
-		if res != nil {
-			logger.Logger.Error("Error validating session with cookie", "error", err, "http_status", res.StatusCode)
-		} else {
-			logger.Logger.Error("Error validating session with cookie", "error", err, "http_status", "no_response")
-		}
-		return nil, fmt.Errorf("invalid or expired session: %w", err)
-	}
-
-	if session.Identity == nil {
-		return nil, fmt.Errorf("no identity found in session")
-	}
-
-	logger.Logger.Debug("Session validated successfully with cookie", "user_id", session.Identity.GetId())
-	return session, nil
-}
-
 func (m *AuthMiddleware) RequireAuth(allowed authn.AuthMethod) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		m.authenticate(c, allowed, false)
@@ -130,17 +106,8 @@ func (m *AuthMiddleware) authenticate(c *gin.Context, allowed authn.AuthMethod, 
 	}
 
 	if allowed&authn.AuthSession != 0 {
-		cookieHeader := c.GetHeader("Cookie")
-		sessionHeader := strings.TrimSpace(c.GetHeader("X-Session-Token"))
-		if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
-			sessionHeader = sessionHeader[:len(sessionHeader)-1]
-		}
-		hasSession := sessionHeader != "" || hasKratosCookie(c.Request)
-		if !optional {
-			hasSession = hasSession || cookieHeader != ""
-		}
-		if hasSession {
-			m.authenticateSession(c, cookieHeader, sessionHeader)
+		if sessionToken := sessionTokenFromRequest(c.Request); sessionToken != "" {
+			m.authenticateSession(c, sessionToken)
 			return
 		}
 	}
@@ -260,19 +227,23 @@ func (m *AuthMiddleware) isTenantMember(ctx context.Context, userID, tenantID uu
 	return count > 0, err
 }
 
-func hasKratosCookie(r *http.Request) bool {
-	_, err := r.Cookie(kratosSessionCookie)
-	return err == nil
+func sessionTokenFromRequest(r *http.Request) string {
+	token := strings.TrimSpace(r.Header.Get("X-Session-Token"))
+	if token == "" {
+		token = omnibaseSessionTokenFromCookie(r)
+	}
+	if len(token) > 0 && token[len(token)-1] == '=' {
+		token = token[:len(token)-1]
+	}
+	return token
 }
 
-func sessionCredential(r *http.Request, cookieHeader, sessionHeader string) string {
-	if sessionHeader != "" {
-		return "token:" + sessionHeader
+func omnibaseSessionTokenFromCookie(r *http.Request) string {
+	cookie, err := r.Cookie(omnibaseSessionTokenCookie)
+	if err != nil {
+		return ""
 	}
-	if ck, err := r.Cookie(kratosSessionCookie); err == nil {
-		return "cookie:" + ck.Value
-	}
-	return "header:" + cookieHeader
+	return strings.TrimSpace(cookie.Value)
 }
 
 func usesFullSession(path string) bool {
@@ -284,8 +255,12 @@ func usesFullSession(path string) bool {
 	}
 }
 
-func (m *AuthMiddleware) resolveSession(ctx context.Context, r *http.Request, cookieHeader, sessionHeader string) (*kratos.Session, error) {
-	key := sessioncache.Key(sessionCredential(r, cookieHeader, sessionHeader))
+func (m *AuthMiddleware) resolveSession(ctx context.Context, r *http.Request, sessionToken string) (*kratos.Session, error) {
+	if sessionToken == "" {
+		return nil, fmt.Errorf("missing session token")
+	}
+
+	key := sessioncache.Key("token:" + sessionToken)
 	if !usesFullSession(r.URL.Path) {
 		if entry, ok := m.sessionCache.Get(key); ok {
 			session := &kratos.Session{Identity: &kratos.Identity{Id: entry.IdentityID}}
@@ -296,17 +271,8 @@ func (m *AuthMiddleware) resolveSession(ctx context.Context, r *http.Request, co
 		}
 	}
 
-	var (
-		session *kratos.Session
-		err     error
-	)
-	if sessionHeader != "" {
-		logger.Logger.Debug("Session header received", "length", len(sessionHeader))
-		session, err = m.validateSessionWithToken(ctx, sessionHeader)
-	} else {
-		logger.Logger.Debug("Using cookie session validation")
-		session, err = m.validateSessionWithCookie(ctx, cookieHeader)
-	}
+	logger.Logger.Debug("Validating session with token", "length", len(sessionToken))
+	session, err := m.validateSessionWithToken(ctx, sessionToken)
 	if err != nil {
 		return nil, err
 	}
@@ -335,8 +301,8 @@ func (m *AuthMiddleware) lookupActiveTenant(ctx context.Context, userID uuid.UUI
 	return t, err
 }
 
-func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessionHeader string) {
-	session, err := m.resolveSession(c.Request.Context(), c.Request, cookieHeader, sessionHeader)
+func (m *AuthMiddleware) authenticateSession(c *gin.Context, sessionToken string) {
+	session, err := m.resolveSession(c.Request.Context(), c.Request, sessionToken)
 	if err != nil {
 		logger.Logger.Error("Session validation failed", "error", err)
 		handlers.NewUnauthorizedResponse(c, "Invalid or expired session")
