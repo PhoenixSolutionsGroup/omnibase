@@ -60,7 +60,8 @@ async function fetchLogs(
   });
 
   const response = await fetch(
-    `/api/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
+    { credentials: "include" },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch logs: ${response.status}`);
@@ -101,7 +102,7 @@ export default function Logs({
   }, [projectId, workerName, startTime, endTime]);
 
   return (
-    <Card className="pt-0 gap-0">
+    <Card className="py-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
         <div className="grid flex-1">
           <CardTitle>Logs</CardTitle>
@@ -125,7 +126,7 @@ export default function Logs({
         </Select>
       </CardHeader>
       <Separator />
-      <CardContent className="p-0 max-h-96 overflow-scroll">
+      <CardContent className="p-0 max-h-97 overflow-scroll">
         <Table>
           <TableBody>
             {loading ? (

@@ -93,7 +93,8 @@ async function fetchMetrics(
   query: MetricsQuery<MetricName>,
 ): Promise<MetricsResponse> {
   const response = await fetch(
-    `/api/project_branches/${projectId}/workers/${workerName}/metrics?${buildMetricsParams(query)}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/metrics?${buildMetricsParams(query)}`,
+    { credentials: "include" },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch metrics: ${response.status}`);
