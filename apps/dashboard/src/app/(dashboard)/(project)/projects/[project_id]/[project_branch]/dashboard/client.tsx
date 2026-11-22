@@ -351,7 +351,7 @@ export function ProjectDashboardClient({
                       {action.icon}
                       <h3 className="font-semibold">{action.title}</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {action.subtitle}
                     </p>
                   </div>

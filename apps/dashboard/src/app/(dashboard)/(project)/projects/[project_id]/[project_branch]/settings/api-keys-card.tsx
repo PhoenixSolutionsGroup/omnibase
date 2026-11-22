@@ -188,7 +188,10 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                 Manage and rotate your project's API keys
               </CardDescription>
             </div>
-            <Button onClick={() => setIsRotateModalOpen(true)}>
+            <Button
+              onClick={() => setIsRotateModalOpen(true)}
+              variant="outline"
+            >
               <RotateCw className="h-4 w-4" />
               Rotate Keys
             </Button>
@@ -243,6 +246,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                         disabled={isLoading}
                         className="disabled:opacity-50 disabled:cursor-not-allowed"
                         title={isRevealed ? "Hide" : "Reveal"}
+                        variant="outline"
                       >
                         {isLoading ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -264,6 +268,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                       }
                       disabled={item.sensitive && !isRevealed}
                       className="disabled:opacity-50 disabled:cursor-not-allowed"
+                      variant="outline"
                     >
                       Copy
                     </Button>
@@ -297,15 +302,11 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
             <Button
               onClick={() => setIsRotateModalOpen(false)}
               disabled={isRotating}
-              className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
+              variant="outline"
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleRotateKeys}
-              disabled={isRotating}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
+            <Button onClick={handleRotateKeys} disabled={isRotating}>
               {isRotating ? "Rotating..." : "Rotate Keys"}
             </Button>
           </DialogFooter>
