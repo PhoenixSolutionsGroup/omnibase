@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **AllowPromotionCodes** | Pointer to **bool** |  | [optional] 
 **CancelUrl** | **string** |  | 
-**PriceId** | **string** |  | 
+**LineItems** | [**[]LineItem**](LineItem.md) |  | 
 **PromotionCode** | Pointer to **string** |  | [optional] 
 **SuccessUrl** | **string** |  | 
 **TrialPeriodDays** | Pointer to **int64** |  | [optional] 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewCreateCheckoutRequest
 
-`func NewCreateCheckoutRequest(cancelUrl string, priceId string, successUrl string, ) *CreateCheckoutRequest`
+`func NewCreateCheckoutRequest(cancelUrl string, lineItems []LineItem, successUrl string, ) *CreateCheckoutRequest`
 
 NewCreateCheckoutRequest instantiates a new CreateCheckoutRequest object
 This constructor will assign default values to properties that have it defined,
@@ -75,26 +75,36 @@ and a boolean to check if the value has been set.
 SetCancelUrl sets CancelUrl field to given value.
 
 
-### GetPriceId
+### GetLineItems
 
-`func (o *CreateCheckoutRequest) GetPriceId() string`
+`func (o *CreateCheckoutRequest) GetLineItems() []LineItem`
 
-GetPriceId returns the PriceId field if non-nil, zero value otherwise.
+GetLineItems returns the LineItems field if non-nil, zero value otherwise.
 
-### GetPriceIdOk
+### GetLineItemsOk
 
-`func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool)`
+`func (o *CreateCheckoutRequest) GetLineItemsOk() (*[]LineItem, bool)`
 
-GetPriceIdOk returns a tuple with the PriceId field if it's non-nil, zero value otherwise
+GetLineItemsOk returns a tuple with the LineItems field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetPriceId
+### SetLineItems
 
-`func (o *CreateCheckoutRequest) SetPriceId(v string)`
+`func (o *CreateCheckoutRequest) SetLineItems(v []LineItem)`
 
-SetPriceId sets PriceId field to given value.
+SetLineItems sets LineItems field to given value.
 
 
+### SetLineItemsNil
+
+`func (o *CreateCheckoutRequest) SetLineItemsNil(b bool)`
+
+ SetLineItemsNil sets the value for LineItems to be an explicit nil
+
+### UnsetLineItems
+`func (o *CreateCheckoutRequest) UnsetLineItems()`
+
+UnsetLineItems ensures that no value is present for LineItems, not even an explicit nil
 ### GetPromotionCode
 
 `func (o *CreateCheckoutRequest) GetPromotionCode() string`

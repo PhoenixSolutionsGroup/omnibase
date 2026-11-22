@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { LineItem } from './LineItem';
+import {
+    LineItemFromJSON,
+    LineItemFromJSONTyped,
+    LineItemToJSON,
+    LineItemToJSONTyped,
+} from './LineItem';
+
 /**
  * 
  * @export
@@ -33,10 +41,10 @@ export interface CreateCheckoutRequest {
     cancelUrl: string;
     /**
      * 
-     * @type {string}
+     * @type {Array<LineItem>}
      * @memberof CreateCheckoutRequest
      */
-    priceId: string;
+    lineItems: Array<LineItem> | null;
     /**
      * 
      * @type {string}
@@ -62,7 +70,7 @@ export interface CreateCheckoutRequest {
  */
 export function instanceOfCreateCheckoutRequest(value: object): value is CreateCheckoutRequest {
     if (!('cancelUrl' in value) || value['cancelUrl'] === undefined) return false;
-    if (!('priceId' in value) || value['priceId'] === undefined) return false;
+    if (!('lineItems' in value) || value['lineItems'] === undefined) return false;
     if (!('successUrl' in value) || value['successUrl'] === undefined) return false;
     return true;
 }
@@ -79,7 +87,7 @@ export function CreateCheckoutRequestFromJSONTyped(json: any, ignoreDiscriminato
         
         'allowPromotionCodes': json['allow_promotion_codes'] == null ? undefined : json['allow_promotion_codes'],
         'cancelUrl': json['cancel_url'],
-        'priceId': json['price_id'],
+        'lineItems': (json['line_items'] == null ? null : (json['line_items'] as Array<any>).map(LineItemFromJSON)),
         'promotionCode': json['promotion_code'] == null ? undefined : json['promotion_code'],
         'successUrl': json['success_url'],
         'trialPeriodDays': json['trial_period_days'] == null ? undefined : json['trial_period_days'],
@@ -99,7 +107,7 @@ export function CreateCheckoutRequestToJSONTyped(value?: CreateCheckoutRequest |
         
         'allow_promotion_codes': value['allowPromotionCodes'],
         'cancel_url': value['cancelUrl'],
-        'price_id': value['priceId'],
+        'line_items': (value['lineItems'] == null ? null : (value['lineItems'] as Array<any>).map(LineItemToJSON)),
         'promotion_code': value['promotionCode'],
         'success_url': value['successUrl'],
         'trial_period_days': value['trialPeriodDays'],

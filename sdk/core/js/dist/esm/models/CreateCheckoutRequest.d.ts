@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import type { LineItem } from './LineItem';
 /**
  *
  * @export
@@ -29,10 +30,10 @@ export interface CreateCheckoutRequest {
     cancelUrl: string;
     /**
      *
-     * @type {string}
+     * @type {Array<LineItem>}
      * @memberof CreateCheckoutRequest
      */
-    priceId: string;
+    lineItems: Array<LineItem> | null;
     /**
      *
      * @type {string}
