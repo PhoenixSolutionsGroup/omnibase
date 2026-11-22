@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Messages } from "../components/ui/messages";
 import { isUiNodeInputAttributes } from "./types";
+import { cn } from "@/lib/utils";
 
 export const OIDC_INIT_CODE_COOKIE = "omnibase_oidc_init_code";
 
@@ -25,12 +26,15 @@ export type LoginFormProps = {
    * @defaultValue "/auth/callback"
    */
   return_to?: string;
+  variant?: "card" | "plain";
+  className?: string;
 };
 
 function collectMessages(flow?: LoginFlow): string[] {
   return [
     ...(flow?.ui.messages?.map((m) => m.text) ?? []),
-    ...(flow?.ui.nodes.flatMap((n) => n.messages?.map((m) => m.text) ?? []) ?? []),
+    ...(flow?.ui.nodes.flatMap((n) => n.messages?.map((m) => m.text) ?? []) ??
+      []),
   ];
 }
 
@@ -38,7 +42,7 @@ function getCsrfToken(flow?: LoginFlow | null): string | undefined {
   const csrfNode = flow?.ui.nodes.find(
     (n) =>
       isUiNodeInputAttributes(n.attributes) &&
-      n.attributes.name === "csrf_token"
+      n.attributes.name === "csrf_token",
   );
   return csrfNode && isUiNodeInputAttributes(csrfNode.attributes)
     ? (csrfNode.attributes.value as string | undefined)
@@ -61,6 +65,8 @@ export function LoginForm({
   Header,
   register_url,
   return_to = "/auth/callback",
+  variant = "card",
+  className = "",
 }: LoginFormProps) {
   const [flow, setFlow] = useState<LoginFlow | null>(null);
   const [identifier, setIdentifier] = useState("");
@@ -72,12 +78,12 @@ export function LoginForm({
     setError(null);
     try {
       const url = new URL(
-        `${api_url.replace(/\/$/, "")}/api/v1/auth/proxy/self-service/login/api`
+        `${api_url.replace(/\/$/, "")}/api/v1/auth/proxy/self-service/login/api`,
       );
       url.searchParams.set("return_session_token_exchange_code", "true");
       url.searchParams.set(
         "return_to",
-        `${window.location.origin}${return_to}`
+        `${window.location.origin}${return_to}`,
       );
 
       const res = await fetch(url.toString(), {
@@ -113,7 +119,10 @@ export function LoginForm({
     try {
       const res = await fetch(flow.ui.action, {
         method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           csrf_token: getCsrfToken(flow),
           identifier: identifier.trim(),
@@ -130,7 +139,11 @@ export function LoginForm({
       }
 
       if (data?.ui?.nodes && Array.isArray(data.ui.nodes)) {
-        setError(collectMessages(data as LoginFlow).join(" ") || data?.error?.message || "Login failed");
+        setError(
+          collectMessages(data as LoginFlow).join(" ") ||
+            data?.error?.message ||
+            "Login failed",
+        );
         setFlow(data);
       } else {
         setError(data?.error?.message ?? "Login failed");
@@ -151,7 +164,10 @@ export function LoginForm({
     try {
       const res = await fetch(flow.ui.action, {
         method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           csrf_token: getCsrfToken(flow),
           method: "oidc",
@@ -167,7 +183,9 @@ export function LoginForm({
       }
 
       if (data?.ui?.nodes && Array.isArray(data.ui.nodes)) {
-        setError(collectMessages(data as LoginFlow).join(" ") || "Sign in failed");
+        setError(
+          collectMessages(data as LoginFlow).join(" ") || "Sign in failed",
+        );
         setFlow(data);
       } else {
         setError(data?.error?.message ?? "Sign in failed");
@@ -184,13 +202,19 @@ export function LoginForm({
       (n) =>
         n.group === "oidc" &&
         isUiNodeInputAttributes(n.attributes) &&
-        n.attributes.name === "provider"
+        n.attributes.name === "provider",
     ) ?? [];
 
   return (
-    <div>
+    <div className="w-90 md:w-100">
       <Messages flow={flow ?? undefined} />
-      <Card className="w-full max-w-md mx-auto">
+      <Card
+        className={cn(
+          "w-full mx-auto",
+          variant === "plain" ? "border-none shadow-none" : "",
+          className,
+        )}
+      >
         {Header && (
           <CardHeader>
             <CardTitle className="text-center pb-1">{Header}</CardTitle>
@@ -201,36 +225,6 @@ export function LoginForm({
           {error && (
             <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
-            </div>
-          )}
-
-          {oidcProviders.length > 0 && (
-            <div className="space-y-2">
-              {oidcProviders.map((node) => {
-                const attrs = node.attributes as UiNodeInputAttributes;
-                return (
-                  <Button
-                    key={attrs.value}
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loading || !flow}
-                    onClick={() => onOidcSubmit(attrs.value)}
-                  >
-                    {node.meta?.label?.text ?? `Continue with ${attrs.value}`}
-                  </Button>
-                );
-              })}
-              <div className="relative py-2">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    or
-                  </span>
-                </div>
-              </div>
             </div>
           )}
 
@@ -259,9 +253,43 @@ export function LoginForm({
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading || !flow}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || !flow}
+            >
               {loading ? "Signing in…" : "Sign in"}
             </Button>
+
+            {oidcProviders.length > 0 && (
+              <div className="space-y-2">
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      or
+                    </span>
+                  </div>
+                </div>
+                {oidcProviders.map((node) => {
+                  const attrs = node.attributes as UiNodeInputAttributes;
+                  return (
+                    <Button
+                      key={attrs.value}
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      disabled={loading || !flow}
+                      onClick={() => onOidcSubmit(attrs.value)}
+                    >
+                      {node.meta?.label?.text ?? `Continue with ${attrs.value}`}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
           </form>
 
           {register_url && (
@@ -271,7 +299,7 @@ export function LoginForm({
                 href={register_url}
                 className="text-primary underline-offset-4 hover:underline"
               >
-                Go to Register
+                Sign Up
               </a>
             </div>
           )}

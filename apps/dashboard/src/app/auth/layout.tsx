@@ -6,10 +6,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative grid grid-cols-1 md:grid-cols-5 h-full">
+    <div className="relative grid grid-cols-1 lg:grid-cols-4 h-full">
       {/* Background image: top half on mobile, left column on desktop */}
-      <div className="absolute inset-x-0 top-0 h-1/2 p-4 md:static md:col-span-3 md:h-full">
-        <div className="relative isolate h-full w-full overflow-hidden rounded-2xl">
+      <div className="absolute inset-x-0 top-0 h-1/2 lg:static lg:col-span-2 lg:h-full lg:p-4">
+        <div className="relative isolate h-full w-full overflow-hidden rounded-b-xl lg:rounded-2xl">
           <Image
             src="/auth-background.jpg"
             alt=""
@@ -35,7 +35,7 @@ export default function AuthLayout({
       </div>
 
       {/* Content: overlaps the image on mobile */}
-      <div className="relative z-10 flex items-center justify-center md:col-span-2">
+      <div className="relative z-10 flex items-center justify-center lg:col-span-2">
         {children}
       </div>
     </div>
