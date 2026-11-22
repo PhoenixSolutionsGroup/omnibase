@@ -129,10 +129,10 @@ func BuildAPI(r *gin.Engine, d v1_routes.Deps) huma.API {
 	humaCfg.Info.TermsOfService = "https://omnibase.dev/terms"
 	humaCfg.Servers = []*huma.Server{{URL: "https://api.omnibase.tech", Description: "Production server"}}
 	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
-		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token", Description: "Kratos session JWT token. Alternative to cookie authentication for non-browser clients."},
+		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token", Description: "OmniBase session token. Also accepted via the omnibase_session_token cookie."},
 		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key", Description: "Admin service-to-service key. Trusted for all routes and skips permission checks."},
 		"AppKeyAuth":       {Type: "apiKey", In: "header", Name: "X-App-Key", Description: "Customer app backend key. Requires X-User-Id and X-Tenant-Id and is authorized as that user."},
-		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session", Description: "Session cookie set by Kratos after login."},
+		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "omnibase_session_token", Description: "OmniBase session token cookie set after login."},
 	}
 	huma.NewErrorWithContext = func(ctx huma.Context, status int, msg string, errs ...error) huma.StatusError {
 		if status >= http.StatusInternalServerError {

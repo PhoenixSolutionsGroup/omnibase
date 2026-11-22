@@ -344,7 +344,7 @@ r, err := client.Service.Operation(auth, args)
 ### CookieAuth
 
 - **Type**: API key
-- **API key parameter name**: ory_kratos_session
+- **API key parameter name**: omnibase_session_token
 - **Location**: 
 
 Note, each API key must be added to a map of `map[string]APIKey` where the key is: CookieAuth and passed in as the auth context for each request.

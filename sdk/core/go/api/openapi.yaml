@@ -12704,9 +12704,9 @@ components:
       name: X-App-Key
       type: apiKey
     CookieAuth:
-      description: Session cookie set by Kratos after login.
+      description: OmniBase session token cookie set after login.
       in: cookie
-      name: ory_kratos_session
+      name: omnibase_session_token
       type: apiKey
     ServiceKeyAuth:
       description: Admin service-to-service key. Trusted for all routes and skips
@@ -12715,8 +12715,8 @@ components:
       name: X-Service-Key
       type: apiKey
     SessionTokenAuth:
-      description: Kratos session JWT token. Alternative to cookie authentication
-        for non-browser clients.
+      description: OmniBase session token. Also accepted via the omnibase_session_token
+        cookie.
       in: header
       name: X-Session-Token
       type: apiKey
