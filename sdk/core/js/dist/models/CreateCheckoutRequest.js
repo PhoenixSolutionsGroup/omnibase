@@ -18,13 +18,14 @@ exports.CreateCheckoutRequestFromJSON = CreateCheckoutRequestFromJSON;
 exports.CreateCheckoutRequestFromJSONTyped = CreateCheckoutRequestFromJSONTyped;
 exports.CreateCheckoutRequestToJSON = CreateCheckoutRequestToJSON;
 exports.CreateCheckoutRequestToJSONTyped = CreateCheckoutRequestToJSONTyped;
+const LineItem_1 = require("./LineItem");
 /**
  * Check if a given object implements the CreateCheckoutRequest interface.
  */
 function instanceOfCreateCheckoutRequest(value) {
     if (!('cancelUrl' in value) || value['cancelUrl'] === undefined)
         return false;
-    if (!('priceId' in value) || value['priceId'] === undefined)
+    if (!('lineItems' in value) || value['lineItems'] === undefined)
         return false;
     if (!('successUrl' in value) || value['successUrl'] === undefined)
         return false;
@@ -40,7 +41,7 @@ function CreateCheckoutRequestFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'allowPromotionCodes': json['allow_promotion_codes'] == null ? undefined : json['allow_promotion_codes'],
         'cancelUrl': json['cancel_url'],
-        'priceId': json['price_id'],
+        'lineItems': (json['line_items'] == null ? null : json['line_items'].map(LineItem_1.LineItemFromJSON)),
         'promotionCode': json['promotion_code'] == null ? undefined : json['promotion_code'],
         'successUrl': json['success_url'],
         'trialPeriodDays': json['trial_period_days'] == null ? undefined : json['trial_period_days'],
@@ -56,7 +57,7 @@ function CreateCheckoutRequestToJSONTyped(value, ignoreDiscriminator = false) {
     return {
         'allow_promotion_codes': value['allowPromotionCodes'],
         'cancel_url': value['cancelUrl'],
-        'price_id': value['priceId'],
+        'line_items': (value['lineItems'] == null ? null : value['lineItems'].map(LineItem_1.LineItemToJSON)),
         'promotion_code': value['promotionCode'],
         'success_url': value['successUrl'],
         'trial_period_days': value['trialPeriodDays'],

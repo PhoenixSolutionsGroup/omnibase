@@ -29,12 +29,35 @@ export default function page({ params, searchParams }: any) {
                 api_url={API_URL}
                 onToken={setSessionTokenAction}
                 register_url="/auth/registration"
+                variant="plain"
+                Header={
+                  <div className="flex flex-col gap-1">
+                    <span className="text-2xl">Get started</span>
+                    <span className="text-xs font-light text-muted-foreground">
+                      Continue where you left off.
+                    </span>
+                  </div>
+                }
+                className="shadow-xl lg:shadow-none bg-card lg:bg-transparent"
               />
             );
           },
           registration: (flow) => {
             return (
-              <RegistrationForm flow={flow as any} login_url="/auth/login" />
+              <RegistrationForm
+                flow={flow as any}
+                login_url="/auth/login"
+                variant="plain"
+                Header={
+                  <div className="flex flex-col gap-1">
+                    <span className="text-2xl">Get started</span>
+                    <span className="text-xs font-light text-muted-foreground">
+                      Continue where you left off.
+                    </span>
+                  </div>
+                }
+                className="shadow-xl lg:shadow-none bg-card lg:bg-transparent"
+              />
             );
           },
           recovery: (flow) => {

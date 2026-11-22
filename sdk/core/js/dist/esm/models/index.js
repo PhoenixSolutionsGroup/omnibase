@@ -91,6 +91,7 @@ __exportStar(require("./IdentityCredentials"), exports);
 __exportStar(require("./IdentityName"), exports);
 __exportStar(require("./InvoiceLineItemResponse"), exports);
 __exportStar(require("./InvoiceResponse"), exports);
+__exportStar(require("./LineItem"), exports);
 __exportStar(require("./ListRolesByTenantRow"), exports);
 __exportStar(require("./ListStripeWebhooksRow"), exports);
 __exportStar(require("./ListSystemTemplatesResponse"), exports);

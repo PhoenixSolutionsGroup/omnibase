@@ -7864,8 +7864,12 @@ components:
       example:
         allow_promotion_codes: true
         promotion_code: promotion_code
-        price_id: price_id
-        trial_period_days: 0
+        line_items:
+        - quantity: 0
+          price_id: price_id
+        - quantity: 0
+          price_id: price_id
+        trial_period_days: 6
         cancel_url: cancel_url
         success_url: success_url
       properties:
@@ -7874,9 +7878,12 @@ components:
         cancel_url:
           minLength: 1
           type: string
-        price_id:
-          minLength: 1
-          type: string
+        line_items:
+          items:
+            $ref: "#/components/schemas/LineItem"
+          minItems: 1
+          nullable: true
+          type: array
         promotion_code:
           type: string
         success_url:
@@ -7887,7 +7894,7 @@ components:
           type: integer
       required:
       - cancel_url
-      - price_id
+      - line_items
       - success_url
     CreateCheckoutResponse:
       additionalProperties: false
@@ -9140,6 +9147,21 @@ components:
       - customer_id
       - id
       - status
+    LineItem:
+      additionalProperties: false
+      example:
+        quantity: 0
+        price_id: price_id
+      properties:
+        price_id:
+          minLength: 1
+          type: string
+        quantity:
+          default: 1
+          format: int64
+          type: integer
+      required:
+      - price_id
     ListRolesByTenantRow:
       additionalProperties: false
       example:

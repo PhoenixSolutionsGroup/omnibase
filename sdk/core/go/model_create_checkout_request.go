@@ -24,7 +24,7 @@ var _ MappedNullable = &CreateCheckoutRequest{}
 type CreateCheckoutRequest struct {
 	AllowPromotionCodes *bool `json:"allow_promotion_codes,omitempty"`
 	CancelUrl string `json:"cancel_url"`
-	PriceId string `json:"price_id"`
+	LineItems []LineItem `json:"line_items"`
 	PromotionCode *string `json:"promotion_code,omitempty"`
 	SuccessUrl string `json:"success_url"`
 	TrialPeriodDays *int64 `json:"trial_period_days,omitempty"`
@@ -36,10 +36,10 @@ type _CreateCheckoutRequest CreateCheckoutRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateCheckoutRequest(cancelUrl string, priceId string, successUrl string) *CreateCheckoutRequest {
+func NewCreateCheckoutRequest(cancelUrl string, lineItems []LineItem, successUrl string) *CreateCheckoutRequest {
 	this := CreateCheckoutRequest{}
 	this.CancelUrl = cancelUrl
-	this.PriceId = priceId
+	this.LineItems = lineItems
 	this.SuccessUrl = successUrl
 	return &this
 }
@@ -108,28 +108,30 @@ func (o *CreateCheckoutRequest) SetCancelUrl(v string) {
 	o.CancelUrl = v
 }
 
-// GetPriceId returns the PriceId field value
-func (o *CreateCheckoutRequest) GetPriceId() string {
+// GetLineItems returns the LineItems field value
+// If the value is explicit nil, the zero value for []LineItem will be returned
+func (o *CreateCheckoutRequest) GetLineItems() []LineItem {
 	if o == nil {
-		var ret string
+		var ret []LineItem
 		return ret
 	}
 
-	return o.PriceId
+	return o.LineItems
 }
 
-// GetPriceIdOk returns a tuple with the PriceId field value
+// GetLineItemsOk returns a tuple with the LineItems field value
 // and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateCheckoutRequest) GetLineItemsOk() ([]LineItem, bool) {
+	if o == nil || IsNil(o.LineItems) {
 		return nil, false
 	}
-	return &o.PriceId, true
+	return o.LineItems, true
 }
 
-// SetPriceId sets field value
-func (o *CreateCheckoutRequest) SetPriceId(v string) {
-	o.PriceId = v
+// SetLineItems sets field value
+func (o *CreateCheckoutRequest) SetLineItems(v []LineItem) {
+	o.LineItems = v
 }
 
 // GetPromotionCode returns the PromotionCode field value if set, zero value otherwise.
@@ -234,7 +236,9 @@ func (o CreateCheckoutRequest) ToMap() (map[string]interface{}, error) {
 		toSerialize["allow_promotion_codes"] = o.AllowPromotionCodes
 	}
 	toSerialize["cancel_url"] = o.CancelUrl
-	toSerialize["price_id"] = o.PriceId
+	if o.LineItems != nil {
+		toSerialize["line_items"] = o.LineItems
+	}
 	if !IsNil(o.PromotionCode) {
 		toSerialize["promotion_code"] = o.PromotionCode
 	}
@@ -251,7 +255,7 @@ func (o *CreateCheckoutRequest) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"cancel_url",
-		"price_id",
+		"line_items",
 		"success_url",
 	}
 

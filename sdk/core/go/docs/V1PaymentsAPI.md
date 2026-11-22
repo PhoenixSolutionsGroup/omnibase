@@ -175,7 +175,7 @@ import (
 )
 
 func main() {
-	createCheckoutRequest := *openapiclient.NewCreateCheckoutRequest("CancelUrl_example", "PriceId_example", "SuccessUrl_example") // CreateCheckoutRequest | 
+	createCheckoutRequest := *openapiclient.NewCreateCheckoutRequest("CancelUrl_example", []openapiclient.LineItem{*openapiclient.NewLineItem("PriceId_example")}, "SuccessUrl_example") // CreateCheckoutRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)

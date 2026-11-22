@@ -73,6 +73,7 @@ export * from './IdentityCredentials';
 export * from './IdentityName';
 export * from './InvoiceLineItemResponse';
 export * from './InvoiceResponse';
+export * from './LineItem';
 export * from './ListRolesByTenantRow';
 export * from './ListStripeWebhooksRow';
 export * from './ListSystemTemplatesResponse';
