@@ -14,17 +14,22 @@ import {
   findCsrfToken,
 } from "./utils";
 import { isUiNodeInputAttributes } from "./types";
+import { cn } from "@/lib/utils";
 
 export type RegistrationFormProps = {
   flow: RegistrationFlow;
   Header?: React.ReactNode;
   login_url?: string;
+  variant?: "card" | "plain";
+  className?: string;
 };
 
 export function RegistrationForm({
   flow,
   Header,
   login_url,
+  variant = "card",
+  className = "",
 }: RegistrationFormProps) {
   const nodesByGroup = groupNodesByGroup(flow.ui.nodes);
   const csrfToken = findCsrfToken(flow.ui.nodes);
@@ -36,7 +41,7 @@ export function RegistrationForm({
 
   // Get visible input fields from default and password groups
   const inputNodes = filterInputNodes(
-    sortNodes([...defaultNodes, ...passwordNodes])
+    sortNodes([...defaultNodes, ...passwordNodes]),
   );
 
   // Get hidden fields (excluding CSRF token which is handled separately)
@@ -44,7 +49,7 @@ export function RegistrationForm({
     (node) =>
       isUiNodeInputAttributes(node.attributes) &&
       node.attributes.type === "hidden" &&
-      node.attributes.name !== "csrf_token"
+      node.attributes.name !== "csrf_token",
   );
 
   // Get submit button from profile or password group (password group takes precedence for password step)
@@ -59,9 +64,15 @@ export function RegistrationForm({
       : login_url;
 
   return (
-    <div>
+    <div className="w-90 md:w-100">
       <Messages flow={flow} />
-      <Card className="w-full max-w-md mx-auto">
+      <Card
+        className={cn(
+          "w-full mx-auto",
+          variant === "plain" ? "border-none shadow-none" : "",
+          className,
+        )}
+      >
         {Header && (
           <CardHeader>
             <CardTitle className="text-center pb-1">{Header}</CardTitle>
@@ -69,22 +80,8 @@ export function RegistrationForm({
         )}
 
         <CardContent className="space-y-6">
-          {/* OIDC buttons (if present) */}
-          {oidcNodes.length > 0 && (
-            <OidcGroup
-              nodes={sortNodes(oidcNodes)}
-              flowAction={flow.ui.action}
-              flowMethod={flow.ui.method}
-              csrfToken={csrfToken}
-              groupIndex={0}
-              groupName="oidc"
-            />
-          )}
-
           {/* Main registration form with inputs and submit button */}
           <div>
-            {oidcNodes.length > 0 && <Divider withText />}
-
             <form action={flow.ui.action} method={flow.ui.method}>
               <div className="space-y-4">
                 {csrfToken && <HiddenInput node={csrfToken} />}
@@ -98,9 +95,28 @@ export function RegistrationForm({
                   <FormInput key={idx} node={node} />
                 ))}
 
-                {submitButton && <SubmitButton node={submitButton} />}
+                {submitButton && (
+                  <SubmitButton
+                    node={submitButton}
+                    className="w-full capitalize"
+                  />
+                )}
               </div>
             </form>
+
+            {oidcNodes.length > 0 && <Divider withText />}
+
+            {/* OIDC buttons (if present) */}
+            {oidcNodes.length > 0 && (
+              <OidcGroup
+                nodes={sortNodes(oidcNodes)}
+                flowAction={flow.ui.action}
+                flowMethod={flow.ui.method}
+                csrfToken={csrfToken}
+                groupIndex={0}
+                groupName="oidc"
+              />
+            )}
 
             {/* Navigation to Login */}
             {login_url && (
@@ -110,7 +126,7 @@ export function RegistrationForm({
                   href={loginHref}
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  Go to Login
+                  Sign In
                 </a>
               </div>
             )}

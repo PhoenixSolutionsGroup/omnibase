@@ -24,7 +24,7 @@ export function OidcGroup({
   const submitButtons = nodes.filter(
     (node) =>
       isUiNodeInputAttributes(node.attributes) &&
-      node.attributes.type === "submit"
+      node.attributes.type === "submit",
   );
 
   return (
@@ -40,7 +40,11 @@ export function OidcGroup({
             className="w-full"
           >
             {csrfToken && <HiddenInput node={csrfToken} />}
-            <SubmitButton node={node} variant="outline" />
+            <SubmitButton
+              node={node}
+              variant="outline"
+              className="capitalize w-full"
+            />
           </form>
         ))}
       </div>
