@@ -12,7 +12,7 @@ export type SettingsFormProps = {
 
 // Helper function to check if node attributes are input attributes
 function isUiNodeInputAttributes(
-  attributes: any
+  attributes: any,
 ): attributes is UiNodeInputAttributes {
   return (
     attributes &&
@@ -24,25 +24,28 @@ function isUiNodeInputAttributes(
 
 export function SettingsForm({ flow }: SettingsFormProps) {
   // Group nodes by their group property
-  const nodesByGroup = flow.ui.nodes.reduce((groups, node) => {
-    const group = node.group || "default";
-    if (!groups[group]) {
-      groups[group] = [];
-    }
-    groups[group].push(node);
-    return groups;
-  }, {} as Record<string, typeof flow.ui.nodes>);
+  const nodesByGroup = flow.ui.nodes.reduce(
+    (groups, node) => {
+      const group = node.group || "default";
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(node);
+      return groups;
+    },
+    {} as Record<string, typeof flow.ui.nodes>,
+  );
 
   // Get CSRF token (shared across all forms)
   const csrfToken = flow.ui.nodes.find(
     (node) =>
       isUiNodeInputAttributes(node.attributes) &&
-      node.attributes.name === "csrf_token"
+      node.attributes.name === "csrf_token",
   );
 
   // Filter out groups that should be rendered as separate sections
   const settingsGroups = Object.entries(nodesByGroup).filter(
-    ([group]) => group !== "default" && group !== "oidc"
+    ([group]) => group !== "default" && group !== "oidc",
   );
 
   // Group titles mapping
@@ -65,7 +68,7 @@ export function SettingsForm({ flow }: SettingsFormProps) {
         const submitButton = nodes.find(
           (node) =>
             isUiNodeInputAttributes(node.attributes) &&
-            node.attributes.type === "submit"
+            node.attributes.type === "submit",
         );
 
         // Get all non-submit, non-hidden input nodes for this group
@@ -73,7 +76,7 @@ export function SettingsForm({ flow }: SettingsFormProps) {
           (node) =>
             isUiNodeInputAttributes(node.attributes) &&
             node.attributes.type !== "submit" &&
-            node.attributes.type !== "hidden"
+            node.attributes.type !== "hidden",
         );
 
         // Get special node types (img, text)
