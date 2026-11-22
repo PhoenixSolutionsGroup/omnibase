@@ -17,6 +17,7 @@ import {
   PanelLeft,
   House,
   Rocket,
+  FileDatabase,
 } from "lucide-react";
 import { ProjectOption } from "./project-dropdown";
 import { Separator } from "@/components/ui/separator";
@@ -107,7 +108,7 @@ export const getProjectNavigationItems = (
   {
     title: "PostgreSQL",
     href: `/projects/${projectId}/${projectBranch}/postgresql`,
-    icon: Database,
+    icon: FileDatabase,
   },
   {
     title: "Stripe",

@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Logs from "./components/logs";
+// import TopQueries from "./components/top-queries";
 
 interface PostgreSQLClientProps {
   branchId: string;
@@ -80,6 +81,12 @@ export function PostgreSQLClient({ branchId }: PostgreSQLClientProps) {
             startTime={startTime}
             endTime={endTime}
           />
+
+          {/* <TopQueries
+            projectBranchId={branchId}
+            startTime={startTime}
+            endTime={endTime}
+          /> */}
         </div>
       </div>
     </div>
