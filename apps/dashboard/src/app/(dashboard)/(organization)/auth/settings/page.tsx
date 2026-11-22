@@ -1,14 +1,12 @@
 import { getSettingsFlow } from "@omnibase/nextjs/auth";
 import { SettingsForm } from "@omnibase/shadcn";
-import React from "react";
 
 export default async function page({ searchParams }: any) {
   const flow = await getSettingsFlow({ searchParams, url: "/auth/settings" });
   if (!flow) return null;
   return (
     <div className="my-8">
-      {/* TODO: Fix `as any` type */}
-      <SettingsForm flow={flow as any} />
+      <SettingsForm flow={flow} />
     </div>
   );
 }

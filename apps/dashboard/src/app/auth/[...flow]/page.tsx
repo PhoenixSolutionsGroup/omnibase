@@ -40,13 +40,6 @@ export default function page({ params, searchParams }: any) {
           recovery: (flow) => {
             return <RecoveryForm flow={flow as any} />;
           },
-          settings: (flow) => {
-            return (
-              <div className="-mt-[10vh]">
-                <SettingsForm flow={flow as any} />
-              </div>
-            );
-          },
           verification: (flow) => {
             return <VerificationForm flow={flow as any} />;
           },
