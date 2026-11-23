@@ -114,7 +114,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
                 onClick={() => setIsDeleteModalOpen(true)}
                 variant="destructive"
               >
-                <Trash className="w-3 h-3" />
+                <Trash />
                 {isMain ? "Delete Project" : `Delete ${branchName} branch`}
               </Button>
             </div>

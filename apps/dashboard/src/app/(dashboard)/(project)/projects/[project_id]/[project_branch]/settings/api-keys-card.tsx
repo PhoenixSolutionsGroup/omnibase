@@ -192,7 +192,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
               onClick={() => setIsRotateModalOpen(true)}
               variant="outline"
             >
-              <RotateCw className="h-4 w-4" />
+              <RotateCw className="mr-1" />
               Rotate Keys
             </Button>
           </div>
