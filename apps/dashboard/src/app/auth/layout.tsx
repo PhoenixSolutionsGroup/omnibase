@@ -7,7 +7,6 @@ export default function AuthLayout({
 }) {
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-4 h-full">
-      {/* Background image: top half on mobile, left column on desktop */}
       <div className="absolute inset-x-0 top-0 h-1/2 lg:static lg:col-span-2 lg:h-full lg:p-4">
         <div className="relative isolate h-full w-full overflow-hidden rounded-b-xl lg:rounded-2xl">
           <Image
