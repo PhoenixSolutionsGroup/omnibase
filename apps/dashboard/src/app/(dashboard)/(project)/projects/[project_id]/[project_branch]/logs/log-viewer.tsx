@@ -31,19 +31,26 @@ if (!MANAGED_HOSTING_API_URL)
 
 // Service name labels and colors
 const SERVICE_CONFIG: Record<string, { label: string; className: string }> = {
-  all: { label: "ALL", className: "bg-gray-100 text-gray-700 border-gray-200" },
-  api: { label: "API", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  all: {
+    label: "ALL",
+    className:
+      "bg-muted-foreground/5 text-muted-foreground border-muted-foreground/50",
+  },
+  api: {
+    label: "API",
+    className: "bg-blue-700/5 text-blue-700 border-blue-700/50",
+  },
   auth: {
     label: "AUTH",
-    className: "bg-green-50 text-green-700 border-green-200",
+    className: "bg-green-700/5 text-green-700 border-green-700/50",
   },
   perm: {
     label: "PERM",
-    className: "bg-purple-50 text-purple-700 border-purple-200",
+    className: "bg-purple-700/5 text-purple-700 border-purple-700/50",
   },
   postgrest: {
     label: "POSTGREST",
-    className: "bg-orange-50 text-orange-700 border-orange-200",
+    className: "bg-orange-700/5 text-orange-700 border-orange-700/50",
   },
 };
 
@@ -52,7 +59,8 @@ const getServiceNameBadge = (serviceName?: string) => {
 
   const config = SERVICE_CONFIG[serviceName] || {
     label: serviceName.toUpperCase(),
-    className: "bg-gray-100 text-gray-700 border-gray-200",
+    className:
+      "bg-muted-foreground/5 text-muted-foreground border-muted-foreground/50",
   };
 
   return (

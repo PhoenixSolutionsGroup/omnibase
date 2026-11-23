@@ -344,7 +344,7 @@ export function ProjectDashboardClient({
         <div className="grid gap-4 md:grid-cols-3">
           {QUICK_ACTIONS.map((action) => (
             <Link key={action.title} href={action.link}>
-              <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
+              <Card className="transition-colors hover:bg-muted/80 cursor-pointer">
                 <CardContent className="flex items-center gap-4">
                   <div>
                     <div className="flex gap-2 items-center">

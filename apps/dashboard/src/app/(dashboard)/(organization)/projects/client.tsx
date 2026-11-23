@@ -82,7 +82,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                          <Building2 className="h-4 w-4 text-primary" />
+                          <FolderKanban className="h-4 w-4 text-primary" />
                         </div>
                         {project.name}
                       </div>

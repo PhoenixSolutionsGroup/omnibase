@@ -300,7 +300,7 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <a
                 href={register_url}
-                className="text-primary underline-offset-4 hover:underline"
+                className="text-primary underline-offset-4 hover:underline font-medium"
               >
                 Sign Up
               </a>
