@@ -18,7 +18,7 @@ export default function AuthLayout({
             className="object-cover"
           />
 
-          <div className="absolute top-0 left-0 z-10 p-6">
+          <div className="absolute inset-x-0 top-0 z-10 flex justify-center p-6 lg:justify-start">
             <span className="flex items-center text-background dark:text-foreground font-semibold text-lg">
               <Image
                 src="/omnibase-logo-transparent.svg"
