@@ -20,21 +20,13 @@ export default function AuthLayout({
           />
 
           <div className="absolute top-0 left-0 z-10 p-6">
-            <span className="flex items-center text-background font-semibold text-lg">
+            <span className="flex items-center text-background dark:text-foreground font-semibold text-lg">
               <Image
                 src="/omnibase-logo-transparent.svg"
                 alt="Omnibase"
                 width={64}
                 height={64}
-                className="rounded-lg scale-25 -mr-4 block dark:hidden"
-                unoptimized
-              />
-              <Image
-                src="/omnibase-logo-transparent-dark.svg"
-                alt="Omnibase"
-                width={64}
-                height={64}
-                className="rounded-lg scale-25 -mr-4 hidden dark:block"
+                className="rounded-lg scale-25 -mr-4 block"
                 unoptimized
               />
               Omnibase
