@@ -97,7 +97,7 @@ export function StripeSettingsClient({
         </Card>
       )}
 
-      {!isTestMode && (
+      {isTestMode && (
         <Card className="ring-info bg-info/10">
           <CardHeader>
             <CardTitle>Sandbox Mode</CardTitle>
