@@ -82,11 +82,11 @@ export type GetFlowProps = {
  * @group Flow Retrieval
  */
 export const getLoginFlow = async (
-  props: GetFlowProps
+  props: GetFlowProps,
 ): Promise<LoginFlow | null> => {
   const flow = await loginFlow(
     { project: { login_ui_url: props.url } },
-    props.searchParams
+    props.searchParams,
   );
   if (!flow) return null;
   else return flow;
@@ -125,13 +125,13 @@ export const getLoginFlow = async (
  * @group Flow Retrieval
  */
 export const getRecoveryFlow = async (
-  props: GetFlowProps
+  props: GetFlowProps,
 ): Promise<RecoveryFlow | null> => {
   const flow = await recoveryFlow(
     {
       project: { recovery_ui_url: props.url },
     },
-    props.searchParams
+    props.searchParams,
   );
   if (!flow) return null;
   else return flow;
@@ -170,13 +170,13 @@ export const getRecoveryFlow = async (
  * @group Flow Retrieval
  */
 export const getRegistrationFlow = async (
-  props: GetFlowProps
+  props: GetFlowProps,
 ): Promise<RegistrationFlow | null> => {
   const flow = await registrationFlow(
     {
       project: { registration_ui_url: props.url },
     },
-    props.searchParams
+    props.searchParams,
   );
   if (!flow) return null;
   else return flow;
@@ -215,13 +215,13 @@ export const getRegistrationFlow = async (
  * @group Flow Retrieval
  */
 export const getSettingsFlow = async (
-  props: GetFlowProps
+  props: GetFlowProps,
 ): Promise<SettingsFlow | null> => {
   const flow = await settingsFlow(
     {
       project: { settings_ui_url: props.url },
     },
-    props.searchParams
+    props.searchParams,
   );
   if (!flow) return null;
   else return flow;
@@ -260,13 +260,13 @@ export const getSettingsFlow = async (
  * @group Flow Retrieval
  */
 export const getVerificationFlow = async (
-  props: GetFlowProps
+  props: GetFlowProps,
 ): Promise<VerificationFlow | null> => {
   const flow = await verificationFlow(
     {
       project: { verification_ui_url: props.url },
     },
-    props.searchParams
+    props.searchParams,
   );
   if (!flow) return null;
   else return flow;
@@ -293,8 +293,7 @@ export type LogoutFlowReturnType = {
  * Retrieves a logout flow for the authenticated user with complete logout handling
  *
  * Fetches logout flow data from Ory Kratos and provides a server action that handles
- * the complete logout process. This includes clearing session cookies (ory_kratos_session,
- * ory_kratos_continuity) and calling the Ory logout endpoint.
+ * the complete logout process. This includes clearing session cookies (omnibase_session_token) and calling the Ory logout endpoint.
  *
  * The returned action should be called from a form or button to execute the logout
  * and redirect the user to the specified return URL.
@@ -326,7 +325,7 @@ export type LogoutFlowReturnType = {
  * }
  * ```
  *
- * @since 0.5.1
+ * @since 0.9.2
  * @public
  * @group Flow Retrieval
  */
@@ -343,8 +342,7 @@ export const getLogoutFlow = async ({
       action: async () => {
         "use server";
         const cookieStore = await cookies();
-        cookieStore.delete("ory_kratos_continuity");
-        cookieStore.delete("ory_kratos_session");
+        cookieStore.delete("omnibase_session_token");
 
         await fetch(flow.logout_url, {
           credentials: "include",
@@ -402,7 +400,7 @@ export type GetErrorFlowProps = {
  * @group Flow Retrieval
  */
 export const getErrorFlow = async (
-  props: GetErrorFlowProps
+  props: GetErrorFlowProps,
 ): Promise<FlowError | null> => {
   const params = await props.searchParams;
   const id = typeof params.id === "string" ? params.id : params.id?.[0];
@@ -412,7 +410,7 @@ export const getErrorFlow = async (
   const ory = new FrontendApi(
     new Configuration({
       basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL,
-    })
+    }),
   );
 
   try {
