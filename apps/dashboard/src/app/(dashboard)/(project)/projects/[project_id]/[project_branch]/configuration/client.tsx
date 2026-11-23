@@ -486,7 +486,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                             {item.label}
                           </p>
                           <p
-                            className={`mt-1 font-mono text-sm break-all ${
+                            className={`mt-1 text-sm break-all ${
                               error ? "text-destructive" : ""
                             }`}
                           >

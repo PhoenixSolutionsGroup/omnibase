@@ -201,122 +201,130 @@ export function LogViewer({
   }, [logs, projectId, serviceType]);
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-background">
-      <Table>
-        <TableHeader className="bg-muted">
-          <TableRow>
-            <TableHead className="w-12 px-4" />
-            <TableHead className="w-42 px-3">Timestamp</TableHead>
-            <TableHead className="w-24 px-0">Severity</TableHead>
-            {serviceType === "all" && (
-              <TableHead className="px-2 w-24">Service</TableHead>
-            )}
-
-            <TableHead className="px-4">Message</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {logs.length === 0 ? (
+    <div className="flex h-full min-h-0 flex-col border rounded-lg overflow-hidden bg-background">
+      <div className="min-h-0 flex-1 [&>div]:h-full [&>div]:overflow-auto">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-card shadow-[0_1px_0_var(--border)]">
             <TableRow>
-              <TableCell
-                colSpan={colCount}
-                className="px-4 py-8 text-center text-muted-foreground"
-              >
-                No logs found
-              </TableCell>
+              <TableHead className="w-12 px-4" />
+              <TableHead className="w-42 px-3">Timestamp</TableHead>
+              <TableHead className="w-24 px-0">Severity</TableHead>
+              {serviceType === "all" && (
+                <TableHead className="px-2 w-24">Service</TableHead>
+              )}
+
+              <TableHead className="px-4">Message</TableHead>
             </TableRow>
-          ) : (
-            logs.map((log, index) => (
-              <React.Fragment key={index}>
-                <TableRow>
-                  <TableCell className="px-4 py-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => toggleRow(index)}
-                      aria-expanded={expandedRows.has(index)}
-                      aria-label={
-                        expandedRows.has(index) ? "Collapse log" : "Expand log"
-                      }
-                    >
-                      {expandedRows.has(index) ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableCell>
-                  <TableCell className="px-3 py-2">
-                    <span className="text-muted-foreground">
-                      {formatTimestamp(log.timestamp)}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-0 py-2">
-                    <SeverityBadge severity={log.severity} variant="badge" />
-                  </TableCell>
-                  {serviceType === "all" && (
-                    <TableCell className="px-2 py-2 w-24">
-                      {getServiceNameBadge(log.service_name)}
+          </TableHeader>
+          <TableBody>
+            {logs.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={colCount}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
+                  No logs found
+                </TableCell>
+              </TableRow>
+            ) : (
+              logs.map((log, index) => (
+                <React.Fragment key={index}>
+                  <TableRow>
+                    <TableCell className="px-4 py-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => toggleRow(index)}
+                        aria-expanded={expandedRows.has(index)}
+                        aria-label={
+                          expandedRows.has(index)
+                            ? "Collapse log"
+                            : "Expand log"
+                        }
+                      >
+                        {expandedRows.has(index) ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </Button>
                     </TableCell>
-                  )}
+                    <TableCell className="px-3 py-2">
+                      <span className="text-muted-foreground">
+                        {formatTimestamp(log.timestamp)}
+                      </span>
+                    </TableCell>
 
-                  <TableCell className="px-4 py-2 max-w-0">
-                    <span>{log.message || "(no message)"}</span>
-                  </TableCell>
-                </TableRow>
-                {expandedRows.has(index) && (
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell
-                      colSpan={colCount}
-                      className="px-4 pb-3 bg-muted/30 whitespace-normal"
-                    >
-                      {/* Raw Log Line */}
-                      {log.metadata?.raw_line && (
-                        <div className="mb-3">
-                          <div className="text-xs font-semibold text-muted-foreground mb-1">
-                            Raw Log:
-                          </div>
-                          <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
-                            {typeof log.metadata.raw_line === "string"
-                              ? (() => {
-                                  try {
-                                    return JSON.stringify(
-                                      JSON.parse(log.metadata.raw_line),
-                                      null,
-                                      2,
-                                    );
-                                  } catch {
-                                    return log.metadata.raw_line;
-                                  }
-                                })()
-                              : JSON.stringify(log.metadata.raw_line, null, 2)}
-                          </pre>
-                        </div>
-                      )}
+                    <TableCell className="px-0 py-2">
+                      <SeverityBadge severity={log.severity} variant="badge" />
+                    </TableCell>
+                    {serviceType === "all" && (
+                      <TableCell className="px-2 py-2 w-24">
+                        {getServiceNameBadge(log.service_name)}
+                      </TableCell>
+                    )}
 
-                      {/* Full Log Entry */}
-                      <div>
-                        <div className="text-xs font-semibold text-muted-foreground mb-1">
-                          Full Log Entry:
-                        </div>
-                        <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
-                          {JSON.stringify(log, null, 2)}
-                        </pre>
-                      </div>
+                    <TableCell className="px-4 py-2 max-w-0">
+                      <span>{log.message || "(no message)"}</span>
                     </TableCell>
                   </TableRow>
-                )}
-              </React.Fragment>
-            ))
-          )}
-        </TableBody>
-      </Table>
+                  {expandedRows.has(index) && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell
+                        colSpan={colCount}
+                        className="px-4 pb-3 bg-muted/30 whitespace-normal"
+                      >
+                        {/* Raw Log Line */}
+                        {log.metadata?.raw_line && (
+                          <div className="mb-3">
+                            <div className="text-xs font-semibold text-muted-foreground mb-1">
+                              Raw Log:
+                            </div>
+                            <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
+                              {typeof log.metadata.raw_line === "string"
+                                ? (() => {
+                                    try {
+                                      return JSON.stringify(
+                                        JSON.parse(log.metadata.raw_line),
+                                        null,
+                                        2,
+                                      );
+                                    } catch {
+                                      return log.metadata.raw_line;
+                                    }
+                                  })()
+                                : JSON.stringify(
+                                    log.metadata.raw_line,
+                                    null,
+                                    2,
+                                  )}
+                            </pre>
+                          </div>
+                        )}
+
+                        {/* Full Log Entry */}
+                        <div>
+                          <div className="text-xs font-semibold text-muted-foreground mb-1">
+                            Full Log Entry:
+                          </div>
+                          <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
+                            {JSON.stringify(log, null, 2)}
+                          </pre>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Load More Button */}
       {logs.length > 0 && hasMore && (
-        <div className="px-4 py-3 border-t flex justify-center">
+        <div className="px-4 py-3 border-t flex justify-center shrink-0">
           <Button
             onClick={loadMoreLogs}
             disabled={loading}
