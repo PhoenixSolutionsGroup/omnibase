@@ -23,9 +23,9 @@ export default function AuthLayout({
               <Image
                 src="/omnibase-logo-transparent.svg"
                 alt="Omnibase"
-                width={64}
-                height={64}
-                className="rounded-lg scale-25 -mr-4 block"
+                width={22}
+                height={22}
+                className="rounded-lg mr-1 block"
                 unoptimized
               />
               Omnibase
