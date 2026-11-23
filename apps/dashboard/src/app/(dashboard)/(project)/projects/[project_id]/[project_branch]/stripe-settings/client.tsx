@@ -1,7 +1,12 @@
 "use client";
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
@@ -75,50 +80,56 @@ export function StripeSettingsClient({
     <div className="space-y-6">
       {/* Show onboarding notice if not complete */}
       {showOnboardingCta && (
-        <Card className="p-6 border-orange-300 dark:border-orange-700">
-          <h2 className="text-lg font-semibold mb-2">
-            Stripe Onboarding Required
-          </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Please complete Stripe onboarding to access these settings.
-          </p>
-          <div className="flex">
-            <Button className="">
-              <Link href={onboardingUrl}>Finish Stripe Onboarding</Link>
-            </Button>
-          </div>
+        <Card className="ring-warning bg-warning/10">
+          <CardHeader>
+            <CardTitle>Stripe Onboarding Required</CardTitle>
+            <CardDescription>
+              Please complete Stripe onboarding to access these settings.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex">
+              <Button variant="outline">
+                <Link href={onboardingUrl}>Finish Stripe Onboarding</Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
       )}
 
-      {isTestMode && (
-        <Card className="p-6 border-blue-300 dark:border-blue-700">
-          <h2 className="text-lg font-semibold mb-2">Sandbox Mode</h2>
-          <p className="text-sm text-muted-foreground">
-            This branch uses a sandbox (test) Stripe account. No onboarding is
-            required and all charges are in test mode.
-          </p>
+      {!isTestMode && (
+        <Card className="ring-info bg-info/10">
+          <CardHeader>
+            <CardTitle>Sandbox Mode</CardTitle>
+            <CardDescription>
+              This branch uses a sandbox (test) Stripe account. No onboarding is
+              required and all charges are in test mode.
+            </CardDescription>
+          </CardHeader>
         </Card>
       )}
 
       {/* Quick Links to Stripe Dashboard Settings */}
-      <Card className={`p-6 ${!isOnboarded ? "opacity-50" : ""}`}>
-        <h2 className="text-lg font-semibold mb-4">
-          Stripe Dashboard Settings
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Configure your branding, custom domains, and customer email settings
-          directly in your Stripe Dashboard.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {dashboardLinks.map((link) => (
-            <DashboardLinkCard
-              key={link.label}
-              label={link.label}
-              href={link.href}
-              isOnboarded={isOnboarded}
-            />
-          ))}
-        </div>
+      <Card className={`${!isOnboarded ? "opacity-50" : ""}`}>
+        <CardHeader>
+          <CardTitle>Stripe Dashboard Settings</CardTitle>
+          <CardDescription>
+            Configure your branding, custom domains, and customer email settings
+            directly in your Stripe Dashboard.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {dashboardLinks.map((link) => (
+              <DashboardLinkCard
+                key={link.label}
+                label={link.label}
+                href={link.href}
+                isOnboarded={isOnboarded}
+              />
+            ))}
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
