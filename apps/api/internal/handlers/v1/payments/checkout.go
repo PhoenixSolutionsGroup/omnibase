@@ -58,7 +58,7 @@ func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (
 					"auth_method", in.Method)
 				return nil, huma.Error403Forbidden(fmt.Sprintf("Price is not available: %s", item.PriceID))
 			case errors.Is(err, billing.CheckoutPriceNotFoundError):
-				return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", item.PriceID))
+				return nil, huma.Error422UnprocessableEntity(fmt.Sprintf("No Stripe price found for config_id: %s", item.PriceID))
 			default:
 				return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateCheckoutError, err).Error())
 			}

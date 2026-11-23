@@ -55,7 +55,7 @@ func (h *Handler) AddLineItemByPrice(ctx context.Context, in *AddLineItemByPrice
 	if stripePriceID == "" {
 		resolved, err := h.billing.GetStripePriceID(ctx, req.PriceID)
 		if err != nil {
-			return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
+			return nil, huma.Error422UnprocessableEntity(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
 		}
 		stripePriceID = resolved
 	}
