@@ -44,11 +44,6 @@ export interface WorkerLogsResponse {
   };
 }
 
-interface ApiResponse<T> {
-  status: number;
-  data: T;
-}
-
 async function fetchLogs(
   projectId: string,
   workerName: string,
@@ -60,7 +55,7 @@ async function fetchLogs(
   });
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
+    `${process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
     { credentials: "include" },
   );
   if (!response.ok) {

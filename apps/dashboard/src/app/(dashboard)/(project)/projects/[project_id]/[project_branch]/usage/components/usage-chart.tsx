@@ -30,7 +30,7 @@ export interface WorkerUsage {
   worker_name: string;
   requests: number;
   errors: number;
-  subrequests: number;
+  cpu_time_total_us: number;
   cpu_time_p50_us: number;
   cpu_time_p99_us: number;
 }
@@ -160,7 +160,10 @@ export function UsageChart({ data }: UsageChartProps) {
                   {data.r2 && (
                     <>
                       <TableRow>
-                        <TableCell rowSpan={5} className="font-medium align-top">
+                        <TableCell
+                          rowSpan={5}
+                          className="font-medium align-top"
+                        >
                           Storage
                         </TableCell>
                         <TableCell>Payload size</TableCell>
@@ -197,7 +200,10 @@ export function UsageChart({ data }: UsageChartProps) {
                   {data.workers && (
                     <>
                       <TableRow>
-                        <TableCell rowSpan={4} className="font-medium align-top">
+                        <TableCell
+                          rowSpan={4}
+                          className="font-medium align-top"
+                        >
                           Workers
                         </TableCell>
                         <TableCell>Requests</TableCell>
@@ -212,9 +218,9 @@ export function UsageChart({ data }: UsageChartProps) {
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Subrequests</TableCell>
+                        <TableCell>CPU time</TableCell>
                         <TableCell className="text-right font-mono">
-                          {formatNumber(data.workers.subrequests)}
+                          {formatMicros(data.workers.cpu_time_total_us)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -229,7 +235,10 @@ export function UsageChart({ data }: UsageChartProps) {
                   {data.ses && (
                     <>
                       <TableRow>
-                        <TableCell rowSpan={3} className="font-medium align-top">
+                        <TableCell
+                          rowSpan={3}
+                          className="font-medium align-top"
+                        >
                           Email
                         </TableCell>
                         <TableCell>Sent</TableCell>

@@ -46,12 +46,10 @@ export interface ApiResponse<T> {
 export type MetricName =
   | "requests"
   | "errors"
-  | "subrequests"
   | "cpu_total_seconds"
   | "cpu_p50_seconds"
-  | "cpu_p99_seconds"
-  | "duration_p50_seconds"
-  | "duration_p99_seconds";
+  | "cpu_p95_seconds"
+  | "cpu_p99_seconds";
 
 export interface MetricsData {
   period: { start: string; end: string }; // docs say {...}, shape is a guess
@@ -64,12 +62,10 @@ export type MetricsResponse = ApiResponse<MetricsData>;
 export const ALL_METRICS: MetricName[] = [
   "requests",
   "errors",
-  "subrequests",
   "cpu_total_seconds",
   "cpu_p50_seconds",
+  "cpu_p95_seconds",
   "cpu_p99_seconds",
-  "duration_p50_seconds",
-  "duration_p99_seconds",
 ];
 
 interface MetricsProps {
@@ -85,7 +81,12 @@ interface ChartPoint {
   error: number;
 }
 
-const KPI_HEADERS = ["Requests", "Errors", "CPU time", "Subrequests"] as const;
+const KPI_HEADERS = [
+  "Requests",
+  "Total CPU Time",
+  "CPU Metrics",
+  "Errors",
+] as const;
 
 async function fetchMetrics(
   projectId: string,
@@ -93,13 +94,24 @@ async function fetchMetrics(
   query: MetricsQuery<MetricName>,
 ): Promise<MetricsResponse> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/metrics?${buildMetricsParams(query)}`,
+    `${process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/metrics?${buildMetricsParams(query)}`,
     { credentials: "include" },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch metrics: ${response.status}`);
   }
-  return (await response.json()) as MetricsResponse;
+  return response.json();
+}
+
+function formatCpu(ms: number): string {
+  if (ms >= 1000) return `${(ms / 1000).toFixed(2)} s`;
+  return `${ms.toFixed(1)} ms`;
+}
+
+function formatPercentile(ms: number): string {
+  if (ms < 1) return "<1";
+  if (ms < 10) return ms.toFixed(1);
+  return Math.round(ms).toString();
 }
 
 function buildKpis(
@@ -114,16 +126,19 @@ function buildKpis(
   const requests = sum(cur("requests"));
   const prevRequests = sum(prev("requests"));
   const errors = sum(cur("errors"));
-  const subrequests = sum(cur("subrequests"));
+  const cpuTotalMs = sum(cur("cpu_total_seconds")) * 1000;
+  const prevCpuTotalMs = sum(prev("cpu_total_seconds")) * 1000;
 
   const requestsDelta =
     prevRequests === 0 ? 0 : ((requests - prevRequests) / prevRequests) * 100;
+  const cpuDelta =
+    prevCpuTotalMs === 0
+      ? 0
+      : ((cpuTotalMs - prevCpuTotalMs) / prevCpuTotalMs) * 100;
   const errorRate = requests === 0 ? 0 : (errors / requests) * 100;
-  const subPerRequest = requests === 0 ? 0 : subrequests / requests;
 
-  // seconds * 1000 = ms. Averaging p50 / taking max p99 across buckets is an
-  // approximation, percentiles can't be exactly re-aggregated.
   const cpuP50Ms = avg(cur("cpu_p50_seconds")) * 1000;
+  const cpuP95Ms = avg(cur("cpu_p95_seconds")) * 1000;
   const cpuP99Ms = max(cur("cpu_p99_seconds")) * 1000;
 
   return [
@@ -133,19 +148,19 @@ function buildKpis(
       subtitle: `${pct(requestsDelta)} vs previous period`,
     },
     {
+      header: "Total CPU Time",
+      title: formatCpu(cpuTotalMs),
+      subtitle: `${pct(cpuDelta)} vs previous period`,
+    },
+    {
+      header: "CPU Metrics",
+      title: `${formatPercentile(cpuP50Ms)} / ${formatPercentile(cpuP95Ms)} / ${formatPercentile(cpuP99Ms)} ms`,
+      subtitle: "p50 / p95 / p99",
+    },
+    {
       header: "Errors",
       title: errors.toLocaleString("en-US"),
       subtitle: `${errorRate.toFixed(2)}% error rate`,
-    },
-    {
-      header: "CPU time",
-      title: `${cpuP50Ms.toFixed(1)} / ${cpuP99Ms.toFixed(0)} ms`,
-      subtitle: "p50 / p99",
-    },
-    {
-      header: "Subrequests",
-      title: compact(subrequests),
-      subtitle: `${subPerRequest.toFixed(1)} per request`,
     },
   ];
 }
@@ -321,12 +336,12 @@ export default function Metrics({
     const startMs = Date.parse(startTime);
     const endMs = Date.parse(endTime);
     const spanMs = endMs - startMs;
-    const step = pickStep(startMs, endMs);
+    const kpiStep = `${Math.max(1, Math.floor(spanMs / 1000))}s`;
 
     const query = (from: number, to: number): MetricsQuery<MetricName> => ({
       start: new Date(from).toISOString(),
       end: new Date(to).toISOString(),
-      step,
+      step: kpiStep,
       metrics: ALL_METRICS,
     });
 
