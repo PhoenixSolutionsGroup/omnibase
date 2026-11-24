@@ -12,79 +12,84 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ProductWithStripeIDs } from './ProductWithStripeIDs';
+import { mapValues } from "../runtime";
+import type { PriceWithStripeID } from "./PriceWithStripeID";
 import {
-    ProductWithStripeIDsFromJSON,
-    ProductWithStripeIDsFromJSONTyped,
-    ProductWithStripeIDsToJSON,
-    ProductWithStripeIDsToJSONTyped,
-} from './ProductWithStripeIDs';
-import type { PriceWithStripeID } from './PriceWithStripeID';
+	PriceWithStripeIDFromJSON,
+	PriceWithStripeIDFromJSONTyped,
+	PriceWithStripeIDToJSON,
+	PriceWithStripeIDToJSONTyped,
+} from "./PriceWithStripeID";
+import type { ProductWithStripeIDs } from "./ProductWithStripeIDs";
 import {
-    PriceWithStripeIDFromJSON,
-    PriceWithStripeIDFromJSONTyped,
-    PriceWithStripeIDToJSON,
-    PriceWithStripeIDToJSONTyped,
-} from './PriceWithStripeID';
+	ProductWithStripeIDsFromJSON,
+	ProductWithStripeIDsFromJSONTyped,
+	ProductWithStripeIDsToJSON,
+	ProductWithStripeIDsToJSONTyped,
+} from "./ProductWithStripeIDs";
 
 /**
- * 
+ *
  * @export
  * @interface GetPriceResponse
  */
 export interface GetPriceResponse {
-    /**
-     * 
-     * @type {PriceWithStripeID}
-     * @memberof GetPriceResponse
-     */
-    price: PriceWithStripeID;
-    /**
-     * 
-     * @type {ProductWithStripeIDs}
-     * @memberof GetPriceResponse
-     */
-    product: ProductWithStripeIDs;
+	/**
+	 *
+	 * @type {PriceWithStripeID}
+	 * @memberof GetPriceResponse
+	 */
+	price: PriceWithStripeID;
+	/**
+	 *
+	 * @type {ProductWithStripeIDs}
+	 * @memberof GetPriceResponse
+	 */
+	product: ProductWithStripeIDs;
 }
 
 /**
  * Check if a given object implements the GetPriceResponse interface.
  */
-export function instanceOfGetPriceResponse(value: object): value is GetPriceResponse {
-    if (!('price' in value) || value['price'] === undefined) return false;
-    if (!('product' in value) || value['product'] === undefined) return false;
-    return true;
+export function instanceOfGetPriceResponse(
+	value: object,
+): value is GetPriceResponse {
+	if (!("price" in value) || value["price"] === undefined) return false;
+	if (!("product" in value) || value["product"] === undefined) return false;
+	return true;
 }
 
 export function GetPriceResponseFromJSON(json: any): GetPriceResponse {
-    return GetPriceResponseFromJSONTyped(json, false);
+	return GetPriceResponseFromJSONTyped(json, false);
 }
 
-export function GetPriceResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetPriceResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'price': PriceWithStripeIDFromJSON(json['price']),
-        'product': ProductWithStripeIDsFromJSON(json['product']),
-    };
+export function GetPriceResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): GetPriceResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		price: PriceWithStripeIDFromJSON(json["price"]),
+		product: ProductWithStripeIDsFromJSON(json["product"]),
+	};
 }
 
 export function GetPriceResponseToJSON(json: any): GetPriceResponse {
-    return GetPriceResponseToJSONTyped(json, false);
+	return GetPriceResponseToJSONTyped(json, false);
 }
 
-export function GetPriceResponseToJSONTyped(value?: GetPriceResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function GetPriceResponseToJSONTyped(
+	value?: GetPriceResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'price': PriceWithStripeIDToJSON(value['price']),
-        'product': ProductWithStripeIDsToJSON(value['product']),
-    };
+	return {
+		price: PriceWithStripeIDToJSON(value["price"]),
+		product: ProductWithStripeIDsToJSON(value["product"]),
+	};
 }
-

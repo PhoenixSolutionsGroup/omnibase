@@ -12,63 +12,66 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface LineItem
  */
 export interface LineItem {
-    /**
-     * 
-     * @type {string}
-     * @memberof LineItem
-     */
-    priceId: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof LineItem
-     */
-    quantity?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof LineItem
+	 */
+	priceId: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof LineItem
+	 */
+	quantity?: number;
 }
 
 /**
  * Check if a given object implements the LineItem interface.
  */
 export function instanceOfLineItem(value: object): value is LineItem {
-    if (!('priceId' in value) || value['priceId'] === undefined) return false;
-    return true;
+	if (!("priceId" in value) || value["priceId"] === undefined) return false;
+	return true;
 }
 
 export function LineItemFromJSON(json: any): LineItem {
-    return LineItemFromJSONTyped(json, false);
+	return LineItemFromJSONTyped(json, false);
 }
 
-export function LineItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): LineItem {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'priceId': json['price_id'],
-        'quantity': json['quantity'] == null ? undefined : json['quantity'],
-    };
+export function LineItemFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): LineItem {
+	if (json == null) {
+		return json;
+	}
+	return {
+		priceId: json["price_id"],
+		quantity: json["quantity"] == null ? undefined : json["quantity"],
+	};
 }
 
 export function LineItemToJSON(json: any): LineItem {
-    return LineItemToJSONTyped(json, false);
+	return LineItemToJSONTyped(json, false);
 }
 
-export function LineItemToJSONTyped(value?: LineItem | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function LineItemToJSONTyped(
+	value?: LineItem | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'price_id': value['priceId'],
-        'quantity': value['quantity'],
-    };
+	return {
+		price_id: value["priceId"],
+		quantity: value["quantity"],
+	};
 }
-

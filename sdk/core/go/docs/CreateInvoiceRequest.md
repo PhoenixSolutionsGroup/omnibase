@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AutoAdvance** | Pointer to **bool** |  | [optional] 
-**CollectionMethod** | Pointer to **string** |  | [optional] 
-**Currency** | **string** |  | 
-**DaysUntilDue** | Pointer to **int64** |  | [optional] 
-**Description** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]string** |  | [optional] 
+| Name                 | Type                             | Description | Notes      |
+| -------------------- | -------------------------------- | ----------- | ---------- |
+| **AutoAdvance**      | Pointer to **bool**              |             | [optional] |
+| **CollectionMethod** | Pointer to **string**            |             | [optional] |
+| **Currency**         | **string**                       |             |
+| **DaysUntilDue**     | Pointer to **int64**             |             | [optional] |
+| **Description**      | Pointer to **string**            |             | [optional] |
+| **Metadata**         | Pointer to **map[string]string** |             | [optional] |
 
 ## Methods
 
@@ -99,7 +99,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-
 ### GetDaysUntilDue
 
 `func (o *CreateInvoiceRequest) GetDaysUntilDue() int64`
@@ -175,7 +174,4 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

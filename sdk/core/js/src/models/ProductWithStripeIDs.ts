@@ -12,128 +12,139 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ProductUI } from './ProductUI';
+import { mapValues } from "../runtime";
+import type { PriceWithStripeID } from "./PriceWithStripeID";
 import {
-    ProductUIFromJSON,
-    ProductUIFromJSONTyped,
-    ProductUIToJSON,
-    ProductUIToJSONTyped,
-} from './ProductUI';
-import type { PriceWithStripeID } from './PriceWithStripeID';
+	PriceWithStripeIDFromJSON,
+	PriceWithStripeIDFromJSONTyped,
+	PriceWithStripeIDToJSON,
+	PriceWithStripeIDToJSONTyped,
+} from "./PriceWithStripeID";
+import type { ProductUI } from "./ProductUI";
 import {
-    PriceWithStripeIDFromJSON,
-    PriceWithStripeIDFromJSONTyped,
-    PriceWithStripeIDToJSON,
-    PriceWithStripeIDToJSONTyped,
-} from './PriceWithStripeID';
+	ProductUIFromJSON,
+	ProductUIFromJSONTyped,
+	ProductUIToJSON,
+	ProductUIToJSONTyped,
+} from "./ProductUI";
 
 /**
- * 
+ *
  * @export
  * @interface ProductWithStripeIDs
  */
 export interface ProductWithStripeIDs {
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductWithStripeIDs
-     */
-    description?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductWithStripeIDs
-     */
-    id: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof ProductWithStripeIDs
-     */
-    metadata?: { [key: string]: string; };
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductWithStripeIDs
-     */
-    name: string;
-    /**
-     * 
-     * @type {Array<PriceWithStripeID>}
-     * @memberof ProductWithStripeIDs
-     */
-    prices: Array<PriceWithStripeID> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductWithStripeIDs
-     */
-    stripeId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductWithStripeIDs
-     */
-    type?: string;
-    /**
-     * 
-     * @type {ProductUI}
-     * @memberof ProductWithStripeIDs
-     */
-    ui?: ProductUI;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductWithStripeIDs
+	 */
+	description?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductWithStripeIDs
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {{ [key: string]: string; }}
+	 * @memberof ProductWithStripeIDs
+	 */
+	metadata?: { [key: string]: string };
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductWithStripeIDs
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {Array<PriceWithStripeID>}
+	 * @memberof ProductWithStripeIDs
+	 */
+	prices: Array<PriceWithStripeID> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductWithStripeIDs
+	 */
+	stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductWithStripeIDs
+	 */
+	type?: string;
+	/**
+	 *
+	 * @type {ProductUI}
+	 * @memberof ProductWithStripeIDs
+	 */
+	ui?: ProductUI;
 }
 
 /**
  * Check if a given object implements the ProductWithStripeIDs interface.
  */
-export function instanceOfProductWithStripeIDs(value: object): value is ProductWithStripeIDs {
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('prices' in value) || value['prices'] === undefined) return false;
-    return true;
+export function instanceOfProductWithStripeIDs(
+	value: object,
+): value is ProductWithStripeIDs {
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("prices" in value) || value["prices"] === undefined) return false;
+	return true;
 }
 
 export function ProductWithStripeIDsFromJSON(json: any): ProductWithStripeIDs {
-    return ProductWithStripeIDsFromJSONTyped(json, false);
+	return ProductWithStripeIDsFromJSONTyped(json, false);
 }
 
-export function ProductWithStripeIDsFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProductWithStripeIDs {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'description': json['description'] == null ? undefined : json['description'],
-        'id': json['id'],
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'name': json['name'],
-        'prices': (json['prices'] == null ? null : (json['prices'] as Array<any>).map(PriceWithStripeIDFromJSON)),
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-        'type': json['type'] == null ? undefined : json['type'],
-        'ui': json['ui'] == null ? undefined : ProductUIFromJSON(json['ui']),
-    };
+export function ProductWithStripeIDsFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ProductWithStripeIDs {
+	if (json == null) {
+		return json;
+	}
+	return {
+		description: json["description"] == null ? undefined : json["description"],
+		id: json["id"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		name: json["name"],
+		prices:
+			json["prices"] == null
+				? null
+				: (json["prices"] as Array<any>).map(PriceWithStripeIDFromJSON),
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		type: json["type"] == null ? undefined : json["type"],
+		ui: json["ui"] == null ? undefined : ProductUIFromJSON(json["ui"]),
+	};
 }
 
 export function ProductWithStripeIDsToJSON(json: any): ProductWithStripeIDs {
-    return ProductWithStripeIDsToJSONTyped(json, false);
+	return ProductWithStripeIDsToJSONTyped(json, false);
 }
 
-export function ProductWithStripeIDsToJSONTyped(value?: ProductWithStripeIDs | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ProductWithStripeIDsToJSONTyped(
+	value?: ProductWithStripeIDs | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'description': value['description'],
-        'id': value['id'],
-        'metadata': value['metadata'],
-        'name': value['name'],
-        'prices': (value['prices'] == null ? null : (value['prices'] as Array<any>).map(PriceWithStripeIDToJSON)),
-        'stripe_id': value['stripeId'],
-        'type': value['type'],
-        'ui': ProductUIToJSON(value['ui']),
-    };
+	return {
+		description: value["description"],
+		id: value["id"],
+		metadata: value["metadata"],
+		name: value["name"],
+		prices:
+			value["prices"] == null
+				? null
+				: (value["prices"] as Array<any>).map(PriceWithStripeIDToJSON),
+		stripe_id: value["stripeId"],
+		type: value["type"],
+		ui: ProductUIToJSON(value["ui"]),
+	};
 }
-

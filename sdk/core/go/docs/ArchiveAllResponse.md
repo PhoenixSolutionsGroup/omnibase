@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**ArchiveErrors** | **[]string** |  | 
-**ArchivedItems** | **[]string** |  | 
-**Message** | **string** |  | 
-**TotalArchived** | **int64** |  | 
-**TotalErrors** | **int64** |  | 
-**Warning** | Pointer to **string** |  | [optional] 
+| Name              | Type                  | Description | Notes      |
+| ----------------- | --------------------- | ----------- | ---------- |
+| **ArchiveErrors** | **[]string**          |             |
+| **ArchivedItems** | **[]string**          |             |
+| **Message**       | **string**            |             |
+| **TotalArchived** | **int64**             |             |
+| **TotalErrors**   | **int64**             |             |
+| **Warning**       | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -49,17 +49,18 @@ and a boolean to check if the value has been set.
 
 SetArchiveErrors sets ArchiveErrors field to given value.
 
-
 ### SetArchiveErrorsNil
 
 `func (o *ArchiveAllResponse) SetArchiveErrorsNil(b bool)`
 
- SetArchiveErrorsNil sets the value for ArchiveErrors to be an explicit nil
+SetArchiveErrorsNil sets the value for ArchiveErrors to be an explicit nil
 
 ### UnsetArchiveErrors
+
 `func (o *ArchiveAllResponse) UnsetArchiveErrors()`
 
 UnsetArchiveErrors ensures that no value is present for ArchiveErrors, not even an explicit nil
+
 ### GetArchivedItems
 
 `func (o *ArchiveAllResponse) GetArchivedItems() []string`
@@ -79,17 +80,18 @@ and a boolean to check if the value has been set.
 
 SetArchivedItems sets ArchivedItems field to given value.
 
-
 ### SetArchivedItemsNil
 
 `func (o *ArchiveAllResponse) SetArchivedItemsNil(b bool)`
 
- SetArchivedItemsNil sets the value for ArchivedItems to be an explicit nil
+SetArchivedItemsNil sets the value for ArchivedItems to be an explicit nil
 
 ### UnsetArchivedItems
+
 `func (o *ArchiveAllResponse) UnsetArchivedItems()`
 
 UnsetArchivedItems ensures that no value is present for ArchivedItems, not even an explicit nil
+
 ### GetMessage
 
 `func (o *ArchiveAllResponse) GetMessage() string`
@@ -108,7 +110,6 @@ and a boolean to check if the value has been set.
 `func (o *ArchiveAllResponse) SetMessage(v string)`
 
 SetMessage sets Message field to given value.
-
 
 ### GetTotalArchived
 
@@ -129,7 +130,6 @@ and a boolean to check if the value has been set.
 
 SetTotalArchived sets TotalArchived field to given value.
 
-
 ### GetTotalErrors
 
 `func (o *ArchiveAllResponse) GetTotalErrors() int64`
@@ -148,7 +148,6 @@ and a boolean to check if the value has been set.
 `func (o *ArchiveAllResponse) SetTotalErrors(v int64)`
 
 SetTotalErrors sets TotalErrors field to given value.
-
 
 ### GetWarning
 
@@ -175,7 +174,4 @@ SetWarning sets Warning field to given value.
 
 HasWarning returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

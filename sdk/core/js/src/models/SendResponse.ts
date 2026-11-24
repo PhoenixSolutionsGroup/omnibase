@@ -12,55 +12,58 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface SendResponse
  */
 export interface SendResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof SendResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SendResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the SendResponse interface.
  */
 export function instanceOfSendResponse(value: object): value is SendResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
 export function SendResponseFromJSON(json: any): SendResponse {
-    return SendResponseFromJSONTyped(json, false);
+	return SendResponseFromJSONTyped(json, false);
 }
 
-export function SendResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SendResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function SendResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SendResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
 export function SendResponseToJSON(json: any): SendResponse {
-    return SendResponseToJSONTyped(json, false);
+	return SendResponseToJSONTyped(json, false);
 }
 
-export function SendResponseToJSONTyped(value?: SendResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SendResponseToJSONTyped(
+	value?: SendResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

@@ -12,78 +12,99 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { PriceChange } from './PriceChange';
+import { mapValues } from "../runtime";
+import type { PriceChange } from "./PriceChange";
 import {
-    PriceChangeFromJSON,
-    PriceChangeFromJSONTyped,
-    PriceChangeToJSON,
-    PriceChangeToJSONTyped,
-} from './PriceChange';
+	PriceChangeFromJSON,
+	PriceChangeFromJSONTyped,
+	PriceChangeToJSON,
+	PriceChangeToJSONTyped,
+} from "./PriceChange";
 
 /**
- * 
+ *
  * @export
  * @interface PriceChanges
  */
 export interface PriceChanges {
-    /**
-     * 
-     * @type {Array<PriceChange>}
-     * @memberof PriceChanges
-     */
-    archived?: Array<PriceChange> | null;
-    /**
-     * 
-     * @type {Array<PriceChange>}
-     * @memberof PriceChanges
-     */
-    created?: Array<PriceChange> | null;
-    /**
-     * 
-     * @type {Array<PriceChange>}
-     * @memberof PriceChanges
-     */
-    updated?: Array<PriceChange> | null;
+	/**
+	 *
+	 * @type {Array<PriceChange>}
+	 * @memberof PriceChanges
+	 */
+	archived?: Array<PriceChange> | null;
+	/**
+	 *
+	 * @type {Array<PriceChange>}
+	 * @memberof PriceChanges
+	 */
+	created?: Array<PriceChange> | null;
+	/**
+	 *
+	 * @type {Array<PriceChange>}
+	 * @memberof PriceChanges
+	 */
+	updated?: Array<PriceChange> | null;
 }
 
 /**
  * Check if a given object implements the PriceChanges interface.
  */
 export function instanceOfPriceChanges(value: object): value is PriceChanges {
-    return true;
+	return true;
 }
 
 export function PriceChangesFromJSON(json: any): PriceChanges {
-    return PriceChangesFromJSONTyped(json, false);
+	return PriceChangesFromJSONTyped(json, false);
 }
 
-export function PriceChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): PriceChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'archived': json['archived'] == null ? undefined : ((json['archived'] as Array<any>).map(PriceChangeFromJSON)),
-        'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(PriceChangeFromJSON)),
-        'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(PriceChangeFromJSON)),
-    };
+export function PriceChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PriceChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		archived:
+			json["archived"] == null
+				? undefined
+				: (json["archived"] as Array<any>).map(PriceChangeFromJSON),
+		created:
+			json["created"] == null
+				? undefined
+				: (json["created"] as Array<any>).map(PriceChangeFromJSON),
+		updated:
+			json["updated"] == null
+				? undefined
+				: (json["updated"] as Array<any>).map(PriceChangeFromJSON),
+	};
 }
 
 export function PriceChangesToJSON(json: any): PriceChanges {
-    return PriceChangesToJSONTyped(json, false);
+	return PriceChangesToJSONTyped(json, false);
 }
 
-export function PriceChangesToJSONTyped(value?: PriceChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PriceChangesToJSONTyped(
+	value?: PriceChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'archived': value['archived'] == null ? undefined : ((value['archived'] as Array<any>).map(PriceChangeToJSON)),
-        'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(PriceChangeToJSON)),
-        'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(PriceChangeToJSON)),
-    };
+	return {
+		archived:
+			value["archived"] == null
+				? undefined
+				: (value["archived"] as Array<any>).map(PriceChangeToJSON),
+		created:
+			value["created"] == null
+				? undefined
+				: (value["created"] as Array<any>).map(PriceChangeToJSON),
+		updated:
+			value["updated"] == null
+				? undefined
+				: (value["updated"] as Array<any>).map(PriceChangeToJSON),
+	};
 }
-

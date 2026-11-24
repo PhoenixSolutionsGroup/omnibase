@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**FlatAmount** | Pointer to **int64** |  | [optional] 
-**UnitAmount** | Pointer to **int64** |  | [optional] 
-**UpTo** | **interface{}** |  | 
+| Name           | Type                 | Description | Notes      |
+| -------------- | -------------------- | ----------- | ---------- |
+| **FlatAmount** | Pointer to **int64** |             | [optional] |
+| **UnitAmount** | Pointer to **int64** |             | [optional] |
+| **UpTo**       | **interface{}**      |             |
 
 ## Methods
 
@@ -96,18 +96,16 @@ and a boolean to check if the value has been set.
 
 SetUpTo sets UpTo field to given value.
 
-
 ### SetUpToNil
 
 `func (o *Tier) SetUpToNil(b bool)`
 
- SetUpToNil sets the value for UpTo to be an explicit nil
+SetUpToNil sets the value for UpTo to be an explicit nil
 
 ### UnsetUpTo
+
 `func (o *Tier) UnsetUpTo()`
 
 UnsetUpTo ensures that no value is present for UpTo, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

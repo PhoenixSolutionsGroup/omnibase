@@ -12,54 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface FinalizeRequest
  */
 export interface FinalizeRequest {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof FinalizeRequest
-     */
-    autoAdvance?: boolean;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof FinalizeRequest
+	 */
+	autoAdvance?: boolean;
 }
 
 /**
  * Check if a given object implements the FinalizeRequest interface.
  */
-export function instanceOfFinalizeRequest(value: object): value is FinalizeRequest {
-    return true;
+export function instanceOfFinalizeRequest(
+	value: object,
+): value is FinalizeRequest {
+	return true;
 }
 
 export function FinalizeRequestFromJSON(json: any): FinalizeRequest {
-    return FinalizeRequestFromJSONTyped(json, false);
+	return FinalizeRequestFromJSONTyped(json, false);
 }
 
-export function FinalizeRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): FinalizeRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'autoAdvance': json['auto_advance'] == null ? undefined : json['auto_advance'],
-    };
+export function FinalizeRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): FinalizeRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		autoAdvance:
+			json["auto_advance"] == null ? undefined : json["auto_advance"],
+	};
 }
 
 export function FinalizeRequestToJSON(json: any): FinalizeRequest {
-    return FinalizeRequestToJSONTyped(json, false);
+	return FinalizeRequestToJSONTyped(json, false);
 }
 
-export function FinalizeRequestToJSONTyped(value?: FinalizeRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function FinalizeRequestToJSONTyped(
+	value?: FinalizeRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'auto_advance': value['autoAdvance'],
-    };
+	return {
+		auto_advance: value["autoAdvance"],
+	};
 }
-

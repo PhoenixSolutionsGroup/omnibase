@@ -12,64 +12,74 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface ApplyEnterpriseCustomRequest
  */
 export interface ApplyEnterpriseCustomRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof ApplyEnterpriseCustomRequest
-     */
-    enterpriseId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ApplyEnterpriseCustomRequest
-     */
-    tenantId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ApplyEnterpriseCustomRequest
+	 */
+	enterpriseId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ApplyEnterpriseCustomRequest
+	 */
+	tenantId: string;
 }
 
 /**
  * Check if a given object implements the ApplyEnterpriseCustomRequest interface.
  */
-export function instanceOfApplyEnterpriseCustomRequest(value: object): value is ApplyEnterpriseCustomRequest {
-    if (!('enterpriseId' in value) || value['enterpriseId'] === undefined) return false;
-    if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
-    return true;
+export function instanceOfApplyEnterpriseCustomRequest(
+	value: object,
+): value is ApplyEnterpriseCustomRequest {
+	if (!("enterpriseId" in value) || value["enterpriseId"] === undefined)
+		return false;
+	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	return true;
 }
 
-export function ApplyEnterpriseCustomRequestFromJSON(json: any): ApplyEnterpriseCustomRequest {
-    return ApplyEnterpriseCustomRequestFromJSONTyped(json, false);
+export function ApplyEnterpriseCustomRequestFromJSON(
+	json: any,
+): ApplyEnterpriseCustomRequest {
+	return ApplyEnterpriseCustomRequestFromJSONTyped(json, false);
 }
 
-export function ApplyEnterpriseCustomRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): ApplyEnterpriseCustomRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'enterpriseId': json['enterprise_id'],
-        'tenantId': json['tenant_id'],
-    };
+export function ApplyEnterpriseCustomRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ApplyEnterpriseCustomRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		enterpriseId: json["enterprise_id"],
+		tenantId: json["tenant_id"],
+	};
 }
 
-export function ApplyEnterpriseCustomRequestToJSON(json: any): ApplyEnterpriseCustomRequest {
-    return ApplyEnterpriseCustomRequestToJSONTyped(json, false);
+export function ApplyEnterpriseCustomRequestToJSON(
+	json: any,
+): ApplyEnterpriseCustomRequest {
+	return ApplyEnterpriseCustomRequestToJSONTyped(json, false);
 }
 
-export function ApplyEnterpriseCustomRequestToJSONTyped(value?: ApplyEnterpriseCustomRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ApplyEnterpriseCustomRequestToJSONTyped(
+	value?: ApplyEnterpriseCustomRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'enterprise_id': value['enterpriseId'],
-        'tenant_id': value['tenantId'],
-    };
+	return {
+		enterprise_id: value["enterpriseId"],
+		tenant_id: value["tenantId"],
+	};
 }
-

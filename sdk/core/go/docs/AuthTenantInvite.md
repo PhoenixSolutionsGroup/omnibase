@@ -2,17 +2,17 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**Email** | **string** |  | 
-**ExpiresAt** | **time.Time** |  | 
-**Id** | **string** |  | 
-**InviterId** | **string** |  | 
-**Role** | **string** |  | 
-**TenantId** | **string** |  | 
-**Token** | **string** |  | 
-**UsedAt** | **NullableTime** |  | 
+| Name          | Type             | Description | Notes |
+| ------------- | ---------------- | ----------- | ----- |
+| **CreatedAt** | **time.Time**    |             |
+| **Email**     | **string**       |             |
+| **ExpiresAt** | **time.Time**    |             |
+| **Id**        | **string**       |             |
+| **InviterId** | **string**       |             |
+| **Role**      | **string**       |             |
+| **TenantId**  | **string**       |             |
+| **Token**     | **string**       |             |
+| **UsedAt**    | **NullableTime** |             |
 
 ## Methods
 
@@ -52,7 +52,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetEmail
 
 `func (o *AuthTenantInvite) GetEmail() string`
@@ -71,7 +70,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenantInvite) SetEmail(v string)`
 
 SetEmail sets Email field to given value.
-
 
 ### GetExpiresAt
 
@@ -92,7 +90,6 @@ and a boolean to check if the value has been set.
 
 SetExpiresAt sets ExpiresAt field to given value.
 
-
 ### GetId
 
 `func (o *AuthTenantInvite) GetId() string`
@@ -111,7 +108,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenantInvite) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetInviterId
 
@@ -132,7 +128,6 @@ and a boolean to check if the value has been set.
 
 SetInviterId sets InviterId field to given value.
 
-
 ### GetRole
 
 `func (o *AuthTenantInvite) GetRole() string`
@@ -151,7 +146,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenantInvite) SetRole(v string)`
 
 SetRole sets Role field to given value.
-
 
 ### GetTenantId
 
@@ -172,7 +166,6 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-
 ### GetToken
 
 `func (o *AuthTenantInvite) GetToken() string`
@@ -191,7 +184,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenantInvite) SetToken(v string)`
 
 SetToken sets Token field to given value.
-
 
 ### GetUsedAt
 
@@ -212,18 +204,16 @@ and a boolean to check if the value has been set.
 
 SetUsedAt sets UsedAt field to given value.
 
-
 ### SetUsedAtNil
 
 `func (o *AuthTenantInvite) SetUsedAtNil(b bool)`
 
- SetUsedAtNil sets the value for UsedAt to be an explicit nil
+SetUsedAtNil sets the value for UsedAt to be an explicit nil
 
 ### UnsetUsedAt
+
 `func (o *AuthTenantInvite) UnsetUsedAt()`
 
 UnsetUsedAt ensures that no value is present for UsedAt, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

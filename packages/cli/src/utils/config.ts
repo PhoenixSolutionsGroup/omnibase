@@ -1,26 +1,26 @@
+import { parse as dotenvParse } from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
 import * as TOML from "smol-toml";
-import { parse as dotenvParse } from "dotenv";
 
 export interface DeploymentConfig {
-  name: string;
-  path?: string;
-  port?: number;
+	name: string;
+	path?: string;
+	port?: number;
 }
 
 export interface OidcProviderConfig {
-  provider: string;
-  client_id?: string;
-  client_secret?: string;
+	provider: string;
+	client_id?: string;
+	client_secret?: string;
 }
 
 export interface AuthConfig {
-  website_url?: string;
-  allowed_return_urls?: string[];
-  cookie_secret?: string;
-  log_level?: string;
-  oidc?: OidcProviderConfig[];
+	website_url?: string;
+	allowed_return_urls?: string[];
+	cookie_secret?: string;
+	log_level?: string;
+	oidc?: OidcProviderConfig[];
 }
 
 /**
@@ -29,149 +29,149 @@ export interface AuthConfig {
  * per branch.
  */
 export interface LocalConfig {
-  stripe?: Record<string, string>;
-  [key: string]: unknown;
+	stripe?: Record<string, string>;
+	[key: string]: unknown;
 }
 
 export interface OmnibaseConfig {
-  project_id?: string;
-  deployments: DeploymentConfig[];
-  auth?: AuthConfig;
-  local?: LocalConfig;
-  env?: Record<string, string>;
-  versions?: Record<string, string>;
-  [key: string]: unknown;
+	project_id?: string;
+	deployments: DeploymentConfig[];
+	auth?: AuthConfig;
+	local?: LocalConfig;
+	env?: Record<string, string>;
+	versions?: Record<string, string>;
+	[key: string]: unknown;
 }
 
 export const VERSION_SERVICES = ["auth", "api", "perm"] as const;
 
 export function assertValidVersions(versions: Record<string, string>): void {
-  for (const [svc, ver] of Object.entries(versions)) {
-    if (!VERSION_SERVICES.includes(svc as (typeof VERSION_SERVICES)[number])) {
-      throw new Error(
-        `[versions] key '${svc}' is not allowed. Use ${VERSION_SERVICES.join(", ")}.`,
-      );
-    }
-    if (/[/:@]/.test(ver)) {
-      throw new Error(
-        `[versions] '${svc}' spec '${ver}' must be a tag, not an image reference.`,
-      );
-    }
-  }
+	for (const [svc, ver] of Object.entries(versions)) {
+		if (!VERSION_SERVICES.includes(svc as (typeof VERSION_SERVICES)[number])) {
+			throw new Error(
+				`[versions] key '${svc}' is not allowed. Use ${VERSION_SERVICES.join(", ")}.`,
+			);
+		}
+		if (/[/:@]/.test(ver)) {
+			throw new Error(
+				`[versions] '${svc}' spec '${ver}' must be a tag, not an image reference.`,
+			);
+		}
+	}
 }
 
 export function findConfigFile(projectRoot: string): string | null {
-  const omnibaseDir = path.join(projectRoot, "omnibase");
-  const candidates = [
-    "omnibase.toml",
-    "omnibase.jsonc",
-    "omnibase.json",
-    "omnibase.yaml",
-    "omnibase.yml",
-  ];
-  for (const name of candidates) {
-    const p = path.join(omnibaseDir, name);
-    if (fs.existsSync(p)) return p;
-  }
-  return null;
+	const omnibaseDir = path.join(projectRoot, "omnibase");
+	const candidates = [
+		"omnibase.toml",
+		"omnibase.jsonc",
+		"omnibase.json",
+		"omnibase.yaml",
+		"omnibase.yml",
+	];
+	for (const name of candidates) {
+		const p = path.join(omnibaseDir, name);
+		if (fs.existsSync(p)) return p;
+	}
+	return null;
 }
 
 export function parseConfigFile(filePath: string): Record<string, unknown> {
-  const ext = path.extname(filePath);
-  const content = fs.readFileSync(filePath, "utf-8");
+	const ext = path.extname(filePath);
+	const content = fs.readFileSync(filePath, "utf-8");
 
-  if (ext === ".toml") {
-    return TOML.parse(content) as Record<string, unknown>;
-  }
+	if (ext === ".toml") {
+		return TOML.parse(content) as Record<string, unknown>;
+	}
 
-  if (ext === ".jsonc") {
-    const noComments = content
-      .replace(
-        /\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
-        (m, comment) => (comment ? "" : m),
-      )
-      .replace(/,(\s*[}\]])/g, "$1");
-    return JSON.parse(noComments);
-  }
+	if (ext === ".jsonc") {
+		const noComments = content
+			.replace(
+				/\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
+				(m, comment) => (comment ? "" : m),
+			)
+			.replace(/,(\s*[}\]])/g, "$1");
+		return JSON.parse(noComments);
+	}
 
-  if (ext === ".json") {
-    return JSON.parse(content);
-  }
+	if (ext === ".json") {
+		return JSON.parse(content);
+	}
 
-  if (ext === ".yaml" || ext === ".yml") {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { load } = require("js-yaml");
-    return load(content) as Record<string, unknown>;
-  }
+	if (ext === ".yaml" || ext === ".yml") {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { load } = require("js-yaml");
+		return load(content) as Record<string, unknown>;
+	}
 
-  throw new Error(`Unsupported config file format: ${ext}`);
+	throw new Error(`Unsupported config file format: ${ext}`);
 }
 
 function loadEnvFile(pathToEnv: string): Record<string, string> {
-  if (!fs.existsSync(pathToEnv)) return {};
-  return dotenvParse(fs.readFileSync(pathToEnv, "utf-8"));
+	if (!fs.existsSync(pathToEnv)) return {};
+	return dotenvParse(fs.readFileSync(pathToEnv, "utf-8"));
 }
 
 export function loadSecretsMap(
-  projectRoot: string,
-  envName?: string,
+	projectRoot: string,
+	envName?: string,
 ): Record<string, string> {
-  const secrets: Record<string, string> = {};
+	const secrets: Record<string, string> = {};
 
-  for (const key of Object.keys(process.env)) {
-    const val = process.env[key];
-    if (val !== undefined) {
-      secrets[key] = val;
-    }
-  }
+	for (const key of Object.keys(process.env)) {
+		const val = process.env[key];
+		if (val !== undefined) {
+			secrets[key] = val;
+		}
+	}
 
-  if (envName && envName !== "local") {
-    const branchEnv = loadEnvFile(
-      path.join(projectRoot, "omnibase", `.env.${envName}`),
-    );
-    for (const [k, v] of Object.entries(branchEnv)) {
-      if (!(k in secrets)) secrets[k] = v;
-    }
-  } else {
-    const defaultLocal = loadEnvFile(
-      path.join(projectRoot, "omnibase", ".env.local"),
-    );
-    for (const [k, v] of Object.entries(defaultLocal)) {
-      if (!(k in secrets)) secrets[k] = v;
-    }
-  }
+	if (envName && envName !== "local") {
+		const branchEnv = loadEnvFile(
+			path.join(projectRoot, "omnibase", `.env.${envName}`),
+		);
+		for (const [k, v] of Object.entries(branchEnv)) {
+			if (!(k in secrets)) secrets[k] = v;
+		}
+	} else {
+		const defaultLocal = loadEnvFile(
+			path.join(projectRoot, "omnibase", ".env.local"),
+		);
+		for (const [k, v] of Object.entries(defaultLocal)) {
+			if (!(k in secrets)) secrets[k] = v;
+		}
+	}
 
-  return secrets;
+	return secrets;
 }
 
 function findWranglerConfigFile(workersDir: string): string | null {
-  for (const name of ["wrangler.toml", "wrangler.jsonc", "wrangler.json"]) {
-    const p = path.join(workersDir, name);
-    if (fs.existsSync(p)) return p;
-  }
-  return null;
+	for (const name of ["wrangler.toml", "wrangler.jsonc", "wrangler.json"]) {
+		const p = path.join(workersDir, name);
+		if (fs.existsSync(p)) return p;
+	}
+	return null;
 }
 
 function parseWranglerConfigFile(filePath: string): Record<string, unknown> {
-  const content = fs.readFileSync(filePath, "utf-8");
-  if (path.extname(filePath) === ".toml") {
-    return TOML.parse(content) as Record<string, unknown>;
-  }
-  const noComments = content
-    .replace(
-      /\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
-      (m, comment) => (comment ? "" : m),
-    )
-    .replace(/,(\s*[}\]])/g, "$1");
-  return JSON.parse(noComments);
+	const content = fs.readFileSync(filePath, "utf-8");
+	if (path.extname(filePath) === ".toml") {
+		return TOML.parse(content) as Record<string, unknown>;
+	}
+	const noComments = content
+		.replace(
+			/\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
+			(m, comment) => (comment ? "" : m),
+		)
+		.replace(/,(\s*[}\]])/g, "$1");
+	return JSON.parse(noComments);
 }
 
 export function loadWranglerConfigFile(
-  workersDir: string,
+	workersDir: string,
 ): Record<string, unknown> | null {
-  const p = findWranglerConfigFile(workersDir);
-  if (!p) return null;
-  return parseWranglerConfigFile(p);
+	const p = findWranglerConfigFile(workersDir);
+	if (!p) return null;
+	return parseWranglerConfigFile(p);
 }
 
 /**
@@ -180,97 +180,94 @@ export function loadWranglerConfigFile(
  * deployment's wrangler config after {VAR} interpolation.
  */
 export function resolveStartEnv(
-  projectRoot: string,
-  envName: string,
-  wranglerConfig?: Record<string, unknown> | null,
+	projectRoot: string,
+	envName: string,
+	wranglerConfig?: Record<string, unknown> | null,
 ): Record<string, string> {
-  const secrets = loadSecretsMap(projectRoot, envName);
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(process.env)) {
-    if (v !== undefined) out[k] = v;
-  }
-  Object.assign(out, secrets);
+	const secrets = loadSecretsMap(projectRoot, envName);
+	const out: Record<string, string> = {};
+	for (const [k, v] of Object.entries(process.env)) {
+		if (v !== undefined) out[k] = v;
+	}
+	Object.assign(out, secrets);
 
-  if (wranglerConfig) {
-    const resolved = interpolateValue(
-      wranglerConfig,
-      secrets,
-    ) as Record<string, { vars?: Record<string, unknown> }>;
-    for (const [k, v] of Object.entries(resolved.vars ?? {})) {
-      if (typeof v === "string") out[k] = v;
-    }
-  }
+	if (wranglerConfig) {
+		const resolved = interpolateValue(wranglerConfig, secrets) as Record<
+			string,
+			{ vars?: Record<string, unknown> }
+		>;
+		for (const [k, v] of Object.entries(resolved.vars ?? {})) {
+			if (typeof v === "string") out[k] = v;
+		}
+	}
 
-  return out;
+	return out;
 }
 
 export function interpolateValue(
-  value: unknown,
-  secrets: Record<string, string>,
+	value: unknown,
+	secrets: Record<string, string>,
 ): unknown {
-  if (typeof value === "string") {
-    const pattern = /\{(\w+)\}/g;
-    if (!pattern.test(value)) return value;
-    pattern.lastIndex = 0;
-    return value.replace(pattern, (_, name) => secrets[name] ?? `{${name}}`);
-  }
+	if (typeof value === "string") {
+		const pattern = /\{(\w+)\}/g;
+		if (!pattern.test(value)) return value;
+		pattern.lastIndex = 0;
+		return value.replace(pattern, (_, name) => secrets[name] ?? `{${name}}`);
+	}
 
-  if (Array.isArray(value)) {
-    return value.map((item) => interpolateValue(item, secrets));
-  }
+	if (Array.isArray(value)) {
+		return value.map((item) => interpolateValue(item, secrets));
+	}
 
-  if (value !== null && typeof value === "object") {
-    const result: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(
-      value as Record<string, unknown>,
-    )) {
-      result[k] = interpolateValue(v, secrets);
-    }
-    return result;
-  }
+	if (value !== null && typeof value === "object") {
+		const result: Record<string, unknown> = {};
+		for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+			result[k] = interpolateValue(v, secrets);
+		}
+		return result;
+	}
 
-  return value;
+	return value;
 }
 
 export function loadConfig(projectRoot: string): OmnibaseConfig {
-  const configPath = findConfigFile(projectRoot);
+	const configPath = findConfigFile(projectRoot);
 
-  if (!configPath) {
-    return { deployments: [] };
-  }
+	if (!configPath) {
+		return { deployments: [] };
+	}
 
-  try {
-    const parsed = parseConfigFile(configPath);
-    const rawDeployments = (parsed.deployments as
-      | Array<Record<string, unknown>>
-      | undefined) ?? [];
-    const rawLocal = parsed.local as LocalConfig | undefined;
+	try {
+		const parsed = parseConfigFile(configPath);
+		const rawDeployments =
+			(parsed.deployments as Array<Record<string, unknown>> | undefined) ?? [];
+		const rawLocal = parsed.local as LocalConfig | undefined;
 
-    return {
-      project_id: parsed.project_id as string | undefined,
-      deployments: rawDeployments.map((d) => ({
-        name: String(d.name ?? ""),
-        path: d.path as string | undefined,
-        port: d.port as number | undefined,
-      })),
-      auth: parsed.auth as AuthConfig | undefined,
-      local: rawLocal,
-      env: parsed.env as Record<string, string> | undefined,
-      versions: parsed.versions as Record<string, string> | undefined,
-    };
-  } catch (error) {
-    console.warn(`Warning: Could not parse config file at ${configPath}`);
-    return { deployments: [] };
-  }
+		return {
+			project_id: parsed.project_id as string | undefined,
+			deployments: rawDeployments.map((d) => ({
+				name: String(d.name ?? ""),
+				path: d.path as string | undefined,
+				port: d.port as number | undefined,
+			})),
+			auth: parsed.auth as AuthConfig | undefined,
+			local: rawLocal,
+			env: parsed.env as Record<string, string> | undefined,
+			versions: parsed.versions as Record<string, string> | undefined,
+		};
+	} catch (error) {
+		console.warn(`Warning: Could not parse config file at ${configPath}`);
+		return { deployments: [] };
+	}
 }
 
 export function getResolvedConfig(
-  projectRoot: string,
-  envName?: string,
+	projectRoot: string,
+	envName?: string,
 ): OmnibaseConfig {
-  const config = loadConfig(projectRoot);
-  const secrets = loadSecretsMap(projectRoot, envName);
-  return interpolateValue(config, secrets) as OmnibaseConfig;
+	const config = loadConfig(projectRoot);
+	const secrets = loadSecretsMap(projectRoot, envName);
+	return interpolateValue(config, secrets) as OmnibaseConfig;
 }
 
 /**
@@ -279,16 +276,14 @@ export function getResolvedConfig(
  */
 const CLI_ONLY_KEYS = new Set(["local", "project_id", "deployments"]);
 
-export function cloudConfigOf(
-  config: OmnibaseConfig,
-): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(config)) {
-    if (!CLI_ONLY_KEYS.has(key) && value !== undefined) {
-      out[key] = value;
-    }
-  }
-  return out;
+export function cloudConfigOf(config: OmnibaseConfig): Record<string, unknown> {
+	const out: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(config)) {
+		if (!CLI_ONLY_KEYS.has(key) && value !== undefined) {
+			out[key] = value;
+		}
+	}
+	return out;
 }
 
 /**
@@ -296,15 +291,15 @@ export function cloudConfigOf(
  * <PROVIDER>_CLIENT_ID / <PROVIDER>_CLIENT_SECRET.
  */
 function oidcEnvOf(providers: OidcProviderConfig[]): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const p of providers) {
-    if (!p.provider) continue;
-    const key = p.provider.toUpperCase();
-    out[`OIDC_${key}_ENABLED`] = "true";
-    if (p.client_id) out[`${key}_CLIENT_ID`] = p.client_id;
-    if (p.client_secret) out[`${key}_CLIENT_SECRET`] = p.client_secret;
-  }
-  return out;
+	const out: Record<string, string> = {};
+	for (const p of providers) {
+		if (!p.provider) continue;
+		const key = p.provider.toUpperCase();
+		out[`OIDC_${key}_ENABLED`] = "true";
+		if (p.client_id) out[`${key}_CLIENT_ID`] = p.client_id;
+		if (p.client_secret) out[`${key}_CLIENT_SECRET`] = p.client_secret;
+	}
+	return out;
 }
 
 /**
@@ -313,31 +308,31 @@ function oidcEnvOf(providers: OidcProviderConfig[]): Record<string, string> {
  * already be interpolated.
  */
 export function localEnvFromConfig(
-  config: OmnibaseConfig,
+	config: OmnibaseConfig,
 ): Record<string, string> {
-  const out: Record<string, string> = {};
+	const out: Record<string, string> = {};
 
-  const auth = config.auth;
-  if (auth) {
-    if (auth.website_url) out.WEBSITE_URL = auth.website_url;
-    if (auth.allowed_return_urls?.length) {
-      const urls = auth.allowed_return_urls
-        .map((u) => u.trim())
-        .filter((u) => u.length > 0);
-      if (urls.length) out.ALLOWED_RETURN_URLS = urls.join(",");
-    }
-    if (auth.cookie_secret) out.COOKIE_SECRET = auth.cookie_secret;
-    // Kratos rejects anything but lowercase levels.
-    if (auth.log_level) out.AUTH_LOG_LEVEL = auth.log_level.toLowerCase();
-    if (auth.oidc) Object.assign(out, oidcEnvOf(auth.oidc));
-  }
+	const auth = config.auth;
+	if (auth) {
+		if (auth.website_url) out.WEBSITE_URL = auth.website_url;
+		if (auth.allowed_return_urls?.length) {
+			const urls = auth.allowed_return_urls
+				.map((u) => u.trim())
+				.filter((u) => u.length > 0);
+			if (urls.length) out.ALLOWED_RETURN_URLS = urls.join(",");
+		}
+		if (auth.cookie_secret) out.COOKIE_SECRET = auth.cookie_secret;
+		// Kratos rejects anything but lowercase levels.
+		if (auth.log_level) out.AUTH_LOG_LEVEL = auth.log_level.toLowerCase();
+		if (auth.oidc) Object.assign(out, oidcEnvOf(auth.oidc));
+	}
 
-  const env = config.env;
-  if (env && typeof env === "object") {
-    for (const [k, v] of Object.entries(env as Record<string, unknown>)) {
-      if (typeof v === "string") out[k] = v;
-    }
-  }
+	const env = config.env;
+	if (env && typeof env === "object") {
+		for (const [k, v] of Object.entries(env as Record<string, unknown>)) {
+			if (typeof v === "string") out[k] = v;
+		}
+	}
 
-  return out;
+	return out;
 }

@@ -60,17 +60,17 @@ The server starts on port 8080 by default (configurable via `PORT` env var).
 
 The API exposes endpoints under `/api/v1/`:
 
-| Module | Endpoints | Description |
-|--------|-----------|-------------|
-| Auth | 6 | Session and authentication |
-| Tenants | 18 | Multi-tenant management, users, roles |
-| Stripe | 9 | Stripe configuration management |
-| Payments | 3 | Checkout and billing portal |
-| Storage | 3 | File operations (S3/R2) |
-| Email | 3 | Email template management |
-| Permissions | 2 | Keto permission checks |
-| Events | 1 | WebSocket/SSE events |
-| Database | 1 | Migration operations |
+| Module      | Endpoints | Description                           |
+| ----------- | --------- | ------------------------------------- |
+| Auth        | 6         | Session and authentication            |
+| Tenants     | 18        | Multi-tenant management, users, roles |
+| Stripe      | 9         | Stripe configuration management       |
+| Payments    | 3         | Checkout and billing portal           |
+| Storage     | 3         | File operations (S3/R2)               |
+| Email       | 3         | Email template management             |
+| Permissions | 2         | Keto permission checks                |
+| Events      | 1         | WebSocket/SSE events                  |
+| Database    | 1         | Migration operations                  |
 
 Health check available at `/health`.
 

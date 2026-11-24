@@ -12,73 +12,79 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AddLineItemRequest
  */
 export interface AddLineItemRequest {
-    /**
-     * 
-     * @type {number}
-     * @memberof AddLineItemRequest
-     */
-    amount: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemRequest
-     */
-    currency: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemRequest
-     */
-    description: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof AddLineItemRequest
+	 */
+	amount: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemRequest
+	 */
+	currency: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemRequest
+	 */
+	description: string;
 }
 
 /**
  * Check if a given object implements the AddLineItemRequest interface.
  */
-export function instanceOfAddLineItemRequest(value: object): value is AddLineItemRequest {
-    if (!('amount' in value) || value['amount'] === undefined) return false;
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    if (!('description' in value) || value['description'] === undefined) return false;
-    return true;
+export function instanceOfAddLineItemRequest(
+	value: object,
+): value is AddLineItemRequest {
+	if (!("amount" in value) || value["amount"] === undefined) return false;
+	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (!("description" in value) || value["description"] === undefined)
+		return false;
+	return true;
 }
 
 export function AddLineItemRequestFromJSON(json: any): AddLineItemRequest {
-    return AddLineItemRequestFromJSONTyped(json, false);
+	return AddLineItemRequestFromJSONTyped(json, false);
 }
 
-export function AddLineItemRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddLineItemRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'amount': json['amount'],
-        'currency': json['currency'],
-        'description': json['description'],
-    };
+export function AddLineItemRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AddLineItemRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		amount: json["amount"],
+		currency: json["currency"],
+		description: json["description"],
+	};
 }
 
 export function AddLineItemRequestToJSON(json: any): AddLineItemRequest {
-    return AddLineItemRequestToJSONTyped(json, false);
+	return AddLineItemRequestToJSONTyped(json, false);
 }
 
-export function AddLineItemRequestToJSONTyped(value?: AddLineItemRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AddLineItemRequestToJSONTyped(
+	value?: AddLineItemRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'amount': value['amount'],
-        'currency': value['currency'],
-        'description': value['description'],
-    };
+	return {
+		amount: value["amount"],
+		currency: value["currency"],
+		description: value["description"],
+	};
 }
-

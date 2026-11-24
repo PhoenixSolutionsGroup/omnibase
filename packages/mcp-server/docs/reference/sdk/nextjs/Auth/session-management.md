@@ -1,6 +1,6 @@
 ---
-title: "Session Management"
----
+
+## title: "Session Management"
 
 # Session Management
 
@@ -36,23 +36,23 @@ Promise resolving to the Session object, or null if no active session exists
 
 ```tsx
 // Check authentication and access user data
-import { getServerSession } from '@omnibase/nextjs/auth';
-import { redirect } from 'next/navigation';
+import { getServerSession } from "@omnibase/nextjs/auth";
+import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
-  const session = await getServerSession();
+	const session = await getServerSession();
 
-  if (!session || !session.active) {
-    redirect('/auth/login');
-  }
+	if (!session || !session.active) {
+		redirect("/auth/login");
+	}
 
-  return (
-    <div>
-      <h1>Profile</h1>
-      <p>Email: {session.identity.traits.email}</p>
-      <p>User ID: {session.identity.id}</p>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Profile</h1>
+			<p>Email: {session.identity.traits.email}</p>
+			<p>User ID: {session.identity.id}</p>
+		</div>
+	);
 }
 ```
 
@@ -60,7 +60,7 @@ export default async function ProfilePage() {
 
 0.5.1
 
-***
+---
 
 ### SessionProvider()
 
@@ -86,10 +86,10 @@ context to all pages in your application.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | \{ `children?`: `ReactNode`; \} | Component props |
-| `props.children?` | `ReactNode` | React nodes to be wrapped with session context |
+| Parameter         | Type                            | Description                                    |
+| ----------------- | ------------------------------- | ---------------------------------------------- |
+| `props`           | \{ `children?`: `ReactNode`; \} | Component props                                |
+| `props.children?` | `ReactNode`                     | React nodes to be wrapped with session context |
 
 #### Returns
 
@@ -101,22 +101,20 @@ Promise resolving to a session provider component with session data
 
 ```tsx
 // app/layout.tsx - Root layout with session provider
-import { SessionProvider } from '@omnibase/nextjs/auth';
+import { SessionProvider } from "@omnibase/nextjs/auth";
 
 export default async function RootLayout({
-  children
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body>
+				<SessionProvider>{children}</SessionProvider>
+			</body>
+		</html>
+	);
 }
 ```
 

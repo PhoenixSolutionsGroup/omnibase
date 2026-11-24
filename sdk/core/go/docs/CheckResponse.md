@@ -2,9 +2,9 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Allowed** | **bool** |  | 
+| Name        | Type     | Description | Notes |
+| ----------- | -------- | ----------- | ----- |
+| **Allowed** | **bool** |             |
 
 ## Methods
 
@@ -44,8 +44,4 @@ and a boolean to check if the value has been set.
 
 SetAllowed sets Allowed field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

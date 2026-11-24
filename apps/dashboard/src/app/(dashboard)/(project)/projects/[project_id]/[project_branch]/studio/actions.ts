@@ -5,67 +5,74 @@ import { getProjectBranch } from "@/utils/get-project";
 import { fetchDatabaseConnectionString } from "../settings/actions";
 
 export interface TableColumn {
-  name: string;
-  type: string;
-  isNullable: boolean;
-  isPrimaryKey: boolean;
-  defaultValue: string | null;
+	name: string;
+	type: string;
+	isNullable: boolean;
+	isPrimaryKey: boolean;
+	defaultValue: string | null;
 }
 
 export interface TableInfo {
-  name: string;
-  schemaName: string;
-  columns: TableColumn[];
-  hasRlsPolicies: boolean;
+	name: string;
+	schemaName: string;
+	columns: TableColumn[];
+	hasRlsPolicies: boolean;
 }
 
 export interface SchemaInfo {
-  [schemaName: string]: TableInfo[];
+	[schemaName: string]: TableInfo[];
 }
 
 export async function fetchSchemaInfo(
-  projectId: string,
-  projectBranch: string
+	projectId: string,
+	projectBranch: string,
 ): Promise<{ success: boolean; schemas?: SchemaInfo; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
+	const project = await getProjectBranch(projectId, projectBranch);
+	if (!project) {
+		return { success: false, error: "Project not found" };
+	}
 
-  // Try to get connection string from managed-hosting, fall back to building from project fields
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-    console.log("[fetchSchemaInfo] Using connection string from managed-hosting");
-  } else {
-    // Fallback: build connection string from project fields
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres"; // default dev password
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-    console.log("[fetchSchemaInfo] Using fallback connection string", { host, port, user, dbName });
-  }
+	// Try to get connection string from managed-hosting, fall back to building from project fields
+	let connectionString: string;
+	const connResult = await fetchDatabaseConnectionString(project.id);
+	if (connResult.success && connResult.connectionString) {
+		connectionString = connResult.connectionString;
+		console.log(
+			"[fetchSchemaInfo] Using connection string from managed-hosting",
+		);
+	} else {
+		// Fallback: build connection string from project fields
+		const host = project.database_host || "127.0.0.1";
+		const port = project.database_port || 5432;
+		const user = project.database_username || "postgres";
+		const password = "postgres"; // default dev password
+		const dbName = project.database_name || "db";
+		connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+		console.log("[fetchSchemaInfo] Using fallback connection string", {
+			host,
+			port,
+			user,
+			dbName,
+		});
+	}
 
-  // Mask password for logging
-  const maskedConnString = connectionString.replace(/:([^@]+)@/, ":***@");
-  console.log("[fetchSchemaInfo] Connecting to:", maskedConnString);
+	// Mask password for logging
+	const maskedConnString = connectionString.replace(/:([^@]+)@/, ":***@");
+	console.log("[fetchSchemaInfo] Connecting to:", maskedConnString);
 
-  const client = new Client({
-    connectionString,
-    connectionTimeoutMillis: 10000, // 10 second connection timeout
-    query_timeout: 30000, // 30 second query timeout
-  });
+	const client = new Client({
+		connectionString,
+		connectionTimeoutMillis: 10000, // 10 second connection timeout
+		query_timeout: 30000, // 30 second query timeout
+	});
 
-  try {
-    console.log("[fetchSchemaInfo] Attempting to connect...");
-    await client.connect();
-    console.log("[fetchSchemaInfo] Connected successfully");
+	try {
+		console.log("[fetchSchemaInfo] Attempting to connect...");
+		await client.connect();
+		console.log("[fetchSchemaInfo] Connected successfully");
 
-    // Get all tables with their schemas using pg_catalog (much faster than information_schema)
-    const tablesResult = await client.query(`
+		// Get all tables with their schemas using pg_catalog (much faster than information_schema)
+		const tablesResult = await client.query(`
       SELECT
         n.nspname AS table_schema,
         c.relname AS table_name,
@@ -94,98 +101,106 @@ export async function fetchSchemaInfo(
       ORDER BY n.nspname, c.relname, a.attnum
     `);
 
-    // Get RLS policy counts per table
-    const rlsResult = await client.query(`
+		// Get RLS policy counts per table
+		const rlsResult = await client.query(`
       SELECT schemaname, tablename, COUNT(*) as policy_count
       FROM pg_policies
       GROUP BY schemaname, tablename
     `);
 
-    const rlsPolicies = new Map<string, number>();
-    for (const row of rlsResult.rows) {
-      rlsPolicies.set(`${row.schemaname}.${row.tablename}`, parseInt(row.policy_count));
-    }
+		const rlsPolicies = new Map<string, number>();
+		for (const row of rlsResult.rows) {
+			rlsPolicies.set(
+				`${row.schemaname}.${row.tablename}`,
+				parseInt(row.policy_count),
+			);
+		}
 
-    // Group by schema and table
-    const schemas: SchemaInfo = {};
+		// Group by schema and table
+		const schemas: SchemaInfo = {};
 
-    for (const row of tablesResult.rows) {
-      const schemaName = row.table_schema;
-      const tableName = row.table_name;
+		for (const row of tablesResult.rows) {
+			const schemaName = row.table_schema;
+			const tableName = row.table_name;
 
-      if (!schemas[schemaName]) {
-        schemas[schemaName] = [];
-      }
+			if (!schemas[schemaName]) {
+				schemas[schemaName] = [];
+			}
 
-      let table = schemas[schemaName].find((t) => t.name === tableName);
-      if (!table) {
-        const policyCount = rlsPolicies.get(`${schemaName}.${tableName}`) || 0;
-        table = { name: tableName, schemaName, columns: [], hasRlsPolicies: policyCount > 0 };
-        schemas[schemaName].push(table);
-      }
+			let table = schemas[schemaName].find((t) => t.name === tableName);
+			if (!table) {
+				const policyCount = rlsPolicies.get(`${schemaName}.${tableName}`) || 0;
+				table = {
+					name: tableName,
+					schemaName,
+					columns: [],
+					hasRlsPolicies: policyCount > 0,
+				};
+				schemas[schemaName].push(table);
+			}
 
-      table!.columns.push({
-        name: row.column_name,
-        type: row.udt_name || row.data_type,
-        isNullable: row.is_nullable === "YES",
-        isPrimaryKey: row.is_primary_key,
-        defaultValue: row.column_default,
-      });
-    }
+			table!.columns.push({
+				name: row.column_name,
+				type: row.udt_name || row.data_type,
+				isNullable: row.is_nullable === "YES",
+				isPrimaryKey: row.is_primary_key,
+				defaultValue: row.column_default,
+			});
+		}
 
-    // Notify PostgREST to reload its schema cache
-    await client.query("NOTIFY pgrst, 'reload schema';");
+		// Notify PostgREST to reload its schema cache
+		await client.query("NOTIFY pgrst, 'reload schema';");
 
-    return { success: true, schemas };
-  } catch (error: any) {
-    console.error("Error fetching schema info:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    await client.end();
-  }
+		return { success: true, schemas };
+	} catch (error: any) {
+		console.error("Error fetching schema info:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		await client.end();
+	}
 }
 
 export interface RLSPolicy {
-  policyname: string;
-  schemaname: string;
-  tablename: string;
-  cmd: string;
-  roles: string[];
-  qual: string | null;
-  with_check: string | null;
+	policyname: string;
+	schemaname: string;
+	tablename: string;
+	cmd: string;
+	roles: string[];
+	qual: string | null;
+	with_check: string | null;
 }
 
 export async function fetchRLSPolicies(
-  projectId: string,
-  projectBranch: string,
-  tableName: string,
-  schemaName: string = "public"
+	projectId: string,
+	projectBranch: string,
+	tableName: string,
+	schemaName: string = "public",
 ): Promise<{ success: boolean; policies?: RLSPolicy[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
+	const project = await getProjectBranch(projectId, projectBranch);
+	if (!project) {
+		return { success: false, error: "Project not found" };
+	}
 
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-  }
+	let connectionString: string;
+	const connResult = await fetchDatabaseConnectionString(project.id);
+	if (connResult.success && connResult.connectionString) {
+		connectionString = connResult.connectionString;
+	} else {
+		const host = project.database_host || "127.0.0.1";
+		const port = project.database_port || 5432;
+		const user = project.database_username || "postgres";
+		const password = "postgres";
+		const dbName = project.database_name || "db";
+		connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+	}
 
-  const client = new Client({ connectionString });
+	const client = new Client({ connectionString });
 
-  try {
-    await client.connect();
+	try {
+		await client.connect();
 
-    const result = await client.query(
-      `
+		const result = await client.query(
+			`
       SELECT
         policyname,
         schemaname,
@@ -198,155 +213,157 @@ export async function fetchRLSPolicies(
       WHERE tablename = $1 AND schemaname = $2
       ORDER BY policyname
     `,
-      [tableName, schemaName]
-    );
+			[tableName, schemaName],
+		);
 
-    const policies: RLSPolicy[] = result.rows.map((row) => {
-      // Parse roles - PostgreSQL returns as {role1,role2} string or actual array
-      let roles: string[] = [];
-      if (Array.isArray(row.roles)) {
-        roles = row.roles;
-      } else if (typeof row.roles === "string") {
-        // Parse PostgreSQL array string format: {role1,role2}
-        roles = row.roles.replace(/^\{|\}$/g, "").split(",").filter(Boolean);
-      }
-      return {
-        policyname: row.policyname,
-        schemaname: row.schemaname,
-        tablename: row.tablename,
-        cmd: row.cmd,
-        roles,
-        qual: row.qual,
-        with_check: row.with_check,
-      };
-    });
+		const policies: RLSPolicy[] = result.rows.map((row) => {
+			// Parse roles - PostgreSQL returns as {role1,role2} string or actual array
+			let roles: string[] = [];
+			if (Array.isArray(row.roles)) {
+				roles = row.roles;
+			} else if (typeof row.roles === "string") {
+				// Parse PostgreSQL array string format: {role1,role2}
+				roles = row.roles
+					.replace(/^\{|\}$/g, "")
+					.split(",")
+					.filter(Boolean);
+			}
+			return {
+				policyname: row.policyname,
+				schemaname: row.schemaname,
+				tablename: row.tablename,
+				cmd: row.cmd,
+				roles,
+				qual: row.qual,
+				with_check: row.with_check,
+			};
+		});
 
-    return { success: true, policies };
-  } catch (error: any) {
-    console.error("Error fetching RLS policies:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    await client.end();
-  }
+		return { success: true, policies };
+	} catch (error: any) {
+		console.error("Error fetching RLS policies:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		await client.end();
+	}
 }
 
 export interface Tenant {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 }
 
 export async function fetchTenants(
-  projectId: string,
-  projectBranch: string
+	projectId: string,
+	projectBranch: string,
 ): Promise<{ success: boolean; tenants?: Tenant[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
+	const project = await getProjectBranch(projectId, projectBranch);
+	if (!project) {
+		return { success: false, error: "Project not found" };
+	}
 
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-  }
+	let connectionString: string;
+	const connResult = await fetchDatabaseConnectionString(project.id);
+	if (connResult.success && connResult.connectionString) {
+		connectionString = connResult.connectionString;
+	} else {
+		const host = project.database_host || "127.0.0.1";
+		const port = project.database_port || 5432;
+		const user = project.database_username || "postgres";
+		const password = "postgres";
+		const dbName = project.database_name || "db";
+		connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+	}
 
-  const client = new Client({ connectionString });
+	const client = new Client({ connectionString });
 
-  try {
-    await client.connect();
+	try {
+		await client.connect();
 
-    const result = await client.query(`
+		const result = await client.query(`
       SELECT id, name FROM auth.tenants ORDER BY name
     `);
 
-    const tenants: Tenant[] = result.rows.map((row) => ({
-      id: row.id,
-      name: row.name || row.id,
-    }));
+		const tenants: Tenant[] = result.rows.map((row) => ({
+			id: row.id,
+			name: row.name || row.id,
+		}));
 
-    return { success: true, tenants };
-  } catch (error: any) {
-    console.error("Error fetching tenants:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    await client.end();
-  }
+		return { success: true, tenants };
+	} catch (error: any) {
+		console.error("Error fetching tenants:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		await client.end();
+	}
 }
 
 export interface TenantUser {
-  id: string;
-  email: string;
+	id: string;
+	email: string;
 }
 
 export async function fetchTenantUsers(
-  projectId: string,
-  projectBranch: string,
-  tenantId: string
+	projectId: string,
+	projectBranch: string,
+	tenantId: string,
 ): Promise<{ success: boolean; users?: TenantUser[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
+	const project = await getProjectBranch(projectId, projectBranch);
+	if (!project) {
+		return { success: false, error: "Project not found" };
+	}
 
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-  }
+	let connectionString: string;
+	const connResult = await fetchDatabaseConnectionString(project.id);
+	if (connResult.success && connResult.connectionString) {
+		connectionString = connResult.connectionString;
+	} else {
+		const host = project.database_host || "127.0.0.1";
+		const port = project.database_port || 5432;
+		const user = project.database_username || "postgres";
+		const password = "postgres";
+		const dbName = project.database_name || "db";
+		connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+	}
 
-  const client = new Client({ connectionString });
+	const client = new Client({ connectionString });
 
-  try {
-    await client.connect();
+	try {
+		await client.connect();
 
-    const result = await client.query(
-      `
+		const result = await client.query(
+			`
       SELECT tu.user_id as id, i.traits->>'email' as email
       FROM auth.tenant_users tu
       JOIN auth.identities i ON tu.user_id::uuid = i.id
       WHERE tu.tenant_id = $1 AND tu.is_active = true
       ORDER BY i.traits->>'email'
     `,
-      [tenantId]
-    );
+			[tenantId],
+		);
 
-    const users: TenantUser[] = result.rows.map((row) => ({
-      id: row.id,
-      email: row.email || row.id,
-    }));
+		const users: TenantUser[] = result.rows.map((row) => ({
+			id: row.id,
+			email: row.email || row.id,
+		}));
 
-    return { success: true, users };
-  } catch (error: any) {
-    console.error("Error fetching tenant users:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    await client.end();
-  }
+		return { success: true, users };
+	} catch (error: any) {
+		console.error("Error fetching tenant users:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		await client.end();
+	}
 }
 
-
 export async function getTenantJWT(
-  _projectId: string,
-  _projectBranch: string,
-  _tenantId: string,
-  _userId: string
+	_projectId: string,
+	_projectBranch: string,
+	_tenantId: string,
+	_userId: string,
 ): Promise<{ success: boolean; token?: string; error?: string }> {
-  return {
-    success: false,
-    error: "PostgREST tokens are no longer issued to clients",
-  };
+	return {
+		success: false,
+		error: "PostgREST tokens are no longer issued to clients",
+	};
 }

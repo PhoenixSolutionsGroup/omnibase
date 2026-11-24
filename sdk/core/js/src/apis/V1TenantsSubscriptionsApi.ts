@@ -12,282 +12,352 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  AddRequest,
-  AddResponse,
-  BillingStatusResponse,
-  ErrorModel,
-  RemoveRequest,
-  RemoveResponse,
-  SubscriptionResponse,
-} from '../models/index';
+	AddRequest,
+	AddResponse,
+	BillingStatusResponse,
+	ErrorModel,
+	RemoveRequest,
+	RemoveResponse,
+	SubscriptionResponse,
+} from "../models/index";
 import {
-    AddRequestFromJSON,
-    AddRequestToJSON,
-    AddResponseFromJSON,
-    AddResponseToJSON,
-    BillingStatusResponseFromJSON,
-    BillingStatusResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    RemoveRequestFromJSON,
-    RemoveRequestToJSON,
-    RemoveResponseFromJSON,
-    RemoveResponseToJSON,
-    SubscriptionResponseFromJSON,
-    SubscriptionResponseToJSON,
-} from '../models/index';
+	AddRequestFromJSON,
+	AddRequestToJSON,
+	AddResponseFromJSON,
+	AddResponseToJSON,
+	BillingStatusResponseFromJSON,
+	BillingStatusResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	RemoveRequestFromJSON,
+	RemoveRequestToJSON,
+	RemoveResponseFromJSON,
+	RemoveResponseToJSON,
+	SubscriptionResponseFromJSON,
+	SubscriptionResponseToJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface AddSubscriptionRequest {
-    addRequest: AddRequest;
+	addRequest: AddRequest;
 }
 
 export interface GetTenantSubscriptionRequest {
-    configPriceId: string;
+	configPriceId: string;
 }
 
 export interface RemoveSubscriptionRequest {
-    removeRequest: RemoveRequest;
+	removeRequest: RemoveRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
+	/**
+	 * Add a subscription to the tenant
+	 */
+	async addSubscriptionRaw(
+		requestParameters: AddSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<AddResponse>> {
+		if (requestParameters["addRequest"] == null) {
+			throw new runtime.RequiredError(
+				"addRequest",
+				'Required parameter "addRequest" was null or undefined when calling addSubscription().',
+			);
+		}
 
-    /**
-     * Add a subscription to the tenant
-     */
-    async addSubscriptionRaw(requestParameters: AddSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddResponse>> {
-        if (requestParameters['addRequest'] == null) {
-            throw new runtime.RequiredError(
-                'addRequest',
-                'Required parameter "addRequest" was null or undefined when calling addSubscription().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/subscriptions`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: AddRequestToJSON(requestParameters["addRequest"]),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/tenants/subscriptions`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			AddResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: AddRequestToJSON(requestParameters['addRequest']),
-        }, initOverrides);
+	/**
+	 * Add a subscription to the tenant
+	 */
+	async addSubscription(
+		requestParameters: AddSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<AddResponse> {
+		const response = await this.addSubscriptionRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AddResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Get tenant billing status
+	 */
+	async getTenantBillingStatusRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<BillingStatusResponse>> {
+		const queryParameters: any = {};
 
-    /**
-     * Add a subscription to the tenant
-     */
-    async addSubscription(requestParameters: AddSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddResponse> {
-        const response = await this.addSubscriptionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get tenant billing status
-     */
-    async getTenantBillingStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BillingStatusResponse>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/billing-status`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			BillingStatusResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/tenants/billing-status`;
+	/**
+	 * Get tenant billing status
+	 */
+	async getTenantBillingStatus(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<BillingStatusResponse> {
+		const response = await this.getTenantBillingStatusRaw(initOverrides);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * Get a single tenant subscription
+	 */
+	async getTenantSubscriptionRaw(
+		requestParameters: GetTenantSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<SubscriptionResponse>> {
+		if (requestParameters["configPriceId"] == null) {
+			throw new runtime.RequiredError(
+				"configPriceId",
+				'Required parameter "configPriceId" was null or undefined when calling getTenantSubscription().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => BillingStatusResponseFromJSON(jsonValue));
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Get tenant billing status
-     */
-    async getTenantBillingStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BillingStatusResponse> {
-        const response = await this.getTenantBillingStatusRaw(initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get a single tenant subscription
-     */
-    async getTenantSubscriptionRaw(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
-        if (requestParameters['configPriceId'] == null) {
-            throw new runtime.RequiredError(
-                'configPriceId',
-                'Required parameter "configPriceId" was null or undefined when calling getTenantSubscription().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		let urlPath = `/api/v1/tenants/subscriptions/{config_price_id}`;
+		urlPath = urlPath.replace(
+			`{${"config_price_id"}}`,
+			encodeURIComponent(String(requestParameters["configPriceId"])),
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			SubscriptionResponseFromJSON(jsonValue),
+		);
+	}
 
+	/**
+	 * Get a single tenant subscription
+	 */
+	async getTenantSubscription(
+		requestParameters: GetTenantSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<SubscriptionResponse> {
+		const response = await this.getTenantSubscriptionRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/tenants/subscriptions/{config_price_id}`;
-        urlPath = urlPath.replace(`{${"config_price_id"}}`, encodeURIComponent(String(requestParameters['configPriceId'])));
+	/**
+	 * List subscriptions for the tenant
+	 */
+	async listTenantSubscriptionsRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>> {
+		const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SubscriptionResponseFromJSON(jsonValue));
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * Get a single tenant subscription
-     */
-    async getTenantSubscription(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
-        const response = await this.getTenantSubscriptionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-    /**
-     * List subscriptions for the tenant
-     */
-    async listTenantSubscriptionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		const urlPath = `/api/v1/tenants/subscriptions`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			jsonValue.map(SubscriptionResponseFromJSON),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+	/**
+	 * List subscriptions for the tenant
+	 */
+	async listTenantSubscriptions(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Array<SubscriptionResponse>> {
+		const response = await this.listTenantSubscriptionsRaw(initOverrides);
+		return await response.value();
+	}
 
+	/**
+	 * Remove a subscription from the tenant
+	 */
+	async removeSubscriptionRaw(
+		requestParameters: RemoveSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<RemoveResponse>> {
+		if (requestParameters["removeRequest"] == null) {
+			throw new runtime.RequiredError(
+				"removeRequest",
+				'Required parameter "removeRequest" was null or undefined when calling removeSubscription().',
+			);
+		}
 
-        let urlPath = `/api/v1/tenants/subscriptions`;
+		const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SubscriptionResponseFromJSON));
-    }
+		headerParameters["Content-Type"] = "application/json";
 
-    /**
-     * List subscriptions for the tenant
-     */
-    async listTenantSubscriptions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>> {
-        const response = await this.listTenantSubscriptionsRaw(initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * Remove a subscription from the tenant
-     */
-    async removeSubscriptionRaw(requestParameters: RemoveSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RemoveResponse>> {
-        if (requestParameters['removeRequest'] == null) {
-            throw new runtime.RequiredError(
-                'removeRequest',
-                'Required parameter "removeRequest" was null or undefined when calling removeSubscription().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		const urlPath = `/api/v1/tenants/subscriptions`;
 
-        headerParameters['Content-Type'] = 'application/json';
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+				body: RemoveRequestToJSON(requestParameters["removeRequest"]),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			RemoveResponseFromJSON(jsonValue),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/subscriptions`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-            body: RemoveRequestToJSON(requestParameters['removeRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => RemoveResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Remove a subscription from the tenant
-     */
-    async removeSubscription(requestParameters: RemoveSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RemoveResponse> {
-        const response = await this.removeSubscriptionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Remove a subscription from the tenant
+	 */
+	async removeSubscription(
+		requestParameters: RemoveSubscriptionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<RemoveResponse> {
+		const response = await this.removeSubscriptionRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }

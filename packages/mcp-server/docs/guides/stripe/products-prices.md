@@ -1,4 +1,5 @@
 ---
+
 title: Products & Prices
 description: Define products with multiple pricing tiers, intervals, and UI configuration
 ---
@@ -13,34 +14,34 @@ Products represent what you sell, and prices define how much customers pay. Omni
 
 ```json
 {
-  "id": "pro",
-  "name": "Professional Plan",
-  "description": "For growing businesses",
-  "type": "service",
-  "metadata": { "tier": "pro" },
-  "stripe_id": "prod_xxx",
-  "prices": [],
-  "ui": {}
+	"id": "pro",
+	"name": "Professional Plan",
+	"description": "For growing businesses",
+	"type": "service",
+	"metadata": { "tier": "pro" },
+	"stripe_id": "prod_xxx",
+	"prices": [],
+	"ui": {}
 }
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Unique identifier for the product (config ID) |
-| `name` | `string` | Yes | Product name displayed in Stripe and your UI |
-| `description` | `string` | No | Product description |
-| `type` | `string` | No | `service` (subscriptions) or `good` (one-time) |
-| `metadata` | `object` | No | String metadata synced to the Stripe product |
-| `stripe_id` | `string` | No | Existing Stripe product ID (for migrations) |
-| `prices` | `array` | Yes | Array of price definitions (minimum 1) |
-| `ui` | `object` | No | UI display configuration |
+| Field         | Type     | Required | Description                                    |
+| ------------- | -------- | -------- | ---------------------------------------------- |
+| `id`          | `string` | Yes      | Unique identifier for the product (config ID)  |
+| `name`        | `string` | Yes      | Product name displayed in Stripe and your UI   |
+| `description` | `string` | No       | Product description                            |
+| `type`        | `string` | No       | `service` (subscriptions) or `good` (one-time) |
+| `metadata`    | `object` | No       | String metadata synced to the Stripe product   |
+| `stripe_id`   | `string` | No       | Existing Stripe product ID (for migrations)    |
+| `prices`      | `array`  | Yes      | Array of price definitions (minimum 1)         |
+| `ui`          | `object` | No       | UI display configuration                       |
 
 ### Product Types
 
-| Type | Use Case | Example |
-|------|----------|---------|
-| `service` | Recurring subscriptions | SaaS plans, memberships |
-| `good` | One-time purchases, usage | Infrastructure, API calls |
+| Type      | Use Case                  | Example                   |
+| --------- | ------------------------- | ------------------------- |
+| `service` | Recurring subscriptions   | SaaS plans, memberships   |
+| `good`    | One-time purchases, usage | Infrastructure, API calls |
 
 ## Price Configuration
 
@@ -50,36 +51,36 @@ The simplest pricing model charges a fixed amount:
 
 ```json
 {
-  "id": "pro_monthly",
-  "amount": 4900,
-  "currency": "usd",
-  "interval": "month",
-  "interval_count": 1,
-  "usage_type": "licensed",
-  "billing_scheme": "per_unit",
-  "public": true,
-  "default": true,
-  "metadata": { "billing": "monthly" },
-  "stripe_id": "price_xxx",
-  "ui": {}
+	"id": "pro_monthly",
+	"amount": 4900,
+	"currency": "usd",
+	"interval": "month",
+	"interval_count": 1,
+	"usage_type": "licensed",
+	"billing_scheme": "per_unit",
+	"public": true,
+	"default": true,
+	"metadata": { "billing": "monthly" },
+	"stripe_id": "price_xxx",
+	"ui": {}
 }
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Unique price identifier |
-| `amount` | `number` | Yes | Price in smallest currency unit (cents for USD) |
-| `currency` | `string` | Yes | 3-letter ISO currency code (lowercase) |
-| `interval` | `string` | No | Billing interval: `day`, `week`, `month`, `year` |
-| `interval_count` | `integer` | No | Number of intervals between billings (default: 1) |
-| `usage_type` | `string` | No | `licensed` (fixed) or `metered` (usage-based) |
-| `billing_scheme` | `string` | No | `per_unit` (default) or `tiered` |
-| `public` | `boolean` | No | Visible in public API (`true`/`null` = public) |
-| `default` | `boolean` | No | Default price for the product |
-| `tax_included_in_price` | `boolean` | No | Whether tax is included |
-| `metadata` | `object` | No | String metadata synced to the Stripe price |
-| `stripe_id` | `string` | No | Existing Stripe price ID (for migrations) |
-| `ui` | `object` | No | UI display configuration |
+| Field                   | Type      | Required | Description                                       |
+| ----------------------- | --------- | -------- | ------------------------------------------------- |
+| `id`                    | `string`  | Yes      | Unique price identifier                           |
+| `amount`                | `number`  | Yes      | Price in smallest currency unit (cents for USD)   |
+| `currency`              | `string`  | Yes      | 3-letter ISO currency code (lowercase)            |
+| `interval`              | `string`  | No       | Billing interval: `day`, `week`, `month`, `year`  |
+| `interval_count`        | `integer` | No       | Number of intervals between billings (default: 1) |
+| `usage_type`            | `string`  | No       | `licensed` (fixed) or `metered` (usage-based)     |
+| `billing_scheme`        | `string`  | No       | `per_unit` (default) or `tiered`                  |
+| `public`                | `boolean` | No       | Visible in public API (`true`/`null` = public)    |
+| `default`               | `boolean` | No       | Default price for the product                     |
+| `tax_included_in_price` | `boolean` | No       | Whether tax is included                           |
+| `metadata`              | `object`  | No       | String metadata synced to the Stripe price        |
+| `stripe_id`             | `string`  | No       | Existing Stripe price ID (for migrations)         |
+| `ui`                    | `object`  | No       | UI display configuration                          |
 
 ### Tiered Pricing
 
@@ -87,28 +88,28 @@ For volume-based or graduated pricing:
 
 ```json
 {
-  "id": "api_calls_tiered",
-  "currency": "usd",
-  "interval": "month",
-  "usage_type": "metered",
-  "meter": "api_calls",
-  "billing_scheme": "tiered",
-  "tiers_mode": "graduated",
-  "tiers": [
-    { "up_to": 1000, "unit_amount": 0 },
-    { "up_to": 10000, "unit_amount": 100 },
-    { "up_to": 100000, "unit_amount": 50 },
-    { "up_to": "inf", "unit_amount": 25 }
-  ]
+	"id": "api_calls_tiered",
+	"currency": "usd",
+	"interval": "month",
+	"usage_type": "metered",
+	"meter": "api_calls",
+	"billing_scheme": "tiered",
+	"tiers_mode": "graduated",
+	"tiers": [
+		{ "up_to": 1000, "unit_amount": 0 },
+		{ "up_to": 10000, "unit_amount": 100 },
+		{ "up_to": 100000, "unit_amount": 50 },
+		{ "up_to": "inf", "unit_amount": 25 }
+	]
 }
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `billing_scheme` | `string` | Yes | Must be `tiered` |
-| `tiers_mode` | `string` | Yes | `graduated` or `volume` |
-| `tiers` | `array` | Yes | Array of tier definitions |
-| `metadata` | `object` | No | String metadata synced to the Stripe price |
+| Field            | Type     | Required | Description                                |
+| ---------------- | -------- | -------- | ------------------------------------------ |
+| `billing_scheme` | `string` | Yes      | Must be `tiered`                           |
+| `tiers_mode`     | `string` | Yes      | `graduated` or `volume`                    |
+| `tiers`          | `array`  | Yes      | Array of tier definitions                  |
+| `metadata`       | `object` | No       | String metadata synced to the Stripe price |
 
 ### Metadata
 
@@ -116,15 +117,15 @@ Products and prices accept an optional `metadata` object. Values must be strings
 
 ```json
 {
-  "id": "pg_scale_large_monthly",
-  "amount": 3500,
-  "currency": "usd",
-  "interval": "month",
-  "metadata": {
-    "size": "large",
-    "postgres_cpu": "2",
-    "postgres_ram_gb": "8"
-  }
+	"id": "pg_scale_large_monthly",
+	"amount": 3500,
+	"currency": "usd",
+	"interval": "month",
+	"metadata": {
+		"size": "large",
+		"postgres_cpu": "2",
+		"postgres_ram_gb": "8"
+	}
 }
 ```
 
@@ -160,20 +161,20 @@ Total: $75
 
 ```json
 {
-  "up_to": 1000,
-  "flat_amount": 0,
-  "unit_amount": 100
+	"up_to": 1000,
+	"flat_amount": 0,
+	"unit_amount": 100
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `up_to` | `integer` or `"inf"` | Upper limit of this tier. Use `"inf"` for the final tier |
-| `flat_amount` | `integer` | Flat fee for this tier (in cents) |
-| `unit_amount` | `integer` | Per-unit price for this tier (in cents) |
+| Field         | Type                 | Description                                              |
+| ------------- | -------------------- | -------------------------------------------------------- |
+| `up_to`       | `integer` or `"inf"` | Upper limit of this tier. Use `"inf"` for the final tier |
+| `flat_amount` | `integer`            | Flat fee for this tier (in cents)                        |
+| `unit_amount` | `integer`            | Per-unit price for this tier (in cents)                  |
 
 > **Note:**
-The final tier must have `"up_to": "inf"` to handle any quantity.
+> The final tier must have `"up_to": "inf"` to handle any quantity.
 
 ### Sub-Cent Pricing
 
@@ -181,11 +182,11 @@ For high-volume usage pricing, you may need sub-cent amounts:
 
 ```json
 {
-  "id": "compute_hourly",
-  "amount": 0.684,
-  "currency": "usd",
-  "interval": "month",
-  "usage_type": "metered"
+	"id": "compute_hourly",
+	"amount": 0.684,
+	"currency": "usd",
+	"interval": "month",
+	"usage_type": "metered"
 }
 ```
 
@@ -197,15 +198,15 @@ Unlike Stripe, OmniBase supports $0 prices:
 
 ```json
 {
-  "id": "free",
-  "amount": 0,
-  "currency": "usd",
-  "interval": "month",
-  "ui": {
-    "price_display": {
-      "custom_text": "Free"
-    }
-  }
+	"id": "free",
+	"amount": 0,
+	"currency": "usd",
+	"interval": "month",
+	"ui": {
+		"price_display": {
+			"custom_text": "Free"
+		}
+	}
 }
 ```
 
@@ -219,12 +220,12 @@ Create discount templates for enterprise tiers:
 
 ```json
 {
-  "id": "pro_monthly_enterprise_tier1",
-  "amount": 4410,
-  "currency": "usd",
-  "interval": "month",
-  "public": false,
-  "enterprise_template": "tier1_10pct_off"
+	"id": "pro_monthly_enterprise_tier1",
+	"amount": 4410,
+	"currency": "usd",
+	"interval": "month",
+	"public": false,
+	"enterprise_template": "tier1_10pct_off"
 }
 ```
 
@@ -234,12 +235,12 @@ Create custom pricing for specific customers:
 
 ```json
 {
-  "id": "pro_monthly_acme",
-  "amount": 3920,
-  "currency": "usd",
-  "interval": "month",
-  "public": false,
-  "enterprise_id": "acme_corp"
+	"id": "pro_monthly_acme",
+	"amount": 3920,
+	"currency": "usd",
+	"interval": "month",
+	"public": false,
+	"enterprise_id": "acme_corp"
 }
 ```
 
@@ -251,106 +252,103 @@ See [Enterprise Pricing](/guides/stripe/enterprise-pricing) for details.
 
 ```json
 {
-  "ui": {
-    "display_name": "Pro",
-    "tagline": "For growing teams",
-    "features": [
-      "Unlimited projects",
-      "Priority support",
-      "Advanced analytics"
-    ],
-    "badge": "Most Popular",
-    "cta_text": "Upgrade to Pro",
-    "highlighted": true,
-    "sort_order": 3
-  }
+	"ui": {
+		"display_name": "Pro",
+		"tagline": "For growing teams",
+		"features": [
+			"Unlimited projects",
+			"Priority support",
+			"Advanced analytics"
+		],
+		"badge": "Most Popular",
+		"cta_text": "Upgrade to Pro",
+		"highlighted": true,
+		"sort_order": 3
+	}
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `display_name` | `string` | Display name in UI |
-| `tagline` | `string` | Short description/tagline |
-| `features` | `string[]` | List of product features |
-| `badge` | `string` | Badge text (`"Most Popular"`, `"Best Value"`, etc.) |
-| `cta_text` | `string` | Call-to-action button text |
-| `highlighted` | `boolean` | Highlight this product in pricing table |
-| `sort_order` | `integer` | Display order (lower = first) |
+| Field          | Type       | Description                                         |
+| -------------- | ---------- | --------------------------------------------------- |
+| `display_name` | `string`   | Display name in UI                                  |
+| `tagline`      | `string`   | Short description/tagline                           |
+| `features`     | `string[]` | List of product features                            |
+| `badge`        | `string`   | Badge text (`"Most Popular"`, `"Best Value"`, etc.) |
+| `cta_text`     | `string`   | Call-to-action button text                          |
+| `highlighted`  | `boolean`  | Highlight this product in pricing table             |
+| `sort_order`   | `integer`  | Display order (lower = first)                       |
 
 ### Price UI
 
 ```json
 {
-  "ui": {
-    "display_name": "Monthly",
-    "billing_period": "per month",
-    "price_display": {
-      "custom_text": "Custom",
-      "show_currency": true,
-      "suffix": "/month"
-    },
-    "features": [
-      "Everything in Free",
-      "API access"
-    ],
-    "limits": [
-      {
-        "text": "0.75% transaction fee",
-        "value": 0.75,
-        "unit": "percent"
-      },
-      {
-        "text": "Unlimited instances",
-        "value": null,
-        "unit": "instances"
-      }
-    ]
-  }
+	"ui": {
+		"display_name": "Monthly",
+		"billing_period": "per month",
+		"price_display": {
+			"custom_text": "Custom",
+			"show_currency": true,
+			"suffix": "/month"
+		},
+		"features": ["Everything in Free", "API access"],
+		"limits": [
+			{
+				"text": "0.75% transaction fee",
+				"value": 0.75,
+				"unit": "percent"
+			},
+			{
+				"text": "Unlimited instances",
+				"value": null,
+				"unit": "instances"
+			}
+		]
+	}
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `display_name` | `string` | Price tier name |
-| `billing_period` | `string` | Human-readable period (`"per month"`, `"Forever"`) |
-| `price_display` | `object` | Custom price display options |
-| `features` | `string[]` | Features specific to this price |
-| `limits` | `array` | Usage limits for this price |
+| Field            | Type       | Description                                        |
+| ---------------- | ---------- | -------------------------------------------------- |
+| `display_name`   | `string`   | Price tier name                                    |
+| `billing_period` | `string`   | Human-readable period (`"per month"`, `"Forever"`) |
+| `price_display`  | `object`   | Custom price display options                       |
+| `features`       | `string[]` | Features specific to this price                    |
+| `limits`         | `array`    | Usage limits for this price                        |
 
 ### Price Display Options
 
 ```json
 {
-  "price_display": {
-    "custom_text": "Free",
-    "show_currency": false,
-    "suffix": "/month"
-  }
+	"price_display": {
+		"custom_text": "Free",
+		"show_currency": false,
+		"suffix": "/month"
+	}
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `custom_text` | `string` | Custom text instead of price (`"Free"`, `"Custom"`) |
-| `show_currency` | `boolean` | Whether to show currency symbol |
-| `suffix` | `string` | Text after price (`"/month"`, `"/year"`) |
+| Field           | Type      | Description                                         |
+| --------------- | --------- | --------------------------------------------------- |
+| `custom_text`   | `string`  | Custom text instead of price (`"Free"`, `"Custom"`) |
+| `show_currency` | `boolean` | Whether to show currency symbol                     |
+| `suffix`        | `string`  | Text after price (`"/month"`, `"/year"`)            |
 
 ### Price Limits
 
 ```json
 {
-  "limits": [
-    {
-      "text": "2 instances",
-      "value": 2,
-      "unit": "instances"
-    },
-    {
-      "text": "2.5% transaction fee",
-      "value": 2.5,
-      "unit": "percent"
-    }
-  ]
+	"limits": [
+		{
+			"text": "2 instances",
+			"value": 2,
+			"unit": "instances"
+		},
+		{
+			"text": "2.5% transaction fee",
+			"value": 2.5,
+			"unit": "percent"
+		}
+	]
 }
 ```
 
@@ -358,110 +356,114 @@ See [Enterprise Pricing](/guides/stripe/enterprise-pricing) for details.
 
 ```json title="omnibase/stripe/subscriptions.config.json"
 {
-  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
-  "version": "1.0.0",
-  "products": [
-    {
-      "id": "free",
-      "name": "Free Plan",
-      "description": "Get started with OmniBase",
-      "type": "service",
-      "prices": [
-        {
-          "id": "free",
-          "amount": 0,
-          "currency": "usd",
-          "interval": "month",
-          "public": true,
-          "ui": {
-            "display_name": "Free",
-            "billing_period": "Forever",
-            "price_display": { "custom_text": "Free" },
-            "limits": [
-              { "text": "2 instances", "value": 2, "unit": "instances" },
-              { "text": "2.5% transaction fee", "value": 2.5, "unit": "percent" }
-            ]
-          }
-        }
-      ],
-      "ui": {
-        "display_name": "Free",
-        "tagline": "For personal projects",
-        "sort_order": 1
-      }
-    },
-    {
-      "id": "starter",
-      "name": "Starter Plan",
-      "type": "service",
-      "prices": [
-        {
-          "id": "starter_monthly",
-          "amount": 1900,
-          "currency": "usd",
-          "interval": "month",
-          "public": true,
-          "default": true
-        }
-      ],
-      "ui": {
-        "display_name": "Starter",
-        "tagline": "For small teams",
-        "sort_order": 2
-      }
-    },
-    {
-      "id": "pro",
-      "name": "Pro Plan",
-      "type": "service",
-      "prices": [
-        {
-          "id": "pro_monthly",
-          "amount": 4900,
-          "currency": "usd",
-          "interval": "month",
-          "public": true,
-          "default": true
-        },
-        {
-          "id": "pro_yearly",
-          "amount": 49000,
-          "currency": "usd",
-          "interval": "year",
-          "public": true
-        }
-      ],
-      "ui": {
-        "display_name": "Pro",
-        "tagline": "For growing teams",
-        "badge": "Most Popular",
-        "highlighted": true,
-        "sort_order": 3
-      }
-    },
-    {
-      "id": "enterprise",
-      "name": "Enterprise",
-      "type": "service",
-      "prices": [
-        {
-          "id": "enterprise",
-          "amount": 0,
-          "currency": "usd",
-          "public": true,
-          "ui": {
-            "price_display": { "custom_text": "Custom" }
-          }
-        }
-      ],
-      "ui": {
-        "display_name": "Enterprise",
-        "tagline": "For large organizations",
-        "cta_text": "Contact Sales",
-        "sort_order": 4
-      }
-    }
-  ]
+	"$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+	"version": "1.0.0",
+	"products": [
+		{
+			"id": "free",
+			"name": "Free Plan",
+			"description": "Get started with OmniBase",
+			"type": "service",
+			"prices": [
+				{
+					"id": "free",
+					"amount": 0,
+					"currency": "usd",
+					"interval": "month",
+					"public": true,
+					"ui": {
+						"display_name": "Free",
+						"billing_period": "Forever",
+						"price_display": { "custom_text": "Free" },
+						"limits": [
+							{ "text": "2 instances", "value": 2, "unit": "instances" },
+							{
+								"text": "2.5% transaction fee",
+								"value": 2.5,
+								"unit": "percent"
+							}
+						]
+					}
+				}
+			],
+			"ui": {
+				"display_name": "Free",
+				"tagline": "For personal projects",
+				"sort_order": 1
+			}
+		},
+		{
+			"id": "starter",
+			"name": "Starter Plan",
+			"type": "service",
+			"prices": [
+				{
+					"id": "starter_monthly",
+					"amount": 1900,
+					"currency": "usd",
+					"interval": "month",
+					"public": true,
+					"default": true
+				}
+			],
+			"ui": {
+				"display_name": "Starter",
+				"tagline": "For small teams",
+				"sort_order": 2
+			}
+		},
+		{
+			"id": "pro",
+			"name": "Pro Plan",
+			"type": "service",
+			"prices": [
+				{
+					"id": "pro_monthly",
+					"amount": 4900,
+					"currency": "usd",
+					"interval": "month",
+					"public": true,
+					"default": true
+				},
+				{
+					"id": "pro_yearly",
+					"amount": 49000,
+					"currency": "usd",
+					"interval": "year",
+					"public": true
+				}
+			],
+			"ui": {
+				"display_name": "Pro",
+				"tagline": "For growing teams",
+				"badge": "Most Popular",
+				"highlighted": true,
+				"sort_order": 3
+			}
+		},
+		{
+			"id": "enterprise",
+			"name": "Enterprise",
+			"type": "service",
+			"prices": [
+				{
+					"id": "enterprise",
+					"amount": 0,
+					"currency": "usd",
+					"public": true,
+					"ui": {
+						"price_display": { "custom_text": "Custom" }
+					}
+				}
+			],
+			"ui": {
+				"display_name": "Enterprise",
+				"tagline": "For large organizations",
+				"cta_text": "Contact Sales",
+				"sort_order": 4
+			}
+		}
+	]
 }
 ```
 
@@ -470,12 +472,12 @@ See [Enterprise Pricing](/guides/stripe/enterprise-pricing) for details.
 ### Get Price Details
 
 ```typescript
-import { V1StripeApi } from '@omnibase/core-js';
+import { V1StripeApi } from "@omnibase/core-js";
 
 const stripeApi = new V1StripeApi(config);
 
 // Get price by config ID
-const { data } = await stripeApi.getPriceByID({ priceId: 'pro_monthly' });
+const { data } = await stripeApi.getPriceByID({ priceId: "pro_monthly" });
 console.log(data.price.amount); // 4900
 console.log(data.product.name); // "Pro Plan"
 ```
@@ -485,8 +487,8 @@ console.log(data.product.name); // "Pro Plan"
 ```typescript
 // Calculate cost for a quantity
 const { data } = await stripeApi.calculatePriceCost({
-  priceId: 'api_calls_tiered',
-  calculatePriceCostRequest: { quantity: 15000 },
+	priceId: "api_calls_tiered",
+	calculatePriceCostRequest: { quantity: 15000 },
 });
 
 console.log(data.cost_cents); // Cost in cents
@@ -500,8 +502,8 @@ console.log(data.tiers_mode); // "graduated" or "volume"
 const { data: stripeConfig } = await stripeApi.getStripeConfig();
 
 // Filter to public products
-const publicProducts = stripeConfig.products.filter(p =>
-  p.prices.some(price => price.public !== false)
+const publicProducts = stripeConfig.products.filter((p) =>
+	p.prices.some((price) => price.public !== false),
 );
 ```
 

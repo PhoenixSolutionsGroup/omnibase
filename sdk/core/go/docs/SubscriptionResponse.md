@@ -2,18 +2,18 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CancelAtPeriodEnd** | **bool** |  | 
-**CanceledAt** | Pointer to **int64** |  | [optional] 
-**ConfigPriceId** | **string** |  | 
-**CurrentPeriodEnd** | **int64** |  | 
-**CurrentPeriodStart** | **int64** |  | 
-**IsLegacyPrice** | **bool** |  | 
-**Status** | **string** |  | 
-**SubscriptionId** | **string** |  | 
-**TrialEnd** | Pointer to **int64** |  | [optional] 
-**TrialStart** | Pointer to **int64** |  | [optional] 
+| Name                   | Type                 | Description | Notes      |
+| ---------------------- | -------------------- | ----------- | ---------- |
+| **CancelAtPeriodEnd**  | **bool**             |             |
+| **CanceledAt**         | Pointer to **int64** |             | [optional] |
+| **ConfigPriceId**      | **string**           |             |
+| **CurrentPeriodEnd**   | **int64**            |             |
+| **CurrentPeriodStart** | **int64**            |             |
+| **IsLegacyPrice**      | **bool**             |             |
+| **Status**             | **string**           |             |
+| **SubscriptionId**     | **string**           |             |
+| **TrialEnd**           | Pointer to **int64** |             | [optional] |
+| **TrialStart**         | Pointer to **int64** |             | [optional] |
 
 ## Methods
 
@@ -52,7 +52,6 @@ and a boolean to check if the value has been set.
 `func (o *SubscriptionResponse) SetCancelAtPeriodEnd(v bool)`
 
 SetCancelAtPeriodEnd sets CancelAtPeriodEnd field to given value.
-
 
 ### GetCanceledAt
 
@@ -98,7 +97,6 @@ and a boolean to check if the value has been set.
 
 SetConfigPriceId sets ConfigPriceId field to given value.
 
-
 ### GetCurrentPeriodEnd
 
 `func (o *SubscriptionResponse) GetCurrentPeriodEnd() int64`
@@ -117,7 +115,6 @@ and a boolean to check if the value has been set.
 `func (o *SubscriptionResponse) SetCurrentPeriodEnd(v int64)`
 
 SetCurrentPeriodEnd sets CurrentPeriodEnd field to given value.
-
 
 ### GetCurrentPeriodStart
 
@@ -138,7 +135,6 @@ and a boolean to check if the value has been set.
 
 SetCurrentPeriodStart sets CurrentPeriodStart field to given value.
 
-
 ### GetIsLegacyPrice
 
 `func (o *SubscriptionResponse) GetIsLegacyPrice() bool`
@@ -157,7 +153,6 @@ and a boolean to check if the value has been set.
 `func (o *SubscriptionResponse) SetIsLegacyPrice(v bool)`
 
 SetIsLegacyPrice sets IsLegacyPrice field to given value.
-
 
 ### GetStatus
 
@@ -178,7 +173,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-
 ### GetSubscriptionId
 
 `func (o *SubscriptionResponse) GetSubscriptionId() string`
@@ -197,7 +191,6 @@ and a boolean to check if the value has been set.
 `func (o *SubscriptionResponse) SetSubscriptionId(v string)`
 
 SetSubscriptionId sets SubscriptionId field to given value.
-
 
 ### GetTrialEnd
 
@@ -249,7 +242,4 @@ SetTrialStart sets TrialStart field to given value.
 
 HasTrialStart returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

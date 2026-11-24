@@ -1,4 +1,5 @@
 ---
+
 title: Team Invitations
 description: Invite users to your organization and manage team memberships
 ---
@@ -16,23 +17,24 @@ OmniBase provides pre-built shadcn components for team management in `@omnibase/
 Invite users with email validation and role selector.
 
 ```tsx
-import { UserInvite } from '@omnibase/shadcn';
+import { UserInvite } from "@omnibase/shadcn";
 
 <UserInvite
-  roles={['admin', 'member', 'viewer']}
-  onInvite={async (inviteData) => {
-    await tenantsApi.createInvite({
-      createTenantUserInviteRequest: {
-        email: inviteData.createTenantUserInviteRequest.email,
-        role: inviteData.createTenantUserInviteRequest.role,
-        inviteUrl: 'https://app.example.com/auth/onboarding',
-      },
-    });
-  }}
-/>
+	roles={["admin", "member", "viewer"]}
+	onInvite={async (inviteData) => {
+		await tenantsApi.createInvite({
+			createTenantUserInviteRequest: {
+				email: inviteData.createTenantUserInviteRequest.email,
+				role: inviteData.createTenantUserInviteRequest.role,
+				inviteUrl: "https://app.example.com/auth/onboarding",
+			},
+		});
+	}}
+/>;
 ```
 
 **Props:**
+
 - `roles` — Array of available role names for selection
 - `onInvite` — Callback with `CreateInviteRequest` when form submits
 
@@ -41,26 +43,27 @@ import { UserInvite } from '@omnibase/shadcn';
 Display team members with role management and removal.
 
 ```tsx
-import { UserViewer } from '@omnibase/shadcn';
+import { UserViewer } from "@omnibase/shadcn";
 
 <UserViewer
-  users={tenantUsers}
-  availableRoles={['owner', 'admin', 'member']}
-  canEditUsers={hasPermission('tenant#update_user_role')}
-  onRoleUpdate={async (userId, newRole) => {
-    await tenantsApi.updateTenantUserRole({
-      updateTenantUserRoleRequest: { userId, role: newRole },
-    });
-  }}
-  onRemoveUser={async (userId) => {
-    await tenantsApi.removeTenantUser({
-      removeTenantUserRequest: { userId },
-    });
-  }}
-/>
+	users={tenantUsers}
+	availableRoles={["owner", "admin", "member"]}
+	canEditUsers={hasPermission("tenant#update_user_role")}
+	onRoleUpdate={async (userId, newRole) => {
+		await tenantsApi.updateTenantUserRole({
+			updateTenantUserRoleRequest: { userId, role: newRole },
+		});
+	}}
+	onRemoveUser={async (userId) => {
+		await tenantsApi.removeTenantUser({
+			removeTenantUserRequest: { userId },
+		});
+	}}
+/>;
 ```
 
 **Props:**
+
 - `users` — Array of `TenantUserResponse` from `listTenantUsers()`
 - `availableRoles` — Role names for the dropdown
 - `canEditUsers` — Whether to show edit controls
@@ -72,35 +75,36 @@ import { UserViewer } from '@omnibase/shadcn';
 Create new organizations or join via invite token. Auto-detects invite tokens from URL.
 
 ```tsx
-import { TenantCreator } from '@omnibase/shadcn';
+import { TenantCreator } from "@omnibase/shadcn";
 
 <TenantCreator
-  config={{
-    defaultMode: 'create',
-    createOrganizationText: 'Create Organization',
-    joinOrganizationText: 'Join Organization',
-  }}
-  formActions={{
-    createOrganizationAction: async (formData) => {
-      await tenantsApi.createTenant({
-        createTenantRequest: {
-          name: formData.get('organizationName') as string,
-          billingEmail: formData.get('billingEmail') as string,
-        },
-      });
-    },
-    joinOrganizationAction: async (formData) => {
-      await tenantsApi.acceptInvite({
-        acceptInviteRequest: {
-          token: formData.get('token') as string,
-        },
-      });
-    },
-  }}
-/>
+	config={{
+		defaultMode: "create",
+		createOrganizationText: "Create Organization",
+		joinOrganizationText: "Join Organization",
+	}}
+	formActions={{
+		createOrganizationAction: async (formData) => {
+			await tenantsApi.createTenant({
+				createTenantRequest: {
+					name: formData.get("organizationName") as string,
+					billingEmail: formData.get("billingEmail") as string,
+				},
+			});
+		},
+		joinOrganizationAction: async (formData) => {
+			await tenantsApi.acceptInvite({
+				acceptInviteRequest: {
+					token: formData.get("token") as string,
+				},
+			});
+		},
+	}}
+/>;
 ```
 
 **Props:**
+
 - `config.defaultMode` — `'create'` or `'join'`
 - `config.createForm` — Customize labels and placeholders
 - `config.joinForm` — Customize invite token input
@@ -134,20 +138,20 @@ Users with the `tenant#invite_user` permission can invite new members.
 ### Basic Invitation
 
 ```typescript
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
 
 const tenantsApi = new V1TenantsApi(config);
 
 const { data: invite } = await tenantsApi.createInvite({
-  createTenantUserInviteRequest: {
-    email: 'newuser@example.com',
-    role: 'member',
-    inviteUrl: 'https://app.example.com/auth/onboarding',
-  },
+	createTenantUserInviteRequest: {
+		email: "newuser@example.com",
+		role: "member",
+		inviteUrl: "https://app.example.com/auth/onboarding",
+	},
 });
 
-console.log('Token:', invite.data.token);
-console.log('Expires:', invite.data.expires_at);
+console.log("Token:", invite.data.token);
+console.log("Expires:", invite.data.expires_at);
 ```
 
 ### Automatic Email Delivery
@@ -158,8 +162,7 @@ OmniBase automatically sends an invitation email to the invitee when you create 
 - The assigned role
 - A link to accept the invitation (using the `inviteUrl` you provide)
 
-> **Note:**
-  Make sure your OmniBase instance has email configured. The invite URL you provide will have the token appended as a query parameter: `{inviteUrl}?token={token}`
+> **Note:** Make sure your OmniBase instance has email configured. The invite URL you provide will have the token appended as a query parameter: `{inviteUrl}?token={token}`
 
 The invitation email template can be customized. See the [Email Templates](/guides/email-templates) guide for details.
 
@@ -173,39 +176,44 @@ The invited user must be authenticated before accepting. Their email must match 
 
 ```typescript
 const { data } = await tenantsApi.acceptInvite({
-  acceptInviteRequest: {
-    token: inviteToken,
-  },
+	acceptInviteRequest: {
+		token: inviteToken,
+	},
 });
 
 // User is now a member of the tenant
-console.log('Joined tenant:', data.data.tenant.name);
-console.log('Assigned role:', data.data.role);
-console.log('JWT Token:', data.data.token);
+console.log("Joined tenant:", data.data.tenant.name);
+console.log("Assigned role:", data.data.role);
+console.log("JWT Token:", data.data.token);
 ```
 
 ### What Happens on Acceptance
 
 ### Token Validation
+
 OmniBase verifies the token is valid, not expired, and not already used.
 
 ### Email Verification
+
 The authenticated user's email must match the invitation email.
 
 ### Membership Creation
+
 A `tenant_user` record is created linking the user to the tenant with the assigned role.
 
 ### Permission Assignment
+
 Permission relationships are created based on the role's permissions.
 
 ### Invite Marked Used
+
 The invitation is marked as used and cannot be reused.
 
 ### Tenant Activation
+
 The new tenant becomes the user's active tenant, and a JWT token is returned.
 
-> **Note:**
-  The invitee's email must exactly match the authenticated user's email. Invitations expire after 7 days and can only be used once.
+> **Note:** The invitee's email must exactly match the authenticated user's email. Invitations expire after 7 days and can only be used once.
 
 ### Invitation Acceptance UI
 
@@ -213,48 +221,48 @@ Here's how to handle invitation acceptance in a Next.js app:
 
 ```tsx
 // app/auth/onboarding/page.tsx
-import { V1TenantsApi, Configuration } from '@omnibase/core-js';
-import { redirect } from 'next/navigation';
+import { V1TenantsApi, Configuration } from "@omnibase/core-js";
+import { redirect } from "next/navigation";
 
 export default async function OnboardingPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: { token?: string };
+	searchParams: { token?: string };
 }) {
-  const { token } = searchParams;
+	const { token } = searchParams;
 
-  if (token) {
-    // User is accepting an invitation
-    return <AcceptInviteForm token={token} />;
-  }
+	if (token) {
+		// User is accepting an invitation
+		return <AcceptInviteForm token={token} />;
+	}
 
-  // User is creating a new organization
-  return <CreateTenantForm />;
+	// User is creating a new organization
+	return <CreateTenantForm />;
 }
 
 async function AcceptInviteForm({ token }: { token: string }) {
-  async function acceptInvite() {
-    'use server';
+	async function acceptInvite() {
+		"use server";
 
-    const config = new Configuration({
-      basePath: process.env.OMNIBASE_API_URL,
-    });
-    const tenantsApi = new V1TenantsApi(config);
+		const config = new Configuration({
+			basePath: process.env.OMNIBASE_API_URL,
+		});
+		const tenantsApi = new V1TenantsApi(config);
 
-    await tenantsApi.acceptInvite({
-      acceptInviteRequest: { token },
-    });
+		await tenantsApi.acceptInvite({
+			acceptInviteRequest: { token },
+		});
 
-    redirect('/');
-  }
+		redirect("/");
+	}
 
-  return (
-    <form action={acceptInvite}>
-      <h1>Accept Invitation</h1>
-      <p>Click below to join the organization.</p>
-      <button type="submit">Accept & Join</button>
-    </form>
-  );
+	return (
+		<form action={acceptInvite}>
+			<h1>Accept Invitation</h1>
+			<p>Click below to join the organization.</p>
+			<button type="submit">Accept & Join</button>
+		</form>
+	);
 }
 ```
 
@@ -268,9 +276,9 @@ async function AcceptInviteForm({ token }: { token: string }) {
 const { data: members } = await tenantsApi.listTenantUsers();
 
 for (const member of members.data) {
-  console.log(`${member.email}: ${member.role}`);
-  console.log(`  User ID: ${member.user_id}`);
-  console.log(`  Joined: ${member.joined_at}`);
+	console.log(`${member.email}: ${member.role}`);
+	console.log(`  User ID: ${member.user_id}`);
+	console.log(`  Joined: ${member.joined_at}`);
 }
 ```
 
@@ -282,15 +290,14 @@ Users with the `tenant#update_user_role` permission can change member roles.
 
 ```typescript
 await tenantsApi.updateTenantUserRole({
-  updateTenantUserRoleRequest: {
-    userId: targetUserId,
-    role: 'admin',
-  },
+	updateTenantUserRoleRequest: {
+		userId: targetUserId,
+		role: "admin",
+	},
 });
 ```
 
-> **Note:**
-  Changing a user's role immediately updates their permissions. The change takes effect on their next request.
+> **Note:** Changing a user's role immediately updates their permissions. The change takes effect on their next request.
 
 ### Role Update Flow
 
@@ -308,9 +315,9 @@ Users with the `tenant#remove_user` permission can remove members.
 
 ```typescript
 await tenantsApi.removeTenantUser({
-  removeTenantUserRequest: {
-    userId: targetUserId,
-  },
+	removeTenantUserRequest: {
+		userId: targetUserId,
+	},
 });
 ```
 
@@ -321,28 +328,27 @@ await tenantsApi.removeTenantUser({
 3. If this was their active tenant, another tenant becomes active
 4. If they have no tenants left, their identity metadata is updated
 
-> **Note:**
-  Owners cannot be removed from a tenant. The tenant must be deleted instead, or ownership must be transferred first.
+> **Note:** Owners cannot be removed from a tenant. The tenant must be deleted instead, or ownership must be transferred first.
 
 ---
 
 ## Permission Requirements
 
-| Action | Required Permission |
-|--------|---------------------|
-| Create invitation | `tenant#invite_user` |
-| Accept invitation | (Authenticated + matching email) |
-| List members | `tenant#view_users` |
-| Update member role | `tenant#update_user_role` |
-| Remove member | `tenant#remove_user` |
+| Action             | Required Permission              |
+| ------------------ | -------------------------------- |
+| Create invitation  | `tenant#invite_user`             |
+| Accept invitation  | (Authenticated + matching email) |
+| List members       | `tenant#view_users`              |
+| Update member role | `tenant#update_user_role`        |
+| Remove member      | `tenant#remove_user`             |
 
 ### Built-in Role Permissions
 
-| Role | invite_user | view_users | update_user_role | remove_user |
-|------|-------------|------------|------------------|-------------|
-| Owner | Yes | Yes | Yes | Yes |
-| Admin | Yes | Yes | Yes | Yes |
-| Member | No | No | No | No |
+| Role   | invite_user | view_users | update_user_role | remove_user |
+| ------ | ----------- | ---------- | ---------------- | ----------- |
+| Owner  | Yes         | Yes        | Yes              | Yes         |
+| Admin  | Yes         | Yes        | Yes              | Yes         |
+| Member | No          | No         | No               | No          |
 
 ---
 
@@ -352,38 +358,38 @@ await tenantsApi.removeTenantUser({
 
 **Invite Creation:**
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `403 Forbidden` | User lacks `invite_user` permission | Ensure user is owner/admin or has custom role with permission |
-| `400 Bad Request` | Invalid email format | Validate email before sending |
-| `409 Conflict` | User already a member | Check membership before inviting |
+| Error             | Cause                               | Solution                                                      |
+| ----------------- | ----------------------------------- | ------------------------------------------------------------- |
+| `403 Forbidden`   | User lacks `invite_user` permission | Ensure user is owner/admin or has custom role with permission |
+| `400 Bad Request` | Invalid email format                | Validate email before sending                                 |
+| `409 Conflict`    | User already a member               | Check membership before inviting                              |
 
 **Invite Acceptance:**
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `404 Not Found` | Invalid or expired token | Request a new invitation |
-| `400 Bad Request` | Email mismatch | User must authenticate with the invited email |
-| `409 Conflict` | Invitation already used | Request a new invitation |
-| `410 Gone` | Invitation expired | Request a new invitation |
+| Error             | Cause                    | Solution                                      |
+| ----------------- | ------------------------ | --------------------------------------------- |
+| `404 Not Found`   | Invalid or expired token | Request a new invitation                      |
+| `400 Bad Request` | Email mismatch           | User must authenticate with the invited email |
+| `409 Conflict`    | Invitation already used  | Request a new invitation                      |
+| `410 Gone`        | Invitation expired       | Request a new invitation                      |
 
 ### Example Error Handling
 
 ```typescript
 try {
-  await tenantsApi.acceptInvite({
-    acceptInviteRequest: { token },
-  });
+	await tenantsApi.acceptInvite({
+		acceptInviteRequest: { token },
+	});
 } catch (error) {
-  if (error.response?.status === 404) {
-    console.error('Invalid or expired invitation');
-  } else if (error.response?.status === 400) {
-    console.error('Email does not match invitation');
-  } else if (error.response?.status === 410) {
-    console.error('Invitation has expired');
-  } else {
-    console.error('Failed to accept invitation:', error);
-  }
+	if (error.response?.status === 404) {
+		console.error("Invalid or expired invitation");
+	} else if (error.response?.status === 400) {
+		console.error("Email does not match invitation");
+	} else if (error.response?.status === 410) {
+		console.error("Invitation has expired");
+	} else {
+		console.error("Failed to accept invitation:", error);
+	}
 }
 ```
 

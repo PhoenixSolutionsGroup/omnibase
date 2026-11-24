@@ -1,16 +1,14 @@
 # V1TenantsRolesApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**createRole**](V1TenantsRolesApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create a role |
-| [**deleteRole**](V1TenantsRolesApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete a role |
-| [**listRoleDefinitions**](V1TenantsRolesApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List role definitions |
-| [**listRoles**](V1TenantsRolesApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles for the tenant |
-| [**updateRole**](V1TenantsRolesApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update a role |
-
-
+| Method                                                              | HTTP request                               | Description               |
+| ------------------------------------------------------------------- | ------------------------------------------ | ------------------------- |
+| [**createRole**](V1TenantsRolesApi.md#createroleoperation)          | **POST** /api/v1/tenants/roles             | Create a role             |
+| [**deleteRole**](V1TenantsRolesApi.md#deleterole)                   | **DELETE** /api/v1/tenants/roles/{role_id} | Delete a role             |
+| [**listRoleDefinitions**](V1TenantsRolesApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions  | List role definitions     |
+| [**listRoles**](V1TenantsRolesApi.md#listroles)                     | **GET** /api/v1/tenants/roles              | List roles for the tenant |
+| [**updateRole**](V1TenantsRolesApi.md#updateroleoperation)          | **PUT** /api/v1/tenants/roles/{role_id}    | Update a role             |
 
 ## createRole
 
@@ -60,10 +58,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **createRoleRequest** | [CreateRoleRequest](CreateRoleRequest.md) |  | |
+| Name                  | Type                                      | Description | Notes |
+| --------------------- | ----------------------------------------- | ----------- | ----- |
+| **createRoleRequest** | [CreateRoleRequest](CreateRoleRequest.md) |             |       |
 
 ### Return type
 
@@ -78,19 +75,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## deleteRole
 
@@ -101,37 +97,34 @@ Delete a role
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsRolesApi,
-} from '@omnibase/core-js';
-import type { DeleteRoleRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsRolesApi } from "@omnibase/core-js";
+import type { DeleteRoleRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsRolesApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsRolesApi(config);
 
-  const body = {
-    // string
-    roleId: roleId_example,
-  } satisfies DeleteRoleRequest;
+	const body = {
+		// string
+		roleId: roleId_example,
+	} satisfies DeleteRoleRequest;
 
-  try {
-    const data = await api.deleteRole(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.deleteRole(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -140,10 +133,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **roleId** | `string` |  | [Defaults to `undefined`] |
+| Name       | Type     | Description | Notes                     |
+| ---------- | -------- | ----------- | ------------------------- |
+| **roleId** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -158,19 +150,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## listRoleDefinitions
 
@@ -181,37 +172,34 @@ List role definitions
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsRolesApi,
-} from '@omnibase/core-js';
-import type { ListRoleDefinitionsRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsRolesApi } from "@omnibase/core-js";
+import type { ListRoleDefinitionsRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsRolesApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsRolesApi(config);
 
-  const body = {
-    // string (optional)
-    subject: subject_example,
-  } satisfies ListRoleDefinitionsRequest;
+	const body = {
+		// string (optional)
+		subject: subject_example,
+	} satisfies ListRoleDefinitionsRequest;
 
-  try {
-    const data = await api.listRoleDefinitions(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.listRoleDefinitions(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -220,10 +208,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **subject** | `string` |  | [Optional] [Defaults to `undefined`] |
+| Name        | Type     | Description | Notes                                |
+| ----------- | -------- | ----------- | ------------------------------------ |
+| **subject** | `string` |             | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -238,18 +225,17 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## listRoles
 
@@ -260,32 +246,29 @@ List roles for the tenant
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsRolesApi,
-} from '@omnibase/core-js';
-import type { ListRolesRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsRolesApi } from "@omnibase/core-js";
+import type { ListRolesRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsRolesApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsRolesApi(config);
 
-  try {
-    const data = await api.listRoles();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.listRoles();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -309,17 +292,16 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## updateRole
 
@@ -371,11 +353,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **roleId** | `string` |  | [Defaults to `undefined`] |
-| **updateRoleRequest** | [UpdateRoleRequest](UpdateRoleRequest.md) |  | |
+| Name                  | Type                                      | Description | Notes                     |
+| --------------------- | ----------------------------------------- | ----------- | ------------------------- |
+| **roleId**            | `string`                                  |             | [Defaults to `undefined`] |
+| **updateRoleRequest** | [UpdateRoleRequest](UpdateRoleRequest.md) |             |                           |
 
 ### Return type
 
@@ -390,16 +371,15 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

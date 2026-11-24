@@ -12,62 +12,70 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import { mapValues } from "../runtime";
+import type { GetTenantByIDRow } from "./GetTenantByIDRow";
 import {
-    GetTenantByIDRowFromJSON,
-    GetTenantByIDRowFromJSONTyped,
-    GetTenantByIDRowToJSON,
-    GetTenantByIDRowToJSONTyped,
-} from './GetTenantByIDRow';
+	GetTenantByIDRowFromJSON,
+	GetTenantByIDRowFromJSONTyped,
+	GetTenantByIDRowToJSON,
+	GetTenantByIDRowToJSONTyped,
+} from "./GetTenantByIDRow";
 
 /**
- * 
+ *
  * @export
  * @interface ActiveTenantResponse
  */
 export interface ActiveTenantResponse {
-    /**
-     * 
-     * @type {GetTenantByIDRow}
-     * @memberof ActiveTenantResponse
-     */
-    tenant?: GetTenantByIDRow;
+	/**
+	 *
+	 * @type {GetTenantByIDRow}
+	 * @memberof ActiveTenantResponse
+	 */
+	tenant?: GetTenantByIDRow;
 }
 
 /**
  * Check if a given object implements the ActiveTenantResponse interface.
  */
-export function instanceOfActiveTenantResponse(value: object): value is ActiveTenantResponse {
-    return true;
+export function instanceOfActiveTenantResponse(
+	value: object,
+): value is ActiveTenantResponse {
+	return true;
 }
 
 export function ActiveTenantResponseFromJSON(json: any): ActiveTenantResponse {
-    return ActiveTenantResponseFromJSONTyped(json, false);
+	return ActiveTenantResponseFromJSONTyped(json, false);
 }
 
-export function ActiveTenantResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActiveTenantResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'tenant': json['tenant'] == null ? undefined : GetTenantByIDRowFromJSON(json['tenant']),
-    };
+export function ActiveTenantResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ActiveTenantResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		tenant:
+			json["tenant"] == null
+				? undefined
+				: GetTenantByIDRowFromJSON(json["tenant"]),
+	};
 }
 
 export function ActiveTenantResponseToJSON(json: any): ActiveTenantResponse {
-    return ActiveTenantResponseToJSONTyped(json, false);
+	return ActiveTenantResponseToJSONTyped(json, false);
 }
 
-export function ActiveTenantResponseToJSONTyped(value?: ActiveTenantResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ActiveTenantResponseToJSONTyped(
+	value?: ActiveTenantResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'tenant': GetTenantByIDRowToJSON(value['tenant']),
-    };
+	return {
+		tenant: GetTenantByIDRowToJSON(value["tenant"]),
+	};
 }
-

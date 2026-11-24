@@ -1,44 +1,44 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
 import { useFormStatus } from "react-dom";
+import { Button } from "@/components/ui/button";
 
 export interface CustomerPortalButtonProps {
-  /**
-   * Optional custom label for the button
-   * @default "Manage Billing"
-   */
-  label?: string;
+	/**
+	 * Optional custom label for the button
+	 * @default "Manage Billing"
+	 */
+	label?: string;
 
-  /**
-   * Optional custom className for styling
-   */
-  className?: string;
+	/**
+	 * Optional custom className for styling
+	 */
+	className?: string;
 
-  /**
-   * Button variant
-   * @default "outline"
-   */
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+	/**
+	 * Button variant
+	 * @default "outline"
+	 */
+	variant?:
+		| "default"
+		| "destructive"
+		| "outline"
+		| "secondary"
+		| "ghost"
+		| "link";
 
-  /**
-   * Button size
-   * @default "default"
-   */
-  size?: "default" | "sm" | "lg" | "icon";
+	/**
+	 * Button size
+	 * @default "default"
+	 */
+	size?: "default" | "sm" | "lg" | "icon";
 
-  /**
-   * Whether to show the credit card icon
-   * @default true
-   */
-  showIcon?: boolean;
+	/**
+	 * Whether to show the credit card icon
+	 * @default true
+	 */
+	showIcon?: boolean;
 }
 
 /**
@@ -63,25 +63,25 @@ export interface CustomerPortalButtonProps {
  * ```
  */
 export function CustomerPortalButton({
-  label = "Manage Billing",
-  className,
-  variant = "outline",
-  size = "default",
-  showIcon = true,
+	label = "Manage Billing",
+	className,
+	variant = "outline",
+	size = "default",
+	showIcon = true,
 }: CustomerPortalButtonProps) {
-  const { pending } = useFormStatus();
+	const { pending } = useFormStatus();
 
-  return (
-    <Button
-      type="submit"
-      variant={variant}
-      size={size}
-      className={className}
-      disabled={pending}
-      aria-label="Open customer portal to manage billing and subscriptions"
-    >
-      {showIcon && !pending && <CreditCard className="mr-2 h-4 w-4" />}
-      {pending ? "Loading..." : label}
-    </Button>
-  );
+	return (
+		<Button
+			type="submit"
+			variant={variant}
+			size={size}
+			className={className}
+			disabled={pending}
+			aria-label="Open customer portal to manage billing and subscriptions"
+		>
+			{showIcon && !pending && <CreditCard className="mr-2 h-4 w-4" />}
+			{pending ? "Loading..." : label}
+		</Button>
+	);
 }

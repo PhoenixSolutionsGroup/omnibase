@@ -1,4 +1,5 @@
 ---
+
 title: Authentication Middleware
 description: Protecting routes and managing tenant context with Next.js middleware
 ---
@@ -36,44 +37,44 @@ The middleware runs on every request and performs:
 Create a `middleware.ts` file in your project root:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
 
 export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL);
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+	matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };
 ```
 
 > **Note:**
-The matcher excludes static files and images from middleware processing for better performance.
+> The matcher excludes static files and images from middleware processing for better performance.
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `tenant_check` | `boolean` | `true` | Enable tenant membership validation |
-| `tenant_check_paths` | `string[]` | `["/"]` | Paths that require tenant membership |
-| `tenant_check_redirect_url` | `string` | `"/auth/onboarding"` | URL to redirect users without a tenant |
+| Option                      | Type       | Default              | Description                            |
+| --------------------------- | ---------- | -------------------- | -------------------------------------- |
+| `tenant_check`              | `boolean`  | `true`               | Enable tenant membership validation    |
+| `tenant_check_paths`        | `string[]` | `["/"]`              | Paths that require tenant membership   |
+| `tenant_check_redirect_url` | `string`   | `"/auth/onboarding"` | URL to redirect users without a tenant |
 
 ### Full Configuration Example
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.OMNIBASE_API_URL!,
-  {
-    tenant_check: true,
-    tenant_check_paths: ['/', '/dashboard', '/settings'],
-    tenant_check_redirect_url: '/auth/onboarding',
-  }
+	process.env.OMNIBASE_API_URL!,
+	{
+		tenant_check: true,
+		tenant_check_paths: ["/", "/dashboard", "/settings"],
+		tenant_check_redirect_url: "/auth/onboarding",
+	},
 );
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/|auth/).*)'],
+	matcher: ["/((?!_next/static|_next/image|favicon.ico|api/|auth/).*)"],
 };
 ```
 
@@ -83,11 +84,11 @@ export const config = {
 
 The middleware supports three matching patterns:
 
-| Pattern | Behavior |
-|---------|----------|
+| Pattern      | Behavior                                             |
+| ------------ | ---------------------------------------------------- |
 | `/dashboard` | Exact match and all subpaths (`/dashboard/settings`) |
-| `/api/*` | Wildcard matches all paths starting with `/api/` |
-| `/` | Matches the root and all subpaths |
+| `/api/*`     | Wildcard matches all paths starting with `/api/`     |
+| `/`          | Matches the root and all subpaths                    |
 
 ### Authentication Flow
 
@@ -121,20 +122,20 @@ Request continues to your Next.js application with all cookies merged.
 ### Protect Everything Except Auth Routes
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.OMNIBASE_API_URL!,
-  {
-    tenant_check: true,
-    tenant_check_paths: ['/'],
-    tenant_check_redirect_url: '/auth/onboarding',
-  }
+	process.env.OMNIBASE_API_URL!,
+	{
+		tenant_check: true,
+		tenant_check_paths: ["/"],
+		tenant_check_redirect_url: "/auth/onboarding",
+	},
 );
 
 export const config = {
-  // Exclude auth routes, static files, and API routes
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|auth/|api/).*)'],
+	// Exclude auth routes, static files, and API routes
+	matcher: ["/((?!_next/static|_next/image|favicon.ico|auth/|api/).*)"],
 };
 ```
 
@@ -143,28 +144,28 @@ export const config = {
 For single-tenant applications or when handling tenants manually:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.OMNIBASE_API_URL!,
-  {
-    tenant_check: false,
-  }
+	process.env.OMNIBASE_API_URL!,
+	{
+		tenant_check: false,
+	},
 );
 ```
 
 ### Protect Specific Paths Only
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.OMNIBASE_API_URL!,
-  {
-    tenant_check: true,
-    tenant_check_paths: ['/dashboard', '/settings', '/billing'],
-    tenant_check_redirect_url: '/setup',
-  }
+	process.env.OMNIBASE_API_URL!,
+	{
+		tenant_check: true,
+		tenant_check_paths: ["/dashboard", "/settings", "/billing"],
+		tenant_check_redirect_url: "/setup",
+	},
 );
 ```
 
@@ -173,45 +174,46 @@ export const middleware = createOmniBaseMiddleware(
 Middleware handles the high-level routing, but you should also use `protectedRoute()` for additional security:
 
 ```tsx title="app/dashboard/page.tsx"
-import { protectedRoute } from '@omnibase/nextjs/auth';
+import { protectedRoute } from "@omnibase/nextjs/auth";
 
 export default async function DashboardPage() {
-  // Double-check authentication at the page level
-  const session = await protectedRoute('/auth/login');
+	// Double-check authentication at the page level
+	const session = await protectedRoute("/auth/login");
 
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {session.identity.traits.email}</p>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Dashboard</h1>
+			<p>Welcome, {session.identity.traits.email}</p>
+		</div>
+	);
 }
 ```
 
 > **Note:**
-Page-level protection (`protectedRoute`) provides defense in depth and handles edge cases where middleware might be bypassed.
+> Page-level protection (`protectedRoute`) provides defense in depth and handles edge cases where middleware might be bypassed.
 
 ## Real-World Example
 
 Here's the complete middleware setup from the OmniBase dashboard:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
 
 export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL, {
-  tenant_check: true,
-  tenant_check_paths: ['/'],
-  tenant_check_redirect_url: '/auth/onboarding',
+	tenant_check: true,
+	tenant_check_paths: ["/"],
+	tenant_check_redirect_url: "/auth/onboarding",
 });
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 ```
 
 This configuration:
+
 - Validates sessions on all routes
 - Requires tenant membership for the entire app
 - Redirects new users to `/auth/onboarding` to create or join an organization
@@ -224,25 +226,25 @@ This configuration:
 ```typescript
 // Simplified version of internal implementation
 function tenantCheckMiddleware(req, session, config) {
-  // Skip if tenant check disabled
-  if (!config.tenant_check) return NextResponse.next();
+	// Skip if tenant check disabled
+	if (!config.tenant_check) return NextResponse.next();
 
-  // Skip non-matching paths
-  if (!matchesPath(req.url, config.tenant_check_paths)) {
-    return NextResponse.next();
-  }
+	// Skip non-matching paths
+	if (!matchesPath(req.url, config.tenant_check_paths)) {
+		return NextResponse.next();
+	}
 
-  // Skip if no session (handled elsewhere)
-  if (!session) return NextResponse.next();
+	// Skip if no session (handled elsewhere)
+	if (!session) return NextResponse.next();
 
-  // Check if user has active tenant
-  const hasTenant = session.identity?.metadata_public?.active_tenant_id;
+	// Check if user has active tenant
+	const hasTenant = session.identity?.metadata_public?.active_tenant_id;
 
-  if (!hasTenant) {
-    return NextResponse.redirect(config.tenant_check_redirect_url);
-  }
+	if (!hasTenant) {
+		return NextResponse.redirect(config.tenant_check_redirect_url);
+	}
 
-  return NextResponse.next();
+	return NextResponse.next();
 }
 ```
 
@@ -251,29 +253,29 @@ function tenantCheckMiddleware(req, session, config) {
 ```typescript
 // Simplified version of internal implementation
 async function postgrestJWTCheckMiddleware(req, session, apiUrl) {
-  // Skip if no session
-  if (!session) return NextResponse.next();
+	// Skip if no session
+	if (!session) return NextResponse.next();
 
-  // Check for existing JWT
-  const existingJWT = req.cookies.get('omnibase_postgrest_jwt');
-  if (existingJWT) return NextResponse.next();
+	// Check for existing JWT
+	const existingJWT = req.cookies.get("omnibase_postgrest_jwt");
+	if (existingJWT) return NextResponse.next();
 
-  // Fetch new JWT from API
-  const response = await fetch(`${apiUrl}/api/v1/tenants/jwt`, {
-    headers: { Cookie: req.headers.get('cookie') },
-  });
+	// Fetch new JWT from API
+	const response = await fetch(`${apiUrl}/api/v1/tenants/jwt`, {
+		headers: { Cookie: req.headers.get("cookie") },
+	});
 
-  const { data } = await response.json();
+	const { data } = await response.json();
 
-  // Set JWT cookie
-  const nextResponse = NextResponse.next();
-  nextResponse.cookies.set('omnibase_postgrest_jwt', data.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-  });
+	// Set JWT cookie
+	const nextResponse = NextResponse.next();
+	nextResponse.cookies.set("omnibase_postgrest_jwt", data.token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+	});
 
-  return nextResponse;
+	return nextResponse;
 }
 ```
 
@@ -289,7 +291,7 @@ async function postgrestJWTCheckMiddleware(req, session, apiUrl) {
 
 ```typescript
 export const config = {
-  matcher: ['/((?!auth/).*)'],
+	matcher: ["/((?!auth/).*)"],
 };
 ```
 
@@ -310,7 +312,7 @@ export const config = {
 **Fix**: Use wildcards or ensure exact path matches:
 
 ```typescript
-tenant_check_paths: ['/dashboard', '/dashboard/*', '/settings/*']
+tenant_check_paths: ["/dashboard", "/dashboard/*", "/settings/*"];
 ```
 
 ## Performance Considerations
@@ -322,13 +324,13 @@ tenant_check_paths: ['/dashboard', '/dashboard/*', '/settings/*']
 ```typescript
 // Optimized matcher
 export const config = {
-  matcher: [
-    // Only match app routes that need protection
-    '/dashboard/:path*',
-    '/settings/:path*',
-    '/billing/:path*',
-    '/',
-  ],
+	matcher: [
+		// Only match app routes that need protection
+		"/dashboard/:path*",
+		"/settings/:path*",
+		"/billing/:path*",
+		"/",
+	],
 };
 ```
 

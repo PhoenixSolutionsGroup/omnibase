@@ -12,105 +12,124 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { LineItem } from './LineItem';
+import { mapValues } from "../runtime";
+import type { LineItem } from "./LineItem";
 import {
-    LineItemFromJSON,
-    LineItemFromJSONTyped,
-    LineItemToJSON,
-    LineItemToJSONTyped,
-} from './LineItem';
+	LineItemFromJSON,
+	LineItemFromJSONTyped,
+	LineItemToJSON,
+	LineItemToJSONTyped,
+} from "./LineItem";
 
 /**
- * 
+ *
  * @export
  * @interface CreateCheckoutRequest
  */
 export interface CreateCheckoutRequest {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof CreateCheckoutRequest
-     */
-    allowPromotionCodes?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateCheckoutRequest
-     */
-    cancelUrl: string;
-    /**
-     * 
-     * @type {Array<LineItem>}
-     * @memberof CreateCheckoutRequest
-     */
-    lineItems: Array<LineItem> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateCheckoutRequest
-     */
-    promotionCode?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateCheckoutRequest
-     */
-    successUrl: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateCheckoutRequest
-     */
-    trialPeriodDays?: number;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof CreateCheckoutRequest
+	 */
+	allowPromotionCodes?: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateCheckoutRequest
+	 */
+	cancelUrl: string;
+	/**
+	 *
+	 * @type {Array<LineItem>}
+	 * @memberof CreateCheckoutRequest
+	 */
+	lineItems: Array<LineItem> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateCheckoutRequest
+	 */
+	promotionCode?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateCheckoutRequest
+	 */
+	successUrl: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CreateCheckoutRequest
+	 */
+	trialPeriodDays?: number;
 }
 
 /**
  * Check if a given object implements the CreateCheckoutRequest interface.
  */
-export function instanceOfCreateCheckoutRequest(value: object): value is CreateCheckoutRequest {
-    if (!('cancelUrl' in value) || value['cancelUrl'] === undefined) return false;
-    if (!('lineItems' in value) || value['lineItems'] === undefined) return false;
-    if (!('successUrl' in value) || value['successUrl'] === undefined) return false;
-    return true;
+export function instanceOfCreateCheckoutRequest(
+	value: object,
+): value is CreateCheckoutRequest {
+	if (!("cancelUrl" in value) || value["cancelUrl"] === undefined) return false;
+	if (!("lineItems" in value) || value["lineItems"] === undefined) return false;
+	if (!("successUrl" in value) || value["successUrl"] === undefined)
+		return false;
+	return true;
 }
 
-export function CreateCheckoutRequestFromJSON(json: any): CreateCheckoutRequest {
-    return CreateCheckoutRequestFromJSONTyped(json, false);
+export function CreateCheckoutRequestFromJSON(
+	json: any,
+): CreateCheckoutRequest {
+	return CreateCheckoutRequestFromJSONTyped(json, false);
 }
 
-export function CreateCheckoutRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateCheckoutRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'allowPromotionCodes': json['allow_promotion_codes'] == null ? undefined : json['allow_promotion_codes'],
-        'cancelUrl': json['cancel_url'],
-        'lineItems': (json['line_items'] == null ? null : (json['line_items'] as Array<any>).map(LineItemFromJSON)),
-        'promotionCode': json['promotion_code'] == null ? undefined : json['promotion_code'],
-        'successUrl': json['success_url'],
-        'trialPeriodDays': json['trial_period_days'] == null ? undefined : json['trial_period_days'],
-    };
+export function CreateCheckoutRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateCheckoutRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		allowPromotionCodes:
+			json["allow_promotion_codes"] == null
+				? undefined
+				: json["allow_promotion_codes"],
+		cancelUrl: json["cancel_url"],
+		lineItems:
+			json["line_items"] == null
+				? null
+				: (json["line_items"] as Array<any>).map(LineItemFromJSON),
+		promotionCode:
+			json["promotion_code"] == null ? undefined : json["promotion_code"],
+		successUrl: json["success_url"],
+		trialPeriodDays:
+			json["trial_period_days"] == null ? undefined : json["trial_period_days"],
+	};
 }
 
 export function CreateCheckoutRequestToJSON(json: any): CreateCheckoutRequest {
-    return CreateCheckoutRequestToJSONTyped(json, false);
+	return CreateCheckoutRequestToJSONTyped(json, false);
 }
 
-export function CreateCheckoutRequestToJSONTyped(value?: CreateCheckoutRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateCheckoutRequestToJSONTyped(
+	value?: CreateCheckoutRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'allow_promotion_codes': value['allowPromotionCodes'],
-        'cancel_url': value['cancelUrl'],
-        'line_items': (value['lineItems'] == null ? null : (value['lineItems'] as Array<any>).map(LineItemToJSON)),
-        'promotion_code': value['promotionCode'],
-        'success_url': value['successUrl'],
-        'trial_period_days': value['trialPeriodDays'],
-    };
+	return {
+		allow_promotion_codes: value["allowPromotionCodes"],
+		cancel_url: value["cancelUrl"],
+		line_items:
+			value["lineItems"] == null
+				? null
+				: (value["lineItems"] as Array<any>).map(LineItemToJSON),
+		promotion_code: value["promotionCode"],
+		success_url: value["successUrl"],
+		trial_period_days: value["trialPeriodDays"],
+	};
 }
-

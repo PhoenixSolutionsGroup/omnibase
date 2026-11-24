@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Email** | **string** |  | 
-**Name** | [**IdentityName**](IdentityName.md) |  | 
-**Password** | **string** |  | 
+| Name         | Type                                | Description | Notes |
+| ------------ | ----------------------------------- | ----------- | ----- |
+| **Email**    | **string**                          |             |
+| **Name**     | [**IdentityName**](IdentityName.md) |             |
+| **Password** | **string**                          |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetEmail sets Email field to given value.
 
-
 ### GetName
 
 `func (o *CreateUserRequest) GetName() IdentityName`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateUserRequest) SetName(v IdentityName)`
 
 SetName sets Name field to given value.
-
 
 ### GetPassword
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetPassword sets Password field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

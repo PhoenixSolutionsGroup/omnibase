@@ -12,55 +12,62 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface BillingStatusResponse
  */
 export interface BillingStatusResponse {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BillingStatusResponse
-     */
-    isActive: boolean;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof BillingStatusResponse
+	 */
+	isActive: boolean;
 }
 
 /**
  * Check if a given object implements the BillingStatusResponse interface.
  */
-export function instanceOfBillingStatusResponse(value: object): value is BillingStatusResponse {
-    if (!('isActive' in value) || value['isActive'] === undefined) return false;
-    return true;
+export function instanceOfBillingStatusResponse(
+	value: object,
+): value is BillingStatusResponse {
+	if (!("isActive" in value) || value["isActive"] === undefined) return false;
+	return true;
 }
 
-export function BillingStatusResponseFromJSON(json: any): BillingStatusResponse {
-    return BillingStatusResponseFromJSONTyped(json, false);
+export function BillingStatusResponseFromJSON(
+	json: any,
+): BillingStatusResponse {
+	return BillingStatusResponseFromJSONTyped(json, false);
 }
 
-export function BillingStatusResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): BillingStatusResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'isActive': json['is_active'],
-    };
+export function BillingStatusResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): BillingStatusResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		isActive: json["is_active"],
+	};
 }
 
 export function BillingStatusResponseToJSON(json: any): BillingStatusResponse {
-    return BillingStatusResponseToJSONTyped(json, false);
+	return BillingStatusResponseToJSONTyped(json, false);
 }
 
-export function BillingStatusResponseToJSONTyped(value?: BillingStatusResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function BillingStatusResponseToJSONTyped(
+	value?: BillingStatusResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'is_active': value['isActive'],
-    };
+	return {
+		is_active: value["isActive"],
+	};
 }
-

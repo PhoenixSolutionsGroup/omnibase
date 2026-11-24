@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Count** | **int64** |  | 
-**Prices** | [**[]PriceWithStripeID**](PriceWithStripeID.md) |  | 
+| Name       | Type                                            | Description | Notes |
+| ---------- | ----------------------------------------------- | ----------- | ----- |
+| **Count**  | **int64**                                       |             |
+| **Prices** | [**[]PriceWithStripeID**](PriceWithStripeID.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetCount sets Count field to given value.
 
-
 ### GetPrices
 
 `func (o *EnterprisePricesResponse) GetPrices() []PriceWithStripeID`
@@ -65,18 +64,16 @@ and a boolean to check if the value has been set.
 
 SetPrices sets Prices field to given value.
 
-
 ### SetPricesNil
 
 `func (o *EnterprisePricesResponse) SetPricesNil(b bool)`
 
- SetPricesNil sets the value for Prices to be an explicit nil
+SetPricesNil sets the value for Prices to be an explicit nil
 
 ### UnsetPrices
+
 `func (o *EnterprisePricesResponse) UnsetPrices()`
 
 UnsetPrices ensures that no value is present for Prices, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

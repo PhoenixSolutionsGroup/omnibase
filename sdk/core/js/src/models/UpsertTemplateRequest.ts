@@ -12,73 +12,80 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface UpsertTemplateRequest
  */
 export interface UpsertTemplateRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertTemplateRequest
-     */
-    htmlBody: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertTemplateRequest
-     */
-    subject: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertTemplateRequest
-     */
-    type: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertTemplateRequest
+	 */
+	htmlBody: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertTemplateRequest
+	 */
+	subject: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertTemplateRequest
+	 */
+	type: string;
 }
 
 /**
  * Check if a given object implements the UpsertTemplateRequest interface.
  */
-export function instanceOfUpsertTemplateRequest(value: object): value is UpsertTemplateRequest {
-    if (!('htmlBody' in value) || value['htmlBody'] === undefined) return false;
-    if (!('subject' in value) || value['subject'] === undefined) return false;
-    if (!('type' in value) || value['type'] === undefined) return false;
-    return true;
+export function instanceOfUpsertTemplateRequest(
+	value: object,
+): value is UpsertTemplateRequest {
+	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
+	if (!("subject" in value) || value["subject"] === undefined) return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
+	return true;
 }
 
-export function UpsertTemplateRequestFromJSON(json: any): UpsertTemplateRequest {
-    return UpsertTemplateRequestFromJSONTyped(json, false);
+export function UpsertTemplateRequestFromJSON(
+	json: any,
+): UpsertTemplateRequest {
+	return UpsertTemplateRequestFromJSONTyped(json, false);
 }
 
-export function UpsertTemplateRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpsertTemplateRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'htmlBody': json['html_body'],
-        'subject': json['subject'],
-        'type': json['type'],
-    };
+export function UpsertTemplateRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpsertTemplateRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		htmlBody: json["html_body"],
+		subject: json["subject"],
+		type: json["type"],
+	};
 }
 
 export function UpsertTemplateRequestToJSON(json: any): UpsertTemplateRequest {
-    return UpsertTemplateRequestToJSONTyped(json, false);
+	return UpsertTemplateRequestToJSONTyped(json, false);
 }
 
-export function UpsertTemplateRequestToJSONTyped(value?: UpsertTemplateRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpsertTemplateRequestToJSONTyped(
+	value?: UpsertTemplateRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'html_body': value['htmlBody'],
-        'subject': value['subject'],
-        'type': value['type'],
-    };
+	return {
+		html_body: value["htmlBody"],
+		subject: value["subject"],
+		type: value["type"],
+	};
 }
-

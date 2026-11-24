@@ -12,81 +12,86 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface PromotionCodeChange
  */
 export interface PromotionCodeChange {
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCodeChange
-     */
-    action: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCodeChange
-     */
-    code: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCodeChange
-     */
-    promoId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCodeChange
-     */
-    stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCodeChange
+	 */
+	action: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCodeChange
+	 */
+	code: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCodeChange
+	 */
+	promoId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCodeChange
+	 */
+	stripeId?: string;
 }
 
 /**
  * Check if a given object implements the PromotionCodeChange interface.
  */
-export function instanceOfPromotionCodeChange(value: object): value is PromotionCodeChange {
-    if (!('action' in value) || value['action'] === undefined) return false;
-    if (!('code' in value) || value['code'] === undefined) return false;
-    if (!('promoId' in value) || value['promoId'] === undefined) return false;
-    return true;
+export function instanceOfPromotionCodeChange(
+	value: object,
+): value is PromotionCodeChange {
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("code" in value) || value["code"] === undefined) return false;
+	if (!("promoId" in value) || value["promoId"] === undefined) return false;
+	return true;
 }
 
 export function PromotionCodeChangeFromJSON(json: any): PromotionCodeChange {
-    return PromotionCodeChangeFromJSONTyped(json, false);
+	return PromotionCodeChangeFromJSONTyped(json, false);
 }
 
-export function PromotionCodeChangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): PromotionCodeChange {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'action': json['action'],
-        'code': json['code'],
-        'promoId': json['promo_id'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-    };
+export function PromotionCodeChangeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PromotionCodeChange {
+	if (json == null) {
+		return json;
+	}
+	return {
+		action: json["action"],
+		code: json["code"],
+		promoId: json["promo_id"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+	};
 }
 
 export function PromotionCodeChangeToJSON(json: any): PromotionCodeChange {
-    return PromotionCodeChangeToJSONTyped(json, false);
+	return PromotionCodeChangeToJSONTyped(json, false);
 }
 
-export function PromotionCodeChangeToJSONTyped(value?: PromotionCodeChange | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PromotionCodeChangeToJSONTyped(
+	value?: PromotionCodeChange | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'action': value['action'],
-        'code': value['code'],
-        'promo_id': value['promoId'],
-        'stripe_id': value['stripeId'],
-    };
+	return {
+		action: value["action"],
+		code: value["code"],
+		promo_id: value["promoId"],
+		stripe_id: value["stripeId"],
+	};
 }
-

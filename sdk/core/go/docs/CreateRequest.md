@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Email** | **string** |  | 
-**InviteUrl** | **string** |  | 
-**Role** | **string** |  | 
+| Name          | Type       | Description | Notes |
+| ------------- | ---------- | ----------- | ----- |
+| **Email**     | **string** |             |
+| **InviteUrl** | **string** |             |
+| **Role**      | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetEmail sets Email field to given value.
 
-
 ### GetInviteUrl
 
 `func (o *CreateRequest) GetInviteUrl() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateRequest) SetInviteUrl(v string)`
 
 SetInviteUrl sets InviteUrl field to given value.
-
 
 ### GetRole
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetRole sets Role field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

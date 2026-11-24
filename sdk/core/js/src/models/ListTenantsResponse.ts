@@ -12,63 +12,74 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { UserTenantListItem } from './UserTenantListItem';
+import { mapValues } from "../runtime";
+import type { UserTenantListItem } from "./UserTenantListItem";
 import {
-    UserTenantListItemFromJSON,
-    UserTenantListItemFromJSONTyped,
-    UserTenantListItemToJSON,
-    UserTenantListItemToJSONTyped,
-} from './UserTenantListItem';
+	UserTenantListItemFromJSON,
+	UserTenantListItemFromJSONTyped,
+	UserTenantListItemToJSON,
+	UserTenantListItemToJSONTyped,
+} from "./UserTenantListItem";
 
 /**
- * 
+ *
  * @export
  * @interface ListTenantsResponse
  */
 export interface ListTenantsResponse {
-    /**
-     * 
-     * @type {Array<UserTenantListItem>}
-     * @memberof ListTenantsResponse
-     */
-    tenants: Array<UserTenantListItem> | null;
+	/**
+	 *
+	 * @type {Array<UserTenantListItem>}
+	 * @memberof ListTenantsResponse
+	 */
+	tenants: Array<UserTenantListItem> | null;
 }
 
 /**
  * Check if a given object implements the ListTenantsResponse interface.
  */
-export function instanceOfListTenantsResponse(value: object): value is ListTenantsResponse {
-    if (!('tenants' in value) || value['tenants'] === undefined) return false;
-    return true;
+export function instanceOfListTenantsResponse(
+	value: object,
+): value is ListTenantsResponse {
+	if (!("tenants" in value) || value["tenants"] === undefined) return false;
+	return true;
 }
 
 export function ListTenantsResponseFromJSON(json: any): ListTenantsResponse {
-    return ListTenantsResponseFromJSONTyped(json, false);
+	return ListTenantsResponseFromJSONTyped(json, false);
 }
 
-export function ListTenantsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListTenantsResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'tenants': (json['tenants'] == null ? null : (json['tenants'] as Array<any>).map(UserTenantListItemFromJSON)),
-    };
+export function ListTenantsResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ListTenantsResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		tenants:
+			json["tenants"] == null
+				? null
+				: (json["tenants"] as Array<any>).map(UserTenantListItemFromJSON),
+	};
 }
 
 export function ListTenantsResponseToJSON(json: any): ListTenantsResponse {
-    return ListTenantsResponseToJSONTyped(json, false);
+	return ListTenantsResponseToJSONTyped(json, false);
 }
 
-export function ListTenantsResponseToJSONTyped(value?: ListTenantsResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ListTenantsResponseToJSONTyped(
+	value?: ListTenantsResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'tenants': (value['tenants'] == null ? null : (value['tenants'] as Array<any>).map(UserTenantListItemToJSON)),
-    };
+	return {
+		tenants:
+			value["tenants"] == null
+				? null
+				: (value["tenants"] as Array<any>).map(UserTenantListItemToJSON),
+	};
 }
-

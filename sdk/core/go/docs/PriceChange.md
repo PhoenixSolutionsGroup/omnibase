@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Action** | **string** |  | 
-**PriceId** | **string** |  | 
-**ProductId** | **string** |  | 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name          | Type                  | Description | Notes      |
+| ------------- | --------------------- | ----------- | ---------- |
+| **Action**    | **string**            |             |
+| **PriceId**   | **string**            |             |
+| **ProductId** | **string**            |             |
+| **StripeId**  | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetAction sets Action field to given value.
 
-
 ### GetPriceId
 
 `func (o *PriceChange) GetPriceId() string`
@@ -67,7 +66,6 @@ and a boolean to check if the value has been set.
 
 SetPriceId sets PriceId field to given value.
 
-
 ### GetProductId
 
 `func (o *PriceChange) GetProductId() string`
@@ -86,7 +84,6 @@ and a boolean to check if the value has been set.
 `func (o *PriceChange) SetProductId(v string)`
 
 SetProductId sets ProductId field to given value.
-
 
 ### GetStripeId
 
@@ -113,7 +110,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

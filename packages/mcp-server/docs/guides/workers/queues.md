@@ -1,4 +1,5 @@
 ---
+
 title: Queues
 description: Background job processing with guaranteed delivery on Cloudflare Queues
 ---
@@ -50,23 +51,23 @@ Send messages to the queue from your API:
 import { Hono } from "hono";
 
 type EnvVars = {
-  JOB_QUEUE: Queue;
+	JOB_QUEUE: Queue;
 };
 
 const app = new Hono<{ Bindings: EnvVars }>();
 
 app.post("/api/process", async (c) => {
-  const data = await c.req.json();
+	const data = await c.req.json();
 
-  // Send to queue for background processing
-  await c.env.JOB_QUEUE.send({
-    type: "process-data",
-    userId: data.userId,
-    payload: data,
-    timestamp: Date.now(),
-  });
+	// Send to queue for background processing
+	await c.env.JOB_QUEUE.send({
+		type: "process-data",
+		userId: data.userId,
+		payload: data,
+		timestamp: Date.now(),
+	});
 
-  return c.json({ queued: true });
+	return c.json({ queued: true });
 });
 ```
 
@@ -76,27 +77,27 @@ Add a queue handler to process messages:
 
 ```typescript title="src/index.ts"
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 
-  // Process messages from queue
-  async queue(batch, env) {
-    for (const message of batch.messages) {
-      try {
-        const data = message.body;
-        console.log("Processing:", data);
+	// Process messages from queue
+	async queue(batch, env) {
+		for (const message of batch.messages) {
+			try {
+				const data = message.body;
+				console.log("Processing:", data);
 
-        // Your processing logic
-        await processJob(data, env);
+				// Your processing logic
+				await processJob(data, env);
 
-        // Mark as successfully processed
-        message.ack();
-      } catch (error) {
-        console.error("Job failed:", error);
-        // Message will be retried automatically
-        message.retry();
-      }
-    }
-  },
+				// Mark as successfully processed
+				message.ack();
+			} catch (error) {
+				console.error("Job failed:", error);
+				// Message will be retried automatically
+				message.retry();
+			}
+		}
+	},
 };
 ```
 
@@ -128,9 +129,9 @@ Send multiple messages efficiently:
 ```typescript
 // Send multiple messages at once
 await env.MY_QUEUE.sendBatch([
-  { body: { userId: 1, action: "email" } },
-  { body: { userId: 2, action: "email" } },
-  { body: { userId: 3, action: "email" } },
+	{ body: { userId: 1, action: "email" } },
+	{ body: { userId: 2, action: "email" } },
+	{ body: { userId: 3, action: "email" } },
 ]);
 ```
 
@@ -140,10 +141,7 @@ Delay message processing:
 
 ```typescript
 // Process after 60 seconds
-await env.MY_QUEUE.send(
-  { userId: 123 },
-  { delaySeconds: 60 }
-);
+await env.MY_QUEUE.send({ userId: 123 }, { delaySeconds: 60 });
 ```
 
 ---
@@ -154,11 +152,11 @@ await env.MY_QUEUE.send(
 
 ```typescript
 interface QueueMessage {
-  id: string;              // Unique message ID
-  timestamp: Date;         // When message was sent
-  body: any;              // Your message data
-  ack: () => void;        // Mark as successfully processed
-  retry: () => void;      // Retry this message
+	id: string; // Unique message ID
+	timestamp: Date; // When message was sent
+	body: any; // Your message data
+	ack: () => void; // Mark as successfully processed
+	retry: () => void; // Retry this message
 }
 ```
 
@@ -241,14 +239,14 @@ Retry failed webhooks automatically:
 
 ```typescript
 app.post("/api/webhooks/stripe", async (c) => {
-  const event = await c.req.json();
+	const event = await c.req.json();
 
-  await c.env.WEBHOOK_QUEUE.send({
-    provider: "stripe",
-    event,
-  });
+	await c.env.WEBHOOK_QUEUE.send({
+		provider: "stripe",
+		event,
+	});
 
-  return c.json({ received: true });
+	return c.json({ received: true });
 });
 ```
 
@@ -258,15 +256,15 @@ Handle heavy computations in the background:
 
 ```typescript
 app.post("/api/reports/generate", async (c) => {
-  const { userId, reportType } = await c.req.json();
+	const { userId, reportType } = await c.req.json();
 
-  await c.env.REPORT_QUEUE.send({
-    userId,
-    reportType,
-    requestedAt: Date.now(),
-  });
+	await c.env.REPORT_QUEUE.send({
+		userId,
+		reportType,
+		requestedAt: Date.now(),
+	});
 
-  return c.json({ status: "processing" });
+	return c.json({ status: "processing" });
 });
 ```
 
@@ -280,12 +278,12 @@ Always explicitly handle each message:
 
 ```typescript
 for (const message of batch.messages) {
-  try {
-    await processMessage(message.body);
-    message.ack();  // ✅ Mark as done
-  } catch (error) {
-    message.retry(); // ✅ Retry later
-  }
+	try {
+		await processMessage(message.body);
+		message.ack(); // ✅ Mark as done
+	} catch (error) {
+		message.retry(); // ✅ Retry later
+	}
 }
 ```
 
@@ -316,11 +314,11 @@ Include useful debugging information:
 
 ```typescript
 await env.MY_QUEUE.send({
-  type: "process-order",
-  orderId: 123,
-  userId: 456,
-  timestamp: Date.now(),
-  source: "api",
+	type: "process-order",
+	orderId: 123,
+	userId: 456,
+	timestamp: Date.now(),
+	source: "api",
 });
 ```
 
@@ -387,7 +385,7 @@ max_batch_size = 10  # Process up to 10 messages per batch
 ```
 
 > **Note:**
-Larger batch sizes improve throughput but increase processing time. Start with 10 and adjust based on your needs.
+> Larger batch sizes improve throughput but increase processing time. Start with 10 and adjust based on your needs.
 
 ---
 

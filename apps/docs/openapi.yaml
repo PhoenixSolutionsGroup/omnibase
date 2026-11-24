@@ -891,7 +891,8 @@ components:
       additionalProperties: false
       properties:
         path:
-          description: Bucket-wide object path. Prefix with the tenant ID or another
+          description:
+            Bucket-wide object path. Prefix with the tenant ID or another
             unique namespace.
           examples:
             - tenants/00000000-0000-4000-8000-000000000000/avatars/me.png
@@ -1000,7 +1001,8 @@ components:
       additionalProperties: false
       properties:
         path:
-          description: Bucket-wide object path. Prefix with the tenant ID or another
+          description:
+            Bucket-wide object path. Prefix with the tenant ID or another
             unique namespace.
           examples:
             - tenants/00000000-0000-4000-8000-000000000000/avatars/me.png
@@ -1128,7 +1130,8 @@ components:
       additionalProperties: false
       properties:
         detail:
-          description: A human-readable explanation specific to this occurrence of the
+          description:
+            A human-readable explanation specific to this occurrence of the
             problem.
           examples:
             - Property foo is required but is missing.
@@ -1141,7 +1144,8 @@ components:
             - array
             - "null"
         instance:
-          description: A URI reference that identifies the specific occurrence of the
+          description:
+            A URI reference that identifies the specific occurrence of the
             problem.
           examples:
             - https://example.com/error-log/abc123
@@ -1154,7 +1158,8 @@ components:
           format: int64
           type: integer
         title:
-          description: A short, human-readable summary of the problem type. This value
+          description:
+            A short, human-readable summary of the problem type. This value
             should not change between occurrences of the error.
           examples:
             - Bad Request
@@ -1601,7 +1606,8 @@ components:
       additionalProperties: false
       properties:
         path:
-          description: Bucket-wide object path. Prefix with the tenant ID or another
+          description:
+            Bucket-wide object path. Prefix with the tenant ID or another
             unique namespace.
           examples:
             - tenants/00000000-0000-4000-8000-000000000000/avatars/me.png
@@ -2831,7 +2837,8 @@ components:
           additionalProperties: {}
           type: object
         path:
-          description: Bucket-wide object path. Prefix with the tenant ID or another
+          description:
+            Bucket-wide object path. Prefix with the tenant ID or another
             unique namespace.
           examples:
             - tenants/00000000-0000-4000-8000-000000000000/avatars/me.png
@@ -3072,7 +3079,8 @@ components:
       type: object
   securitySchemes:
     AppKeyAuth:
-      description: Customer app backend key. Requires X-User-Id and X-Tenant-Id and is
+      description:
+        Customer app backend key. Requires X-User-Id and X-Tenant-Id and is
         authorized as that user.
       in: header
       name: X-App-Key
@@ -3083,13 +3091,15 @@ components:
       name: ory_kratos_session
       type: apiKey
     ServiceKeyAuth:
-      description: Admin service-to-service key. Trusted for all routes and skips
+      description:
+        Admin service-to-service key. Trusted for all routes and skips
         permission checks.
       in: header
       name: X-Service-Key
       type: apiKey
     SessionTokenAuth:
-      description: Kratos session JWT token. Alternative to cookie authentication for
+      description:
+        Kratos session JWT token. Alternative to cookie authentication for
         non-browser clients.
       in: header
       name: X-Session-Token
@@ -5613,7 +5623,8 @@ paths:
         - V1 Configuration
   /api/v1/storage/download:
     post:
-      description: Storage object paths are unique across the entire bucket, not per
+      description:
+        Storage object paths are unique across the entire bucket, not per
         tenant. Prefix paths with the tenant ID or another unique namespace, for
         example `tenants/<tenant_id>/avatars/me.png`.
       operationId: downloadFile
@@ -5693,7 +5704,8 @@ paths:
         - V1 Storage
   /api/v1/storage/make-public:
     post:
-      description: Storage object paths are unique across the entire bucket, not per
+      description:
+        Storage object paths are unique across the entire bucket, not per
         tenant. Prefix paths with the tenant ID or another unique namespace, for
         example `tenants/<tenant_id>/avatars/me.png`.
       operationId: makeFilePublic
@@ -5773,7 +5785,8 @@ paths:
         - V1 Storage
   /api/v1/storage/object:
     delete:
-      description: Storage object paths are unique across the entire bucket, not per
+      description:
+        Storage object paths are unique across the entire bucket, not per
         tenant. Prefix paths with the tenant ID or another unique namespace, for
         example `tenants/<tenant_id>/avatars/me.png`.
       operationId: deleteObject
@@ -5853,7 +5866,8 @@ paths:
         - V1 Storage
   /api/v1/storage/upload:
     post:
-      description: Storage object paths are unique across the entire bucket, not per
+      description:
+        Storage object paths are unique across the entire bucket, not per
         tenant. Prefix paths with the tenant ID or another unique namespace, for
         example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing
         path returns 409 Conflict.

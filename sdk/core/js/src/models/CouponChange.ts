@@ -12,81 +12,84 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CouponChange
  */
 export interface CouponChange {
-    /**
-     * 
-     * @type {string}
-     * @memberof CouponChange
-     */
-    action: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CouponChange
-     */
-    couponId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CouponChange
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CouponChange
-     */
-    stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CouponChange
+	 */
+	action: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CouponChange
+	 */
+	couponId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CouponChange
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CouponChange
+	 */
+	stripeId?: string;
 }
 
 /**
  * Check if a given object implements the CouponChange interface.
  */
 export function instanceOfCouponChange(value: object): value is CouponChange {
-    if (!('action' in value) || value['action'] === undefined) return false;
-    if (!('couponId' in value) || value['couponId'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    return true;
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("couponId" in value) || value["couponId"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	return true;
 }
 
 export function CouponChangeFromJSON(json: any): CouponChange {
-    return CouponChangeFromJSONTyped(json, false);
+	return CouponChangeFromJSONTyped(json, false);
 }
 
-export function CouponChangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): CouponChange {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'action': json['action'],
-        'couponId': json['coupon_id'],
-        'name': json['name'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-    };
+export function CouponChangeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CouponChange {
+	if (json == null) {
+		return json;
+	}
+	return {
+		action: json["action"],
+		couponId: json["coupon_id"],
+		name: json["name"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+	};
 }
 
 export function CouponChangeToJSON(json: any): CouponChange {
-    return CouponChangeToJSONTyped(json, false);
+	return CouponChangeToJSONTyped(json, false);
 }
 
-export function CouponChangeToJSONTyped(value?: CouponChange | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CouponChangeToJSONTyped(
+	value?: CouponChange | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'action': value['action'],
-        'coupon_id': value['couponId'],
-        'name': value['name'],
-        'stripe_id': value['stripeId'],
-    };
+	return {
+		action: value["action"],
+		coupon_id: value["couponId"],
+		name: value["name"],
+		stripe_id: value["stripeId"],
+	};
 }
-

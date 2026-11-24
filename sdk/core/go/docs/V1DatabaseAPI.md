@@ -1,15 +1,13 @@
 # \V1DatabaseAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**GenerateDatabaseTypes**](V1DatabaseAPI.md#GenerateDatabaseTypes) | **Get** /api/v1/database/typegen | Generate type definitions for the database schema
-[**GetDatabaseMigrationStatus**](V1DatabaseAPI.md#GetDatabaseMigrationStatus) | **Get** /api/v1/database/migrations/status | Get the status of applied migrations
-[**RollbackDatabaseMigrations**](V1DatabaseAPI.md#RollbackDatabaseMigrations) | **Post** /api/v1/database/migrations/down | Roll back database migrations
-[**UploadDatabaseMigrations**](V1DatabaseAPI.md#UploadDatabaseMigrations) | **Post** /api/v1/database/migrations | Apply database migrations
-
-
+| Method                                                                        | HTTP request                               | Description                                       |
+| ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------- |
+| [**GenerateDatabaseTypes**](V1DatabaseAPI.md#GenerateDatabaseTypes)           | **Get** /api/v1/database/typegen           | Generate type definitions for the database schema |
+| [**GetDatabaseMigrationStatus**](V1DatabaseAPI.md#GetDatabaseMigrationStatus) | **Get** /api/v1/database/migrations/status | Get the status of applied migrations              |
+| [**RollbackDatabaseMigrations**](V1DatabaseAPI.md#RollbackDatabaseMigrations) | **Post** /api/v1/database/migrations/down  | Roll back database migrations                     |
+| [**UploadDatabaseMigrations**](V1DatabaseAPI.md#UploadDatabaseMigrations)     | **Post** /api/v1/database/migrations       | Apply database migrations                         |
 
 ## GenerateDatabaseTypes
 
@@ -47,17 +45,14 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGenerateDatabaseTypesRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **language** | **string** |  | [default to &quot;typescript&quot;]
- **schemas** | **string** |  | 
+| Name         | Type       | Description | Notes                               |
+| ------------ | ---------- | ----------- | ----------------------------------- |
+| **language** | **string** |             | [default to &quot;typescript&quot;] |
+| **schemas**  | **string** |             |
 
 ### Return type
 
@@ -75,7 +70,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetDatabaseMigrationStatus
 
@@ -117,7 +111,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetDatabaseMigrationStatusRequest struct via the builder pattern
 
-
 ### Return type
 
 [**[]AppliedMigration**](AppliedMigration.md)
@@ -134,7 +127,6 @@ Other parameters are passed through a pointer to a apiGetDatabaseMigrationStatus
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## RollbackDatabaseMigrations
 
@@ -172,17 +164,14 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiRollbackDatabaseMigrationsRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **migrations** | ***os.File** |  | 
- **steps** | **string** |  | 
+| Name           | Type         | Description | Notes |
+| -------------- | ------------ | ----------- | ----- |
+| **migrations** | ***os.File** |             |
+| **steps**      | **string**   |             |
 
 ### Return type
 
@@ -200,7 +189,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## UploadDatabaseMigrations
 
@@ -237,16 +225,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUploadDatabaseMigrationsRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **migrations** | ***os.File** |  | 
+| Name           | Type         | Description | Notes |
+| -------------- | ------------ | ----------- | ----- |
+| **migrations** | ***os.File** |             |
 
 ### Return type
 
@@ -264,4 +249,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

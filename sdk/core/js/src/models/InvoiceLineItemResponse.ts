@@ -12,73 +12,83 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface InvoiceLineItemResponse
  */
 export interface InvoiceLineItemResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof InvoiceLineItemResponse
-     */
-    amount: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceLineItemResponse
-     */
-    description: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceLineItemResponse
-     */
-    id: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof InvoiceLineItemResponse
+	 */
+	amount: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceLineItemResponse
+	 */
+	description: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceLineItemResponse
+	 */
+	id: string;
 }
 
 /**
  * Check if a given object implements the InvoiceLineItemResponse interface.
  */
-export function instanceOfInvoiceLineItemResponse(value: object): value is InvoiceLineItemResponse {
-    if (!('amount' in value) || value['amount'] === undefined) return false;
-    if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    return true;
+export function instanceOfInvoiceLineItemResponse(
+	value: object,
+): value is InvoiceLineItemResponse {
+	if (!("amount" in value) || value["amount"] === undefined) return false;
+	if (!("description" in value) || value["description"] === undefined)
+		return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	return true;
 }
 
-export function InvoiceLineItemResponseFromJSON(json: any): InvoiceLineItemResponse {
-    return InvoiceLineItemResponseFromJSONTyped(json, false);
+export function InvoiceLineItemResponseFromJSON(
+	json: any,
+): InvoiceLineItemResponse {
+	return InvoiceLineItemResponseFromJSONTyped(json, false);
 }
 
-export function InvoiceLineItemResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): InvoiceLineItemResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'amount': json['amount'],
-        'description': json['description'],
-        'id': json['id'],
-    };
+export function InvoiceLineItemResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): InvoiceLineItemResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		amount: json["amount"],
+		description: json["description"],
+		id: json["id"],
+	};
 }
 
-export function InvoiceLineItemResponseToJSON(json: any): InvoiceLineItemResponse {
-    return InvoiceLineItemResponseToJSONTyped(json, false);
+export function InvoiceLineItemResponseToJSON(
+	json: any,
+): InvoiceLineItemResponse {
+	return InvoiceLineItemResponseToJSONTyped(json, false);
 }
 
-export function InvoiceLineItemResponseToJSONTyped(value?: InvoiceLineItemResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function InvoiceLineItemResponseToJSONTyped(
+	value?: InvoiceLineItemResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'amount': value['amount'],
-        'description': value['description'],
-        'id': value['id'],
-    };
+	return {
+		amount: value["amount"],
+		description: value["description"],
+		id: value["id"],
+	};
 }
-

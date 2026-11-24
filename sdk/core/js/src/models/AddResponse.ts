@@ -12,73 +12,77 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AddResponse
  */
 export interface AddResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof AddResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddResponse
-     */
-    status: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddResponse
-     */
-    subscriptionId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddResponse
+	 */
+	status: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddResponse
+	 */
+	subscriptionId: string;
 }
 
 /**
  * Check if a given object implements the AddResponse interface.
  */
 export function instanceOfAddResponse(value: object): value is AddResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('status' in value) || value['status'] === undefined) return false;
-    if (!('subscriptionId' in value) || value['subscriptionId'] === undefined) return false;
-    return true;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("status" in value) || value["status"] === undefined) return false;
+	if (!("subscriptionId" in value) || value["subscriptionId"] === undefined)
+		return false;
+	return true;
 }
 
 export function AddResponseFromJSON(json: any): AddResponse {
-    return AddResponseFromJSONTyped(json, false);
+	return AddResponseFromJSONTyped(json, false);
 }
 
-export function AddResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'status': json['status'],
-        'subscriptionId': json['subscription_id'],
-    };
+export function AddResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AddResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		status: json["status"],
+		subscriptionId: json["subscription_id"],
+	};
 }
 
 export function AddResponseToJSON(json: any): AddResponse {
-    return AddResponseToJSONTyped(json, false);
+	return AddResponseToJSONTyped(json, false);
 }
 
-export function AddResponseToJSONTyped(value?: AddResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AddResponseToJSONTyped(
+	value?: AddResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'status': value['status'],
-        'subscription_id': value['subscriptionId'],
-    };
+	return {
+		message: value["message"],
+		status: value["status"],
+		subscription_id: value["subscriptionId"],
+	};
 }
-

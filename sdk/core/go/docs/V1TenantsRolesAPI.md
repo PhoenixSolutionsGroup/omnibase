@@ -1,16 +1,14 @@
 # \V1TenantsRolesAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CreateRole**](V1TenantsRolesAPI.md#CreateRole) | **Post** /api/v1/tenants/roles | Create a role
-[**DeleteRole**](V1TenantsRolesAPI.md#DeleteRole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete a role
-[**ListRoleDefinitions**](V1TenantsRolesAPI.md#ListRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions | List role definitions
-[**ListRoles**](V1TenantsRolesAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles for the tenant
-[**UpdateRole**](V1TenantsRolesAPI.md#UpdateRole) | **Put** /api/v1/tenants/roles/{role_id} | Update a role
-
-
+| Method                                                              | HTTP request                               | Description               |
+| ------------------------------------------------------------------- | ------------------------------------------ | ------------------------- |
+| [**CreateRole**](V1TenantsRolesAPI.md#CreateRole)                   | **Post** /api/v1/tenants/roles             | Create a role             |
+| [**DeleteRole**](V1TenantsRolesAPI.md#DeleteRole)                   | **Delete** /api/v1/tenants/roles/{role_id} | Delete a role             |
+| [**ListRoleDefinitions**](V1TenantsRolesAPI.md#ListRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions  | List role definitions     |
+| [**ListRoles**](V1TenantsRolesAPI.md#ListRoles)                     | **Get** /api/v1/tenants/roles              | List roles for the tenant |
+| [**UpdateRole**](V1TenantsRolesAPI.md#UpdateRole)                   | **Put** /api/v1/tenants/roles/{role_id}    | Update a role             |
 
 ## CreateRole
 
@@ -47,16 +45,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateRoleRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createRoleRequest** | [**CreateRoleRequest**](CreateRoleRequest.md) |  | 
+| Name                  | Type                                          | Description | Notes |
+| --------------------- | --------------------------------------------- | ----------- | ----- |
+| **createRoleRequest** | [**CreateRoleRequest**](CreateRoleRequest.md) |             |
 
 ### Return type
 
@@ -74,7 +69,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeleteRole
 
@@ -111,20 +105,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**roleId** | **string** |  | 
+| Name       | Type                | Description                                                                 | Notes |
+| ---------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**    | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **roleId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteRoleRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -142,7 +133,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ListRoleDefinitions
 
@@ -179,16 +169,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListRoleDefinitionsRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **subject** | **string** |  | 
+| Name        | Type       | Description | Notes |
+| ----------- | ---------- | ----------- | ----- |
+| **subject** | **string** |             |
 
 ### Return type
 
@@ -206,7 +193,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ListRoles
 
@@ -248,7 +234,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiListRolesRequest struct via the builder pattern
 
-
 ### Return type
 
 [**[]ListRolesByTenantRow**](ListRolesByTenantRow.md)
@@ -265,7 +250,6 @@ Other parameters are passed through a pointer to a apiListRolesRequest struct vi
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## UpdateRole
 
@@ -303,21 +287,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**roleId** | **string** |  | 
+| Name       | Type                | Description                                                                 | Notes |
+| ---------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**    | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **roleId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUpdateRoleRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **updateRoleRequest** | [**UpdateRoleRequest**](UpdateRoleRequest.md) |  | 
+**updateRoleRequest** | [**UpdateRoleRequest**](UpdateRoleRequest.md) | |
 
 ### Return type
 
@@ -335,4 +317,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

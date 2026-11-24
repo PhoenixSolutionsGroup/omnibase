@@ -12,107 +12,116 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface InvoiceResponse
  */
 export interface InvoiceResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof InvoiceResponse
-     */
-    amountDue: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    currency: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    customerId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    hostedInvoiceUrl?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    invoicePdf?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvoiceResponse
-     */
-    status: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof InvoiceResponse
+	 */
+	amountDue: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	currency: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	customerId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	hostedInvoiceUrl?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	invoicePdf?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof InvoiceResponse
+	 */
+	status: string;
 }
 
 /**
  * Check if a given object implements the InvoiceResponse interface.
  */
-export function instanceOfInvoiceResponse(value: object): value is InvoiceResponse {
-    if (!('amountDue' in value) || value['amountDue'] === undefined) return false;
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    if (!('customerId' in value) || value['customerId'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('status' in value) || value['status'] === undefined) return false;
-    return true;
+export function instanceOfInvoiceResponse(
+	value: object,
+): value is InvoiceResponse {
+	if (!("amountDue" in value) || value["amountDue"] === undefined) return false;
+	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (!("customerId" in value) || value["customerId"] === undefined)
+		return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("status" in value) || value["status"] === undefined) return false;
+	return true;
 }
 
 export function InvoiceResponseFromJSON(json: any): InvoiceResponse {
-    return InvoiceResponseFromJSONTyped(json, false);
+	return InvoiceResponseFromJSONTyped(json, false);
 }
 
-export function InvoiceResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): InvoiceResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'amountDue': json['amount_due'],
-        'currency': json['currency'],
-        'customerId': json['customer_id'],
-        'hostedInvoiceUrl': json['hosted_invoice_url'] == null ? undefined : json['hosted_invoice_url'],
-        'id': json['id'],
-        'invoicePdf': json['invoice_pdf'] == null ? undefined : json['invoice_pdf'],
-        'status': json['status'],
-    };
+export function InvoiceResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): InvoiceResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		amountDue: json["amount_due"],
+		currency: json["currency"],
+		customerId: json["customer_id"],
+		hostedInvoiceUrl:
+			json["hosted_invoice_url"] == null
+				? undefined
+				: json["hosted_invoice_url"],
+		id: json["id"],
+		invoicePdf: json["invoice_pdf"] == null ? undefined : json["invoice_pdf"],
+		status: json["status"],
+	};
 }
 
 export function InvoiceResponseToJSON(json: any): InvoiceResponse {
-    return InvoiceResponseToJSONTyped(json, false);
+	return InvoiceResponseToJSONTyped(json, false);
 }
 
-export function InvoiceResponseToJSONTyped(value?: InvoiceResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function InvoiceResponseToJSONTyped(
+	value?: InvoiceResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'amount_due': value['amountDue'],
-        'currency': value['currency'],
-        'customer_id': value['customerId'],
-        'hosted_invoice_url': value['hostedInvoiceUrl'],
-        'id': value['id'],
-        'invoice_pdf': value['invoicePdf'],
-        'status': value['status'],
-    };
+	return {
+		amount_due: value["amountDue"],
+		currency: value["currency"],
+		customer_id: value["customerId"],
+		hosted_invoice_url: value["hostedInvoiceUrl"],
+		id: value["id"],
+		invoice_pdf: value["invoicePdf"],
+		status: value["status"],
+	};
 }
-

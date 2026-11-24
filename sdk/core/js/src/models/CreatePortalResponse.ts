@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreatePortalResponse
  */
 export interface CreatePortalResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreatePortalResponse
-     */
-    url: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreatePortalResponse
+	 */
+	url: string;
 }
 
 /**
  * Check if a given object implements the CreatePortalResponse interface.
  */
-export function instanceOfCreatePortalResponse(value: object): value is CreatePortalResponse {
-    if (!('url' in value) || value['url'] === undefined) return false;
-    return true;
+export function instanceOfCreatePortalResponse(
+	value: object,
+): value is CreatePortalResponse {
+	if (!("url" in value) || value["url"] === undefined) return false;
+	return true;
 }
 
 export function CreatePortalResponseFromJSON(json: any): CreatePortalResponse {
-    return CreatePortalResponseFromJSONTyped(json, false);
+	return CreatePortalResponseFromJSONTyped(json, false);
 }
 
-export function CreatePortalResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreatePortalResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'url': json['url'],
-    };
+export function CreatePortalResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreatePortalResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		url: json["url"],
+	};
 }
 
 export function CreatePortalResponseToJSON(json: any): CreatePortalResponse {
-    return CreatePortalResponseToJSONTyped(json, false);
+	return CreatePortalResponseToJSONTyped(json, false);
 }
 
-export function CreatePortalResponseToJSONTyped(value?: CreatePortalResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreatePortalResponseToJSONTyped(
+	value?: CreatePortalResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'url': value['url'],
-    };
+	return {
+		url: value["url"],
+	};
 }
-

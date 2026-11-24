@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface DownloadRequest
  */
 export interface DownloadRequest {
-    /**
-     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
-     * @type {string}
-     * @memberof DownloadRequest
-     */
-    path: string;
+	/**
+	 * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
+	 * @type {string}
+	 * @memberof DownloadRequest
+	 */
+	path: string;
 }
 
 /**
  * Check if a given object implements the DownloadRequest interface.
  */
-export function instanceOfDownloadRequest(value: object): value is DownloadRequest {
-    if (!('path' in value) || value['path'] === undefined) return false;
-    return true;
+export function instanceOfDownloadRequest(
+	value: object,
+): value is DownloadRequest {
+	if (!("path" in value) || value["path"] === undefined) return false;
+	return true;
 }
 
 export function DownloadRequestFromJSON(json: any): DownloadRequest {
-    return DownloadRequestFromJSONTyped(json, false);
+	return DownloadRequestFromJSONTyped(json, false);
 }
 
-export function DownloadRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): DownloadRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'path': json['path'],
-    };
+export function DownloadRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DownloadRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		path: json["path"],
+	};
 }
 
 export function DownloadRequestToJSON(json: any): DownloadRequest {
-    return DownloadRequestToJSONTyped(json, false);
+	return DownloadRequestToJSONTyped(json, false);
 }
 
-export function DownloadRequestToJSONTyped(value?: DownloadRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DownloadRequestToJSONTyped(
+	value?: DownloadRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'path': value['path'],
-    };
+	return {
+		path: value["path"],
+	};
 }
-

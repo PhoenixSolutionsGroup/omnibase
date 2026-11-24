@@ -12,64 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MakePublicResponse
  */
 export interface MakePublicResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof MakePublicResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MakePublicResponse
-     */
-    path: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MakePublicResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MakePublicResponse
+	 */
+	path: string;
 }
 
 /**
  * Check if a given object implements the MakePublicResponse interface.
  */
-export function instanceOfMakePublicResponse(value: object): value is MakePublicResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('path' in value) || value['path'] === undefined) return false;
-    return true;
+export function instanceOfMakePublicResponse(
+	value: object,
+): value is MakePublicResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("path" in value) || value["path"] === undefined) return false;
+	return true;
 }
 
 export function MakePublicResponseFromJSON(json: any): MakePublicResponse {
-    return MakePublicResponseFromJSONTyped(json, false);
+	return MakePublicResponseFromJSONTyped(json, false);
 }
 
-export function MakePublicResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): MakePublicResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'path': json['path'],
-    };
+export function MakePublicResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MakePublicResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		path: json["path"],
+	};
 }
 
 export function MakePublicResponseToJSON(json: any): MakePublicResponse {
-    return MakePublicResponseToJSONTyped(json, false);
+	return MakePublicResponseToJSONTyped(json, false);
 }
 
-export function MakePublicResponseToJSONTyped(value?: MakePublicResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MakePublicResponseToJSONTyped(
+	value?: MakePublicResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'path': value['path'],
-    };
+	return {
+		message: value["message"],
+		path: value["path"],
+	};
 }
-

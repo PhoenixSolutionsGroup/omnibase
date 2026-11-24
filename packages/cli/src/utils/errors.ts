@@ -1,48 +1,48 @@
-import axios from "axios";
 import { ResponseError } from "@omnibase/core-js";
+import axios from "axios";
 import { logger } from "./logger";
 
 export async function extractApiError(error: unknown): Promise<string> {
-  if (error instanceof ResponseError) {
-    try {
-      const body = await error.response.json();
-      return (
-        body.error ||
-        body.message ||
-        body.detail ||
-        `${error.response.status} - ${error.response.statusText}`
-      );
-    } catch {
-      return `${error.response.status} - ${error.response.statusText}`;
-    }
-  }
+	if (error instanceof ResponseError) {
+		try {
+			const body = await error.response.json();
+			return (
+				body.error ||
+				body.message ||
+				body.detail ||
+				`${error.response.status} - ${error.response.statusText}`
+			);
+		} catch {
+			return `${error.response.status} - ${error.response.statusText}`;
+		}
+	}
 
-  return formatHttpError(error);
+	return formatHttpError(error);
 }
 
 export function formatHttpError(error: unknown): string {
-  if (axios.isAxiosError(error)) {
-    const status = error.response?.status || "Unknown";
-    const data = error.response?.data;
+	if (axios.isAxiosError(error)) {
+		const status = error.response?.status || "Unknown";
+		const data = error.response?.data;
 
-    const apiMessage = data?.error || data?.message || data?.detail;
+		const apiMessage = data?.error || data?.message || data?.detail;
 
-    if (apiMessage) {
-      return `${status} - ${apiMessage}`;
-    }
+		if (apiMessage) {
+			return `${status} - ${apiMessage}`;
+		}
 
-    const statusText = error.response?.statusText || "Request failed";
-    return `${status} - ${statusText}`;
-  }
+		const statusText = error.response?.statusText || "Request failed";
+		return `${status} - ${statusText}`;
+	}
 
-  if (error instanceof Error) {
-    return error.message;
-  }
+	if (error instanceof Error) {
+		return error.message;
+	}
 
-  return "Unknown error occurred";
+	return "Unknown error occurred";
 }
 
 export async function handleCommandError(error: unknown): Promise<never> {
-  logger.fail(await extractApiError(error));
-  process.exit(1);
+	logger.fail(await extractApiError(error));
+	process.exit(1);
 }

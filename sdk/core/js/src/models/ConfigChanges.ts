@@ -12,137 +12,154 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { MeterChanges } from './MeterChanges';
+import { mapValues } from "../runtime";
+import type { CouponChanges } from "./CouponChanges";
 import {
-    MeterChangesFromJSON,
-    MeterChangesFromJSONTyped,
-    MeterChangesToJSON,
-    MeterChangesToJSONTyped,
-} from './MeterChanges';
-import type { CouponChanges } from './CouponChanges';
+	CouponChangesFromJSON,
+	CouponChangesFromJSONTyped,
+	CouponChangesToJSON,
+	CouponChangesToJSONTyped,
+} from "./CouponChanges";
+import type { MeterChanges } from "./MeterChanges";
 import {
-    CouponChangesFromJSON,
-    CouponChangesFromJSONTyped,
-    CouponChangesToJSON,
-    CouponChangesToJSONTyped,
-} from './CouponChanges';
-import type { PromotionCodeChanges } from './PromotionCodeChanges';
+	MeterChangesFromJSON,
+	MeterChangesFromJSONTyped,
+	MeterChangesToJSON,
+	MeterChangesToJSONTyped,
+} from "./MeterChanges";
+import type { PriceChanges } from "./PriceChanges";
 import {
-    PromotionCodeChangesFromJSON,
-    PromotionCodeChangesFromJSONTyped,
-    PromotionCodeChangesToJSON,
-    PromotionCodeChangesToJSONTyped,
-} from './PromotionCodeChanges';
-import type { PriceChanges } from './PriceChanges';
+	PriceChangesFromJSON,
+	PriceChangesFromJSONTyped,
+	PriceChangesToJSON,
+	PriceChangesToJSONTyped,
+} from "./PriceChanges";
+import type { ProductChanges } from "./ProductChanges";
 import {
-    PriceChangesFromJSON,
-    PriceChangesFromJSONTyped,
-    PriceChangesToJSON,
-    PriceChangesToJSONTyped,
-} from './PriceChanges';
-import type { ProductChanges } from './ProductChanges';
+	ProductChangesFromJSON,
+	ProductChangesFromJSONTyped,
+	ProductChangesToJSON,
+	ProductChangesToJSONTyped,
+} from "./ProductChanges";
+import type { PromotionCodeChanges } from "./PromotionCodeChanges";
 import {
-    ProductChangesFromJSON,
-    ProductChangesFromJSONTyped,
-    ProductChangesToJSON,
-    ProductChangesToJSONTyped,
-} from './ProductChanges';
-import type { WebhookChanges } from './WebhookChanges';
+	PromotionCodeChangesFromJSON,
+	PromotionCodeChangesFromJSONTyped,
+	PromotionCodeChangesToJSON,
+	PromotionCodeChangesToJSONTyped,
+} from "./PromotionCodeChanges";
+import type { WebhookChanges } from "./WebhookChanges";
 import {
-    WebhookChangesFromJSON,
-    WebhookChangesFromJSONTyped,
-    WebhookChangesToJSON,
-    WebhookChangesToJSONTyped,
-} from './WebhookChanges';
+	WebhookChangesFromJSON,
+	WebhookChangesFromJSONTyped,
+	WebhookChangesToJSON,
+	WebhookChangesToJSONTyped,
+} from "./WebhookChanges";
 
 /**
- * 
+ *
  * @export
  * @interface ConfigChanges
  */
 export interface ConfigChanges {
-    /**
-     * 
-     * @type {CouponChanges}
-     * @memberof ConfigChanges
-     */
-    coupons?: CouponChanges;
-    /**
-     * 
-     * @type {MeterChanges}
-     * @memberof ConfigChanges
-     */
-    meters?: MeterChanges;
-    /**
-     * 
-     * @type {PriceChanges}
-     * @memberof ConfigChanges
-     */
-    prices?: PriceChanges;
-    /**
-     * 
-     * @type {ProductChanges}
-     * @memberof ConfigChanges
-     */
-    products?: ProductChanges;
-    /**
-     * 
-     * @type {PromotionCodeChanges}
-     * @memberof ConfigChanges
-     */
-    promotionCodes?: PromotionCodeChanges;
-    /**
-     * 
-     * @type {WebhookChanges}
-     * @memberof ConfigChanges
-     */
-    webhooks?: WebhookChanges;
+	/**
+	 *
+	 * @type {CouponChanges}
+	 * @memberof ConfigChanges
+	 */
+	coupons?: CouponChanges;
+	/**
+	 *
+	 * @type {MeterChanges}
+	 * @memberof ConfigChanges
+	 */
+	meters?: MeterChanges;
+	/**
+	 *
+	 * @type {PriceChanges}
+	 * @memberof ConfigChanges
+	 */
+	prices?: PriceChanges;
+	/**
+	 *
+	 * @type {ProductChanges}
+	 * @memberof ConfigChanges
+	 */
+	products?: ProductChanges;
+	/**
+	 *
+	 * @type {PromotionCodeChanges}
+	 * @memberof ConfigChanges
+	 */
+	promotionCodes?: PromotionCodeChanges;
+	/**
+	 *
+	 * @type {WebhookChanges}
+	 * @memberof ConfigChanges
+	 */
+	webhooks?: WebhookChanges;
 }
 
 /**
  * Check if a given object implements the ConfigChanges interface.
  */
 export function instanceOfConfigChanges(value: object): value is ConfigChanges {
-    return true;
+	return true;
 }
 
 export function ConfigChangesFromJSON(json: any): ConfigChanges {
-    return ConfigChangesFromJSONTyped(json, false);
+	return ConfigChangesFromJSONTyped(json, false);
 }
 
-export function ConfigChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'coupons': json['coupons'] == null ? undefined : CouponChangesFromJSON(json['coupons']),
-        'meters': json['meters'] == null ? undefined : MeterChangesFromJSON(json['meters']),
-        'prices': json['prices'] == null ? undefined : PriceChangesFromJSON(json['prices']),
-        'products': json['products'] == null ? undefined : ProductChangesFromJSON(json['products']),
-        'promotionCodes': json['promotion_codes'] == null ? undefined : PromotionCodeChangesFromJSON(json['promotion_codes']),
-        'webhooks': json['webhooks'] == null ? undefined : WebhookChangesFromJSON(json['webhooks']),
-    };
+export function ConfigChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ConfigChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		coupons:
+			json["coupons"] == null
+				? undefined
+				: CouponChangesFromJSON(json["coupons"]),
+		meters:
+			json["meters"] == null ? undefined : MeterChangesFromJSON(json["meters"]),
+		prices:
+			json["prices"] == null ? undefined : PriceChangesFromJSON(json["prices"]),
+		products:
+			json["products"] == null
+				? undefined
+				: ProductChangesFromJSON(json["products"]),
+		promotionCodes:
+			json["promotion_codes"] == null
+				? undefined
+				: PromotionCodeChangesFromJSON(json["promotion_codes"]),
+		webhooks:
+			json["webhooks"] == null
+				? undefined
+				: WebhookChangesFromJSON(json["webhooks"]),
+	};
 }
 
 export function ConfigChangesToJSON(json: any): ConfigChanges {
-    return ConfigChangesToJSONTyped(json, false);
+	return ConfigChangesToJSONTyped(json, false);
 }
 
-export function ConfigChangesToJSONTyped(value?: ConfigChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ConfigChangesToJSONTyped(
+	value?: ConfigChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'coupons': CouponChangesToJSON(value['coupons']),
-        'meters': MeterChangesToJSON(value['meters']),
-        'prices': PriceChangesToJSON(value['prices']),
-        'products': ProductChangesToJSON(value['products']),
-        'promotion_codes': PromotionCodeChangesToJSON(value['promotionCodes']),
-        'webhooks': WebhookChangesToJSON(value['webhooks']),
-    };
+	return {
+		coupons: CouponChangesToJSON(value["coupons"]),
+		meters: MeterChangesToJSON(value["meters"]),
+		prices: PriceChangesToJSON(value["prices"]),
+		products: ProductChangesToJSON(value["products"]),
+		promotion_codes: PromotionCodeChangesToJSON(value["promotionCodes"]),
+		webhooks: WebhookChangesToJSON(value["webhooks"]),
+	};
 }
-

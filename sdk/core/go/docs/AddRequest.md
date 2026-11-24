@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**IdempotencyKey** | **string** |  | 
-**PlanId** | **string** |  | 
-**Quantity** | Pointer to **int64** |  | [optional] 
+| Name               | Type                 | Description | Notes      |
+| ------------------ | -------------------- | ----------- | ---------- |
+| **IdempotencyKey** | **string**           |             |
+| **PlanId**         | **string**           |             |
+| **Quantity**       | Pointer to **int64** |             | [optional] |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetIdempotencyKey sets IdempotencyKey field to given value.
 
-
 ### GetPlanId
 
 `func (o *AddRequest) GetPlanId() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *AddRequest) SetPlanId(v string)`
 
 SetPlanId sets PlanId field to given value.
-
 
 ### GetQuantity
 
@@ -92,7 +90,4 @@ SetQuantity sets Quantity field to given value.
 
 HasQuantity returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

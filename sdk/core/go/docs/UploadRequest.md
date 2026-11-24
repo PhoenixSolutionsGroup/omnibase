@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
-**Path** | **string** | Bucket-wide object path. Prefix with the tenant ID or another unique namespace. | 
+| Name         | Type                                  | Description                                                                     | Notes      |
+| ------------ | ------------------------------------- | ------------------------------------------------------------------------------- | ---------- |
+| **Metadata** | Pointer to **map[string]interface{}** |                                                                                 | [optional] |
+| **Path**     | **string**                            | Bucket-wide object path. Prefix with the tenant ID or another unique namespace. |
 
 ## Methods
 
@@ -70,8 +70,4 @@ and a boolean to check if the value has been set.
 
 SetPath sets Path field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

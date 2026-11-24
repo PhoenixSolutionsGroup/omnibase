@@ -1,13 +1,13 @@
 {
-  "title": "Cloud",
-  "pages": [
-    "login",
-    "logout",
-    "switch",
-    "profiles",
-    "workers",
-    "domains",
-    "branch",
-    "env"
-  ]
+	"title": "Cloud",
+	"pages": [
+		"login",
+		"logout",
+		"switch",
+		"profiles",
+		"workers",
+		"domains",
+		"branch",
+		"env"
+	]
 }

@@ -12,55 +12,58 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface RemoveRequest
  */
 export interface RemoveRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof RemoveRequest
-     */
-    planId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RemoveRequest
+	 */
+	planId: string;
 }
 
 /**
  * Check if a given object implements the RemoveRequest interface.
  */
 export function instanceOfRemoveRequest(value: object): value is RemoveRequest {
-    if (!('planId' in value) || value['planId'] === undefined) return false;
-    return true;
+	if (!("planId" in value) || value["planId"] === undefined) return false;
+	return true;
 }
 
 export function RemoveRequestFromJSON(json: any): RemoveRequest {
-    return RemoveRequestFromJSONTyped(json, false);
+	return RemoveRequestFromJSONTyped(json, false);
 }
 
-export function RemoveRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): RemoveRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'planId': json['plan_id'],
-    };
+export function RemoveRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): RemoveRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		planId: json["plan_id"],
+	};
 }
 
 export function RemoveRequestToJSON(json: any): RemoveRequest {
-    return RemoveRequestToJSONTyped(json, false);
+	return RemoveRequestToJSONTyped(json, false);
 }
 
-export function RemoveRequestToJSONTyped(value?: RemoveRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function RemoveRequestToJSONTyped(
+	value?: RemoveRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'plan_id': value['planId'],
-    };
+	return {
+		plan_id: value["planId"],
+	};
 }
-

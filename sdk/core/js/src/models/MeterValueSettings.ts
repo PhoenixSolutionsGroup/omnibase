@@ -12,55 +12,61 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MeterValueSettings
  */
 export interface MeterValueSettings {
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterValueSettings
-     */
-    eventPayloadKey: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterValueSettings
+	 */
+	eventPayloadKey: string;
 }
 
 /**
  * Check if a given object implements the MeterValueSettings interface.
  */
-export function instanceOfMeterValueSettings(value: object): value is MeterValueSettings {
-    if (!('eventPayloadKey' in value) || value['eventPayloadKey'] === undefined) return false;
-    return true;
+export function instanceOfMeterValueSettings(
+	value: object,
+): value is MeterValueSettings {
+	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
+		return false;
+	return true;
 }
 
 export function MeterValueSettingsFromJSON(json: any): MeterValueSettings {
-    return MeterValueSettingsFromJSONTyped(json, false);
+	return MeterValueSettingsFromJSONTyped(json, false);
 }
 
-export function MeterValueSettingsFromJSONTyped(json: any, ignoreDiscriminator: boolean): MeterValueSettings {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'eventPayloadKey': json['event_payload_key'],
-    };
+export function MeterValueSettingsFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MeterValueSettings {
+	if (json == null) {
+		return json;
+	}
+	return {
+		eventPayloadKey: json["event_payload_key"],
+	};
 }
 
 export function MeterValueSettingsToJSON(json: any): MeterValueSettings {
-    return MeterValueSettingsToJSONTyped(json, false);
+	return MeterValueSettingsToJSONTyped(json, false);
 }
 
-export function MeterValueSettingsToJSONTyped(value?: MeterValueSettings | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MeterValueSettingsToJSONTyped(
+	value?: MeterValueSettings | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'event_payload_key': value['eventPayloadKey'],
-    };
+	return {
+		event_payload_key: value["eventPayloadKey"],
+	};
 }
-

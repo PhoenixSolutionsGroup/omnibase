@@ -78,7 +78,6 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
 
-
   # ============================================
   # Dry run every selected package before releasing
   # ============================================

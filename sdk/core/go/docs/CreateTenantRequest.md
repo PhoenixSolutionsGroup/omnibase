@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**BillingEmail** | **string** |  | 
-**Name** | **string** |  | 
-**Type** | **string** |  | 
+| Name             | Type       | Description | Notes |
+| ---------------- | ---------- | ----------- | ----- |
+| **BillingEmail** | **string** |             |
+| **Name**         | **string** |             |
+| **Type**         | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetBillingEmail sets BillingEmail field to given value.
 
-
 ### GetName
 
 `func (o *CreateTenantRequest) GetName() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateTenantRequest) SetName(v string)`
 
 SetName sets Name field to given value.
-
 
 ### GetType
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetType sets Type field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

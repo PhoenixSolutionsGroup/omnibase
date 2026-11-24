@@ -1,79 +1,79 @@
 "use client";
 
-import * as React from "react";
-import { TopNavbar } from "@/components/top-navbar";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import { useRouter } from "next/navigation";
+import type * as React from "react";
 import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
-import { useRouter } from "next/navigation";
-import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
-import { ProjectOption } from "./project-dropdown";
+import { TopNavbar } from "@/components/top-navbar";
+import type { ProjectOption } from "./project-dropdown";
 
 interface ProjectData {
-  branchId: string;
-  projectId: string;
-  projectBranch: string;
-  projectName: string;
-  branches: string[];
+	branchId: string;
+	projectId: string;
+	projectBranch: string;
+	projectName: string;
+	branches: string[];
 }
 
 interface UnifiedLayoutClientProps {
-  children: React.ReactNode;
-  tenants: Tenant[];
-  currentTenantId: string;
-  projectData?: ProjectData;
-  projects?: ProjectOption[];
-  defaultSidebarCollapsed?: boolean;
+	children: React.ReactNode;
+	tenants: Tenant[];
+	currentTenantId: string;
+	projectData?: ProjectData;
+	projects?: ProjectOption[];
+	defaultSidebarCollapsed?: boolean;
 }
 
 export function UnifiedLayoutClient({
-  children,
-  tenants,
-  currentTenantId,
-  projectData,
-  projects,
-  defaultSidebarCollapsed = false,
+	children,
+	tenants,
+	currentTenantId,
+	projectData,
+	projects,
+	defaultSidebarCollapsed = false,
 }: UnifiedLayoutClientProps) {
-  const router = useRouter();
-  return (
-    <SidebarProvider defaultCollapsed={defaultSidebarCollapsed}>
-      <div className="flex h-screen flex-col overflow-hidden bg-background">
-        <TopNavbar
-          tenants={tenants}
-          currentTenantId={currentTenantId}
-          projectContext={
-            projectData
-              ? {
-                  branchId: projectData.branchId,
-                  projectId: projectData.projectId,
-                  projectBranch: projectData.projectBranch,
-                  projectName: projectData.projectName,
-                  branches: projectData.branches,
-                  onCreateProject: () => router.push("/projects/new"),
-                  projects: projects,
-                }
-              : undefined
-          }
-        />
-        <div className="flex flex-1 overflow-hidden">
-          <UnifiedSidebar
-            projectContext={
-              projectData
-                ? {
-                    branchId: projectData.branchId,
-                    projectId: projectData.projectId,
-                    projectBranch: projectData.projectBranch,
-                    projectName: projectData.projectName,
-                    branches: projectData.branches,
-                    onCreateProject: () => router.push("/projects/new"),
-                    projects: projects,
-                  }
-                : undefined
-            }
-            allowOrgCollapse={!!projectData}
-          />
-          <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
-        </div>
-      </div>
-    </SidebarProvider>
-  );
+	const router = useRouter();
+	return (
+		<SidebarProvider defaultCollapsed={defaultSidebarCollapsed}>
+			<div className="flex h-screen flex-col overflow-hidden bg-background">
+				<TopNavbar
+					tenants={tenants}
+					currentTenantId={currentTenantId}
+					projectContext={
+						projectData
+							? {
+									branchId: projectData.branchId,
+									projectId: projectData.projectId,
+									projectBranch: projectData.projectBranch,
+									projectName: projectData.projectName,
+									branches: projectData.branches,
+									onCreateProject: () => router.push("/projects/new"),
+									projects: projects,
+								}
+							: undefined
+					}
+				/>
+				<div className="flex flex-1 overflow-hidden">
+					<UnifiedSidebar
+						projectContext={
+							projectData
+								? {
+										branchId: projectData.branchId,
+										projectId: projectData.projectId,
+										projectBranch: projectData.projectBranch,
+										projectName: projectData.projectName,
+										branches: projectData.branches,
+										onCreateProject: () => router.push("/projects/new"),
+										projects: projects,
+									}
+								: undefined
+						}
+						allowOrgCollapse={!!projectData}
+					/>
+					<main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+				</div>
+			</div>
+		</SidebarProvider>
+	);
 }

@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface DeleteObjectResponse
  */
 export interface DeleteObjectResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteObjectResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteObjectResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the DeleteObjectResponse interface.
  */
-export function instanceOfDeleteObjectResponse(value: object): value is DeleteObjectResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfDeleteObjectResponse(
+	value: object,
+): value is DeleteObjectResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
 export function DeleteObjectResponseFromJSON(json: any): DeleteObjectResponse {
-    return DeleteObjectResponseFromJSONTyped(json, false);
+	return DeleteObjectResponseFromJSONTyped(json, false);
 }
 
-export function DeleteObjectResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteObjectResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function DeleteObjectResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteObjectResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
 export function DeleteObjectResponseToJSON(json: any): DeleteObjectResponse {
-    return DeleteObjectResponseToJSONTyped(json, false);
+	return DeleteObjectResponseToJSONTyped(json, false);
 }
 
-export function DeleteObjectResponseToJSONTyped(value?: DeleteObjectResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteObjectResponseToJSONTyped(
+	value?: DeleteObjectResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

@@ -1,13 +1,12 @@
-
 # JWTTokenResponse
 
 PostgREST JWT token for direct database access
 
 ## Properties
 
-Name | Type
------------- | -------------
-`token` | string
+| Name    | Type   |
+| ------- | ------ |
+| `token` | string |
 
 ## Example
 
@@ -31,5 +30,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

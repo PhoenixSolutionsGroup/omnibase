@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Amount** | **int64** |  | 
-**Currency** | **string** |  | 
-**Description** | **string** |  | 
+| Name            | Type       | Description | Notes |
+| --------------- | ---------- | ----------- | ----- |
+| **Amount**      | **int64**  |             |
+| **Currency**    | **string** |             |
+| **Description** | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetAmount sets Amount field to given value.
 
-
 ### GetCurrency
 
 `func (o *AddLineItemRequest) GetCurrency() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *AddLineItemRequest) SetCurrency(v string)`
 
 SetCurrency sets Currency field to given value.
-
 
 ### GetDescription
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetDescription sets Description field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

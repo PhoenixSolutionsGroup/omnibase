@@ -12,303 +12,370 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  CreateRoleRequest,
-  CreateRoleRow,
-  ErrorModel,
-  ListRolesByTenantRow,
-  NamespaceDefinitionResponse,
-  UpdateRolePermissionsRow,
-  UpdateRoleRequest,
-} from '../models/index';
+	CreateRoleRequest,
+	CreateRoleRow,
+	ErrorModel,
+	ListRolesByTenantRow,
+	NamespaceDefinitionResponse,
+	UpdateRolePermissionsRow,
+	UpdateRoleRequest,
+} from "../models/index";
 import {
-    CreateRoleRequestFromJSON,
-    CreateRoleRequestToJSON,
-    CreateRoleRowFromJSON,
-    CreateRoleRowToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    ListRolesByTenantRowFromJSON,
-    ListRolesByTenantRowToJSON,
-    NamespaceDefinitionResponseFromJSON,
-    NamespaceDefinitionResponseToJSON,
-    UpdateRolePermissionsRowFromJSON,
-    UpdateRolePermissionsRowToJSON,
-    UpdateRoleRequestFromJSON,
-    UpdateRoleRequestToJSON,
-} from '../models/index';
+	CreateRoleRequestFromJSON,
+	CreateRoleRequestToJSON,
+	CreateRoleRowFromJSON,
+	CreateRoleRowToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	ListRolesByTenantRowFromJSON,
+	ListRolesByTenantRowToJSON,
+	NamespaceDefinitionResponseFromJSON,
+	NamespaceDefinitionResponseToJSON,
+	UpdateRolePermissionsRowFromJSON,
+	UpdateRolePermissionsRowToJSON,
+	UpdateRoleRequestFromJSON,
+	UpdateRoleRequestToJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface CreateRoleOperationRequest {
-    createRoleRequest: CreateRoleRequest;
+	createRoleRequest: CreateRoleRequest;
 }
 
 export interface DeleteRoleRequest {
-    roleId: string;
+	roleId: string;
 }
 
 export interface ListRoleDefinitionsRequest {
-    subject?: string;
+	subject?: string;
 }
 
 export interface UpdateRoleOperationRequest {
-    roleId: string;
-    updateRoleRequest: UpdateRoleRequest;
+	roleId: string;
+	updateRoleRequest: UpdateRoleRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1TenantsRolesApi extends runtime.BaseAPI {
+	/**
+	 * Create a role
+	 */
+	async createRoleRaw(
+		requestParameters: CreateRoleOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CreateRoleRow>> {
+		if (requestParameters["createRoleRequest"] == null) {
+			throw new runtime.RequiredError(
+				"createRoleRequest",
+				'Required parameter "createRoleRequest" was null or undefined when calling createRole().',
+			);
+		}
 
-    /**
-     * Create a role
-     */
-    async createRoleRaw(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRoleRow>> {
-        if (requestParameters['createRoleRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createRoleRequest',
-                'Required parameter "createRoleRequest" was null or undefined when calling createRole().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/roles`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CreateRoleRequestToJSON(requestParameters["createRoleRequest"]),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/tenants/roles`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CreateRoleRowFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateRoleRequestToJSON(requestParameters['createRoleRequest']),
-        }, initOverrides);
+	/**
+	 * Create a role
+	 */
+	async createRole(
+		requestParameters: CreateRoleOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CreateRoleRow> {
+		const response = await this.createRoleRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRoleRowFromJSON(jsonValue));
-    }
+	/**
+	 * Delete a role
+	 */
+	async deleteRoleRaw(
+		requestParameters: DeleteRoleRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<any>> {
+		if (requestParameters["roleId"] == null) {
+			throw new runtime.RequiredError(
+				"roleId",
+				'Required parameter "roleId" was null or undefined when calling deleteRole().',
+			);
+		}
 
-    /**
-     * Create a role
-     */
-    async createRole(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRoleRow> {
-        const response = await this.createRoleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Delete a role
-     */
-    async deleteRoleRaw(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        if (requestParameters['roleId'] == null) {
-            throw new runtime.RequiredError(
-                'roleId',
-                'Required parameter "roleId" was null or undefined when calling deleteRole().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		let urlPath = `/api/v1/tenants/roles/{role_id}`;
+		urlPath = urlPath.replace(
+			`{${"role_id"}}`,
+			encodeURIComponent(String(requestParameters["roleId"])),
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
+		if (this.isJsonMime(response.headers.get("content-type"))) {
+			return new runtime.JSONApiResponse<any>(response);
+		} else {
+			return new runtime.TextApiResponse(response) as any;
+		}
+	}
 
-        let urlPath = `/api/v1/tenants/roles/{role_id}`;
-        urlPath = urlPath.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters['roleId'])));
+	/**
+	 * Delete a role
+	 */
+	async deleteRole(
+		requestParameters: DeleteRoleRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<any> {
+		const response = await this.deleteRoleRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * List role definitions
+	 */
+	async listRoleDefinitionsRaw(
+		requestParameters: ListRoleDefinitionsRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Array<NamespaceDefinitionResponse>>> {
+		const queryParameters: any = {};
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<any>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
-    }
+		if (requestParameters["subject"] != null) {
+			queryParameters["subject"] = requestParameters["subject"];
+		}
 
-    /**
-     * Delete a role
-     */
-    async deleteRole(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
-        const response = await this.deleteRoleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * List role definitions
-     */
-    async listRoleDefinitionsRaw(requestParameters: ListRoleDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<NamespaceDefinitionResponse>>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (requestParameters['subject'] != null) {
-            queryParameters['subject'] = requestParameters['subject'];
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/roles/definitions`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			jsonValue.map(NamespaceDefinitionResponseFromJSON),
+		);
+	}
 
+	/**
+	 * List role definitions
+	 */
+	async listRoleDefinitions(
+		requestParameters: ListRoleDefinitionsRequest = {},
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Array<NamespaceDefinitionResponse>> {
+		const response = await this.listRoleDefinitionsRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/tenants/roles/definitions`;
+	/**
+	 * List roles for the tenant
+	 */
+	async listRolesRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Array<ListRolesByTenantRow>>> {
+		const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(NamespaceDefinitionResponseFromJSON));
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * List role definitions
-     */
-    async listRoleDefinitions(requestParameters: ListRoleDefinitionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<NamespaceDefinitionResponse>> {
-        const response = await this.listRoleDefinitionsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-    /**
-     * List roles for the tenant
-     */
-    async listRolesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ListRolesByTenantRow>>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		const urlPath = `/api/v1/tenants/roles`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			jsonValue.map(ListRolesByTenantRowFromJSON),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+	/**
+	 * List roles for the tenant
+	 */
+	async listRoles(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Array<ListRolesByTenantRow>> {
+		const response = await this.listRolesRaw(initOverrides);
+		return await response.value();
+	}
 
+	/**
+	 * Update a role
+	 */
+	async updateRoleRaw(
+		requestParameters: UpdateRoleOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<UpdateRolePermissionsRow>> {
+		if (requestParameters["roleId"] == null) {
+			throw new runtime.RequiredError(
+				"roleId",
+				'Required parameter "roleId" was null or undefined when calling updateRole().',
+			);
+		}
 
-        let urlPath = `/api/v1/tenants/roles`;
+		if (requestParameters["updateRoleRequest"] == null) {
+			throw new runtime.RequiredError(
+				"updateRoleRequest",
+				'Required parameter "updateRoleRequest" was null or undefined when calling updateRole().',
+			);
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ListRolesByTenantRowFromJSON));
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * List roles for the tenant
-     */
-    async listRoles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ListRolesByTenantRow>> {
-        const response = await this.listRolesRaw(initOverrides);
-        return await response.value();
-    }
+		headerParameters["Content-Type"] = "application/json";
 
-    /**
-     * Update a role
-     */
-    async updateRoleRaw(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateRolePermissionsRow>> {
-        if (requestParameters['roleId'] == null) {
-            throw new runtime.RequiredError(
-                'roleId',
-                'Required parameter "roleId" was null or undefined when calling updateRole().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (requestParameters['updateRoleRequest'] == null) {
-            throw new runtime.RequiredError(
-                'updateRoleRequest',
-                'Required parameter "updateRoleRequest" was null or undefined when calling updateRole().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		let urlPath = `/api/v1/tenants/roles/{role_id}`;
+		urlPath = urlPath.replace(
+			`{${"role_id"}}`,
+			encodeURIComponent(String(requestParameters["roleId"])),
+		);
 
-        headerParameters['Content-Type'] = 'application/json';
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "PUT",
+				headers: headerParameters,
+				query: queryParameters,
+				body: UpdateRoleRequestToJSON(requestParameters["updateRoleRequest"]),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			UpdateRolePermissionsRowFromJSON(jsonValue),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/roles/{role_id}`;
-        urlPath = urlPath.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters['roleId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UpdateRoleRequestToJSON(requestParameters['updateRoleRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateRolePermissionsRowFromJSON(jsonValue));
-    }
-
-    /**
-     * Update a role
-     */
-    async updateRole(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateRolePermissionsRow> {
-        const response = await this.updateRoleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Update a role
+	 */
+	async updateRole(
+		requestParameters: UpdateRoleOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<UpdateRolePermissionsRow> {
+		const response = await this.updateRoleRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
 }

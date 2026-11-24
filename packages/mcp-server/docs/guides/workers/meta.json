@@ -1,10 +1,6 @@
 {
-  "title": "Workers",
-  "description": "Edge functions, cron jobs, and queues on Cloudflare Workers",
-  "icon": "Zap",
-  "pages": [
-    "edge-functions",
-    "cron",
-    "queues"
-  ]
+	"title": "Workers",
+	"description": "Edge functions, cron jobs, and queues on Cloudflare Workers",
+	"icon": "Zap",
+	"pages": ["edge-functions", "cron", "queues"]
 }

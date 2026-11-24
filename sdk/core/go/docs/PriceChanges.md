@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Archived** | Pointer to [**[]PriceChange**](PriceChange.md) |  | [optional] 
-**Created** | Pointer to [**[]PriceChange**](PriceChange.md) |  | [optional] 
-**Updated** | Pointer to [**[]PriceChange**](PriceChange.md) |  | [optional] 
+| Name         | Type                                           | Description | Notes      |
+| ------------ | ---------------------------------------------- | ----------- | ---------- |
+| **Archived** | Pointer to [**[]PriceChange**](PriceChange.md) |             | [optional] |
+| **Created**  | Pointer to [**[]PriceChange**](PriceChange.md) |             | [optional] |
+| **Updated**  | Pointer to [**[]PriceChange**](PriceChange.md) |             | [optional] |
 
 ## Methods
 
@@ -56,12 +56,14 @@ HasArchived returns a boolean if a field has been set.
 
 `func (o *PriceChanges) SetArchivedNil(b bool)`
 
- SetArchivedNil sets the value for Archived to be an explicit nil
+SetArchivedNil sets the value for Archived to be an explicit nil
 
 ### UnsetArchived
+
 `func (o *PriceChanges) UnsetArchived()`
 
 UnsetArchived ensures that no value is present for Archived, not even an explicit nil
+
 ### GetCreated
 
 `func (o *PriceChanges) GetCreated() []PriceChange`
@@ -91,12 +93,14 @@ HasCreated returns a boolean if a field has been set.
 
 `func (o *PriceChanges) SetCreatedNil(b bool)`
 
- SetCreatedNil sets the value for Created to be an explicit nil
+SetCreatedNil sets the value for Created to be an explicit nil
 
 ### UnsetCreated
+
 `func (o *PriceChanges) UnsetCreated()`
 
 UnsetCreated ensures that no value is present for Created, not even an explicit nil
+
 ### GetUpdated
 
 `func (o *PriceChanges) GetUpdated() []PriceChange`
@@ -126,13 +130,12 @@ HasUpdated returns a boolean if a field has been set.
 
 `func (o *PriceChanges) SetUpdatedNil(b bool)`
 
- SetUpdatedNil sets the value for Updated to be an explicit nil
+SetUpdatedNil sets the value for Updated to be an explicit nil
 
 ### UnsetUpdated
+
 `func (o *PriceChanges) UnsetUpdated()`
 
 UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

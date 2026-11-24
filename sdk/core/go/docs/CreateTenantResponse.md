@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Message** | **string** |  | 
-**Tenant** | [**TenantPayload**](TenantPayload.md) |  | 
+| Name        | Type                                  | Description | Notes |
+| ----------- | ------------------------------------- | ----------- | ----- |
+| **Message** | **string**                            |             |
+| **Tenant**  | [**TenantPayload**](TenantPayload.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
 ### GetTenant
 
 `func (o *CreateTenantResponse) GetTenant() TenantPayload`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetTenant sets Tenant field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

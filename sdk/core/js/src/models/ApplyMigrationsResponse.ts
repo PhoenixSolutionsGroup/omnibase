@@ -12,64 +12,73 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface ApplyMigrationsResponse
  */
 export interface ApplyMigrationsResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof ApplyMigrationsResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ApplyMigrationsResponse
-     */
-    status: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ApplyMigrationsResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ApplyMigrationsResponse
+	 */
+	status: number;
 }
 
 /**
  * Check if a given object implements the ApplyMigrationsResponse interface.
  */
-export function instanceOfApplyMigrationsResponse(value: object): value is ApplyMigrationsResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('status' in value) || value['status'] === undefined) return false;
-    return true;
+export function instanceOfApplyMigrationsResponse(
+	value: object,
+): value is ApplyMigrationsResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("status" in value) || value["status"] === undefined) return false;
+	return true;
 }
 
-export function ApplyMigrationsResponseFromJSON(json: any): ApplyMigrationsResponse {
-    return ApplyMigrationsResponseFromJSONTyped(json, false);
+export function ApplyMigrationsResponseFromJSON(
+	json: any,
+): ApplyMigrationsResponse {
+	return ApplyMigrationsResponseFromJSONTyped(json, false);
 }
 
-export function ApplyMigrationsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ApplyMigrationsResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'status': json['status'],
-    };
+export function ApplyMigrationsResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ApplyMigrationsResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		status: json["status"],
+	};
 }
 
-export function ApplyMigrationsResponseToJSON(json: any): ApplyMigrationsResponse {
-    return ApplyMigrationsResponseToJSONTyped(json, false);
+export function ApplyMigrationsResponseToJSON(
+	json: any,
+): ApplyMigrationsResponse {
+	return ApplyMigrationsResponseToJSONTyped(json, false);
 }
 
-export function ApplyMigrationsResponseToJSONTyped(value?: ApplyMigrationsResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ApplyMigrationsResponseToJSONTyped(
+	value?: ApplyMigrationsResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'status': value['status'],
-    };
+	return {
+		message: value["message"],
+		status: value["status"],
+	};
 }
-

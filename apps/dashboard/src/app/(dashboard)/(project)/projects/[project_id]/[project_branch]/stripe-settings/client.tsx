@@ -1,187 +1,187 @@
 "use client";
 
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface StripeSettingsClientProps {
-  stripeAccountId: string;
-  stripeEnvironment?: string | null;
-  isOnboarded: boolean;
-  onboardingUrl?: string;
+	stripeAccountId: string;
+	stripeEnvironment?: string | null;
+	isOnboarded: boolean;
+	onboardingUrl?: string;
 }
 
 export function StripeSettingsClient({
-  stripeAccountId,
-  stripeEnvironment,
-  isOnboarded,
-  onboardingUrl,
+	stripeAccountId,
+	stripeEnvironment,
+	isOnboarded,
+	onboardingUrl,
 }: StripeSettingsClientProps) {
-  const isTestMode = stripeEnvironment === "sandbox";
+	const isTestMode = stripeEnvironment === "sandbox";
 
-  // Generate Stripe Dashboard deep links
-  const dashboardBase = isTestMode
-    ? `https://dashboard.stripe.com/test/${stripeAccountId}`
-    : `https://dashboard.stripe.com/${stripeAccountId}`;
+	// Generate Stripe Dashboard deep links
+	const dashboardBase = isTestMode
+		? `https://dashboard.stripe.com/test/${stripeAccountId}`
+		: `https://dashboard.stripe.com/${stripeAccountId}`;
 
-  const stripeDashboardUrls = {
-    branding: `${dashboardBase}/settings/branding`,
-    emails: `${dashboardBase}/settings/emails`,
-    domains: `${dashboardBase}/settings/public`,
-    account: `${dashboardBase}/settings/account`,
-  };
+	const stripeDashboardUrls = {
+		branding: `${dashboardBase}/settings/branding`,
+		emails: `${dashboardBase}/settings/emails`,
+		domains: `${dashboardBase}/settings/public`,
+		account: `${dashboardBase}/settings/account`,
+	};
 
-  const showOnboardingCta = !isOnboarded && !!onboardingUrl;
+	const showOnboardingCta = !isOnboarded && !!onboardingUrl;
 
-  return (
-    <div className="space-y-6">
-      {/* Show onboarding notice if not complete */}
-      {showOnboardingCta && (
-        <Card className="p-6 border-orange-300 dark:border-orange-700">
-          <h2 className="text-lg font-semibold mb-2">
-            Stripe Onboarding Required
-          </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Please complete Stripe onboarding to access these settings.
-          </p>
-          <div className="flex">
-            <Button className="">
-              <Link href={onboardingUrl}>Finish Stripe Onboarding</Link>
-            </Button>
-          </div>
-        </Card>
-      )}
+	return (
+		<div className="space-y-6">
+			{/* Show onboarding notice if not complete */}
+			{showOnboardingCta && (
+				<Card className="p-6 border-orange-300 dark:border-orange-700">
+					<h2 className="text-lg font-semibold mb-2">
+						Stripe Onboarding Required
+					</h2>
+					<p className="text-sm text-muted-foreground mb-4">
+						Please complete Stripe onboarding to access these settings.
+					</p>
+					<div className="flex">
+						<Button className="">
+							<Link href={onboardingUrl}>Finish Stripe Onboarding</Link>
+						</Button>
+					</div>
+				</Card>
+			)}
 
-      {isTestMode && (
-        <Card className="p-6 border-blue-300 dark:border-blue-700">
-          <h2 className="text-lg font-semibold mb-2">Sandbox Mode</h2>
-          <p className="text-sm text-muted-foreground">
-            This branch uses a sandbox (test) Stripe account. No onboarding is
-            required and all charges are in test mode.
-          </p>
-        </Card>
-      )}
+			{isTestMode && (
+				<Card className="p-6 border-blue-300 dark:border-blue-700">
+					<h2 className="text-lg font-semibold mb-2">Sandbox Mode</h2>
+					<p className="text-sm text-muted-foreground">
+						This branch uses a sandbox (test) Stripe account. No onboarding is
+						required and all charges are in test mode.
+					</p>
+				</Card>
+			)}
 
-      {/* Quick Links to Stripe Dashboard Settings */}
-      <Card className={`p-6 ${!isOnboarded ? "opacity-50" : ""}`}>
-        <h2 className="text-lg font-semibold mb-4">
-          Stripe Dashboard Settings
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Configure your branding, custom domains, and customer email settings
-          directly in your Stripe Dashboard.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a
-            href={isOnboarded ? stripeDashboardUrls.branding : "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
-              isOnboarded
-                ? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                : "cursor-not-allowed opacity-60"
-            }`}
-            onClick={(e) => !isOnboarded && e.preventDefault()}
-          >
-            <span className="font-medium">Branding (Logo, Colors)</span>
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+			{/* Quick Links to Stripe Dashboard Settings */}
+			<Card className={`p-6 ${!isOnboarded ? "opacity-50" : ""}`}>
+				<h2 className="text-lg font-semibold mb-4">
+					Stripe Dashboard Settings
+				</h2>
+				<p className="text-sm text-muted-foreground mb-6">
+					Configure your branding, custom domains, and customer email settings
+					directly in your Stripe Dashboard.
+				</p>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<a
+						href={isOnboarded ? stripeDashboardUrls.branding : "#"}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
+							isOnboarded
+								? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+								: "cursor-not-allowed opacity-60"
+						}`}
+						onClick={(e) => !isOnboarded && e.preventDefault()}
+					>
+						<span className="font-medium">Branding (Logo, Colors)</span>
+						<svg
+							className="w-4 h-4 ml-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+							/>
+						</svg>
+					</a>
 
-          <a
-            href={isOnboarded ? stripeDashboardUrls.emails : "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
-              isOnboarded
-                ? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                : "cursor-not-allowed opacity-60"
-            }`}
-            onClick={(e) => !isOnboarded && e.preventDefault()}
-          >
-            <span className="font-medium">Customer Emails</span>
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+					<a
+						href={isOnboarded ? stripeDashboardUrls.emails : "#"}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
+							isOnboarded
+								? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+								: "cursor-not-allowed opacity-60"
+						}`}
+						onClick={(e) => !isOnboarded && e.preventDefault()}
+					>
+						<span className="font-medium">Customer Emails</span>
+						<svg
+							className="w-4 h-4 ml-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+							/>
+						</svg>
+					</a>
 
-          <a
-            href={isOnboarded ? stripeDashboardUrls.domains : "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
-              isOnboarded
-                ? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                : "cursor-not-allowed opacity-60"
-            }`}
-            onClick={(e) => !isOnboarded && e.preventDefault()}
-          >
-            <span className="font-medium">Custom Domains</span>
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+					<a
+						href={isOnboarded ? stripeDashboardUrls.domains : "#"}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
+							isOnboarded
+								? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+								: "cursor-not-allowed opacity-60"
+						}`}
+						onClick={(e) => !isOnboarded && e.preventDefault()}
+					>
+						<span className="font-medium">Custom Domains</span>
+						<svg
+							className="w-4 h-4 ml-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+							/>
+						</svg>
+					</a>
 
-          <a
-            href={isOnboarded ? stripeDashboardUrls.account : "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
-              isOnboarded
-                ? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                : "cursor-not-allowed opacity-60"
-            }`}
-            onClick={(e) => !isOnboarded && e.preventDefault()}
-          >
-            <span className="font-medium">Account Settings</span>
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
-        </div>
-      </Card>
-    </div>
-  );
+					<a
+						href={isOnboarded ? stripeDashboardUrls.account : "#"}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={`flex items-center justify-between p-4 border border-input rounded-lg transition-colors ${
+							isOnboarded
+								? "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+								: "cursor-not-allowed opacity-60"
+						}`}
+						onClick={(e) => !isOnboarded && e.preventDefault()}
+					>
+						<span className="font-medium">Account Settings</span>
+						<svg
+							className="w-4 h-4 ml-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+							/>
+						</svg>
+					</a>
+				</div>
+			</Card>
+		</div>
+	);
 }

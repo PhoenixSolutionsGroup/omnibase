@@ -12,64 +12,67 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface ModelFile
  */
 export interface ModelFile {
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelFile
-     */
-    contents: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelFile
-     */
-    name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ModelFile
+	 */
+	contents: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ModelFile
+	 */
+	name: string;
 }
 
 /**
  * Check if a given object implements the ModelFile interface.
  */
 export function instanceOfModelFile(value: object): value is ModelFile {
-    if (!('contents' in value) || value['contents'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    return true;
+	if (!("contents" in value) || value["contents"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	return true;
 }
 
 export function ModelFileFromJSON(json: any): ModelFile {
-    return ModelFileFromJSONTyped(json, false);
+	return ModelFileFromJSONTyped(json, false);
 }
 
-export function ModelFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelFile {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'contents': json['contents'],
-        'name': json['name'],
-    };
+export function ModelFileFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ModelFile {
+	if (json == null) {
+		return json;
+	}
+	return {
+		contents: json["contents"],
+		name: json["name"],
+	};
 }
 
 export function ModelFileToJSON(json: any): ModelFile {
-    return ModelFileToJSONTyped(json, false);
+	return ModelFileToJSONTyped(json, false);
 }
 
-export function ModelFileToJSONTyped(value?: ModelFile | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ModelFileToJSONTyped(
+	value?: ModelFile | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'contents': value['contents'],
-        'name': value['name'],
-    };
+	return {
+		contents: value["contents"],
+		name: value["name"],
+	};
 }
-

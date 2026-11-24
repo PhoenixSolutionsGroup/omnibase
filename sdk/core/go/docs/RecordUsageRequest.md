@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**IdempotencyKey** | Pointer to **string** |  | [optional] 
-**MeterEventName** | **string** |  | 
-**Value** | **string** |  | 
+| Name               | Type                  | Description | Notes      |
+| ------------------ | --------------------- | ----------- | ---------- |
+| **IdempotencyKey** | Pointer to **string** |             | [optional] |
+| **MeterEventName** | **string**            |             |
+| **Value**          | **string**            |             |
 
 ## Methods
 
@@ -71,7 +71,6 @@ and a boolean to check if the value has been set.
 
 SetMeterEventName sets MeterEventName field to given value.
 
-
 ### GetValue
 
 `func (o *RecordUsageRequest) GetValue() string`
@@ -91,8 +90,4 @@ and a boolean to check if the value has been set.
 
 SetValue sets Value field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

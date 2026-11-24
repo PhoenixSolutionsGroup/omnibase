@@ -1,4 +1,5 @@
 ---
+
 title: Workers Overview
 description: Serverless compute at the edge with Cloudflare Workers
 ---
@@ -22,11 +23,11 @@ Workers are lightweight, serverless functions that run on Cloudflare's global ne
 ## Features
 
 - **[Edge Functions](/docs/guides/workers/edge-functions)**
-    HTTP APIs that run globally at the edge with sub-10ms latency
+  HTTP APIs that run globally at the edge with sub-10ms latency
 - **[Cron Jobs](/docs/guides/workers/cron)**
-    Scheduled tasks for automated workflows and background processing
+  Scheduled tasks for automated workflows and background processing
 - **[Queues](/docs/guides/workers/queues)**
-    Background job processing with guaranteed delivery and automatic retries
+  Background job processing with guaranteed delivery and automatic retries
 
 ## Quick Start
 
@@ -67,14 +68,14 @@ const app = new Hono();
 app.use("/*", cors());
 
 app.get("/api/hello", (c) => {
-  return c.json({
-    message: "Hello from the edge!",
-    location: c.req.header("cf-ray"),
-  });
+	return c.json({
+		message: "Hello from the edge!",
+		location: c.req.header("cf-ray"),
+	});
 });
 
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 };
 ```
 
@@ -98,9 +99,9 @@ Build REST APIs that respond in milliseconds globally:
 
 ```typescript
 app.get("/api/users/:id", async (c) => {
-  const userId = c.req.param("id");
-  const user = await fetchUser(userId);
-  return c.json(user);
+	const userId = c.req.param("id");
+	const user = await fetchUser(userId);
+	return c.json(user);
 });
 ```
 
@@ -110,9 +111,9 @@ Handle incoming webhooks from Stripe, GitHub, etc.:
 
 ```typescript
 app.post("/webhooks/stripe", async (c) => {
-  const event = await c.req.json();
-  await processStripeEvent(event);
-  return c.json({ received: true });
+	const event = await c.req.json();
+	await processStripeEvent(event);
+	return c.json({ received: true });
 });
 ```
 
@@ -122,14 +123,14 @@ Cache and optimize content at the edge:
 
 ```typescript
 app.get("/images/:id", async (c) => {
-  const id = c.req.param("id");
-  const response = await fetch(`https://storage.example.com/${id}`);
+	const id = c.req.param("id");
+	const response = await fetch(`https://storage.example.com/${id}`);
 
-  return new Response(response.body, {
-    headers: {
-      "Cache-Control": "public, max-age=31536000",
-    },
-  });
+	return new Response(response.body, {
+		headers: {
+			"Cache-Control": "public, max-age=31536000",
+		},
+	});
 });
 ```
 
@@ -139,7 +140,7 @@ Handle redirects at the edge without hitting your origin:
 
 ```typescript
 app.get("/old-path", (c) => {
-  return c.redirect("/new-path", 301);
+	return c.redirect("/new-path", 301);
 });
 ```
 
@@ -171,15 +172,15 @@ Access environment variables via `c.env` in your worker code:
 
 ```typescript
 app.get("/api/data", async (c) => {
-  const apiUrl = c.env.OMNIBASE_API_URL;
-  const apiKey = c.env.API_KEY;
+	const apiUrl = c.env.OMNIBASE_API_URL;
+	const apiKey = c.env.API_KEY;
 
-  return c.json({ connected: true });
+	return c.json({ connected: true });
 });
 ```
 
 > **Note:**
-When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically injects variables from `omnibase/environments/.env.production` into your worker.
+> When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically injects variables from `omnibase/environments/.env.production` into your worker.
 
 ## Deployment
 
@@ -221,17 +222,17 @@ Workers are designed for fast execution. Avoid heavy processing:
 ```typescript
 // ✅ Good: Quick response with offloading
 app.post("/api/process", async (c) => {
-  const data = await c.req.json();
-  // Queue heavy processing
-  await c.env.QUEUE.send({ data });
-  return c.json({ queued: true });
+	const data = await c.req.json();
+	// Queue heavy processing
+	await c.env.QUEUE.send({ data });
+	return c.json({ queued: true });
 });
 
 // ❌ Bad: Heavy processing blocks worker
 app.post("/api/process", async (c) => {
-  const data = await c.req.json();
-  await heavyProcessing(data); // Takes 5+ seconds
-  return c.json({ done: true });
+	const data = await c.req.json();
+	await heavyProcessing(data); // Takes 5+ seconds
+	return c.json({ done: true });
 });
 ```
 
@@ -241,16 +242,16 @@ Get full type safety and autocomplete:
 
 ```typescript
 type EnvVars = {
-  DATABASE_URL: string;
-  API_KEY: string;
+	DATABASE_URL: string;
+	API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: EnvVars }>();
 
 app.get("/", (c) => {
-  // c.env is now fully typed
-  const dbUrl = c.env.DATABASE_URL;
-  return c.json({ connected: true });
+	// c.env is now fully typed
+	const dbUrl = c.env.DATABASE_URL;
+	return c.json({ connected: true });
 });
 ```
 
@@ -260,25 +261,23 @@ Leverage Cloudflare's cache for static responses:
 
 ```typescript
 app.get("/api/data", async (c) => {
-  const cached = await caches.default.match(c.req.url);
-  if (cached) return cached;
+	const cached = await caches.default.match(c.req.url);
+	if (cached) return cached;
 
-  const data = await fetchData();
-  const response = c.json(data);
+	const data = await fetchData();
+	const response = c.json(data);
 
-  c.executionCtx.waitUntil(
-    caches.default.put(c.req.url, response.clone())
-  );
+	c.executionCtx.waitUntil(caches.default.put(c.req.url, response.clone()));
 
-  return response;
+	return response;
 });
 ```
 
 ## Next Steps
 
 - **[Edge Functions](/docs/guides/workers/edge-functions)**
-    Learn how to build and deploy edge functions with Hono
+  Learn how to build and deploy edge functions with Hono
 - **[Hono Documentation](https://hono.dev/)**
-    Explore Hono's full API and middleware ecosystem
+  Explore Hono's full API and middleware ecosystem
 - **[Cloudflare Workers](https://developers.cloudflare.com/workers/)**
-    Deep dive into the Workers platform
+  Deep dive into the Workers platform

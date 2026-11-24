@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreatePortalRequest
  */
 export interface CreatePortalRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreatePortalRequest
-     */
-    returnUrl: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreatePortalRequest
+	 */
+	returnUrl: string;
 }
 
 /**
  * Check if a given object implements the CreatePortalRequest interface.
  */
-export function instanceOfCreatePortalRequest(value: object): value is CreatePortalRequest {
-    if (!('returnUrl' in value) || value['returnUrl'] === undefined) return false;
-    return true;
+export function instanceOfCreatePortalRequest(
+	value: object,
+): value is CreatePortalRequest {
+	if (!("returnUrl" in value) || value["returnUrl"] === undefined) return false;
+	return true;
 }
 
 export function CreatePortalRequestFromJSON(json: any): CreatePortalRequest {
-    return CreatePortalRequestFromJSONTyped(json, false);
+	return CreatePortalRequestFromJSONTyped(json, false);
 }
 
-export function CreatePortalRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreatePortalRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'returnUrl': json['return_url'],
-    };
+export function CreatePortalRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreatePortalRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		returnUrl: json["return_url"],
+	};
 }
 
 export function CreatePortalRequestToJSON(json: any): CreatePortalRequest {
-    return CreatePortalRequestToJSONTyped(json, false);
+	return CreatePortalRequestToJSONTyped(json, false);
 }
 
-export function CreatePortalRequestToJSONTyped(value?: CreatePortalRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreatePortalRequestToJSONTyped(
+	value?: CreatePortalRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'return_url': value['returnUrl'],
-    };
+	return {
+		return_url: value["returnUrl"],
+	};
 }
-

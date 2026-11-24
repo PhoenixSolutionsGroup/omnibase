@@ -1,4 +1,5 @@
 ---
+
 title: Row-Level Security
 description: Enforce tenant isolation and access control at the database level with PostgreSQL RLS
 ---
@@ -69,13 +70,12 @@ CREATE POLICY tenant_isolation ON projects
   WITH CHECK (tenant_id = auth.active_tenant_id()::uuid);
 ```
 
-| Clause | Applies to | Purpose |
-|--------|-----------|---------|
-| `USING` | SELECT, UPDATE, DELETE | Filters which rows are visible |
-| `WITH CHECK` | INSERT, UPDATE | Validates new/modified rows |
+| Clause       | Applies to             | Purpose                        |
+| ------------ | ---------------------- | ------------------------------ |
+| `USING`      | SELECT, UPDATE, DELETE | Filters which rows are visible |
+| `WITH CHECK` | INSERT, UPDATE         | Validates new/modified rows    |
 
-> **Note:**
-  Always use `ON DELETE CASCADE` on `tenant_id` foreign keys so data is cleaned up when a tenant is deleted.
+> **Note:** Always use `ON DELETE CASCADE` on `tenant_id` foreign keys so data is cleaned up when a tenant is deleted.
 
 ---
 

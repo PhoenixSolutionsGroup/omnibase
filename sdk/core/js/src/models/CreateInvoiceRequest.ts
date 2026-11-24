@@ -12,106 +12,113 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreateInvoiceRequest
  */
 export interface CreateInvoiceRequest {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof CreateInvoiceRequest
-     */
-    autoAdvance?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateInvoiceRequest
-     */
-    collectionMethod?: CreateInvoiceRequestCollectionMethodEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateInvoiceRequest
-     */
-    currency: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateInvoiceRequest
-     */
-    daysUntilDue?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateInvoiceRequest
-     */
-    description?: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof CreateInvoiceRequest
-     */
-    metadata?: { [key: string]: string; };
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof CreateInvoiceRequest
+	 */
+	autoAdvance?: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateInvoiceRequest
+	 */
+	collectionMethod?: CreateInvoiceRequestCollectionMethodEnum;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateInvoiceRequest
+	 */
+	currency: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CreateInvoiceRequest
+	 */
+	daysUntilDue?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateInvoiceRequest
+	 */
+	description?: string;
+	/**
+	 *
+	 * @type {{ [key: string]: string; }}
+	 * @memberof CreateInvoiceRequest
+	 */
+	metadata?: { [key: string]: string };
 }
-
 
 /**
  * @export
  */
 export const CreateInvoiceRequestCollectionMethodEnum = {
-    ChargeAutomatically: 'charge_automatically',
-    SendInvoice: 'send_invoice'
+	ChargeAutomatically: "charge_automatically",
+	SendInvoice: "send_invoice",
 } as const;
-export type CreateInvoiceRequestCollectionMethodEnum = typeof CreateInvoiceRequestCollectionMethodEnum[keyof typeof CreateInvoiceRequestCollectionMethodEnum];
-
+export type CreateInvoiceRequestCollectionMethodEnum =
+	(typeof CreateInvoiceRequestCollectionMethodEnum)[keyof typeof CreateInvoiceRequestCollectionMethodEnum];
 
 /**
  * Check if a given object implements the CreateInvoiceRequest interface.
  */
-export function instanceOfCreateInvoiceRequest(value: object): value is CreateInvoiceRequest {
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    return true;
+export function instanceOfCreateInvoiceRequest(
+	value: object,
+): value is CreateInvoiceRequest {
+	if (!("currency" in value) || value["currency"] === undefined) return false;
+	return true;
 }
 
 export function CreateInvoiceRequestFromJSON(json: any): CreateInvoiceRequest {
-    return CreateInvoiceRequestFromJSONTyped(json, false);
+	return CreateInvoiceRequestFromJSONTyped(json, false);
 }
 
-export function CreateInvoiceRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateInvoiceRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'autoAdvance': json['auto_advance'] == null ? undefined : json['auto_advance'],
-        'collectionMethod': json['collection_method'] == null ? undefined : json['collection_method'],
-        'currency': json['currency'],
-        'daysUntilDue': json['days_until_due'] == null ? undefined : json['days_until_due'],
-        'description': json['description'] == null ? undefined : json['description'],
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-    };
+export function CreateInvoiceRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateInvoiceRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		autoAdvance:
+			json["auto_advance"] == null ? undefined : json["auto_advance"],
+		collectionMethod:
+			json["collection_method"] == null ? undefined : json["collection_method"],
+		currency: json["currency"],
+		daysUntilDue:
+			json["days_until_due"] == null ? undefined : json["days_until_due"],
+		description: json["description"] == null ? undefined : json["description"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+	};
 }
 
 export function CreateInvoiceRequestToJSON(json: any): CreateInvoiceRequest {
-    return CreateInvoiceRequestToJSONTyped(json, false);
+	return CreateInvoiceRequestToJSONTyped(json, false);
 }
 
-export function CreateInvoiceRequestToJSONTyped(value?: CreateInvoiceRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateInvoiceRequestToJSONTyped(
+	value?: CreateInvoiceRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'auto_advance': value['autoAdvance'],
-        'collection_method': value['collectionMethod'],
-        'currency': value['currency'],
-        'days_until_due': value['daysUntilDue'],
-        'description': value['description'],
-        'metadata': value['metadata'],
-    };
+	return {
+		auto_advance: value["autoAdvance"],
+		collection_method: value["collectionMethod"],
+		currency: value["currency"],
+		days_until_due: value["daysUntilDue"],
+		description: value["description"],
+		metadata: value["metadata"],
+	};
 }
-

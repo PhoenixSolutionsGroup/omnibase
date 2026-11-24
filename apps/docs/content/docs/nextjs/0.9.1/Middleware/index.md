@@ -1,6 +1,6 @@
 ---
-title: "Middleware"
----
+
+## title: "Middleware"
 
 # Middleware
 
@@ -12,6 +12,7 @@ Ory Kratos authentication, tenant membership validation, and PostgREST JWT
 management into a single, easy-to-configure middleware solution.
 
 Key features:
+
 - **Authentication**: Ory Kratos integration with automatic session management
 - **Tenant Validation**: Configurable tenant membership checking for protected routes
 - **PostgREST JWT**: Automatic JWT token management for direct database access
@@ -28,14 +29,14 @@ in the response.
 
 ```typescript
 // middleware.ts - Basic setup at the root of your Next.js project
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.NEXT_PUBLIC_OMNIBASE_API_URL!
+	process.env.NEXT_PUBLIC_OMNIBASE_API_URL!,
 );
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
+	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 ```
 
@@ -49,9 +50,9 @@ export const config = {
 
 ```ts
 type OmnibaseMiddlewareConfig = {
-  tenant_check: boolean;
-  tenant_check_paths: string[];
-  tenant_check_redirect_url: string;
+	tenant_check: boolean;
+	tenant_check_paths: string[];
+	tenant_check_redirect_url: string;
 };
 ```
 
@@ -68,9 +69,9 @@ users who are not part of a tenant.
 
 ```typescript
 const config: OmnibaseMiddlewareConfig = {
-  tenant_check: true,
-  tenant_check_paths: ['/dashboard/*', '/settings'],
-  tenant_check_redirect_url: '/onboarding'
+	tenant_check: true,
+	tenant_check_paths: ["/dashboard/*", "/settings"],
+	tenant_check_redirect_url: "/onboarding",
 };
 ```
 
@@ -93,7 +94,7 @@ Enable or disable tenant membership checking
 ###### Default Value
 
 ```ts
-true
+true;
 ```
 
 ##### tenant\_check\_paths
@@ -110,7 +111,7 @@ Supports exact matches and wildcard patterns (e.g., '/dashboard/*')
 ###### Default Value
 
 ```ts
-['/']
+["/"];
 ```
 
 ##### tenant\_check\_redirect\_url
@@ -126,15 +127,18 @@ URL to redirect users who are not part of a tenant
 ###### Default Value
 
 ```ts
-'/auth/onboarding'
+"/auth/onboarding";
 ```
 
-***
+---
 
 ### createOmniBaseMiddleware()
 
 ```ts
-function createOmniBaseMiddleware(api_url, config?): (req) => Promise<NextResponse<unknown>>;
+function createOmniBaseMiddleware(
+	api_url,
+	config?,
+): (req) => Promise<NextResponse<unknown>>;
 ```
 
 Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:101](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/middleware/middleware.ts#L101)
@@ -147,6 +151,7 @@ authentication via Ory, optionally checks if authenticated users belong to a
 tenant, and ensures PostgREST JWT tokens are available for database access.
 
 The middleware performs the following operations in order:
+
 1. Retrieves the current user session
 2. Validates tenant membership for configured paths (if enabled)
 3. Ensures PostgREST JWT token is available for database access
@@ -154,16 +159,17 @@ The middleware performs the following operations in order:
 5. Merges cookies from all middleware operations
 
 Path matching supports both exact matches and wildcard patterns:
+
 - Exact: '/dashboard' matches only '/dashboard'
 - Prefix: '/dashboard' also matches '/dashboard/settings'
 - Wildcard: '/api/*' matches all paths starting with '/api/'
 
 #### Parameters
 
-| Parameter | Type | Default value | Description |
-| ------ | ------ | ------ | ------ |
-| `api_url` | `string` | `undefined` | The OmniBase API URL (typically from NEXT_PUBLIC_OMNIBASE_API_URL) |
-| `config` | [`OmnibaseMiddlewareConfig`](#omnibasemiddlewareconfig) | `defaultConfig` | Configuration object for middleware behavior (optional) |
+| Parameter | Type                                                    | Default value   | Description                                                        |
+| --------- | ------------------------------------------------------- | --------------- | ------------------------------------------------------------------ |
+| `api_url` | `string`                                                | `undefined`     | The OmniBase API URL (typically from NEXT_PUBLIC_OMNIBASE_API_URL) |
+| `config`  | [`OmnibaseMiddlewareConfig`](#omnibasemiddlewareconfig) | `defaultConfig` | Configuration object for middleware behavior (optional)            |
 
 #### Returns
 
@@ -175,9 +181,9 @@ Next.js middleware function that can be exported from middleware.ts
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `req` | `NextRequest` |
+| Parameter | Type          |
+| --------- | ------------- |
+| `req`     | `NextRequest` |
 
 ##### Returns
 
@@ -187,14 +193,14 @@ Next.js middleware function that can be exported from middleware.ts
 
 ```typescript
 // middleware.ts - Basic usage with default configuration
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export const middleware = createOmniBaseMiddleware(
-  process.env.NEXT_PUBLIC_OMNIBASE_API_URL!
+	process.env.NEXT_PUBLIC_OMNIBASE_API_URL!,
 );
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
+	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 ```
 

@@ -1,114 +1,114 @@
 "use client";
 
-import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 
 interface DeleteSectionProps {
-  onDeleteTenant: () => Promise<void>;
+	onDeleteTenant: () => Promise<void>;
 }
 
 export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
-  const router = useRouter();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
+	const router = useRouter();
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const handleDeleteTenant = async () => {
-    setIsDeleting(true);
-    setDeleteError(null);
+	const handleDeleteTenant = async () => {
+		setIsDeleting(true);
+		setDeleteError(null);
 
-    try {
-      await onDeleteTenant();
-      router.push("/");
-      router.refresh();
-    } catch (error) {
-      setDeleteError(
-        error instanceof Error ? error.message : "An error occurred",
-      );
-      setIsDeleting(false);
-    }
-  };
+		try {
+			await onDeleteTenant();
+			router.push("/");
+			router.refresh();
+		} catch (error) {
+			setDeleteError(
+				error instanceof Error ? error.message : "An error occurred",
+			);
+			setIsDeleting(false);
+		}
+	};
 
-  return (
-    <>
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>
-            Irreversible and destructive actions
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/5 p-4">
-            <div className="space-y-1">
-              <h3 className="font-medium">Delete Organization</h3>
-              <p className="text-sm text-muted-foreground">
-                Permanently delete this organization and all of its data. This
-                action cannot be undone.
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsDeleteModalOpen(true)}
-              variant="destructive"
-            >
-              Delete Organization
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+	return (
+		<>
+			<Card className="border-destructive">
+				<CardHeader>
+					<CardTitle className="text-destructive">Danger Zone</CardTitle>
+					<CardDescription>
+						Irreversible and destructive actions
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					<div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+						<div className="space-y-1">
+							<h3 className="font-medium">Delete Organization</h3>
+							<p className="text-sm text-muted-foreground">
+								Permanently delete this organization and all of its data. This
+								action cannot be undone.
+							</p>
+						</div>
+						<Button
+							onClick={() => setIsDeleteModalOpen(true)}
+							variant="destructive"
+						>
+							Delete Organization
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
 
-      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Organization</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this organization? This action
-              cannot be undone and will permanently delete all organization
-              data, including all users, projects, and settings.
-            </DialogDescription>
-          </DialogHeader>
+			<Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Delete Organization</DialogTitle>
+						<DialogDescription>
+							Are you sure you want to delete this organization? This action
+							cannot be undone and will permanently delete all organization
+							data, including all users, projects, and settings.
+						</DialogDescription>
+					</DialogHeader>
 
-          {deleteError && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {deleteError}
-            </div>
-          )}
+					{deleteError && (
+						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+							{deleteError}
+						</div>
+					)}
 
-          <DialogFooter>
-            <Button
-              onClick={() => setIsDeleteModalOpen(false)}
-              disabled={isDeleting}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleDeleteTenant}
-              disabled={isDeleting}
-              variant="destructive"
-            >
-              {isDeleting ? "Deleting..." : "Delete Organization"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
+					<DialogFooter>
+						<Button
+							onClick={() => setIsDeleteModalOpen(false)}
+							disabled={isDeleting}
+							variant="outline"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleDeleteTenant}
+							disabled={isDeleting}
+							variant="destructive"
+						>
+							{isDeleting ? "Deleting..." : "Delete Organization"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		</>
+	);
 }

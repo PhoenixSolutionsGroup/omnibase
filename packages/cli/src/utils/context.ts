@@ -1,16 +1,16 @@
-import { Command } from "commander";
-import { selectEnvironment, EnvironmentConfig } from "./environment";
+import type { Command } from "commander";
+import { type EnvironmentConfig, selectEnvironment } from "./environment";
 
 export type ComposeMode = "dev" | "test" | "default";
 
 export interface CommandContext {
-  environment: string;
-  mode: ComposeMode;
+	environment: string;
+	mode: ComposeMode;
 }
 
 export interface CommandContextWithEnv {
-  env: EnvironmentConfig;
-  mode: ComposeMode;
+	env: EnvironmentConfig;
+	mode: ComposeMode;
 }
 
 /**
@@ -18,11 +18,11 @@ export interface CommandContextWithEnv {
  * Use this for local-only commands (start, stop)
  */
 export function getCommandContext(program: Command): CommandContext {
-  const opts = program.opts();
-  return {
-    environment: opts.env,
-    mode: opts.mode || "default",
-  };
+	const opts = program.opts();
+	return {
+		environment: opts.env,
+		mode: opts.mode || "default",
+	};
 }
 
 /**
@@ -31,12 +31,12 @@ export function getCommandContext(program: Command): CommandContext {
  * Use this for remote commands (db push, permissions push, sync, etc.)
  */
 export async function getCommandContextWithEnv(
-  program: Command
+	program: Command,
 ): Promise<CommandContextWithEnv> {
-  const opts = program.opts();
-  const env = await selectEnvironment(opts.env);
-  return {
-    env,
-    mode: opts.mode || "default",
-  };
+	const opts = program.opts();
+	const env = await selectEnvironment(opts.env);
+	return {
+		env,
+		mode: opts.mode || "default",
+	};
 }

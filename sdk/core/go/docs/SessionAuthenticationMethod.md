@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**Aal** | Pointer to **string** |  | [optional] 
-**CompletedAt** | Pointer to **time.Time** |  | [optional] 
-**Method** | Pointer to **string** |  | [optional] 
-**Organization** | Pointer to **string** |  | [optional] 
-**Provider** | Pointer to **string** |  | [optional] 
+| Name                          | Type                                  | Description | Notes      |
+| ----------------------------- | ------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}** |             | [optional] |
+| **Aal**                       | Pointer to **string**                 |             | [optional] |
+| **CompletedAt**               | Pointer to **time.Time**              |             | [optional] |
+| **Method**                    | Pointer to **string**                 |             | [optional] |
+| **Organization**              | Pointer to **string**                 |             | [optional] |
+| **Provider**                  | Pointer to **string**                 |             | [optional] |
 
 ## Methods
 
@@ -180,7 +180,4 @@ SetProvider sets Provider field to given value.
 
 HasProvider returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

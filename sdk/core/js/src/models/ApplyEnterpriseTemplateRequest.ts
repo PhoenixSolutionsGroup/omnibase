@@ -12,64 +12,77 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface ApplyEnterpriseTemplateRequest
  */
 export interface ApplyEnterpriseTemplateRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof ApplyEnterpriseTemplateRequest
-     */
-    enterpriseTemplate: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ApplyEnterpriseTemplateRequest
-     */
-    tenantId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ApplyEnterpriseTemplateRequest
+	 */
+	enterpriseTemplate: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ApplyEnterpriseTemplateRequest
+	 */
+	tenantId: string;
 }
 
 /**
  * Check if a given object implements the ApplyEnterpriseTemplateRequest interface.
  */
-export function instanceOfApplyEnterpriseTemplateRequest(value: object): value is ApplyEnterpriseTemplateRequest {
-    if (!('enterpriseTemplate' in value) || value['enterpriseTemplate'] === undefined) return false;
-    if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
-    return true;
+export function instanceOfApplyEnterpriseTemplateRequest(
+	value: object,
+): value is ApplyEnterpriseTemplateRequest {
+	if (
+		!("enterpriseTemplate" in value) ||
+		value["enterpriseTemplate"] === undefined
+	)
+		return false;
+	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	return true;
 }
 
-export function ApplyEnterpriseTemplateRequestFromJSON(json: any): ApplyEnterpriseTemplateRequest {
-    return ApplyEnterpriseTemplateRequestFromJSONTyped(json, false);
+export function ApplyEnterpriseTemplateRequestFromJSON(
+	json: any,
+): ApplyEnterpriseTemplateRequest {
+	return ApplyEnterpriseTemplateRequestFromJSONTyped(json, false);
 }
 
-export function ApplyEnterpriseTemplateRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): ApplyEnterpriseTemplateRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'enterpriseTemplate': json['enterprise_template'],
-        'tenantId': json['tenant_id'],
-    };
+export function ApplyEnterpriseTemplateRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ApplyEnterpriseTemplateRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		enterpriseTemplate: json["enterprise_template"],
+		tenantId: json["tenant_id"],
+	};
 }
 
-export function ApplyEnterpriseTemplateRequestToJSON(json: any): ApplyEnterpriseTemplateRequest {
-    return ApplyEnterpriseTemplateRequestToJSONTyped(json, false);
+export function ApplyEnterpriseTemplateRequestToJSON(
+	json: any,
+): ApplyEnterpriseTemplateRequest {
+	return ApplyEnterpriseTemplateRequestToJSONTyped(json, false);
 }
 
-export function ApplyEnterpriseTemplateRequestToJSONTyped(value?: ApplyEnterpriseTemplateRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ApplyEnterpriseTemplateRequestToJSONTyped(
+	value?: ApplyEnterpriseTemplateRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'enterprise_template': value['enterpriseTemplate'],
-        'tenant_id': value['tenantId'],
-    };
+	return {
+		enterprise_template: value["enterpriseTemplate"],
+		tenant_id: value["tenantId"],
+	};
 }
-

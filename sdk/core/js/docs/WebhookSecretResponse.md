@@ -1,19 +1,17 @@
-
 # WebhookSecretResponse
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`stripeId` | string
-`url` | string
-`secret` | string
-`events` | Array&lt;string&gt;
-`connect` | boolean
-`createdAt` | Date
-`updatedAt` | Date
+| Name        | Type                |
+| ----------- | ------------------- |
+| `id`        | string              |
+| `stripeId`  | string              |
+| `url`       | string              |
+| `secret`    | string              |
+| `events`    | Array&lt;string&gt; |
+| `connect`   | boolean             |
+| `createdAt` | Date                |
+| `updatedAt` | Date                |
 
 ## Example
 
@@ -44,5 +42,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Created** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
-**Deactivated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
-**Updated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
+| Name            | Type                                                           | Description | Notes      |
+| --------------- | -------------------------------------------------------------- | ----------- | ---------- |
+| **Created**     | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |             | [optional] |
+| **Deactivated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |             | [optional] |
+| **Updated**     | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |             | [optional] |
 
 ## Methods
 
@@ -56,12 +56,14 @@ HasCreated returns a boolean if a field has been set.
 
 `func (o *PromotionCodeChanges) SetCreatedNil(b bool)`
 
- SetCreatedNil sets the value for Created to be an explicit nil
+SetCreatedNil sets the value for Created to be an explicit nil
 
 ### UnsetCreated
+
 `func (o *PromotionCodeChanges) UnsetCreated()`
 
 UnsetCreated ensures that no value is present for Created, not even an explicit nil
+
 ### GetDeactivated
 
 `func (o *PromotionCodeChanges) GetDeactivated() []PromotionCodeChange`
@@ -91,12 +93,14 @@ HasDeactivated returns a boolean if a field has been set.
 
 `func (o *PromotionCodeChanges) SetDeactivatedNil(b bool)`
 
- SetDeactivatedNil sets the value for Deactivated to be an explicit nil
+SetDeactivatedNil sets the value for Deactivated to be an explicit nil
 
 ### UnsetDeactivated
+
 `func (o *PromotionCodeChanges) UnsetDeactivated()`
 
 UnsetDeactivated ensures that no value is present for Deactivated, not even an explicit nil
+
 ### GetUpdated
 
 `func (o *PromotionCodeChanges) GetUpdated() []PromotionCodeChange`
@@ -126,13 +130,12 @@ HasUpdated returns a boolean if a field has been set.
 
 `func (o *PromotionCodeChanges) SetUpdatedNil(b bool)`
 
- SetUpdatedNil sets the value for Updated to be an explicit nil
+SetUpdatedNil sets the value for Updated to be an explicit nil
 
 ### UnsetUpdated
+
 `func (o *PromotionCodeChanges) UnsetUpdated()`
 
 UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

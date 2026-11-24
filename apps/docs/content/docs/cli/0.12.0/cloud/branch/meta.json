@@ -1,10 +1,4 @@
 {
-  "title": "Branch",
-  "pages": [
-    "new",
-    "ensure",
-    "env",
-    "list",
-    "rm"
-  ]
+	"title": "Branch",
+	"pages": ["new", "ensure", "env", "list", "rm"]
 }

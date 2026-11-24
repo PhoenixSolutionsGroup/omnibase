@@ -12,73 +12,79 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface RemoveResponse
  */
 export interface RemoveResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RemoveResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RemoveResponse
-     */
-    status: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RemoveResponse
-     */
-    subscriptionId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RemoveResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RemoveResponse
+	 */
+	status: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RemoveResponse
+	 */
+	subscriptionId: string;
 }
 
 /**
  * Check if a given object implements the RemoveResponse interface.
  */
-export function instanceOfRemoveResponse(value: object): value is RemoveResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('status' in value) || value['status'] === undefined) return false;
-    if (!('subscriptionId' in value) || value['subscriptionId'] === undefined) return false;
-    return true;
+export function instanceOfRemoveResponse(
+	value: object,
+): value is RemoveResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("status" in value) || value["status"] === undefined) return false;
+	if (!("subscriptionId" in value) || value["subscriptionId"] === undefined)
+		return false;
+	return true;
 }
 
 export function RemoveResponseFromJSON(json: any): RemoveResponse {
-    return RemoveResponseFromJSONTyped(json, false);
+	return RemoveResponseFromJSONTyped(json, false);
 }
 
-export function RemoveResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): RemoveResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'status': json['status'],
-        'subscriptionId': json['subscription_id'],
-    };
+export function RemoveResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): RemoveResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		status: json["status"],
+		subscriptionId: json["subscription_id"],
+	};
 }
 
 export function RemoveResponseToJSON(json: any): RemoveResponse {
-    return RemoveResponseToJSONTyped(json, false);
+	return RemoveResponseToJSONTyped(json, false);
 }
 
-export function RemoveResponseToJSONTyped(value?: RemoveResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function RemoveResponseToJSONTyped(
+	value?: RemoveResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'status': value['status'],
-        'subscription_id': value['subscriptionId'],
-    };
+	return {
+		message: value["message"],
+		status: value["status"],
+		subscription_id: value["subscriptionId"],
+	};
 }
-

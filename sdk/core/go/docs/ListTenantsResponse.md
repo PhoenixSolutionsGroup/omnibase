@@ -2,9 +2,9 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Tenants** | [**[]UserTenantListItem**](UserTenantListItem.md) |  | 
+| Name        | Type                                              | Description | Notes |
+| ----------- | ------------------------------------------------- | ----------- | ----- |
+| **Tenants** | [**[]UserTenantListItem**](UserTenantListItem.md) |             |
 
 ## Methods
 
@@ -44,18 +44,16 @@ and a boolean to check if the value has been set.
 
 SetTenants sets Tenants field to given value.
 
-
 ### SetTenantsNil
 
 `func (o *ListTenantsResponse) SetTenantsNil(b bool)`
 
- SetTenantsNil sets the value for Tenants to be an explicit nil
+SetTenantsNil sets the value for Tenants to be an explicit nil
 
 ### UnsetTenants
+
 `func (o *ListTenantsResponse) UnsetTenants()`
 
 UnsetTenants ensures that no value is present for Tenants, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

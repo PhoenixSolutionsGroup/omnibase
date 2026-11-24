@@ -1,4 +1,5 @@
 ---
+
 title: Quickstart
 description: Go from zero to a working app with auth and multi-tenancy in 15 minutes
 ---
@@ -69,7 +70,7 @@ STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 > **Note:**
-For local development, you can use your own Stripe keys. Real keys are required for payment features.
+> For local development, you can use your own Stripe keys. Real keys are required for payment features.
 
 ---
 
@@ -82,6 +83,7 @@ omnibase start
 ```
 
 This starts:
+
 - **API** at `http://localhost:8080`
 - **PostgreSQL** database
 - **Ory Kratos** (authentication)
@@ -105,6 +107,7 @@ omnibase sync all
 ```
 
 This syncs:
+
 - Permission namespaces to Keto
 - Database migrations
 - Email templates
@@ -125,45 +128,45 @@ bun add @omnibase/core-js
 Create a user and tenant programmatically:
 
 ```typescript
-import { Configuration, V1AuthApi, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1AuthApi, V1TenantsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: 'http://localhost:8080',
-  headers: {
-    'X-Service-Key': 'your-secret-service-key', // For server-side operations
-  },
+	basePath: "http://localhost:8080",
+	headers: {
+		"X-Service-Key": "your-secret-service-key", // For server-side operations
+	},
 });
 
 // Create a user
 const authApi = new V1AuthApi(config);
 const { data: userData } = await authApi.createUser({
-  createUserRequest: {
-    email: 'admin@example.com',
-    password: 'secure-password-123',
-    name: { first: 'Admin', last: 'User' },
-  },
+	createUserRequest: {
+		email: "admin@example.com",
+		password: "secure-password-123",
+		name: { first: "Admin", last: "User" },
+	},
 });
 
-console.log('User created:', userData.data.id);
+console.log("User created:", userData.data.id);
 
 // Create a tenant (organization)
 const tenantsApi = new V1TenantsApi(config);
 const { data: tenantData } = await tenantsApi.createTenant(
-  {
-    createTenantRequest: {
-      name: 'Acme Corporation',
-      billingEmail: 'billing@acme.com',
-    },
-  },
-  { headers: { 'X-User-Id': userData.data.id } }
+	{
+		createTenantRequest: {
+			name: "Acme Corporation",
+			billingEmail: "billing@acme.com",
+		},
+	},
+	{ headers: { "X-User-Id": userData.data.id } },
 );
 
-console.log('Tenant created:', tenantData.data.tenant.id);
-console.log('Stripe Customer:', tenantData.data.tenant.stripe_customer_id);
+console.log("Tenant created:", tenantData.data.tenant.id);
+console.log("Stripe Customer:", tenantData.data.tenant.stripe_customer_id);
 ```
 
 > **Note:**
-When a tenant is created, OmniBase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
+> When a tenant is created, OmniBase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
 
 ---
 
@@ -173,44 +176,44 @@ Create a billing configuration in `omnibase/stripe/products.config.json`:
 
 ```json
 {
-  "$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
-  "version": "1.0.0",
-  "products": [
-    {
-      "id": "free_plan",
-      "name": "Free",
-      "description": "Get started for free",
-      "type": "service",
-      "prices": [
-        {
-          "id": "free_monthly",
-          "amount": 0,
-          "currency": "usd",
-          "interval": "month"
-        }
-      ]
-    },
-    {
-      "id": "pro_plan",
-      "name": "Professional",
-      "description": "For growing teams",
-      "type": "service",
-      "prices": [
-        {
-          "id": "pro_monthly",
-          "amount": 2900,
-          "currency": "usd",
-          "interval": "month"
-        },
-        {
-          "id": "pro_yearly",
-          "amount": 29000,
-          "currency": "usd",
-          "interval": "year"
-        }
-      ]
-    }
-  ]
+	"$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
+	"version": "1.0.0",
+	"products": [
+		{
+			"id": "free_plan",
+			"name": "Free",
+			"description": "Get started for free",
+			"type": "service",
+			"prices": [
+				{
+					"id": "free_monthly",
+					"amount": 0,
+					"currency": "usd",
+					"interval": "month"
+				}
+			]
+		},
+		{
+			"id": "pro_plan",
+			"name": "Professional",
+			"description": "For growing teams",
+			"type": "service",
+			"prices": [
+				{
+					"id": "pro_monthly",
+					"amount": 2900,
+					"currency": "usd",
+					"interval": "month"
+				},
+				{
+					"id": "pro_yearly",
+					"amount": 29000,
+					"currency": "usd",
+					"interval": "year"
+				}
+			]
+		}
+	]
 }
 ```
 
@@ -242,19 +245,19 @@ Prices created: 3
 Now create a checkout session for your tenant:
 
 ```typescript
-import { V1PaymentsApi } from '@omnibase/core-js';
+import { V1PaymentsApi } from "@omnibase/core-js";
 
 const paymentsApi = new V1PaymentsApi(config);
 
 const { data: checkout } = await paymentsApi.createCheckout({
-  createCheckoutRequest: {
-    priceId: 'pro_monthly',
-    successUrl: 'http://localhost:3000/success',
-    cancelUrl: 'http://localhost:3000/pricing',
-  },
+	createCheckoutRequest: {
+		priceId: "pro_monthly",
+		successUrl: "http://localhost:3000/success",
+		cancelUrl: "http://localhost:3000/pricing",
+	},
 });
 
-console.log('Checkout URL:', checkout.data.url);
+console.log("Checkout URL:", checkout.data.url);
 // Redirect user to checkout.data.url
 ```
 
@@ -263,6 +266,7 @@ console.log('Checkout URL:', checkout.data.url);
 ## Next Steps
 
 You now have a working OmniBase setup with:
+
 - User authentication via Ory Kratos
 - Multi-tenant organization support
 - Stripe billing integration
@@ -293,6 +297,7 @@ This gracefully shuts down all Docker containers while preserving your data.
 ### Services won't start
 
 Check Docker is running:
+
 ```bash
 docker info
 ```
@@ -300,6 +305,7 @@ docker info
 ### Health check fails
 
 View service logs:
+
 ```bash
 docker logs api-rest-api-1
 docker logs api-auth-1

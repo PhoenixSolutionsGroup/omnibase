@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Amount** | **int64** |  | 
-**Description** | **string** |  | 
-**Id** | **string** |  | 
+| Name            | Type       | Description | Notes |
+| --------------- | ---------- | ----------- | ----- |
+| **Amount**      | **int64**  |             |
+| **Description** | **string** |             |
+| **Id**          | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetAmount sets Amount field to given value.
 
-
 ### GetDescription
 
 `func (o *InvoiceLineItemResponse) GetDescription() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *InvoiceLineItemResponse) SetDescription(v string)`
 
 SetDescription sets Description field to given value.
-
 
 ### GetId
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

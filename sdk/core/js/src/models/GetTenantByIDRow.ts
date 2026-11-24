@@ -12,118 +12,129 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface GetTenantByIDRow
  */
 export interface GetTenantByIDRow {
-    /**
-     * 
-     * @type {Date}
-     * @memberof GetTenantByIDRow
-     */
-    createdAt: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    enterpriseId: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    enterpriseTemplate: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    stripeCustomerId: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByIDRow
-     */
-    type: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof GetTenantByIDRow
-     */
-    updatedAt: Date;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof GetTenantByIDRow
+	 */
+	createdAt: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	enterpriseId: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	enterpriseTemplate: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	stripeCustomerId: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetTenantByIDRow
+	 */
+	type: string;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof GetTenantByIDRow
+	 */
+	updatedAt: Date;
 }
 
 /**
  * Check if a given object implements the GetTenantByIDRow interface.
  */
-export function instanceOfGetTenantByIDRow(value: object): value is GetTenantByIDRow {
-    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
-    if (!('enterpriseId' in value) || value['enterpriseId'] === undefined) return false;
-    if (!('enterpriseTemplate' in value) || value['enterpriseTemplate'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('stripeCustomerId' in value) || value['stripeCustomerId'] === undefined) return false;
-    if (!('type' in value) || value['type'] === undefined) return false;
-    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
-    return true;
+export function instanceOfGetTenantByIDRow(
+	value: object,
+): value is GetTenantByIDRow {
+	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+	if (!("enterpriseId" in value) || value["enterpriseId"] === undefined)
+		return false;
+	if (
+		!("enterpriseTemplate" in value) ||
+		value["enterpriseTemplate"] === undefined
+	)
+		return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("stripeCustomerId" in value) || value["stripeCustomerId"] === undefined)
+		return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	return true;
 }
 
 export function GetTenantByIDRowFromJSON(json: any): GetTenantByIDRow {
-    return GetTenantByIDRowFromJSONTyped(json, false);
+	return GetTenantByIDRowFromJSONTyped(json, false);
 }
 
-export function GetTenantByIDRowFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetTenantByIDRow {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'createdAt': (new Date(json['created_at'])),
-        'enterpriseId': json['enterprise_id'],
-        'enterpriseTemplate': json['enterprise_template'],
-        'id': json['id'],
-        'name': json['name'],
-        'stripeCustomerId': json['stripe_customer_id'],
-        'type': json['type'],
-        'updatedAt': (new Date(json['updated_at'])),
-    };
+export function GetTenantByIDRowFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): GetTenantByIDRow {
+	if (json == null) {
+		return json;
+	}
+	return {
+		createdAt: new Date(json["created_at"]),
+		enterpriseId: json["enterprise_id"],
+		enterpriseTemplate: json["enterprise_template"],
+		id: json["id"],
+		name: json["name"],
+		stripeCustomerId: json["stripe_customer_id"],
+		type: json["type"],
+		updatedAt: new Date(json["updated_at"]),
+	};
 }
 
 export function GetTenantByIDRowToJSON(json: any): GetTenantByIDRow {
-    return GetTenantByIDRowToJSONTyped(json, false);
+	return GetTenantByIDRowToJSONTyped(json, false);
 }
 
-export function GetTenantByIDRowToJSONTyped(value?: GetTenantByIDRow | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function GetTenantByIDRowToJSONTyped(
+	value?: GetTenantByIDRow | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'created_at': value['createdAt'].toISOString(),
-        'enterprise_id': value['enterpriseId'],
-        'enterprise_template': value['enterpriseTemplate'],
-        'id': value['id'],
-        'name': value['name'],
-        'stripe_customer_id': value['stripeCustomerId'],
-        'type': value['type'],
-        'updated_at': value['updatedAt'].toISOString(),
-    };
+	return {
+		created_at: value["createdAt"].toISOString(),
+		enterprise_id: value["enterpriseId"],
+		enterprise_template: value["enterpriseTemplate"],
+		id: value["id"],
+		name: value["name"],
+		stripe_customer_id: value["stripeCustomerId"],
+		type: value["type"],
+		updated_at: value["updatedAt"].toISOString(),
+	};
 }
-

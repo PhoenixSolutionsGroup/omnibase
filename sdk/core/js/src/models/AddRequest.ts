@@ -12,72 +12,76 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AddRequest
  */
 export interface AddRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof AddRequest
-     */
-    idempotencyKey: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddRequest
-     */
-    planId: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AddRequest
-     */
-    quantity?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddRequest
+	 */
+	idempotencyKey: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddRequest
+	 */
+	planId: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof AddRequest
+	 */
+	quantity?: number;
 }
 
 /**
  * Check if a given object implements the AddRequest interface.
  */
 export function instanceOfAddRequest(value: object): value is AddRequest {
-    if (!('idempotencyKey' in value) || value['idempotencyKey'] === undefined) return false;
-    if (!('planId' in value) || value['planId'] === undefined) return false;
-    return true;
+	if (!("idempotencyKey" in value) || value["idempotencyKey"] === undefined)
+		return false;
+	if (!("planId" in value) || value["planId"] === undefined) return false;
+	return true;
 }
 
 export function AddRequestFromJSON(json: any): AddRequest {
-    return AddRequestFromJSONTyped(json, false);
+	return AddRequestFromJSONTyped(json, false);
 }
 
-export function AddRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'idempotencyKey': json['idempotency_key'],
-        'planId': json['plan_id'],
-        'quantity': json['quantity'] == null ? undefined : json['quantity'],
-    };
+export function AddRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AddRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		idempotencyKey: json["idempotency_key"],
+		planId: json["plan_id"],
+		quantity: json["quantity"] == null ? undefined : json["quantity"],
+	};
 }
 
 export function AddRequestToJSON(json: any): AddRequest {
-    return AddRequestToJSONTyped(json, false);
+	return AddRequestToJSONTyped(json, false);
 }
 
-export function AddRequestToJSONTyped(value?: AddRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AddRequestToJSONTyped(
+	value?: AddRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'idempotency_key': value['idempotencyKey'],
-        'plan_id': value['planId'],
-        'quantity': value['quantity'],
-    };
+	return {
+		idempotency_key: value["idempotencyKey"],
+		plan_id: value["planId"],
+		quantity: value["quantity"],
+	};
 }
-

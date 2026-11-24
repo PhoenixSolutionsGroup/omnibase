@@ -12,271 +12,331 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  DeleteObjectRequest,
-  DeleteObjectResponse,
-  DownloadRequest,
-  DownloadResponse,
-  ErrorModel,
-  MakePublicRequest,
-  MakePublicResponse,
-  UploadRequest,
-  UploadResponse,
-} from '../models/index';
+	DeleteObjectRequest,
+	DeleteObjectResponse,
+	DownloadRequest,
+	DownloadResponse,
+	ErrorModel,
+	MakePublicRequest,
+	MakePublicResponse,
+	UploadRequest,
+	UploadResponse,
+} from "../models/index";
 import {
-    DeleteObjectRequestFromJSON,
-    DeleteObjectRequestToJSON,
-    DeleteObjectResponseFromJSON,
-    DeleteObjectResponseToJSON,
-    DownloadRequestFromJSON,
-    DownloadRequestToJSON,
-    DownloadResponseFromJSON,
-    DownloadResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    MakePublicRequestFromJSON,
-    MakePublicRequestToJSON,
-    MakePublicResponseFromJSON,
-    MakePublicResponseToJSON,
-    UploadRequestFromJSON,
-    UploadRequestToJSON,
-    UploadResponseFromJSON,
-    UploadResponseToJSON,
-} from '../models/index';
+	DeleteObjectRequestFromJSON,
+	DeleteObjectRequestToJSON,
+	DeleteObjectResponseFromJSON,
+	DeleteObjectResponseToJSON,
+	DownloadRequestFromJSON,
+	DownloadRequestToJSON,
+	DownloadResponseFromJSON,
+	DownloadResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	MakePublicRequestFromJSON,
+	MakePublicRequestToJSON,
+	MakePublicResponseFromJSON,
+	MakePublicResponseToJSON,
+	UploadRequestFromJSON,
+	UploadRequestToJSON,
+	UploadResponseFromJSON,
+	UploadResponseToJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface DeleteObjectOperationRequest {
-    deleteObjectRequest: DeleteObjectRequest;
+	deleteObjectRequest: DeleteObjectRequest;
 }
 
 export interface DownloadFileRequest {
-    downloadRequest: DownloadRequest;
+	downloadRequest: DownloadRequest;
 }
 
 export interface MakeFilePublicRequest {
-    makePublicRequest: MakePublicRequest;
+	makePublicRequest: MakePublicRequest;
 }
 
 export interface UploadFileRequest {
-    uploadRequest: UploadRequest;
+	uploadRequest: UploadRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1StorageApi extends runtime.BaseAPI {
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Delete file from storage
+	 */
+	async deleteObjectRaw(
+		requestParameters: DeleteObjectOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<DeleteObjectResponse>> {
+		if (requestParameters["deleteObjectRequest"] == null) {
+			throw new runtime.RequiredError(
+				"deleteObjectRequest",
+				'Required parameter "deleteObjectRequest" was null or undefined when calling deleteObject().',
+			);
+		}
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Delete file from storage
-     */
-    async deleteObjectRaw(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteObjectResponse>> {
-        if (requestParameters['deleteObjectRequest'] == null) {
-            throw new runtime.RequiredError(
-                'deleteObjectRequest',
-                'Required parameter "deleteObjectRequest" was null or undefined when calling deleteObject().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const urlPath = `/api/v1/storage/object`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+				body: DeleteObjectRequestToJSON(
+					requestParameters["deleteObjectRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/storage/object`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			DeleteObjectResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DeleteObjectRequestToJSON(requestParameters['deleteObjectRequest']),
-        }, initOverrides);
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Delete file from storage
+	 */
+	async deleteObject(
+		requestParameters: DeleteObjectOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<DeleteObjectResponse> {
+		const response = await this.deleteObjectRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteObjectResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Download file from storage
+	 */
+	async downloadFileRaw(
+		requestParameters: DownloadFileRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<DownloadResponse>> {
+		if (requestParameters["downloadRequest"] == null) {
+			throw new runtime.RequiredError(
+				"downloadRequest",
+				'Required parameter "downloadRequest" was null or undefined when calling downloadFile().',
+			);
+		}
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Delete file from storage
-     */
-    async deleteObject(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteObjectResponse> {
-        const response = await this.deleteObjectRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Download file from storage
-     */
-    async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DownloadResponse>> {
-        if (requestParameters['downloadRequest'] == null) {
-            throw new runtime.RequiredError(
-                'downloadRequest',
-                'Required parameter "downloadRequest" was null or undefined when calling downloadFile().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const urlPath = `/api/v1/storage/download`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: DownloadRequestToJSON(requestParameters["downloadRequest"]),
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			DownloadResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/storage/download`;
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Download file from storage
+	 */
+	async downloadFile(
+		requestParameters: DownloadFileRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<DownloadResponse> {
+		const response = await this.downloadFileRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DownloadRequestToJSON(requestParameters['downloadRequest']),
-        }, initOverrides);
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Make a file publicly accessible
+	 */
+	async makeFilePublicRaw(
+		requestParameters: MakeFilePublicRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<MakePublicResponse>> {
+		if (requestParameters["makePublicRequest"] == null) {
+			throw new runtime.RequiredError(
+				"makePublicRequest",
+				'Required parameter "makePublicRequest" was null or undefined when calling makeFilePublic().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DownloadResponseFromJSON(jsonValue));
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Download file from storage
-     */
-    async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadResponse> {
-        const response = await this.downloadFileRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Make a file publicly accessible
-     */
-    async makeFilePublicRaw(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MakePublicResponse>> {
-        if (requestParameters['makePublicRequest'] == null) {
-            throw new runtime.RequiredError(
-                'makePublicRequest',
-                'Required parameter "makePublicRequest" was null or undefined when calling makeFilePublic().'
-            );
-        }
+		headerParameters["Content-Type"] = "application/json";
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const urlPath = `/api/v1/storage/make-public`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: MakePublicRequestToJSON(requestParameters["makePublicRequest"]),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			MakePublicResponseFromJSON(jsonValue),
+		);
+	}
 
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+	 * Make a file publicly accessible
+	 */
+	async makeFilePublic(
+		requestParameters: MakeFilePublicRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<MakePublicResponse> {
+		const response = await this.makeFilePublicRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/storage/make-public`;
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
+	 * Upload file to storage
+	 */
+	async uploadFileRaw(
+		requestParameters: UploadFileRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<UploadResponse>> {
+		if (requestParameters["uploadRequest"] == null) {
+			throw new runtime.RequiredError(
+				"uploadRequest",
+				'Required parameter "uploadRequest" was null or undefined when calling uploadFile().',
+			);
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: MakePublicRequestToJSON(requestParameters['makePublicRequest']),
-        }, initOverrides);
+		const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => MakePublicResponseFromJSON(jsonValue));
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
-     * Make a file publicly accessible
-     */
-    async makeFilePublic(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MakePublicResponse> {
-        const response = await this.makeFilePublicRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		headerParameters["Content-Type"] = "application/json";
 
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
-     * Upload file to storage
-     */
-    async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadResponse>> {
-        if (requestParameters['uploadRequest'] == null) {
-            throw new runtime.RequiredError(
-                'uploadRequest',
-                'Required parameter "uploadRequest" was null or undefined when calling uploadFile().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		const urlPath = `/api/v1/storage/upload`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: UploadRequestToJSON(requestParameters["uploadRequest"]),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			UploadResponseFromJSON(jsonValue),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/storage/upload`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UploadRequestToJSON(requestParameters['uploadRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UploadResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
-     * Upload file to storage
-     */
-    async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadResponse> {
-        const response = await this.uploadFileRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
+	 * Upload file to storage
+	 */
+	async uploadFile(
+		requestParameters: UploadFileRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<UploadResponse> {
+		const response = await this.uploadFileRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
 }

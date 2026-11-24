@@ -12,72 +12,87 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { PriceWithStripeID } from './PriceWithStripeID';
+import { mapValues } from "../runtime";
+import type { PriceWithStripeID } from "./PriceWithStripeID";
 import {
-    PriceWithStripeIDFromJSON,
-    PriceWithStripeIDFromJSONTyped,
-    PriceWithStripeIDToJSON,
-    PriceWithStripeIDToJSONTyped,
-} from './PriceWithStripeID';
+	PriceWithStripeIDFromJSON,
+	PriceWithStripeIDFromJSONTyped,
+	PriceWithStripeIDToJSON,
+	PriceWithStripeIDToJSONTyped,
+} from "./PriceWithStripeID";
 
 /**
- * 
+ *
  * @export
  * @interface EnterprisePricesResponse
  */
 export interface EnterprisePricesResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof EnterprisePricesResponse
-     */
-    count: number;
-    /**
-     * 
-     * @type {Array<PriceWithStripeID>}
-     * @memberof EnterprisePricesResponse
-     */
-    prices: Array<PriceWithStripeID> | null;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EnterprisePricesResponse
+	 */
+	count: number;
+	/**
+	 *
+	 * @type {Array<PriceWithStripeID>}
+	 * @memberof EnterprisePricesResponse
+	 */
+	prices: Array<PriceWithStripeID> | null;
 }
 
 /**
  * Check if a given object implements the EnterprisePricesResponse interface.
  */
-export function instanceOfEnterprisePricesResponse(value: object): value is EnterprisePricesResponse {
-    if (!('count' in value) || value['count'] === undefined) return false;
-    if (!('prices' in value) || value['prices'] === undefined) return false;
-    return true;
+export function instanceOfEnterprisePricesResponse(
+	value: object,
+): value is EnterprisePricesResponse {
+	if (!("count" in value) || value["count"] === undefined) return false;
+	if (!("prices" in value) || value["prices"] === undefined) return false;
+	return true;
 }
 
-export function EnterprisePricesResponseFromJSON(json: any): EnterprisePricesResponse {
-    return EnterprisePricesResponseFromJSONTyped(json, false);
+export function EnterprisePricesResponseFromJSON(
+	json: any,
+): EnterprisePricesResponse {
+	return EnterprisePricesResponseFromJSONTyped(json, false);
 }
 
-export function EnterprisePricesResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): EnterprisePricesResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'count': json['count'],
-        'prices': (json['prices'] == null ? null : (json['prices'] as Array<any>).map(PriceWithStripeIDFromJSON)),
-    };
+export function EnterprisePricesResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): EnterprisePricesResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		count: json["count"],
+		prices:
+			json["prices"] == null
+				? null
+				: (json["prices"] as Array<any>).map(PriceWithStripeIDFromJSON),
+	};
 }
 
-export function EnterprisePricesResponseToJSON(json: any): EnterprisePricesResponse {
-    return EnterprisePricesResponseToJSONTyped(json, false);
+export function EnterprisePricesResponseToJSON(
+	json: any,
+): EnterprisePricesResponse {
+	return EnterprisePricesResponseToJSONTyped(json, false);
 }
 
-export function EnterprisePricesResponseToJSONTyped(value?: EnterprisePricesResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function EnterprisePricesResponseToJSONTyped(
+	value?: EnterprisePricesResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'count': value['count'],
-        'prices': (value['prices'] == null ? null : (value['prices'] as Array<any>).map(PriceWithStripeIDToJSON)),
-    };
+	return {
+		count: value["count"],
+		prices:
+			value["prices"] == null
+				? null
+				: (value["prices"] as Array<any>).map(PriceWithStripeIDToJSON),
+	};
 }
-

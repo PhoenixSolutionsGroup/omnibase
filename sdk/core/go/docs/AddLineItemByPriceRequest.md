@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Currency** | **string** |  | 
-**Description** | **string** |  | 
-**Metadata** | Pointer to **map[string]string** |  | [optional] 
-**PriceId** | Pointer to **string** |  | [optional] 
-**Quantity** | **int64** |  | 
-**StripePriceId** | Pointer to **string** |  | [optional] 
+| Name              | Type                             | Description | Notes      |
+| ----------------- | -------------------------------- | ----------- | ---------- |
+| **Currency**      | **string**                       |             |
+| **Description**   | **string**                       |             |
+| **Metadata**      | Pointer to **map[string]string** |             | [optional] |
+| **PriceId**       | Pointer to **string**            |             | [optional] |
+| **Quantity**      | **int64**                        |             |
+| **StripePriceId** | Pointer to **string**            |             | [optional] |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-
 ### GetDescription
 
 `func (o *AddLineItemByPriceRequest) GetDescription() string`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *AddLineItemByPriceRequest) SetDescription(v string)`
 
 SetDescription sets Description field to given value.
-
 
 ### GetMetadata
 
@@ -139,7 +137,6 @@ and a boolean to check if the value has been set.
 
 SetQuantity sets Quantity field to given value.
 
-
 ### GetStripePriceId
 
 `func (o *AddLineItemByPriceRequest) GetStripePriceId() string`
@@ -165,7 +162,4 @@ SetStripePriceId sets StripePriceId field to given value.
 
 HasStripePriceId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

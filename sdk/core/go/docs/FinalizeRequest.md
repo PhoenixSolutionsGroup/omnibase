@@ -2,9 +2,9 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AutoAdvance** | Pointer to **bool** |  | [optional] 
+| Name            | Type                | Description | Notes      |
+| --------------- | ------------------- | ----------- | ---------- |
+| **AutoAdvance** | Pointer to **bool** |             | [optional] |
 
 ## Methods
 
@@ -50,7 +50,4 @@ SetAutoAdvance sets AutoAdvance field to given value.
 
 HasAutoAdvance returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

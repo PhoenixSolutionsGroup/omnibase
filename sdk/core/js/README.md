@@ -12,7 +12,6 @@ npm install @omnibase/core-js --save
 
 Next, try it out.
 
-
 ```ts
 import {
   Configuration,
@@ -45,94 +44,92 @@ async function example() {
 example().catch(console.error);
 ```
 
-
 ## Documentation
 
 ### API Endpoints
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Class | Method | HTTP request | Description
-| ----- | ------ | ------------ | -------------
-*V1AuthApi* | [**createUser**](docs/V1AuthApi.md#createuseroperation) | **POST** /api/v1/auth/users | Create a new user identity
-*V1AuthApi* | [**getActiveTenant**](docs/V1AuthApi.md#getactivetenant) | **GET** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user
-*V1AuthApi* | [**getIdentity**](docs/V1AuthApi.md#getidentity) | **GET** /api/v1/auth/identity | Get current identity
-*V1AuthApi* | [**getSession**](docs/V1AuthApi.md#getsession) | **GET** /api/v1/auth/session | Get current session
-*V1AuthApi* | [**listTenants**](docs/V1AuthApi.md#listtenants) | **GET** /api/v1/auth/tenants | List tenants the authenticated user belongs to
-*V1AuthApi* | [**logout**](docs/V1AuthApi.md#logout) | **POST** /api/v1/auth/logout | Logout user
-*V1AuthApi* | [**whoAmI**](docs/V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Get authenticated user identity
-*V1ConfigurationApi* | [**archiveAllStripeConfig**](docs/V1ConfigurationApi.md#archiveallstripeconfig) | **POST** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
-*V1ConfigurationApi* | [**createOrUpdateEmailTemplate**](docs/V1ConfigurationApi.md#createorupdateemailtemplate) | **POST** /api/v1/email/templates | Create or update email template
-*V1ConfigurationApi* | [**createOrUpdateSystemEmailTemplate**](docs/V1ConfigurationApi.md#createorupdatesystememailtemplate) | **POST** /api/v1/email/system-templates | Create or update a system email template
-*V1ConfigurationApi* | [**deleteEmailTemplate**](docs/V1ConfigurationApi.md#deleteemailtemplate) | **DELETE** /api/v1/email/templates/{type} | Delete email template
-*V1ConfigurationApi* | [**deleteSystemEmailTemplate**](docs/V1ConfigurationApi.md#deletesystememailtemplate) | **DELETE** /api/v1/email/system-templates/{name} | Delete a system email template
-*V1ConfigurationApi* | [**deployPermissionNamespaces**](docs/V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
-*V1ConfigurationApi* | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates
-*V1ConfigurationApi* | [**getPermissionRequirements**](docs/V1ConfigurationApi.md#getpermissionrequirements) | **GET** /api/v1/permissions/requirements | Get required permission namespaces
-*V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
-*V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
-*V1ConfigurationApi* | [**getStripeConfigStatus**](docs/V1ConfigurationApi.md#getstripeconfigstatus) | **POST** /api/v1/stripe/admin/config/status | Get Stripe config status
-*V1ConfigurationApi* | [**getSystemEmailTemplates**](docs/V1ConfigurationApi.md#getsystememailtemplates) | **GET** /api/v1/email/system-templates | Get all system email templates
-*V1ConfigurationApi* | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-*V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email using an app template
-*V1ConfigurationApi* | [**sendEmailHTML**](docs/V1ConfigurationApi.md#sendemailhtml) | **POST** /api/v1/email/send/html | Send a raw HTML email
-*V1ConfigurationApi* | [**serveEmailTemplate**](docs/V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
-*V1ConfigurationApi* | [**serveSystemEmailTemplate**](docs/V1ConfigurationApi.md#servesystememailtemplate) | **GET** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file
-*V1ConfigurationApi* | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config
-*V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config
-*V1DatabaseApi* | [**generateDatabaseTypes**](docs/V1DatabaseApi.md#generatedatabasetypes) | **GET** /api/v1/database/typegen | Generate type definitions for the database schema
-*V1DatabaseApi* | [**getDatabaseMigrationStatus**](docs/V1DatabaseApi.md#getdatabasemigrationstatus) | **GET** /api/v1/database/migrations/status | Get the status of applied migrations
-*V1DatabaseApi* | [**rollbackDatabaseMigrations**](docs/V1DatabaseApi.md#rollbackdatabasemigrations) | **POST** /api/v1/database/migrations/down | Roll back database migrations
-*V1DatabaseApi* | [**uploadDatabaseMigrations**](docs/V1DatabaseApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Apply database migrations
-*V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitem) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
-*V1PaymentsApi* | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
-*V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create a Stripe checkout session
-*V1PaymentsApi* | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create a Stripe customer portal session
-*V1PaymentsApi* | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create a Stripe invoice
-*V1PaymentsApi* | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoice) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
-*V1PaymentsApi* | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
-*V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record a Stripe meter usage event
-*V1PaymentsApi* | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
-*V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermission) | **POST** /api/v1/permissions/check | Check permission
-*V1PermissionsApi* | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship
-*V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
-*V1StorageApi* | [**deleteObject**](docs/V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage
-*V1StorageApi* | [**downloadFile**](docs/V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage
-*V1StorageApi* | [**makeFilePublic**](docs/V1StorageApi.md#makefilepublic) | **POST** /api/v1/storage/make-public | Make a file publicly accessible
-*V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
-*V1StripeApi* | [**applyEnterpriseCustom**](docs/V1StripeApi.md#applyenterprisecustomoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
-*V1StripeApi* | [**applyEnterpriseTemplate**](docs/V1StripeApi.md#applyenterprisetemplateoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing
-*V1StripeApi* | [**calculatePriceCost**](docs/V1StripeApi.md#calculatepricecostoperation) | **POST** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
-*V1StripeApi* | [**convertStripeIDToConfigID**](docs/V1StripeApi.md#convertstripeidtoconfigid) | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
-*V1StripeApi* | [**getEnterprisePricesByID**](docs/V1StripeApi.md#getenterprisepricesbyid) | **GET** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID
-*V1StripeApi* | [**getEnterprisePricesByTemplate**](docs/V1StripeApi.md#getenterprisepricesbytemplate) | **GET** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template
-*V1StripeApi* | [**getMeterByID**](docs/V1StripeApi.md#getmeterbyid) | **GET** /api/v1/stripe/config/meters/{meter_id} | Get meter by ID
-*V1StripeApi* | [**getPriceByID**](docs/V1StripeApi.md#getpricebyid) | **GET** /api/v1/stripe/config/prices/{price_id} | Get price by ID
-*V1StripeApi* | [**getProductByID**](docs/V1StripeApi.md#getproductbyid) | **GET** /api/v1/stripe/config/products/{product_id} | Get product by ID
-*V1StripeApi* | [**getStripeConfig**](docs/V1StripeApi.md#getstripeconfig) | **GET** /api/v1/stripe/config | Get public Stripe config
-*V1StripeApi* | [**getStripeConfigAdmin**](docs/V1StripeApi.md#getstripeconfigadmin) | **GET** /api/v1/stripe/admin/config | Get full Stripe config (admin)
-*V1StripeApi* | [**listWebhooks**](docs/V1StripeApi.md#listwebhooks) | **GET** /api/v1/stripe/admin/webhooks | List all webhooks
-*V1TenantsInvitesApi* | [**acceptInvite**](docs/V1TenantsInvitesApi.md#acceptinvite) | **PUT** /api/v1/tenants/invites/accept | Accept a tenant invite
-*V1TenantsInvitesApi* | [**createInvite**](docs/V1TenantsInvitesApi.md#createinvite) | **POST** /api/v1/tenants/invites | Create a tenant invite
-*V1TenantsLifecycleApi* | [**createTenant**](docs/V1TenantsLifecycleApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create a tenant
-*V1TenantsLifecycleApi* | [**deleteTenant**](docs/V1TenantsLifecycleApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete the current tenant
-*V1TenantsLifecycleApi* | [**getTenantByID**](docs/V1TenantsLifecycleApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
-*V1TenantsLifecycleApi* | [**getTenantByStripeCustomerID**](docs/V1TenantsLifecycleApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-*V1TenantsLifecycleApi* | [**switchActiveTenant**](docs/V1TenantsLifecycleApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch the active tenant
-*V1TenantsRolesApi* | [**createRole**](docs/V1TenantsRolesApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create a role
-*V1TenantsRolesApi* | [**deleteRole**](docs/V1TenantsRolesApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete a role
-*V1TenantsRolesApi* | [**listRoleDefinitions**](docs/V1TenantsRolesApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List role definitions
-*V1TenantsRolesApi* | [**listRoles**](docs/V1TenantsRolesApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles for the tenant
-*V1TenantsRolesApi* | [**updateRole**](docs/V1TenantsRolesApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update a role
-*V1TenantsSubscriptionsApi* | [**addSubscription**](docs/V1TenantsSubscriptionsApi.md#addsubscription) | **POST** /api/v1/tenants/subscriptions | Add a subscription to the tenant
-*V1TenantsSubscriptionsApi* | [**getTenantBillingStatus**](docs/V1TenantsSubscriptionsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get tenant billing status
-*V1TenantsSubscriptionsApi* | [**getTenantSubscription**](docs/V1TenantsSubscriptionsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription
-*V1TenantsSubscriptionsApi* | [**listTenantSubscriptions**](docs/V1TenantsSubscriptionsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | List subscriptions for the tenant
-*V1TenantsSubscriptionsApi* | [**removeSubscription**](docs/V1TenantsSubscriptionsApi.md#removesubscription) | **DELETE** /api/v1/tenants/subscriptions | Remove a subscription from the tenant
-*V1TenantsUsersApi* | [**listTenantUsers**](docs/V1TenantsUsersApi.md#listtenantusers) | **GET** /api/v1/tenants/users | List users in the tenant
-*V1TenantsUsersApi* | [**removeTenantUser**](docs/V1TenantsUsersApi.md#removetenantuser) | **DELETE** /api/v1/tenants/users | Remove a user from the tenant
-*V1TenantsUsersApi* | [**updateTenantUserRole**](docs/V1TenantsUsersApi.md#updatetenantuserrole) | **PUT** /api/v1/tenants/users | Update a tenant user\&#39;s role
-
+| Class                       | Method                                                                                                | HTTP request                                                          | Description                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| _V1AuthApi_                 | [**createUser**](docs/V1AuthApi.md#createuseroperation)                                               | **POST** /api/v1/auth/users                                           | Create a new user identity                           |
+| _V1AuthApi_                 | [**getActiveTenant**](docs/V1AuthApi.md#getactivetenant)                                              | **GET** /api/v1/auth/active-tenant                                    | Get the active tenant for the authenticated user     |
+| _V1AuthApi_                 | [**getIdentity**](docs/V1AuthApi.md#getidentity)                                                      | **GET** /api/v1/auth/identity                                         | Get current identity                                 |
+| _V1AuthApi_                 | [**getSession**](docs/V1AuthApi.md#getsession)                                                        | **GET** /api/v1/auth/session                                          | Get current session                                  |
+| _V1AuthApi_                 | [**listTenants**](docs/V1AuthApi.md#listtenants)                                                      | **GET** /api/v1/auth/tenants                                          | List tenants the authenticated user belongs to       |
+| _V1AuthApi_                 | [**logout**](docs/V1AuthApi.md#logout)                                                                | **POST** /api/v1/auth/logout                                          | Logout user                                          |
+| _V1AuthApi_                 | [**whoAmI**](docs/V1AuthApi.md#whoami)                                                                | **GET** /api/v1/auth/whoami                                           | Get authenticated user identity                      |
+| _V1ConfigurationApi_        | [**archiveAllStripeConfig**](docs/V1ConfigurationApi.md#archiveallstripeconfig)                       | **POST** /api/v1/stripe/admin/config/archive-all                      | Archive all Stripe config                            |
+| _V1ConfigurationApi_        | [**createOrUpdateEmailTemplate**](docs/V1ConfigurationApi.md#createorupdateemailtemplate)             | **POST** /api/v1/email/templates                                      | Create or update email template                      |
+| _V1ConfigurationApi_        | [**createOrUpdateSystemEmailTemplate**](docs/V1ConfigurationApi.md#createorupdatesystememailtemplate) | **POST** /api/v1/email/system-templates                               | Create or update a system email template             |
+| _V1ConfigurationApi_        | [**deleteEmailTemplate**](docs/V1ConfigurationApi.md#deleteemailtemplate)                             | **DELETE** /api/v1/email/templates/{type}                             | Delete email template                                |
+| _V1ConfigurationApi_        | [**deleteSystemEmailTemplate**](docs/V1ConfigurationApi.md#deletesystememailtemplate)                 | **DELETE** /api/v1/email/system-templates/{name}                      | Delete a system email template                       |
+| _V1ConfigurationApi_        | [**deployPermissionNamespaces**](docs/V1ConfigurationApi.md#deploypermissionnamespaces)               | **POST** /api/v1/permissions/namespaces                               | Deploy Keto namespace configurations                 |
+| _V1ConfigurationApi_        | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates)                                 | **GET** /api/v1/email/templates                                       | Get all email templates                              |
+| _V1ConfigurationApi_        | [**getPermissionRequirements**](docs/V1ConfigurationApi.md#getpermissionrequirements)                 | **GET** /api/v1/permissions/requirements                              | Get required permission namespaces                   |
+| _V1ConfigurationApi_        | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory)                       | **GET** /api/v1/stripe/admin/config/history                           | Get config history                                   |
+| _V1ConfigurationApi_        | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema)                         | **GET** /api/v1/stripe/schema                                         | Get Stripe config schema                             |
+| _V1ConfigurationApi_        | [**getStripeConfigStatus**](docs/V1ConfigurationApi.md#getstripeconfigstatus)                         | **POST** /api/v1/stripe/admin/config/status                           | Get Stripe config status                             |
+| _V1ConfigurationApi_        | [**getSystemEmailTemplates**](docs/V1ConfigurationApi.md#getsystememailtemplates)                     | **GET** /api/v1/email/system-templates                                | Get all system email templates                       |
+| _V1ConfigurationApi_        | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig)                                   | **GET** /api/v1/stripe/admin/config/pull                              | Pull config from Stripe                              |
+| _V1ConfigurationApi_        | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail)                                                 | **POST** /api/v1/email/send                                           | Send an email using an app template                  |
+| _V1ConfigurationApi_        | [**sendEmailHTML**](docs/V1ConfigurationApi.md#sendemailhtml)                                         | **POST** /api/v1/email/send/html                                      | Send a raw HTML email                                |
+| _V1ConfigurationApi_        | [**serveEmailTemplate**](docs/V1ConfigurationApi.md#serveemailtemplate)                               | **GET** /api/v1/email/templates/{template_name}/{type}                | Serve an email template file                         |
+| _V1ConfigurationApi_        | [**serveSystemEmailTemplate**](docs/V1ConfigurationApi.md#servesystememailtemplate)                   | **GET** /api/v1/email/system-templates/{name}/{type}                  | Serve a system email template file                   |
+| _V1ConfigurationApi_        | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig)                               | **POST** /api/v1/stripe/admin/config                                  | Update Stripe config                                 |
+| _V1ConfigurationApi_        | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig)                           | **POST** /api/v1/stripe/admin/config/validate                         | Validate Stripe config                               |
+| _V1DatabaseApi_             | [**generateDatabaseTypes**](docs/V1DatabaseApi.md#generatedatabasetypes)                              | **GET** /api/v1/database/typegen                                      | Generate type definitions for the database schema    |
+| _V1DatabaseApi_             | [**getDatabaseMigrationStatus**](docs/V1DatabaseApi.md#getdatabasemigrationstatus)                    | **GET** /api/v1/database/migrations/status                            | Get the status of applied migrations                 |
+| _V1DatabaseApi_             | [**rollbackDatabaseMigrations**](docs/V1DatabaseApi.md#rollbackdatabasemigrations)                    | **POST** /api/v1/database/migrations/down                             | Roll back database migrations                        |
+| _V1DatabaseApi_             | [**uploadDatabaseMigrations**](docs/V1DatabaseApi.md#uploaddatabasemigrations)                        | **POST** /api/v1/database/migrations                                  | Apply database migrations                            |
+| _V1PaymentsApi_             | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitem)                                    | **POST** /api/v1/payments/invoices/{invoice_id}/items                 | Add a line item to a Stripe invoice                  |
+| _V1PaymentsApi_             | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid)              | **POST** /api/v1/payments/invoices/{invoice_id}/items/price           | Add a line item to a Stripe invoice using a price ID |
+| _V1PaymentsApi_             | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation)                                   | **POST** /api/v1/payments/checkout                                    | Create a Stripe checkout session                     |
+| _V1PaymentsApi_             | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal)                                | **POST** /api/v1/payments/portal                                      | Create a Stripe customer portal session              |
+| _V1PaymentsApi_             | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation)                                     | **POST** /api/v1/payments/invoices                                    | Create a Stripe invoice                              |
+| _V1PaymentsApi_             | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoice)                                          | **POST** /api/v1/payments/invoices/{invoice_id}/finalize              | Finalize a Stripe invoice                            |
+| _V1PaymentsApi_             | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice)                                                    | **GET** /api/v1/payments/invoices/{invoice_id}                        | Get a Stripe invoice                                 |
+| _V1PaymentsApi_             | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation)                                         | **POST** /api/v1/payments/usage                                       | Record a Stripe meter usage event                    |
+| _V1PaymentsApi_             | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation)                                     | **PATCH** /api/v1/payments/invoices/{invoice_id}                      | Update a Stripe invoice                              |
+| _V1PermissionsApi_          | [**checkPermission**](docs/V1PermissionsApi.md#checkpermission)                                       | **POST** /api/v1/permissions/check                                    | Check permission                                     |
+| _V1PermissionsApi_          | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation)                        | **POST** /api/v1/permissions/relationships                            | Create relationship                                  |
+| _V1PermissionsApi_          | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation)                        | **DELETE** /api/v1/permissions/relationships                          | Delete relationship                                  |
+| _V1StorageApi_              | [**deleteObject**](docs/V1StorageApi.md#deleteobjectoperation)                                        | **DELETE** /api/v1/storage/object                                     | Delete file from storage                             |
+| _V1StorageApi_              | [**downloadFile**](docs/V1StorageApi.md#downloadfile)                                                 | **POST** /api/v1/storage/download                                     | Download file from storage                           |
+| _V1StorageApi_              | [**makeFilePublic**](docs/V1StorageApi.md#makefilepublic)                                             | **POST** /api/v1/storage/make-public                                  | Make a file publicly accessible                      |
+| _V1StorageApi_              | [**uploadFile**](docs/V1StorageApi.md#uploadfile)                                                     | **POST** /api/v1/storage/upload                                       | Upload file to storage                               |
+| _V1StripeApi_               | [**applyEnterpriseCustom**](docs/V1StripeApi.md#applyenterprisecustomoperation)                       | **POST** /api/v1/stripe/admin/enterprise/apply-custom                 | Apply custom enterprise pricing                      |
+| _V1StripeApi_               | [**applyEnterpriseTemplate**](docs/V1StripeApi.md#applyenterprisetemplateoperation)                   | **POST** /api/v1/stripe/admin/enterprise/apply-template               | Apply enterprise template pricing                    |
+| _V1StripeApi_               | [**calculatePriceCost**](docs/V1StripeApi.md#calculatepricecostoperation)                             | **POST** /api/v1/stripe/config/prices/{price_id}/calculate            | Calculate cost for a price                           |
+| _V1StripeApi_               | [**convertStripeIDToConfigID**](docs/V1StripeApi.md#convertstripeidtoconfigid)                        | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id}                  | Convert Stripe ID to config ID                       |
+| _V1StripeApi_               | [**getEnterprisePricesByID**](docs/V1StripeApi.md#getenterprisepricesbyid)                            | **GET** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}  | Get enterprise prices by ID                          |
+| _V1StripeApi_               | [**getEnterprisePricesByTemplate**](docs/V1StripeApi.md#getenterprisepricesbytemplate)                | **GET** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template                    |
+| _V1StripeApi_               | [**getMeterByID**](docs/V1StripeApi.md#getmeterbyid)                                                  | **GET** /api/v1/stripe/config/meters/{meter_id}                       | Get meter by ID                                      |
+| _V1StripeApi_               | [**getPriceByID**](docs/V1StripeApi.md#getpricebyid)                                                  | **GET** /api/v1/stripe/config/prices/{price_id}                       | Get price by ID                                      |
+| _V1StripeApi_               | [**getProductByID**](docs/V1StripeApi.md#getproductbyid)                                              | **GET** /api/v1/stripe/config/products/{product_id}                   | Get product by ID                                    |
+| _V1StripeApi_               | [**getStripeConfig**](docs/V1StripeApi.md#getstripeconfig)                                            | **GET** /api/v1/stripe/config                                         | Get public Stripe config                             |
+| _V1StripeApi_               | [**getStripeConfigAdmin**](docs/V1StripeApi.md#getstripeconfigadmin)                                  | **GET** /api/v1/stripe/admin/config                                   | Get full Stripe config (admin)                       |
+| _V1StripeApi_               | [**listWebhooks**](docs/V1StripeApi.md#listwebhooks)                                                  | **GET** /api/v1/stripe/admin/webhooks                                 | List all webhooks                                    |
+| _V1TenantsInvitesApi_       | [**acceptInvite**](docs/V1TenantsInvitesApi.md#acceptinvite)                                          | **PUT** /api/v1/tenants/invites/accept                                | Accept a tenant invite                               |
+| _V1TenantsInvitesApi_       | [**createInvite**](docs/V1TenantsInvitesApi.md#createinvite)                                          | **POST** /api/v1/tenants/invites                                      | Create a tenant invite                               |
+| _V1TenantsLifecycleApi_     | [**createTenant**](docs/V1TenantsLifecycleApi.md#createtenantoperation)                               | **POST** /api/v1/tenants                                              | Create a tenant                                      |
+| _V1TenantsLifecycleApi_     | [**deleteTenant**](docs/V1TenantsLifecycleApi.md#deletetenant)                                        | **DELETE** /api/v1/tenants                                            | Delete the current tenant                            |
+| _V1TenantsLifecycleApi_     | [**getTenantByID**](docs/V1TenantsLifecycleApi.md#gettenantbyid)                                      | **GET** /api/v1/tenants/by-id/{tenant_id}                             | Get tenant by ID                                     |
+| _V1TenantsLifecycleApi_     | [**getTenantByStripeCustomerID**](docs/V1TenantsLifecycleApi.md#gettenantbystripecustomerid)          | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id}       | Get tenant by Stripe customer ID                     |
+| _V1TenantsLifecycleApi_     | [**switchActiveTenant**](docs/V1TenantsLifecycleApi.md#switchactivetenant)                            | **PUT** /api/v1/tenants/switch-active                                 | Switch the active tenant                             |
+| _V1TenantsRolesApi_         | [**createRole**](docs/V1TenantsRolesApi.md#createroleoperation)                                       | **POST** /api/v1/tenants/roles                                        | Create a role                                        |
+| _V1TenantsRolesApi_         | [**deleteRole**](docs/V1TenantsRolesApi.md#deleterole)                                                | **DELETE** /api/v1/tenants/roles/{role_id}                            | Delete a role                                        |
+| _V1TenantsRolesApi_         | [**listRoleDefinitions**](docs/V1TenantsRolesApi.md#listroledefinitions)                              | **GET** /api/v1/tenants/roles/definitions                             | List role definitions                                |
+| _V1TenantsRolesApi_         | [**listRoles**](docs/V1TenantsRolesApi.md#listroles)                                                  | **GET** /api/v1/tenants/roles                                         | List roles for the tenant                            |
+| _V1TenantsRolesApi_         | [**updateRole**](docs/V1TenantsRolesApi.md#updateroleoperation)                                       | **PUT** /api/v1/tenants/roles/{role_id}                               | Update a role                                        |
+| _V1TenantsSubscriptionsApi_ | [**addSubscription**](docs/V1TenantsSubscriptionsApi.md#addsubscription)                              | **POST** /api/v1/tenants/subscriptions                                | Add a subscription to the tenant                     |
+| _V1TenantsSubscriptionsApi_ | [**getTenantBillingStatus**](docs/V1TenantsSubscriptionsApi.md#gettenantbillingstatus)                | **GET** /api/v1/tenants/billing-status                                | Get tenant billing status                            |
+| _V1TenantsSubscriptionsApi_ | [**getTenantSubscription**](docs/V1TenantsSubscriptionsApi.md#gettenantsubscription)                  | **GET** /api/v1/tenants/subscriptions/{config_price_id}               | Get a single tenant subscription                     |
+| _V1TenantsSubscriptionsApi_ | [**listTenantSubscriptions**](docs/V1TenantsSubscriptionsApi.md#listtenantsubscriptions)              | **GET** /api/v1/tenants/subscriptions                                 | List subscriptions for the tenant                    |
+| _V1TenantsSubscriptionsApi_ | [**removeSubscription**](docs/V1TenantsSubscriptionsApi.md#removesubscription)                        | **DELETE** /api/v1/tenants/subscriptions                              | Remove a subscription from the tenant                |
+| _V1TenantsUsersApi_         | [**listTenantUsers**](docs/V1TenantsUsersApi.md#listtenantusers)                                      | **GET** /api/v1/tenants/users                                         | List users in the tenant                             |
+| _V1TenantsUsersApi_         | [**removeTenantUser**](docs/V1TenantsUsersApi.md#removetenantuser)                                    | **DELETE** /api/v1/tenants/users                                      | Remove a user from the tenant                        |
+| _V1TenantsUsersApi_         | [**updateTenantUserRole**](docs/V1TenantsUsersApi.md#updatetenantuserrole)                            | **PUT** /api/v1/tenants/users                                         | Update a tenant user\&#39;s role                     |
 
 ### Models
 
@@ -292,32 +289,28 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ### Authorization
 
-
 Authentication schemes defined for the API:
 <a id="AppKeyAuth"></a>
-#### AppKeyAuth
 
+#### AppKeyAuth
 
 - **Type**: API key
 - **API key parameter name**: `X-App-Key`
 - **Location**: HTTP header
-<a id="CookieAuth"></a>
+  <a id="CookieAuth"></a>
 #### CookieAuth
-
 
 - **Type**: API key
 - **API key parameter name**: `omnibase_session_token`
-- **Location**: 
-<a id="ServiceKeyAuth"></a>
+- **Location**:
+  <a id="ServiceKeyAuth"></a>
 #### ServiceKeyAuth
-
 
 - **Type**: API key
 - **API key parameter name**: `X-Service-Key`
 - **Location**: HTTP header
-<a id="SessionTokenAuth"></a>
+  <a id="SessionTokenAuth"></a>
 #### SessionTokenAuth
-
 
 - **Type**: API key
 - **API key parameter name**: `X-Session-Token`
@@ -337,15 +330,15 @@ and is automatically generated by the
 The generated npm module supports the following:
 
 - Environments
-  * Node.js
-  * Webpack
-  * Browserify
+  - Node.js
+  - Webpack
+  - Browserify
 - Language levels
-  * ES5 - you must have a Promises/A+ library installed
-  * ES6
+  - ES5 - you must have a Promises/A+ library installed
+  - ES6
 - Module systems
-  * CommonJS
-  * ES6 module system
+  - CommonJS
+  - ES6 module system
 
 For more information, please visit [https://omnibase.dev/support](https://omnibase.dev/support)
 

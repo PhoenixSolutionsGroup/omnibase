@@ -10,14 +10,14 @@ The Omnibase Next.js SDK provides seamless integration of Ory Kratos authenticat
 
 ## Features
 
-| Feature | Description | Documentation |
-|---------|-------------|---------------|
-| Authentication Flows | Complete login, registration, recovery, settings, and verification flows | [Auth Docs](#authentication) |
-| Session Management | Server-side session handling with React Context integration | [Session Docs](#authentication) |
-| Flow Router | Automatic routing and handling of authentication flows | [Flow Router](#flow-router) |
-| Multi-tenant Support | Organization management with tenant switching and invitations | [Tenant Docs](#multi-tenant) |
-| Middleware Integration | Next.js middleware for route protection and session management | [Middleware Docs](#middleware) |
-| Server Actions | Next.js server actions for seamless data mutations | [Server Actions](#server-actions) |
+| Feature                | Description                                                              | Documentation                     |
+| ---------------------- | ------------------------------------------------------------------------ | --------------------------------- |
+| Authentication Flows   | Complete login, registration, recovery, settings, and verification flows | [Auth Docs](#authentication)      |
+| Session Management     | Server-side session handling with React Context integration              | [Session Docs](#authentication)   |
+| Flow Router            | Automatic routing and handling of authentication flows                   | [Flow Router](#flow-router)       |
+| Multi-tenant Support   | Organization management with tenant switching and invitations            | [Tenant Docs](#multi-tenant)      |
+| Middleware Integration | Next.js middleware for route protection and session management           | [Middleware Docs](#middleware)    |
+| Server Actions         | Next.js server actions for seamless data mutations                       | [Server Actions](#server-actions) |
 
 ## Quick Start
 
@@ -166,16 +166,17 @@ export default function CreateTenant({ userId }: { userId: string }) {
 
 ```tsx
 // middleware.ts
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmniBaseMiddleware } from "@omnibase/nextjs/middleware";
 
 export default createOmniBaseMiddleware();
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+	matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
 ```
 
 The middleware automatically handles:
+
 - Session validation (required for authentication)
 - Authentication redirects
 - Cookie management
@@ -194,28 +195,31 @@ Manage organizations with server actions for creating ([`createTenantAction`](./
 The SDK provides consistent error handling across all operations:
 
 ```tsx
-import { createTenantAction } from '@omnibase/nextjs/auth';
+import { createTenantAction } from "@omnibase/nextjs/auth";
 
 export default function CreateTenantForm() {
-  const [state, formAction, isPending] = useActionState(createTenantAction, null);
+	const [state, formAction, isPending] = useActionState(
+		createTenantAction,
+		null,
+	);
 
-  return (
-    <form action={formAction}>
-      {/* Form fields */}
-      
-      {/* Error display */}
-      {state?.error && (
-        <div className="error-message" role="alert">
-          <strong>Error:</strong> {state.error}
-        </div>
-      )}
-      
-      {/* Success handling happens via redirect */}
-      <button type="submit" disabled={isPending}>
-        {isPending ? 'Processing...' : 'Submit'}
-      </button>
-    </form>
-  );
+	return (
+		<form action={formAction}>
+			{/* Form fields */}
+
+			{/* Error display */}
+			{state?.error && (
+				<div className="error-message" role="alert">
+					<strong>Error:</strong> {state.error}
+				</div>
+			)}
+
+			{/* Success handling happens via redirect */}
+			<button type="submit" disabled={isPending}>
+				{isPending ? "Processing..." : "Submit"}
+			</button>
+		</form>
+	);
 }
 ```
 
@@ -231,28 +235,31 @@ const [state, action, isPending] = useActionState(createTenantAction, null);
 
 ## Security Features
 
-| Feature | Description |
-|---------|-------------|
-| Server-Side Sessions | All session handling happens on the server for maximum security |
-| Encrypted Cookies | JWT tokens are stored in secure, HTTP-only cookies |
-| CSRF Protection | Built-in CSRF protection for all server actions |
-| Automatic Token Management | Seamless token refresh and rotation |
+| Feature                    | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| Server-Side Sessions       | All session handling happens on the server for maximum security |
+| Encrypted Cookies          | JWT tokens are stored in secure, HTTP-only cookies              |
+| CSRF Protection            | Built-in CSRF protection for all server actions                 |
+| Automatic Token Management | Seamless token refresh and rotation                             |
 
 ## Environment Support
 
 **Runtime Environments**
+
 - ✅ Next.js 15+ (App Router)
 - ✅ Next.js 13+ (App Router)
 - ✅ Node.js 18+
 - ✅ Edge Runtime
 
 **Frameworks**
+
 - ✅ Next.js App Router
 - ✅ React Server Components
 - ✅ React Server Actions
 - ✅ Next.js Middleware
 
 **Module Systems**
+
 - ✅ ESM (ES Modules)
 - ✅ CommonJS
 - ✅ TypeScript

@@ -1,14 +1,12 @@
 # V1TenantsUsersApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**listTenantUsers**](V1TenantsUsersApi.md#listtenantusers) | **GET** /api/v1/tenants/users | List users in the tenant |
-| [**removeTenantUser**](V1TenantsUsersApi.md#removetenantuser) | **DELETE** /api/v1/tenants/users | Remove a user from the tenant |
-| [**updateTenantUserRole**](V1TenantsUsersApi.md#updatetenantuserrole) | **PUT** /api/v1/tenants/users | Update a tenant user\&#39;s role |
-
-
+| Method                                                                | HTTP request                     | Description                      |
+| --------------------------------------------------------------------- | -------------------------------- | -------------------------------- |
+| [**listTenantUsers**](V1TenantsUsersApi.md#listtenantusers)           | **GET** /api/v1/tenants/users    | List users in the tenant         |
+| [**removeTenantUser**](V1TenantsUsersApi.md#removetenantuser)         | **DELETE** /api/v1/tenants/users | Remove a user from the tenant    |
+| [**updateTenantUserRole**](V1TenantsUsersApi.md#updatetenantuserrole) | **PUT** /api/v1/tenants/users    | Update a tenant user\&#39;s role |
 
 ## listTenantUsers
 
@@ -19,32 +17,29 @@ List users in the tenant
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsUsersApi,
-} from '@omnibase/core-js';
-import type { ListTenantUsersRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsUsersApi } from "@omnibase/core-js";
+import type { ListTenantUsersRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsUsersApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsUsersApi(config);
 
-  try {
-    const data = await api.listTenantUsers();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.listTenantUsers();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -68,17 +63,16 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## removeTenantUser
 
@@ -128,10 +122,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **deleteRequest** | [DeleteRequest](DeleteRequest.md) |  | |
+| Name              | Type                              | Description | Notes |
+| ----------------- | --------------------------------- | ----------- | ----- |
+| **deleteRequest** | [DeleteRequest](DeleteRequest.md) |             |       |
 
 ### Return type
 
@@ -146,19 +139,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## updateTenantUserRole
 
@@ -208,10 +200,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **updateUserRoleRequest** | [UpdateUserRoleRequest](UpdateUserRoleRequest.md) |  | |
+| Name                      | Type                                              | Description | Notes |
+| ------------------------- | ------------------------------------------------- | ----------- | ----- |
+| **updateUserRoleRequest** | [UpdateUserRoleRequest](UpdateUserRoleRequest.md) |             |       |
 
 ### Return type
 
@@ -226,16 +217,15 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

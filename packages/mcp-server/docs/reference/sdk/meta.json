@@ -1,8 +1,4 @@
 {
-  "title": "SDKs",
-  "pages": [
-    "nextjs",
-    "react",
-    "shadcn"
-  ]
+	"title": "SDKs",
+	"pages": ["nextjs", "react", "shadcn"]
 }

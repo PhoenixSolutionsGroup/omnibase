@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CustomText** | Pointer to **string** |  | [optional] 
-**ShowCurrency** | Pointer to **bool** |  | [optional] 
-**Suffix** | Pointer to **string** |  | [optional] 
+| Name             | Type                  | Description | Notes      |
+| ---------------- | --------------------- | ----------- | ---------- |
+| **CustomText**   | Pointer to **string** |             | [optional] |
+| **ShowCurrency** | Pointer to **bool**   |             | [optional] |
+| **Suffix**       | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -102,7 +102,4 @@ SetSuffix sets Suffix field to given value.
 
 HasSuffix returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

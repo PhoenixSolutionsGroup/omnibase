@@ -1,20 +1,20 @@
+import type {
+	LoginFlow,
+	RecoveryFlow,
+	RegistrationFlow,
+	SettingsFlow,
+	VerificationFlow,
+} from "@ory/client-fetch";
 import type { ReactNode } from "react";
 import {
-  getRecoveryFlow,
-  getRegistrationFlow,
-  getSettingsFlow,
-  getVerificationFlow,
-  getErrorFlow,
-  type GetFlowProps,
-  type FlowError,
+	type FlowError,
+	type GetFlowProps,
+	getErrorFlow,
+	getRecoveryFlow,
+	getRegistrationFlow,
+	getSettingsFlow,
+	getVerificationFlow,
 } from "./get-flow";
-import type {
-  LoginFlow,
-  RecoveryFlow,
-  RegistrationFlow,
-  SettingsFlow,
-  VerificationFlow,
-} from "@ory/client-fetch";
 
 /**
  * Maps auth flow types to their corresponding React component functions
@@ -37,20 +37,20 @@ import type {
  * @group Flow Routing
  */
 export type FlowMap = {
-  /** Function that takes a LoginFlow and returns a component for user authentication */
-  login?: (flow: LoginFlow) => ReactNode;
-  /** Function that takes a RegistrationFlow and returns a component for user registration */
-  registration?: (flow: RegistrationFlow) => ReactNode;
-  /** Function that takes a RecoveryFlow and returns a component for password recovery */
-  recovery?: (flow: RecoveryFlow) => ReactNode;
-  /** Function that takes a VerificationFlow and returns a component for email/account verification */
-  verification?: (flow: VerificationFlow) => ReactNode;
-  /** Function that takes a SettingsFlow and returns a component for user settings management */
-  settings?: (flow: SettingsFlow) => ReactNode;
-  /** Function that takes any flow object and returns a component for custom onboarding */
-  onboarding?: (flow: any) => ReactNode;
-  /** Function that takes a FlowError and returns a component for displaying authentication errors */
-  error?: (error: FlowError) => ReactNode;
+	/** Function that takes a LoginFlow and returns a component for user authentication */
+	login?: (flow: LoginFlow) => ReactNode;
+	/** Function that takes a RegistrationFlow and returns a component for user registration */
+	registration?: (flow: RegistrationFlow) => ReactNode;
+	/** Function that takes a RecoveryFlow and returns a component for password recovery */
+	recovery?: (flow: RecoveryFlow) => ReactNode;
+	/** Function that takes a VerificationFlow and returns a component for email/account verification */
+	verification?: (flow: VerificationFlow) => ReactNode;
+	/** Function that takes a SettingsFlow and returns a component for user settings management */
+	settings?: (flow: SettingsFlow) => ReactNode;
+	/** Function that takes any flow object and returns a component for custom onboarding */
+	onboarding?: (flow: any) => ReactNode;
+	/** Function that takes a FlowError and returns a component for displaying authentication errors */
+	error?: (error: FlowError) => ReactNode;
 };
 
 /**
@@ -64,11 +64,11 @@ export type FlowMap = {
  * @group Flow Routing
  */
 export type FlowObject =
-  | LoginFlow
-  | RecoveryFlow
-  | RegistrationFlow
-  | SettingsFlow
-  | VerificationFlow;
+	| LoginFlow
+	| RecoveryFlow
+	| RegistrationFlow
+	| SettingsFlow
+	| VerificationFlow;
 
 /**
  * Retrieves the appropriate flow object based on the flow type
@@ -102,28 +102,28 @@ export type FlowObject =
  * @group Flow Routing
  */
 export async function getFlow(
-  flowType: keyof FlowMap,
-  props: GetFlowProps
+	flowType: keyof FlowMap,
+	props: GetFlowProps,
 ): Promise<FlowObject | null> {
-  switch (flowType) {
-    case "login":
-      // Login is self-contained: the token-based LoginForm initializes its own
-      // native (API) flow on the client, so no browser-flow fetch is needed.
-      // This avoids the cross-origin cookie round-trip entirely.
-      return null;
-    case "registration":
-      return await getRegistrationFlow(props);
-    case "recovery":
-      return await getRecoveryFlow(props);
-    case "verification":
-      return await getVerificationFlow(props);
-    case "settings":
-      return await getSettingsFlow(props);
-    case "onboarding":
-      return null;
-    default:
-      return null;
-  }
+	switch (flowType) {
+		case "login":
+			// Login is self-contained: the token-based LoginForm initializes its own
+			// native (API) flow on the client, so no browser-flow fetch is needed.
+			// This avoids the cross-origin cookie round-trip entirely.
+			return null;
+		case "registration":
+			return await getRegistrationFlow(props);
+		case "recovery":
+			return await getRecoveryFlow(props);
+		case "verification":
+			return await getVerificationFlow(props);
+		case "settings":
+			return await getSettingsFlow(props);
+		case "onboarding":
+			return null;
+		default:
+			return null;
+	}
 }
 
 /**
@@ -137,21 +137,21 @@ export async function getFlow(
  * @group Flow Routing
  */
 export interface FlowRouterProps {
-  /** Next.js params promise containing the flow type from dynamic route segments */
-  params: Promise<{ flow: string[] }>;
-  /** Map of flow types to their corresponding React component render functions */
-  flowMap: FlowMap;
-  /** Component to render when the requested flow type is not found or not supported */
-  onNotFound?: ReactNode;
-  /** Base URL path for authentication flows (e.g., '/auth') */
-  url: string;
-  /** Promise resolving to search parameters from the request URL */
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-  /**
-   * URL to redirect to after flow completion
-   * @defaultValue "/"
-   */
-  returnTo?: string;
+	/** Next.js params promise containing the flow type from dynamic route segments */
+	params: Promise<{ flow: string[] }>;
+	/** Map of flow types to their corresponding React component render functions */
+	flowMap: FlowMap;
+	/** Component to render when the requested flow type is not found or not supported */
+	onNotFound?: ReactNode;
+	/** Base URL path for authentication flows (e.g., '/auth') */
+	url: string;
+	/** Promise resolving to search parameters from the request URL */
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	/**
+	 * URL to redirect to after flow completion
+	 * @defaultValue "/"
+	 */
+	returnTo?: string;
 }
 
 /**
@@ -210,42 +210,42 @@ export interface FlowRouterProps {
  * @group Flow Routing
  */
 export async function FlowRouter({
-  params,
-  flowMap,
-  onNotFound,
-  url,
-  returnTo = "/",
-  searchParams,
+	params,
+	flowMap,
+	onNotFound,
+	url,
+	returnTo = "/",
+	searchParams,
 }: FlowRouterProps) {
-  const { flow } = await params;
-  const flowType = flow[0] as keyof FlowMap;
+	const { flow } = await params;
+	const flowType = flow[0] as keyof FlowMap;
 
-  const componentFunction = flowMap[flowType];
+	const componentFunction = flowMap[flowType];
 
-  if (componentFunction) {
-    // Onboarding and login are self-contained: the components initialize
-    // their own flows on the client, so no flow fetch is needed.
-    if (flowType === "onboarding" || flowType === "login") {
-      return componentFunction(null);
-    }
+	if (componentFunction) {
+		// Onboarding and login are self-contained: the components initialize
+		// their own flows on the client, so no flow fetch is needed.
+		if (flowType === "onboarding" || flowType === "login") {
+			return componentFunction(null);
+		}
 
-    // Error flow uses 'id' param instead of 'flow' param
-    if (flowType === "error") {
-      const errorFlow = await getErrorFlow({ searchParams });
-      if (errorFlow) {
-        return (flowMap.error as (error: FlowError) => ReactNode)(errorFlow);
-      }
-      return onNotFound;
-    }
+		// Error flow uses 'id' param instead of 'flow' param
+		if (flowType === "error") {
+			const errorFlow = await getErrorFlow({ searchParams });
+			if (errorFlow) {
+				return (flowMap.error as (error: FlowError) => ReactNode)(errorFlow);
+			}
+			return onNotFound;
+		}
 
-    // Get the flow object using our getFlow function
-    const flowObject = await getFlow(flowType, { url, searchParams });
+		// Get the flow object using our getFlow function
+		const flowObject = await getFlow(flowType, { url, searchParams });
 
-    if (flowObject) {
-      // Call the component function with the flow object
-      return componentFunction(flowObject as any);
-    }
-  }
+		if (flowObject) {
+			// Call the component function with the flow object
+			return componentFunction(flowObject as any);
+		}
+	}
 
-  return onNotFound;
+	return onNotFound;
 }

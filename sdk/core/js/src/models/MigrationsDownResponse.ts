@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MigrationsDownResponse
  */
 export interface MigrationsDownResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof MigrationsDownResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MigrationsDownResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the MigrationsDownResponse interface.
  */
-export function instanceOfMigrationsDownResponse(value: object): value is MigrationsDownResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfMigrationsDownResponse(
+	value: object,
+): value is MigrationsDownResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function MigrationsDownResponseFromJSON(json: any): MigrationsDownResponse {
-    return MigrationsDownResponseFromJSONTyped(json, false);
+export function MigrationsDownResponseFromJSON(
+	json: any,
+): MigrationsDownResponse {
+	return MigrationsDownResponseFromJSONTyped(json, false);
 }
 
-export function MigrationsDownResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): MigrationsDownResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function MigrationsDownResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MigrationsDownResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function MigrationsDownResponseToJSON(json: any): MigrationsDownResponse {
-    return MigrationsDownResponseToJSONTyped(json, false);
+export function MigrationsDownResponseToJSON(
+	json: any,
+): MigrationsDownResponse {
+	return MigrationsDownResponseToJSONTyped(json, false);
 }
 
-export function MigrationsDownResponseToJSONTyped(value?: MigrationsDownResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MigrationsDownResponseToJSONTyped(
+	value?: MigrationsDownResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

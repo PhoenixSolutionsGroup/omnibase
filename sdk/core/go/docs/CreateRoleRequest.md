@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Permissions** | **[]string** |  | 
-**RoleName** | **string** |  | 
+| Name            | Type         | Description | Notes |
+| --------------- | ------------ | ----------- | ----- |
+| **Permissions** | **[]string** |             |
+| **RoleName**    | **string**   |             |
 
 ## Methods
 
@@ -45,17 +45,18 @@ and a boolean to check if the value has been set.
 
 SetPermissions sets Permissions field to given value.
 
-
 ### SetPermissionsNil
 
 `func (o *CreateRoleRequest) SetPermissionsNil(b bool)`
 
- SetPermissionsNil sets the value for Permissions to be an explicit nil
+SetPermissionsNil sets the value for Permissions to be an explicit nil
 
 ### UnsetPermissions
+
 `func (o *CreateRoleRequest) UnsetPermissions()`
 
 UnsetPermissions ensures that no value is present for Permissions, not even an explicit nil
+
 ### GetRoleName
 
 `func (o *CreateRoleRequest) GetRoleName() string`
@@ -75,8 +76,4 @@ and a boolean to check if the value has been set.
 
 SetRoleName sets RoleName field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

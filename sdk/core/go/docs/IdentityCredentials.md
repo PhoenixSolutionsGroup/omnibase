@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**Config** | Pointer to **map[string]interface{}** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**Identifiers** | Pointer to **[]string** |  | [optional] 
-**Type** | Pointer to **string** |  | [optional] 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Version** | Pointer to **int64** |  | [optional] 
+| Name                          | Type                                  | Description | Notes      |
+| ----------------------------- | ------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}** |             | [optional] |
+| **Config**                    | Pointer to **map[string]interface{}** |             | [optional] |
+| **CreatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Identifiers**               | Pointer to **[]string**               |             | [optional] |
+| **Type**                      | Pointer to **string**                 |             | [optional] |
+| **UpdatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Version**                   | Pointer to **int64**                  |             | [optional] |
 
 ## Methods
 
@@ -135,12 +135,14 @@ HasIdentifiers returns a boolean if a field has been set.
 
 `func (o *IdentityCredentials) SetIdentifiersNil(b bool)`
 
- SetIdentifiersNil sets the value for Identifiers to be an explicit nil
+SetIdentifiersNil sets the value for Identifiers to be an explicit nil
 
 ### UnsetIdentifiers
+
 `func (o *IdentityCredentials) UnsetIdentifiers()`
 
 UnsetIdentifiers ensures that no value is present for Identifiers, not even an explicit nil
+
 ### GetType
 
 `func (o *IdentityCredentials) GetType() string`
@@ -216,7 +218,4 @@ SetVersion sets Version field to given value.
 
 HasVersion returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -1,16 +1,14 @@
 # \V1TenantsSubscriptionsAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**AddSubscription**](V1TenantsSubscriptionsAPI.md#AddSubscription) | **Post** /api/v1/tenants/subscriptions | Add a subscription to the tenant
-[**GetTenantBillingStatus**](V1TenantsSubscriptionsAPI.md#GetTenantBillingStatus) | **Get** /api/v1/tenants/billing-status | Get tenant billing status
-[**GetTenantSubscription**](V1TenantsSubscriptionsAPI.md#GetTenantSubscription) | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription
-[**ListTenantSubscriptions**](V1TenantsSubscriptionsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions | List subscriptions for the tenant
-[**RemoveSubscription**](V1TenantsSubscriptionsAPI.md#RemoveSubscription) | **Delete** /api/v1/tenants/subscriptions | Remove a subscription from the tenant
-
-
+| Method                                                                              | HTTP request                                            | Description                           |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------- |
+| [**AddSubscription**](V1TenantsSubscriptionsAPI.md#AddSubscription)                 | **Post** /api/v1/tenants/subscriptions                  | Add a subscription to the tenant      |
+| [**GetTenantBillingStatus**](V1TenantsSubscriptionsAPI.md#GetTenantBillingStatus)   | **Get** /api/v1/tenants/billing-status                  | Get tenant billing status             |
+| [**GetTenantSubscription**](V1TenantsSubscriptionsAPI.md#GetTenantSubscription)     | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription      |
+| [**ListTenantSubscriptions**](V1TenantsSubscriptionsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions                   | List subscriptions for the tenant     |
+| [**RemoveSubscription**](V1TenantsSubscriptionsAPI.md#RemoveSubscription)           | **Delete** /api/v1/tenants/subscriptions                | Remove a subscription from the tenant |
 
 ## AddSubscription
 
@@ -47,16 +45,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiAddSubscriptionRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **addRequest** | [**AddRequest**](AddRequest.md) |  | 
+| Name           | Type                            | Description | Notes |
+| -------------- | ------------------------------- | ----------- | ----- |
+| **addRequest** | [**AddRequest**](AddRequest.md) |             |
 
 ### Return type
 
@@ -74,7 +69,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetTenantBillingStatus
 
@@ -116,7 +110,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequest struct via the builder pattern
 
-
 ### Return type
 
 [**BillingStatusResponse**](BillingStatusResponse.md)
@@ -133,7 +126,6 @@ Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequ
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetTenantSubscription
 
@@ -170,20 +162,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**configPriceId** | **string** |  | 
+| Name              | Type                | Description                                                                 | Notes |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**           | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **configPriceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetTenantSubscriptionRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -201,7 +190,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ListTenantSubscriptions
 
@@ -243,7 +231,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiListTenantSubscriptionsRequest struct via the builder pattern
 
-
 ### Return type
 
 [**[]SubscriptionResponse**](SubscriptionResponse.md)
@@ -260,7 +247,6 @@ Other parameters are passed through a pointer to a apiListTenantSubscriptionsReq
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## RemoveSubscription
 
@@ -297,16 +283,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiRemoveSubscriptionRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **removeRequest** | [**RemoveRequest**](RemoveRequest.md) |  | 
+| Name              | Type                                  | Description | Notes |
+| ----------------- | ------------------------------------- | ----------- | ----- |
+| **removeRequest** | [**RemoveRequest**](RemoveRequest.md) |             |
 
 ### Return type
 
@@ -324,4 +307,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

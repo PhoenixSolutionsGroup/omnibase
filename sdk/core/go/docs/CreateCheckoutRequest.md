@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AllowPromotionCodes** | Pointer to **bool** |  | [optional] 
-**CancelUrl** | **string** |  | 
-**LineItems** | [**[]LineItem**](LineItem.md) |  | 
-**PromotionCode** | Pointer to **string** |  | [optional] 
-**SuccessUrl** | **string** |  | 
-**TrialPeriodDays** | Pointer to **int64** |  | [optional] 
+| Name                    | Type                          | Description | Notes      |
+| ----------------------- | ----------------------------- | ----------- | ---------- |
+| **AllowPromotionCodes** | Pointer to **bool**           |             | [optional] |
+| **CancelUrl**           | **string**                    |             |
+| **LineItems**           | [**[]LineItem**](LineItem.md) |             |
+| **PromotionCode**       | Pointer to **string**         |             | [optional] |
+| **SuccessUrl**          | **string**                    |             |
+| **TrialPeriodDays**     | Pointer to **int64**          |             | [optional] |
 
 ## Methods
 
@@ -74,7 +74,6 @@ and a boolean to check if the value has been set.
 
 SetCancelUrl sets CancelUrl field to given value.
 
-
 ### GetLineItems
 
 `func (o *CreateCheckoutRequest) GetLineItems() []LineItem`
@@ -94,17 +93,18 @@ and a boolean to check if the value has been set.
 
 SetLineItems sets LineItems field to given value.
 
-
 ### SetLineItemsNil
 
 `func (o *CreateCheckoutRequest) SetLineItemsNil(b bool)`
 
- SetLineItemsNil sets the value for LineItems to be an explicit nil
+SetLineItemsNil sets the value for LineItems to be an explicit nil
 
 ### UnsetLineItems
+
 `func (o *CreateCheckoutRequest) UnsetLineItems()`
 
 UnsetLineItems ensures that no value is present for LineItems, not even an explicit nil
+
 ### GetPromotionCode
 
 `func (o *CreateCheckoutRequest) GetPromotionCode() string`
@@ -149,7 +149,6 @@ and a boolean to check if the value has been set.
 
 SetSuccessUrl sets SuccessUrl field to given value.
 
-
 ### GetTrialPeriodDays
 
 `func (o *CreateCheckoutRequest) GetTrialPeriodDays() int64`
@@ -175,7 +174,4 @@ SetTrialPeriodDays sets TrialPeriodDays field to given value.
 
 HasTrialPeriodDays returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

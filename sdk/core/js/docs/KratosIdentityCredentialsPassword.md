@@ -1,16 +1,14 @@
-
 # KratosIdentityCredentialsPassword
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`type` | string
-`identifiers` | Array&lt;string&gt;
-`version` | number
-`createdAt` | Date
-`updatedAt` | Date
+| Name          | Type                |
+| ------------- | ------------------- |
+| `type`        | string              |
+| `identifiers` | Array&lt;string&gt; |
+| `version`     | number              |
+| `createdAt`   | Date                |
+| `updatedAt`   | Date                |
 
 ## Example
 
@@ -38,5 +36,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

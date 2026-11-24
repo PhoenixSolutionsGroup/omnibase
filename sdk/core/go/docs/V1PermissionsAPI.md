@@ -1,14 +1,12 @@
 # \V1PermissionsAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CheckPermission**](V1PermissionsAPI.md#CheckPermission) | **Post** /api/v1/permissions/check | Check permission
-[**CreateRelationship**](V1PermissionsAPI.md#CreateRelationship) | **Post** /api/v1/permissions/relationships | Create relationship
-[**DeleteRelationship**](V1PermissionsAPI.md#DeleteRelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship
-
-
+| Method                                                           | HTTP request                                 | Description         |
+| ---------------------------------------------------------------- | -------------------------------------------- | ------------------- |
+| [**CheckPermission**](V1PermissionsAPI.md#CheckPermission)       | **Post** /api/v1/permissions/check           | Check permission    |
+| [**CreateRelationship**](V1PermissionsAPI.md#CreateRelationship) | **Post** /api/v1/permissions/relationships   | Create relationship |
+| [**DeleteRelationship**](V1PermissionsAPI.md#DeleteRelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship |
 
 ## CheckPermission
 
@@ -45,16 +43,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCheckPermissionRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **checkRequest** | [**CheckRequest**](CheckRequest.md) |  | 
+| Name             | Type                                | Description | Notes |
+| ---------------- | ----------------------------------- | ----------- | ----- |
+| **checkRequest** | [**CheckRequest**](CheckRequest.md) |             |
 
 ### Return type
 
@@ -72,7 +67,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateRelationship
 
@@ -109,16 +103,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateRelationshipRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) |  | 
+| Name                          | Type                                                          | Description | Notes |
+| ----------------------------- | ------------------------------------------------------------- | ----------- | ----- |
+| **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) |             |
 
 ### Return type
 
@@ -136,7 +127,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeleteRelationship
 
@@ -173,16 +163,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteRelationshipRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) |  | 
+| Name                          | Type                                                          | Description | Notes |
+| ----------------------------- | ------------------------------------------------------------- | ----------- | ----- |
+| **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) |             |
 
 ### Return type
 
@@ -200,4 +187,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

@@ -1,23 +1,19 @@
 # \V1StorageAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**DeleteObject**](V1StorageAPI.md#DeleteObject) | **Delete** /api/v1/storage/object | Delete file from storage
-[**DownloadFile**](V1StorageAPI.md#DownloadFile) | **Post** /api/v1/storage/download | Download file from storage
-[**MakeFilePublic**](V1StorageAPI.md#MakeFilePublic) | **Post** /api/v1/storage/make-public | Make a file publicly accessible
-[**UploadFile**](V1StorageAPI.md#UploadFile) | **Post** /api/v1/storage/upload | Upload file to storage
-
-
+| Method                                               | HTTP request                         | Description                     |
+| ---------------------------------------------------- | ------------------------------------ | ------------------------------- |
+| [**DeleteObject**](V1StorageAPI.md#DeleteObject)     | **Delete** /api/v1/storage/object    | Delete file from storage        |
+| [**DownloadFile**](V1StorageAPI.md#DownloadFile)     | **Post** /api/v1/storage/download    | Download file from storage      |
+| [**MakeFilePublic**](V1StorageAPI.md#MakeFilePublic) | **Post** /api/v1/storage/make-public | Make a file publicly accessible |
+| [**UploadFile**](V1StorageAPI.md#UploadFile)         | **Post** /api/v1/storage/upload      | Upload file to storage          |
 
 ## DeleteObject
 
 > DeleteObjectResponse DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).Execute()
 
 Delete file from storage
-
-
 
 ### Example
 
@@ -48,16 +44,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteObjectRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **deleteObjectRequest** | [**DeleteObjectRequest**](DeleteObjectRequest.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **deleteObjectRequest** | [**DeleteObjectRequest**](DeleteObjectRequest.md) |             |
 
 ### Return type
 
@@ -76,14 +69,11 @@ Name | Type | Description  | Notes
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
 
-
 ## DownloadFile
 
 > DownloadResponse DownloadFile(ctx).DownloadRequest(downloadRequest).Execute()
 
 Download file from storage
-
-
 
 ### Example
 
@@ -114,16 +104,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDownloadFileRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **downloadRequest** | [**DownloadRequest**](DownloadRequest.md) |  | 
+| Name                | Type                                      | Description | Notes |
+| ------------------- | ----------------------------------------- | ----------- | ----- |
+| **downloadRequest** | [**DownloadRequest**](DownloadRequest.md) |             |
 
 ### Return type
 
@@ -142,14 +129,11 @@ Name | Type | Description  | Notes
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
 
-
 ## MakeFilePublic
 
 > MakePublicResponse MakeFilePublic(ctx).MakePublicRequest(makePublicRequest).Execute()
 
 Make a file publicly accessible
-
-
 
 ### Example
 
@@ -180,16 +164,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiMakeFilePublicRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **makePublicRequest** | [**MakePublicRequest**](MakePublicRequest.md) |  | 
+| Name                  | Type                                          | Description | Notes |
+| --------------------- | --------------------------------------------- | ----------- | ----- |
+| **makePublicRequest** | [**MakePublicRequest**](MakePublicRequest.md) |             |
 
 ### Return type
 
@@ -208,14 +189,11 @@ Name | Type | Description  | Notes
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
 
-
 ## UploadFile
 
 > UploadResponse UploadFile(ctx).UploadRequest(uploadRequest).Execute()
 
 Upload file to storage
-
-
 
 ### Example
 
@@ -246,16 +224,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUploadFileRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **uploadRequest** | [**UploadRequest**](UploadRequest.md) |  | 
+| Name              | Type                                  | Description | Notes |
+| ----------------- | ------------------------------------- | ----------- | ----- |
+| **uploadRequest** | [**UploadRequest**](UploadRequest.md) |             |
 
 ### Return type
 
@@ -273,4 +248,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

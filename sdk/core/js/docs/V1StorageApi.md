@@ -1,15 +1,13 @@
 # V1StorageApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**deleteObject**](V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage |
-| [**downloadFile**](V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage |
-| [**makeFilePublic**](V1StorageApi.md#makefilepublic) | **POST** /api/v1/storage/make-public | Make a file publicly accessible |
-| [**uploadFile**](V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage |
-
-
+| Method                                                    | HTTP request                         | Description                     |
+| --------------------------------------------------------- | ------------------------------------ | ------------------------------- |
+| [**deleteObject**](V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object    | Delete file from storage        |
+| [**downloadFile**](V1StorageApi.md#downloadfile)          | **POST** /api/v1/storage/download    | Download file from storage      |
+| [**makeFilePublic**](V1StorageApi.md#makefilepublic)      | **POST** /api/v1/storage/make-public | Make a file publicly accessible |
+| [**uploadFile**](V1StorageApi.md#uploadfile)              | **POST** /api/v1/storage/upload      | Upload file to storage          |
 
 ## deleteObject
 
@@ -61,10 +59,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **deleteObjectRequest** | [DeleteObjectRequest](DeleteObjectRequest.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **deleteObjectRequest** | [DeleteObjectRequest](DeleteObjectRequest.md) |             |       |
 
 ### Return type
 
@@ -79,19 +76,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## downloadFile
 
@@ -143,10 +139,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **downloadRequest** | [DownloadRequest](DownloadRequest.md) |  | |
+| Name                | Type                                  | Description | Notes |
+| ------------------- | ------------------------------------- | ----------- | ----- |
+| **downloadRequest** | [DownloadRequest](DownloadRequest.md) |             |       |
 
 ### Return type
 
@@ -161,19 +156,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## makeFilePublic
 
@@ -225,10 +219,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **makePublicRequest** | [MakePublicRequest](MakePublicRequest.md) |  | |
+| Name                  | Type                                      | Description | Notes |
+| --------------------- | ----------------------------------------- | ----------- | ----- |
+| **makePublicRequest** | [MakePublicRequest](MakePublicRequest.md) |             |       |
 
 ### Return type
 
@@ -243,19 +236,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## uploadFile
 
@@ -307,10 +299,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **uploadRequest** | [UploadRequest](UploadRequest.md) |  | |
+| Name              | Type                              | Description | Notes |
+| ----------------- | --------------------------------- | ----------- | ----- |
+| **uploadRequest** | [UploadRequest](UploadRequest.md) |             |       |
 
 ### Return type
 
@@ -325,17 +316,16 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

@@ -1,4 +1,5 @@
 ---
+
 title: Usage-Based Billing
 description: Implement metered billing with billing meters and usage tracking
 ---
@@ -13,45 +14,45 @@ Billing meters track usage events and aggregate them for billing. Define meters 
 
 ```json
 {
-  "meters": [
-    {
-      "id": "api_calls",
-      "display_name": "API Calls",
-      "event_name": "api_call",
-      "default_aggregation": {
-        "formula": "sum"
-      },
-      "customer_mapping": {
-        "event_payload_key": "customer_id",
-        "type": "by_id"
-      },
-      "value_settings": {
-        "event_payload_key": "value"
-      }
-    }
-  ]
+	"meters": [
+		{
+			"id": "api_calls",
+			"display_name": "API Calls",
+			"event_name": "api_call",
+			"default_aggregation": {
+				"formula": "sum"
+			},
+			"customer_mapping": {
+				"event_payload_key": "customer_id",
+				"type": "by_id"
+			},
+			"value_settings": {
+				"event_payload_key": "value"
+			}
+		}
+	]
 }
 ```
 
 ### Meter Configuration
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Unique meter identifier |
-| `display_name` | `string` | Yes | Human-readable name |
-| `event_name` | `string` | Yes | Event name to track |
-| `stripe_id` | `string` | No | Existing Stripe meter ID (migration) |
-| `default_aggregation` | `object` | Yes | How to aggregate events |
-| `customer_mapping` | `object` | No | How to identify customers |
-| `value_settings` | `object` | No | How to extract values |
+| Field                 | Type     | Required | Description                          |
+| --------------------- | -------- | -------- | ------------------------------------ |
+| `id`                  | `string` | Yes      | Unique meter identifier              |
+| `display_name`        | `string` | Yes      | Human-readable name                  |
+| `event_name`          | `string` | Yes      | Event name to track                  |
+| `stripe_id`           | `string` | No       | Existing Stripe meter ID (migration) |
+| `default_aggregation` | `object` | Yes      | How to aggregate events              |
+| `customer_mapping`    | `object` | No       | How to identify customers            |
+| `value_settings`      | `object` | No       | How to extract values                |
 
 ### Aggregation Formulas
 
-| Formula | Description | Use Case |
-|---------|-------------|----------|
-| `sum` | Sum all values | API calls, data transfer |
-| `count` | Count events | Requests, transactions |
-| `last` | Use last value | Current storage size |
+| Formula | Description    | Use Case                 |
+| ------- | -------------- | ------------------------ |
+| `sum`   | Sum all values | API calls, data transfer |
+| `count` | Count events   | Requests, transactions   |
+| `last`  | Use last value | Current storage size     |
 
 ## Metered Prices
 
@@ -59,24 +60,24 @@ Link a price to a meter for usage-based billing:
 
 ```json
 {
-  "products": [
-    {
-      "id": "api_usage",
-      "name": "API Usage",
-      "type": "service",
-      "prices": [
-        {
-          "id": "api_per_call",
-          "currency": "usd",
-          "interval": "month",
-          "usage_type": "metered",
-          "meter": "api_calls",
-          "billing_scheme": "per_unit",
-          "amount": 1
-        }
-      ]
-    }
-  ]
+	"products": [
+		{
+			"id": "api_usage",
+			"name": "API Usage",
+			"type": "service",
+			"prices": [
+				{
+					"id": "api_per_call",
+					"currency": "usd",
+					"interval": "month",
+					"usage_type": "metered",
+					"meter": "api_calls",
+					"billing_scheme": "per_unit",
+					"amount": 1
+				}
+			]
+		}
+	]
 }
 ```
 
@@ -86,13 +87,13 @@ Charge a fixed amount per unit:
 
 ```json
 {
-  "id": "compute_hours",
-  "currency": "usd",
-  "interval": "month",
-  "usage_type": "metered",
-  "meter": "compute_time",
-  "billing_scheme": "per_unit",
-  "amount": 10
+	"id": "compute_hours",
+	"currency": "usd",
+	"interval": "month",
+	"usage_type": "metered",
+	"meter": "compute_time",
+	"billing_scheme": "per_unit",
+	"amount": 10
 }
 ```
 
@@ -104,23 +105,24 @@ For volume discounts, use tiered pricing:
 
 ```json
 {
-  "id": "api_tiered",
-  "currency": "usd",
-  "interval": "month",
-  "usage_type": "metered",
-  "meter": "api_calls",
-  "billing_scheme": "tiered",
-  "tiers_mode": "graduated",
-  "tiers": [
-    { "up_to": 1000, "unit_amount": 0 },
-    { "up_to": 10000, "unit_amount": 100 },
-    { "up_to": 100000, "unit_amount": 50 },
-    { "up_to": "inf", "unit_amount": 25 }
-  ]
+	"id": "api_tiered",
+	"currency": "usd",
+	"interval": "month",
+	"usage_type": "metered",
+	"meter": "api_calls",
+	"billing_scheme": "tiered",
+	"tiers_mode": "graduated",
+	"tiers": [
+		{ "up_to": 1000, "unit_amount": 0 },
+		{ "up_to": 10000, "unit_amount": 100 },
+		{ "up_to": 100000, "unit_amount": 50 },
+		{ "up_to": "inf", "unit_amount": 25 }
+	]
 }
 ```
 
 This creates a pricing structure:
+
 - First 1,000 calls: Free
 - 1,001 - 10,000: $0.01 per call
 - 10,001 - 100,000: $0.005 per call
@@ -131,16 +133,16 @@ This creates a pricing structure:
 ### Via API
 
 ```typescript
-import { V1PaymentsApi } from '@omnibase/core-js';
+import { V1PaymentsApi } from "@omnibase/core-js";
 
 const paymentsApi = new V1PaymentsApi(config);
 
 // Record 100 API calls
 await paymentsApi.recordUsage({
-  recordUsageRequest: {
-    meterEventName: 'api_call',
-    value: '100',
-  },
+	recordUsageRequest: {
+		meterEventName: "api_call",
+		value: "100",
+	},
 });
 ```
 
@@ -171,14 +173,14 @@ For high-volume scenarios, batch usage events:
 ```typescript
 // Record usage in batches (e.g., every minute)
 async function recordBatchedUsage() {
-  const usage = getUsageFromBuffer(); // Your buffered usage data
+	const usage = getUsageFromBuffer(); // Your buffered usage data
 
-  await paymentsApi.recordUsage({
-    recordUsageRequest: {
-      meterEventName: 'api_call',
-      value: String(usage.count),
-    },
-  });
+	await paymentsApi.recordUsage({
+		recordUsageRequest: {
+			meterEventName: "api_call",
+			value: String(usage.count),
+		},
+	});
 }
 
 // Run every minute
@@ -231,13 +233,13 @@ func (u *UsageCalculator) CalculateProjectUsage(
 
 ### Usage Categories
 
-| Category | Metrics | Unit |
-|----------|---------|------|
-| **Compute** | VPS hours, Cloud Run vCPU-seconds | Hours, vCPU-seconds |
-| **Storage** | GB stored, operations (Class A/B) | GB-month, operations |
-| **Database** | Compute hours, storage GB | Hours, GB-hours |
-| **Email** | Emails sent | Count |
-| **Workers** | Requests, CPU milliseconds | Millions |
+| Category     | Metrics                           | Unit                 |
+| ------------ | --------------------------------- | -------------------- |
+| **Compute**  | VPS hours, Cloud Run vCPU-seconds | Hours, vCPU-seconds  |
+| **Storage**  | GB stored, operations (Class A/B) | GB-month, operations |
+| **Database** | Compute hours, storage GB         | Hours, GB-hours      |
+| **Email**    | Emails sent                       | Count                |
+| **Workers**  | Requests, CPU milliseconds        | Millions             |
 
 ### Billing Period Normalization
 
@@ -259,7 +261,7 @@ if ranFullBillingPeriod {
 ```typescript
 // Get usage preview for a billing period
 const response = await fetch(
-  `/api/projects/${projectId}/usage?start=${startDate}&end=${endDate}`
+	`/api/projects/${projectId}/usage?start=${startDate}&end=${endDate}`,
 );
 
 const usage = await response.json();
@@ -355,14 +357,14 @@ Calculate costs for any quantity:
 
 ```typescript
 const { data } = await stripeApi.calculatePriceCost({
-  priceId: 'api_tiered',
-  calculatePriceCostRequest: { quantity: 50000 },
+	priceId: "api_tiered",
+	calculatePriceCostRequest: { quantity: 50000 },
 });
 
-console.log(data.cost_cents);              // Total cost in cents
+console.log(data.cost_cents); // Total cost in cents
 console.log(data.effective_unit_cost_cents); // Average cost per unit
-console.log(data.billing_scheme);          // "tiered"
-console.log(data.tiers_mode);              // "graduated"
+console.log(data.billing_scheme); // "tiered"
+console.log(data.tiers_mode); // "graduated"
 ```
 
 ## Invoice Integration
@@ -408,72 +410,72 @@ func (h *StripeEventHandler) handleInvoiceCreated(
 
 ```json title="omnibase/stripe/usage-billing.config.json"
 {
-  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
-  "version": "1.0.0",
-  "meters": [
-    {
-      "id": "api_calls",
-      "display_name": "API Calls",
-      "event_name": "api_call",
-      "default_aggregation": { "formula": "sum" }
-    },
-    {
-      "id": "storage_gb",
-      "display_name": "Storage (GB)",
-      "event_name": "storage_usage",
-      "default_aggregation": { "formula": "last" }
-    }
-  ],
-  "products": [
-    {
-      "id": "usage_plan",
-      "name": "Usage-Based Plan",
-      "type": "service",
-      "prices": [
-        {
-          "id": "base_monthly",
-          "amount": 999,
-          "currency": "usd",
-          "interval": "month",
-          "usage_type": "licensed",
-          "ui": {
-            "display_name": "Base Fee"
-          }
-        },
-        {
-          "id": "api_usage",
-          "currency": "usd",
-          "interval": "month",
-          "usage_type": "metered",
-          "meter": "api_calls",
-          "billing_scheme": "tiered",
-          "tiers_mode": "graduated",
-          "tiers": [
-            { "up_to": 10000, "unit_amount": 0 },
-            { "up_to": 100000, "unit_amount": 10 },
-            { "up_to": "inf", "unit_amount": 5 }
-          ],
-          "ui": {
-            "display_name": "API Calls",
-            "billing_period": "per 1,000 calls"
-          }
-        },
-        {
-          "id": "storage_usage",
-          "currency": "usd",
-          "interval": "month",
-          "usage_type": "metered",
-          "meter": "storage_gb",
-          "billing_scheme": "per_unit",
-          "amount": 25,
-          "ui": {
-            "display_name": "Storage",
-            "billing_period": "per GB/month"
-          }
-        }
-      ]
-    }
-  ]
+	"$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+	"version": "1.0.0",
+	"meters": [
+		{
+			"id": "api_calls",
+			"display_name": "API Calls",
+			"event_name": "api_call",
+			"default_aggregation": { "formula": "sum" }
+		},
+		{
+			"id": "storage_gb",
+			"display_name": "Storage (GB)",
+			"event_name": "storage_usage",
+			"default_aggregation": { "formula": "last" }
+		}
+	],
+	"products": [
+		{
+			"id": "usage_plan",
+			"name": "Usage-Based Plan",
+			"type": "service",
+			"prices": [
+				{
+					"id": "base_monthly",
+					"amount": 999,
+					"currency": "usd",
+					"interval": "month",
+					"usage_type": "licensed",
+					"ui": {
+						"display_name": "Base Fee"
+					}
+				},
+				{
+					"id": "api_usage",
+					"currency": "usd",
+					"interval": "month",
+					"usage_type": "metered",
+					"meter": "api_calls",
+					"billing_scheme": "tiered",
+					"tiers_mode": "graduated",
+					"tiers": [
+						{ "up_to": 10000, "unit_amount": 0 },
+						{ "up_to": 100000, "unit_amount": 10 },
+						{ "up_to": "inf", "unit_amount": 5 }
+					],
+					"ui": {
+						"display_name": "API Calls",
+						"billing_period": "per 1,000 calls"
+					}
+				},
+				{
+					"id": "storage_usage",
+					"currency": "usd",
+					"interval": "month",
+					"usage_type": "metered",
+					"meter": "storage_gb",
+					"billing_scheme": "per_unit",
+					"amount": 25,
+					"ui": {
+						"display_name": "Storage",
+						"billing_period": "per GB/month"
+					}
+				}
+			]
+		}
+	]
 }
 ```
 

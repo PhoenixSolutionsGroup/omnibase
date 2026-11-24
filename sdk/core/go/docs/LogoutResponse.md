@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**LogoutToken** | **string** |  | 
-**LogoutUrl** | **string** |  | 
+| Name            | Type       | Description | Notes |
+| --------------- | ---------- | ----------- | ----- |
+| **LogoutToken** | **string** |             |
+| **LogoutUrl**   | **string** |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetLogoutToken sets LogoutToken field to given value.
 
-
 ### GetLogoutUrl
 
 `func (o *LogoutResponse) GetLogoutUrl() string`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetLogoutUrl sets LogoutUrl field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

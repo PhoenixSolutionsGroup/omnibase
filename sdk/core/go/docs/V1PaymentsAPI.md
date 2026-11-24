@@ -1,20 +1,18 @@
 # \V1PaymentsAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**AddInvoiceLineItem**](V1PaymentsAPI.md#AddInvoiceLineItem) | **Post** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
-[**AddInvoiceLineItemWithPriceId**](V1PaymentsAPI.md#AddInvoiceLineItemWithPriceId) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
-[**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create a Stripe checkout session
-[**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create a Stripe customer portal session
-[**CreateInvoice**](V1PaymentsAPI.md#CreateInvoice) | **Post** /api/v1/payments/invoices | Create a Stripe invoice
-[**FinalizeInvoice**](V1PaymentsAPI.md#FinalizeInvoice) | **Post** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
-[**GetInvoice**](V1PaymentsAPI.md#GetInvoice) | **Get** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
-[**RecordUsage**](V1PaymentsAPI.md#RecordUsage) | **Post** /api/v1/payments/usage | Record a Stripe meter usage event
-[**UpdateInvoice**](V1PaymentsAPI.md#UpdateInvoice) | **Patch** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
-
-
+| Method                                                                              | HTTP request                                                | Description                                          |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
+| [**AddInvoiceLineItem**](V1PaymentsAPI.md#AddInvoiceLineItem)                       | **Post** /api/v1/payments/invoices/{invoice_id}/items       | Add a line item to a Stripe invoice                  |
+| [**AddInvoiceLineItemWithPriceId**](V1PaymentsAPI.md#AddInvoiceLineItemWithPriceId) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID |
+| [**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout)                               | **Post** /api/v1/payments/checkout                          | Create a Stripe checkout session                     |
+| [**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal)                   | **Post** /api/v1/payments/portal                            | Create a Stripe customer portal session              |
+| [**CreateInvoice**](V1PaymentsAPI.md#CreateInvoice)                                 | **Post** /api/v1/payments/invoices                          | Create a Stripe invoice                              |
+| [**FinalizeInvoice**](V1PaymentsAPI.md#FinalizeInvoice)                             | **Post** /api/v1/payments/invoices/{invoice_id}/finalize    | Finalize a Stripe invoice                            |
+| [**GetInvoice**](V1PaymentsAPI.md#GetInvoice)                                       | **Get** /api/v1/payments/invoices/{invoice_id}              | Get a Stripe invoice                                 |
+| [**RecordUsage**](V1PaymentsAPI.md#RecordUsage)                                     | **Post** /api/v1/payments/usage                             | Record a Stripe meter usage event                    |
+| [**UpdateInvoice**](V1PaymentsAPI.md#UpdateInvoice)                                 | **Patch** /api/v1/payments/invoices/{invoice_id}            | Update a Stripe invoice                              |
 
 ## AddInvoiceLineItem
 
@@ -52,21 +50,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **invoiceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiAddInvoiceLineItemRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **addLineItemRequest** | [**AddLineItemRequest**](AddLineItemRequest.md) |  | 
+**addLineItemRequest** | [**AddLineItemRequest**](AddLineItemRequest.md) | |
 
 ### Return type
 
@@ -84,7 +80,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## AddInvoiceLineItemWithPriceId
 
@@ -122,21 +117,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **invoiceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiAddInvoiceLineItemWithPriceIdRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **addLineItemByPriceRequest** | [**AddLineItemByPriceRequest**](AddLineItemByPriceRequest.md) |  | 
+**addLineItemByPriceRequest** | [**AddLineItemByPriceRequest**](AddLineItemByPriceRequest.md) | |
 
 ### Return type
 
@@ -154,7 +147,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateCheckout
 
@@ -191,16 +183,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateCheckoutRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createCheckoutRequest** | [**CreateCheckoutRequest**](CreateCheckoutRequest.md) |  | 
+| Name                      | Type                                                  | Description | Notes |
+| ------------------------- | ----------------------------------------------------- | ----------- | ----- |
+| **createCheckoutRequest** | [**CreateCheckoutRequest**](CreateCheckoutRequest.md) |             |
 
 ### Return type
 
@@ -218,7 +207,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateCustomerPortal
 
@@ -255,16 +243,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateCustomerPortalRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createPortalRequest** | [**CreatePortalRequest**](CreatePortalRequest.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **createPortalRequest** | [**CreatePortalRequest**](CreatePortalRequest.md) |             |
 
 ### Return type
 
@@ -282,7 +267,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateInvoice
 
@@ -319,16 +303,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateInvoiceRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createInvoiceRequest** | [**CreateInvoiceRequest**](CreateInvoiceRequest.md) |  | 
+| Name                     | Type                                                | Description | Notes |
+| ------------------------ | --------------------------------------------------- | ----------- | ----- |
+| **createInvoiceRequest** | [**CreateInvoiceRequest**](CreateInvoiceRequest.md) |             |
 
 ### Return type
 
@@ -346,7 +327,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## FinalizeInvoice
 
@@ -384,21 +364,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **invoiceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiFinalizeInvoiceRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **finalizeRequest** | [**FinalizeRequest**](FinalizeRequest.md) |  | 
+**finalizeRequest** | [**FinalizeRequest**](FinalizeRequest.md) | |
 
 ### Return type
 
@@ -416,7 +394,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetInvoice
 
@@ -453,20 +430,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **invoiceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetInvoiceRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -484,7 +458,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## RecordUsage
 
@@ -521,16 +494,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiRecordUsageRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **recordUsageRequest** | [**RecordUsageRequest**](RecordUsageRequest.md) |  | 
+| Name                   | Type                                            | Description | Notes |
+| ---------------------- | ----------------------------------------------- | ----------- | ----- |
+| **recordUsageRequest** | [**RecordUsageRequest**](RecordUsageRequest.md) |             |
 
 ### Return type
 
@@ -548,7 +518,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## UpdateInvoice
 
@@ -586,21 +555,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **invoiceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUpdateInvoiceRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **updateInvoiceRequest** | [**UpdateInvoiceRequest**](UpdateInvoiceRequest.md) |  | 
+**updateInvoiceRequest** | [**UpdateInvoiceRequest**](UpdateInvoiceRequest.md) | |
 
 ### Return type
 
@@ -618,4 +585,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

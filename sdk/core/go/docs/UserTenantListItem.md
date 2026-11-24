@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**IsActive** | **bool** |  | 
-**Tenant** | [**GetTenantByIDRow**](GetTenantByIDRow.md) |  | 
+| Name         | Type                                        | Description | Notes |
+| ------------ | ------------------------------------------- | ----------- | ----- |
+| **IsActive** | **bool**                                    |             |
+| **Tenant**   | [**GetTenantByIDRow**](GetTenantByIDRow.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetIsActive sets IsActive field to given value.
 
-
 ### GetTenant
 
 `func (o *UserTenantListItem) GetTenant() GetTenantByIDRow`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetTenant sets Tenant field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

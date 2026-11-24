@@ -1,15 +1,14 @@
-
 # SubjectSet
 
 Subject set representation in Keto relationship tuples
 
 ## Properties
 
-Name | Type
------------- | -------------
-`namespace` | string
-`object` | string
-`relation` | string
+| Name        | Type   |
+| ----------- | ------ |
+| `namespace` | string |
+| `object`    | string |
+| `relation`  | string |
 
 ## Example
 
@@ -35,5 +34,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

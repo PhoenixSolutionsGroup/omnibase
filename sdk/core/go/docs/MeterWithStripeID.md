@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CustomerMapping** | Pointer to [**MeterCustomerMapping**](MeterCustomerMapping.md) |  | [optional] 
-**DefaultAggregation** | [**MeterDefaultAggregation**](MeterDefaultAggregation.md) |  | 
-**DisplayName** | **string** |  | 
-**EventName** | **string** |  | 
-**Id** | **string** |  | 
-**StripeId** | Pointer to **string** |  | [optional] 
-**ValueSettings** | Pointer to [**MeterValueSettings**](MeterValueSettings.md) |  | [optional] 
+| Name                   | Type                                                           | Description | Notes      |
+| ---------------------- | -------------------------------------------------------------- | ----------- | ---------- |
+| **CustomerMapping**    | Pointer to [**MeterCustomerMapping**](MeterCustomerMapping.md) |             | [optional] |
+| **DefaultAggregation** | [**MeterDefaultAggregation**](MeterDefaultAggregation.md)      |             |
+| **DisplayName**        | **string**                                                     |             |
+| **EventName**          | **string**                                                     |             |
+| **Id**                 | **string**                                                     |             |
+| **StripeId**           | Pointer to **string**                                          |             | [optional] |
+| **ValueSettings**      | Pointer to [**MeterValueSettings**](MeterValueSettings.md)     |             | [optional] |
 
 ## Methods
 
@@ -75,7 +75,6 @@ and a boolean to check if the value has been set.
 
 SetDefaultAggregation sets DefaultAggregation field to given value.
 
-
 ### GetDisplayName
 
 `func (o *MeterWithStripeID) GetDisplayName() string`
@@ -94,7 +93,6 @@ and a boolean to check if the value has been set.
 `func (o *MeterWithStripeID) SetDisplayName(v string)`
 
 SetDisplayName sets DisplayName field to given value.
-
 
 ### GetEventName
 
@@ -115,7 +113,6 @@ and a boolean to check if the value has been set.
 
 SetEventName sets EventName field to given value.
 
-
 ### GetId
 
 `func (o *MeterWithStripeID) GetId() string`
@@ -134,7 +131,6 @@ and a boolean to check if the value has been set.
 `func (o *MeterWithStripeID) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetStripeId
 
@@ -186,7 +182,4 @@ SetValueSettings sets ValueSettings field to given value.
 
 HasValueSettings returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

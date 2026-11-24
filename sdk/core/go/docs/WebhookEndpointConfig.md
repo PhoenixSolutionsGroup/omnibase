@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Connect** | Pointer to **bool** |  | [optional] 
-**Events** | **[]string** |  | 
-**Id** | Pointer to **string** |  | [optional] 
-**Url** | **string** |  | 
+| Name        | Type                  | Description | Notes      |
+| ----------- | --------------------- | ----------- | ---------- |
+| **Connect** | Pointer to **bool**   |             | [optional] |
+| **Events**  | **[]string**          |             |
+| **Id**      | Pointer to **string** |             | [optional] |
+| **Url**     | **string**            |             |
 
 ## Methods
 
@@ -72,17 +72,18 @@ and a boolean to check if the value has been set.
 
 SetEvents sets Events field to given value.
 
-
 ### SetEventsNil
 
 `func (o *WebhookEndpointConfig) SetEventsNil(b bool)`
 
- SetEventsNil sets the value for Events to be an explicit nil
+SetEventsNil sets the value for Events to be an explicit nil
 
 ### UnsetEvents
+
 `func (o *WebhookEndpointConfig) UnsetEvents()`
 
 UnsetEvents ensures that no value is present for Events, not even an explicit nil
+
 ### GetId
 
 `func (o *WebhookEndpointConfig) GetId() string`
@@ -127,8 +128,4 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

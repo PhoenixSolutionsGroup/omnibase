@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Price** | [**PriceWithStripeID**](PriceWithStripeID.md) |  | 
-**Product** | [**ProductWithStripeIDs**](ProductWithStripeIDs.md) |  | 
+| Name        | Type                                                | Description | Notes |
+| ----------- | --------------------------------------------------- | ----------- | ----- |
+| **Price**   | [**PriceWithStripeID**](PriceWithStripeID.md)       |             |
+| **Product** | [**ProductWithStripeIDs**](ProductWithStripeIDs.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetPrice sets Price field to given value.
 
-
 ### GetProduct
 
 `func (o *GetPriceResponse) GetProduct() ProductWithStripeIDs`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetProduct sets Product field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -1,4 +1,5 @@
 ---
+
 title: Invoices
 description: Create, manage, and process invoices programmatically
 ---
@@ -21,47 +22,47 @@ OmniBase provides a complete invoice management API for creating custom invoices
                                        └─────────────┘
 ```
 
-| Status | Description |
-|--------|-------------|
-| `draft` | Invoice can be edited, line items added |
-| `open` | Invoice sent to customer, awaiting payment |
-| `paid` | Payment received |
-| `void` | Invoice canceled |
-| `uncollectible` | Payment failed, marked as bad debt |
+| Status          | Description                                |
+| --------------- | ------------------------------------------ |
+| `draft`         | Invoice can be edited, line items added    |
+| `open`          | Invoice sent to customer, awaiting payment |
+| `paid`          | Payment received                           |
+| `void`          | Invoice canceled                           |
+| `uncollectible` | Payment failed, marked as bad debt         |
 
 ## Creating Invoices
 
 ### Create Draft Invoice
 
 ```typescript
-import { V1PaymentsApi } from '@omnibase/core-js';
+import { V1PaymentsApi } from "@omnibase/core-js";
 
 const paymentsApi = new V1PaymentsApi(config);
 
 const { data: invoice } = await paymentsApi.createInvoice({
-  createInvoiceRequest: {
-    currency: 'usd',
-    autoAdvance: false, // Keep as draft
-    description: 'January 2024 Usage',
-    metadata: {
-      billing_period: '2024-01',
-      tenant_id: 'tenant_123',
-    },
-  },
+	createInvoiceRequest: {
+		currency: "usd",
+		autoAdvance: false, // Keep as draft
+		description: "January 2024 Usage",
+		metadata: {
+			billing_period: "2024-01",
+			tenant_id: "tenant_123",
+		},
+	},
 });
 
-console.log(invoice.id);     // "in_xxx..."
+console.log(invoice.id); // "in_xxx..."
 console.log(invoice.status); // "draft"
 ```
 
 ### Invoice Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `currency` | `string` | Invoice currency (e.g., `"usd"`) |
+| Option        | Type      | Description                         |
+| ------------- | --------- | ----------------------------------- |
+| `currency`    | `string`  | Invoice currency (e.g., `"usd"`)    |
 | `autoAdvance` | `boolean` | Auto-finalize and send when created |
-| `description` | `string` | Invoice description |
-| `metadata` | `object` | Custom key-value metadata |
+| `description` | `string`  | Invoice description                 |
+| `metadata`    | `object`  | Custom key-value metadata           |
 
 ## Adding Line Items
 
@@ -71,12 +72,12 @@ Add a custom amount line item:
 
 ```typescript
 await paymentsApi.addInvoiceLineItem({
-  invoiceId: invoice.id,
-  addInvoiceLineItemRequest: {
-    amount: 5000, // $50.00 in cents
-    currency: 'usd',
-    description: 'Consulting Services - 2 hours',
-  },
+	invoiceId: invoice.id,
+	addInvoiceLineItemRequest: {
+		amount: 5000, // $50.00 in cents
+		currency: "usd",
+		description: "Consulting Services - 2 hours",
+	},
 });
 ```
 
@@ -86,21 +87,21 @@ Add a line item using a configured price:
 
 ```typescript
 await paymentsApi.addInvoiceLineItemWithPriceId({
-  invoiceId: invoice.id,
-  addInvoiceLineItemWithPriceIDRequest: {
-    priceId: 'compute_hourly', // Config price ID
-    quantity: 730,             // 730 hours
-    currency: 'usd',
-    description: 'Compute - VKS Starter (730 hours)',
-    metadata: {
-      project_id: 'proj_123',
-    },
-  },
+	invoiceId: invoice.id,
+	addInvoiceLineItemWithPriceIDRequest: {
+		priceId: "compute_hourly", // Config price ID
+		quantity: 730, // 730 hours
+		currency: "usd",
+		description: "Compute - VKS Starter (730 hours)",
+		metadata: {
+			project_id: "proj_123",
+		},
+	},
 });
 ```
 
 > **Note:**
-When using `priceId`, OmniBase automatically converts your config price ID to the Stripe price ID.
+> When using `priceId`, OmniBase automatically converts your config price ID to the Stripe price ID.
 
 ## Updating Invoices
 
@@ -108,18 +109,18 @@ Update draft invoices before finalizing:
 
 ```typescript
 await paymentsApi.updateInvoice({
-  invoiceId: invoice.id,
-  updateInvoiceRequest: {
-    description: 'Updated: January 2024 Usage',
-    metadata: {
-      updated_at: new Date().toISOString(),
-    },
-  },
+	invoiceId: invoice.id,
+	updateInvoiceRequest: {
+		description: "Updated: January 2024 Usage",
+		metadata: {
+			updated_at: new Date().toISOString(),
+		},
+	},
 });
 ```
 
 > **Note:**
-Only draft invoices can be updated. Attempting to update a finalized invoice returns a 400 error.
+> Only draft invoices can be updated. Attempting to update a finalized invoice returns a 400 error.
 
 ## Finalizing Invoices
 
@@ -127,34 +128,34 @@ Finalize to send the invoice to the customer:
 
 ```typescript
 const { data: finalizedInvoice } = await paymentsApi.finalizeInvoice({
-  invoiceId: invoice.id,
-  finalizeInvoiceRequest: {
-    autoAdvance: true, // Send immediately
-  },
+	invoiceId: invoice.id,
+	finalizeInvoiceRequest: {
+		autoAdvance: true, // Send immediately
+	},
 });
 
-console.log(finalizedInvoice.status);          // "open"
+console.log(finalizedInvoice.status); // "open"
 console.log(finalizedInvoice.hostedInvoiceUrl); // Stripe-hosted invoice page
-console.log(finalizedInvoice.invoicePdf);       // PDF download URL
+console.log(finalizedInvoice.invoicePdf); // PDF download URL
 ```
 
 ### Auto-Advance Behavior
 
-| autoAdvance | Behavior |
-|-------------|----------|
-| `true` | Invoice is sent immediately, payment attempted if auto-charge enabled |
-| `false` | Invoice is finalized but not sent; manual sending required |
+| autoAdvance | Behavior                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| `true`      | Invoice is sent immediately, payment attempted if auto-charge enabled |
+| `false`     | Invoice is finalized but not sent; manual sending required            |
 
 ## Getting Invoices
 
 ```typescript
 const { data: invoice } = await paymentsApi.getInvoice({
-  invoiceId: 'in_xxx',
+	invoiceId: "in_xxx",
 });
 
-console.log(invoice.amountDue);      // Amount due in cents
-console.log(invoice.amountPaid);     // Amount paid in cents
-console.log(invoice.lineItems);      // Array of line items
+console.log(invoice.amountDue); // Amount due in cents
+console.log(invoice.amountPaid); // Amount paid in cents
+console.log(invoice.lineItems); // Array of line items
 console.log(invoice.hostedInvoiceUrl); // Customer invoice URL
 ```
 
@@ -277,22 +278,22 @@ Subscribe to invoice events:
 
 ```json
 {
-  "webhooks": [
-    {
-      "id": "invoice_events",
-      "url": "${WEBHOOK_URL}/api/stripe/invoices",
-      "events": [
-        "invoice.created",
-        "invoice.finalized",
-        "invoice.paid",
-        "invoice.payment_failed",
-        "invoice.payment_action_required",
-        "invoice.upcoming",
-        "invoice.marked_uncollectible",
-        "invoice.voided"
-      ]
-    }
-  ]
+	"webhooks": [
+		{
+			"id": "invoice_events",
+			"url": "${WEBHOOK_URL}/api/stripe/invoices",
+			"events": [
+				"invoice.created",
+				"invoice.finalized",
+				"invoice.paid",
+				"invoice.payment_failed",
+				"invoice.payment_action_required",
+				"invoice.upcoming",
+				"invoice.marked_uncollectible",
+				"invoice.voided"
+			]
+		}
+	]
 }
 ```
 
@@ -300,27 +301,27 @@ Subscribe to invoice events:
 
 ```typescript
 switch (event.type) {
-  case 'invoice.created':
-    // Add usage-based line items (see above)
-    await addUsageLineItems(event.data.object);
-    break;
+	case "invoice.created":
+		// Add usage-based line items (see above)
+		await addUsageLineItems(event.data.object);
+		break;
 
-  case 'invoice.paid':
-    // Payment successful
-    const paidInvoice = event.data.object;
-    await recordPayment(paidInvoice.customer, paidInvoice.amount_paid);
-    break;
+	case "invoice.paid":
+		// Payment successful
+		const paidInvoice = event.data.object;
+		await recordPayment(paidInvoice.customer, paidInvoice.amount_paid);
+		break;
 
-  case 'invoice.payment_failed':
-    // Payment failed
-    const failedInvoice = event.data.object;
-    await notifyPaymentFailed(failedInvoice.customer);
-    break;
+	case "invoice.payment_failed":
+		// Payment failed
+		const failedInvoice = event.data.object;
+		await notifyPaymentFailed(failedInvoice.customer);
+		break;
 
-  case 'invoice.upcoming':
-    // Invoice will be created soon (useful for previews)
-    await sendUpcomingInvoiceNotification(event.data.object);
-    break;
+	case "invoice.upcoming":
+		// Invoice will be created soon (useful for previews)
+		await sendUpcomingInvoiceNotification(event.data.object);
+		break;
 }
 ```
 
@@ -329,69 +330,69 @@ switch (event.type) {
 ### TypeScript SDK
 
 ```typescript
-import { V1PaymentsApi, Configuration } from '@omnibase/core-js';
+import { V1PaymentsApi, Configuration } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
-  headers: {
-    'X-Service-Key': process.env.SERVICE_KEY,
-    'X-Tenant-Id': tenantId,
-  },
+	basePath: process.env.OMNIBASE_API_URL,
+	headers: {
+		"X-Service-Key": process.env.SERVICE_KEY,
+		"X-Tenant-Id": tenantId,
+	},
 });
 
 const paymentsApi = new V1PaymentsApi(config);
 
 // 1. Create draft invoice
 const { data: invoice } = await paymentsApi.createInvoice({
-  createInvoiceRequest: {
-    currency: 'usd',
-    autoAdvance: false,
-    description: 'January 2024 Infrastructure Usage',
-  },
+	createInvoiceRequest: {
+		currency: "usd",
+		autoAdvance: false,
+		description: "January 2024 Infrastructure Usage",
+	},
 });
 
 // 2. Add compute line item
 await paymentsApi.addInvoiceLineItemWithPriceId({
-  invoiceId: invoice.id,
-  addInvoiceLineItemWithPriceIDRequest: {
-    priceId: 'vks_starter_hourly',
-    quantity: 730,
-    currency: 'usd',
-    description: 'Compute - VKS Starter (730 hours)',
-  },
+	invoiceId: invoice.id,
+	addInvoiceLineItemWithPriceIDRequest: {
+		priceId: "vks_starter_hourly",
+		quantity: 730,
+		currency: "usd",
+		description: "Compute - VKS Starter (730 hours)",
+	},
 });
 
 // 3. Add database line item
 await paymentsApi.addInvoiceLineItemWithPriceId({
-  invoiceId: invoice.id,
-  addInvoiceLineItemWithPriceIDRequest: {
-    priceId: 'neon_compute_hour',
-    quantity: 150,
-    currency: 'usd',
-    description: 'Database - Neon Compute (150 hours)',
-  },
+	invoiceId: invoice.id,
+	addInvoiceLineItemWithPriceIDRequest: {
+		priceId: "neon_compute_hour",
+		quantity: 150,
+		currency: "usd",
+		description: "Database - Neon Compute (150 hours)",
+	},
 });
 
 // 4. Add storage line item
 await paymentsApi.addInvoiceLineItemWithPriceId({
-  invoiceId: invoice.id,
-  addInvoiceLineItemWithPriceIDRequest: {
-    priceId: 'cloudflare_r2_storage',
-    quantity: 50,
-    currency: 'usd',
-    description: 'Storage - Cloudflare R2 (50 GB)',
-  },
+	invoiceId: invoice.id,
+	addInvoiceLineItemWithPriceIDRequest: {
+		priceId: "cloudflare_r2_storage",
+		quantity: 50,
+		currency: "usd",
+		description: "Storage - Cloudflare R2 (50 GB)",
+	},
 });
 
 // 5. Finalize and send
 const { data: finalInvoice } = await paymentsApi.finalizeInvoice({
-  invoiceId: invoice.id,
-  finalizeInvoiceRequest: {
-    autoAdvance: true,
-  },
+	invoiceId: invoice.id,
+	finalizeInvoiceRequest: {
+		autoAdvance: true,
+	},
 });
 
-console.log('Invoice sent:', finalInvoice.hostedInvoiceUrl);
+console.log("Invoice sent:", finalInvoice.hostedInvoiceUrl);
 ```
 
 ### Go SDK

@@ -12,81 +12,86 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { IdentityName } from './IdentityName';
+import { mapValues } from "../runtime";
+import type { IdentityName } from "./IdentityName";
 import {
-    IdentityNameFromJSON,
-    IdentityNameFromJSONTyped,
-    IdentityNameToJSON,
-    IdentityNameToJSONTyped,
-} from './IdentityName';
+	IdentityNameFromJSON,
+	IdentityNameFromJSONTyped,
+	IdentityNameToJSON,
+	IdentityNameToJSONTyped,
+} from "./IdentityName";
 
 /**
- * 
+ *
  * @export
  * @interface CreateUserRequest
  */
 export interface CreateUserRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateUserRequest
-     */
-    email: string;
-    /**
-     * 
-     * @type {IdentityName}
-     * @memberof CreateUserRequest
-     */
-    name: IdentityName;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateUserRequest
-     */
-    password: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateUserRequest
+	 */
+	email: string;
+	/**
+	 *
+	 * @type {IdentityName}
+	 * @memberof CreateUserRequest
+	 */
+	name: IdentityName;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateUserRequest
+	 */
+	password: string;
 }
 
 /**
  * Check if a given object implements the CreateUserRequest interface.
  */
-export function instanceOfCreateUserRequest(value: object): value is CreateUserRequest {
-    if (!('email' in value) || value['email'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('password' in value) || value['password'] === undefined) return false;
-    return true;
+export function instanceOfCreateUserRequest(
+	value: object,
+): value is CreateUserRequest {
+	if (!("email" in value) || value["email"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("password" in value) || value["password"] === undefined) return false;
+	return true;
 }
 
 export function CreateUserRequestFromJSON(json: any): CreateUserRequest {
-    return CreateUserRequestFromJSONTyped(json, false);
+	return CreateUserRequestFromJSONTyped(json, false);
 }
 
-export function CreateUserRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateUserRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'email': json['email'],
-        'name': IdentityNameFromJSON(json['name']),
-        'password': json['password'],
-    };
+export function CreateUserRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateUserRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		email: json["email"],
+		name: IdentityNameFromJSON(json["name"]),
+		password: json["password"],
+	};
 }
 
 export function CreateUserRequestToJSON(json: any): CreateUserRequest {
-    return CreateUserRequestToJSONTyped(json, false);
+	return CreateUserRequestToJSONTyped(json, false);
 }
 
-export function CreateUserRequestToJSONTyped(value?: CreateUserRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateUserRequestToJSONTyped(
+	value?: CreateUserRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'email': value['email'],
-        'name': IdentityNameToJSON(value['name']),
-        'password': value['password'],
-    };
+	return {
+		email: value["email"],
+		name: IdentityNameToJSON(value["name"]),
+		password: value["password"],
+	};
 }
-

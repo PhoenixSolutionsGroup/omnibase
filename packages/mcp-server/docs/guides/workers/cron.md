@@ -1,4 +1,5 @@
 ---
+
 title: Cron Jobs
 description: Run scheduled tasks at the edge with Cloudflare Workers cron triggers
 ---
@@ -49,8 +50,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 
 type EnvVars = {
-  OMNIBASE_API_URL: string;
-  API_KEY: string;
+	OMNIBASE_API_URL: string;
+	API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: EnvVars }>();
@@ -58,34 +59,37 @@ const app = new Hono<{ Bindings: EnvVars }>();
 app.use("/*", cors());
 
 app.get("/", (c) => {
-  return c.json({
-    message: "Hello from the edge!",
-    timestamp: new Date().toISOString(),
-  });
+	return c.json({
+		message: "Hello from the edge!",
+		timestamp: new Date().toISOString(),
+	});
 });
 
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 
-  // Handle scheduled cron triggers
-  async scheduled(event, env, ctx) {
-    console.log("Cron job triggered at:", new Date(event.scheduledTime).toISOString());
+	// Handle scheduled cron triggers
+	async scheduled(event, env, ctx) {
+		console.log(
+			"Cron job triggered at:",
+			new Date(event.scheduledTime).toISOString(),
+		);
 
-    // Your scheduled task logic here
-    await performScheduledTask(env);
-  },
+		// Your scheduled task logic here
+		await performScheduledTask(env);
+	},
 };
 
 async function performScheduledTask(env: EnvVars) {
-  // Example: Call your OmniBase API
-  const response = await fetch(`${env.OMNIBASE_API_URL}/api/v1/cleanup`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${env.API_KEY}`,
-    },
-  });
+	// Example: Call your OmniBase API
+	const response = await fetch(`${env.OMNIBASE_API_URL}/api/v1/cleanup`, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${env.API_KEY}`,
+		},
+	});
 
-  console.log("Cleanup task completed:", response.status);
+	console.log("Cleanup task completed:", response.status);
 }
 ```
 
@@ -107,18 +111,18 @@ Cron expressions use the standard format: `minute hour day month dayOfWeek`
 
 ### Common Patterns
 
-| Expression | Description |
-|------------|-------------|
-| `* * * * *` | Every minute |
-| `*/5 * * * *` | Every 5 minutes |
-| `*/15 * * * *` | Every 15 minutes |
-| `0 * * * *` | Every hour at minute 0 |
-| `0 */6 * * *` | Every 6 hours |
-| `0 0 * * *` | Daily at midnight (00:00) |
-| `0 9 * * *` | Daily at 9:00 AM |
-| `0 0 * * 0` | Weekly on Sunday at midnight |
-| `0 0 1 * *` | Monthly on the 1st at midnight |
-| `0 0 1 1 *` | Yearly on January 1st at midnight |
+| Expression     | Description                       |
+| -------------- | --------------------------------- |
+| `* * * * *`    | Every minute                      |
+| `*/5 * * * *`  | Every 5 minutes                   |
+| `*/15 * * * *` | Every 15 minutes                  |
+| `0 * * * *`    | Every hour at minute 0            |
+| `0 */6 * * *`  | Every 6 hours                     |
+| `0 0 * * *`    | Daily at midnight (00:00)         |
+| `0 9 * * *`    | Daily at 9:00 AM                  |
+| `0 0 * * 0`    | Weekly on Sunday at midnight      |
+| `0 0 1 * *`    | Monthly on the 1st at midnight    |
+| `0 0 1 1 *`    | Yearly on January 1st at midnight |
 
 ### Syntax Breakdown
 
@@ -133,7 +137,7 @@ Cron expressions use the standard format: `minute hour day month dayOfWeek`
 ```
 
 > **Note:**
-Cloudflare Workers supports standard cron syntax with `*`, ranges (`1-5`), lists (`1,3,5`), and steps (`*/15`).
+> Cloudflare Workers supports standard cron syntax with `*`, ranges (`1-5`), lists (`1,3,5`), and steps (`*/15`).
 
 ---
 
@@ -158,8 +162,8 @@ async scheduled(
 
 ```typescript
 interface ScheduledEvent {
-  scheduledTime: number;  // Unix timestamp in milliseconds
-  cron: string;           // The cron pattern that triggered this event
+	scheduledTime: number; // Unix timestamp in milliseconds
+	cron: string; // The cron pattern that triggered this event
 }
 ```
 
@@ -167,21 +171,21 @@ interface ScheduledEvent {
 
 ```typescript
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 
-  async scheduled(event, env, ctx) {
-    const scheduledDate = new Date(event.scheduledTime);
+	async scheduled(event, env, ctx) {
+		const scheduledDate = new Date(event.scheduledTime);
 
-    console.log("Triggered by cron:", event.cron);
-    console.log("Scheduled for:", scheduledDate.toISOString());
+		console.log("Triggered by cron:", event.cron);
+		console.log("Scheduled for:", scheduledDate.toISOString());
 
-    // Different logic based on which cron triggered
-    if (event.cron === "0 0 * * *") {
-      await runDailyReport(env);
-    } else if (event.cron === "0 * * * *") {
-      await runHourlySync(env);
-    }
-  },
+		// Different logic based on which cron triggered
+		if (event.cron === "0 0 * * *") {
+			await runDailyReport(env);
+		} else if (event.cron === "0 * * * *") {
+			await runHourlySync(env);
+		}
+	},
 };
 ```
 
@@ -294,21 +298,21 @@ Access environment variables the same way as in your edge functions:
 
 ```typescript
 type EnvVars = {
-  OMNIBASE_API_URL: string;
-  DATABASE_URL: string;
-  API_KEY: string;
+	OMNIBASE_API_URL: string;
+	DATABASE_URL: string;
+	API_KEY: string;
 };
 
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 
-  async scheduled(event, env: EnvVars, ctx) {
-    // Use environment variables
-    const apiUrl = env.OMNIBASE_API_URL;
-    const apiKey = env.API_KEY;
+	async scheduled(event, env: EnvVars, ctx) {
+		// Use environment variables
+		const apiUrl = env.OMNIBASE_API_URL;
+		const apiKey = env.API_KEY;
 
-    await performTask(apiUrl, apiKey);
-  },
+		await performTask(apiUrl, apiKey);
+	},
 };
 ```
 
@@ -323,22 +327,22 @@ You can test cron triggers locally by calling your scheduled handler manually:
 ```typescript
 // Add a test endpoint for local development
 app.get("/test-cron", async (c) => {
-  // Manually invoke the scheduled handler
-  const event = {
-    scheduledTime: Date.now(),
-    cron: "0 * * * *",
-  };
+	// Manually invoke the scheduled handler
+	const event = {
+		scheduledTime: Date.now(),
+		cron: "0 * * * *",
+	};
 
-  await scheduled(event, c.env, {} as ExecutionContext);
+	await scheduled(event, c.env, {} as ExecutionContext);
 
-  return c.json({ message: "Cron job executed" });
+	return c.json({ message: "Cron job executed" });
 });
 
 export default {
-  fetch: app.fetch,
-  async scheduled(event, env, ctx) {
-    await performScheduledTask(env);
-  },
+	fetch: app.fetch,
+	async scheduled(event, env, ctx) {
+		await performScheduledTask(env);
+	},
 };
 ```
 
@@ -354,7 +358,7 @@ curl http://localhost:8787/test-cron
 ```
 
 > **Note:**
-Remove test endpoints before deploying to production to avoid unauthorized executions.
+> Remove test endpoints before deploying to production to avoid unauthorized executions.
 
 ---
 
@@ -461,7 +465,7 @@ omnibase cloud workers deploy --env dev
 The CLI automatically reads cron schedules from `wrangler.toml` and configures them on Cloudflare Workers.
 
 > **Note:**
-Cron schedules are updated every time you deploy. You don't need to manually configure them separately.
+> Cron schedules are updated every time you deploy. You don't need to manually configure them separately.
 
 ---
 

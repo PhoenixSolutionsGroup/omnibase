@@ -53,21 +53,23 @@ Quick start guide at https://docs.omnibase.tech/docs/guides/quickstart
 SDKs available in multiple languages (currently **JavaScript/TypeScript** and **Go**).
 
 ```typescript
-import { Configuration, V1TenantsApi, V1PaymentsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi, V1PaymentsApi } from "@omnibase/core-js";
 
-const config = new Configuration({ basePath: 'http://localhost:8080' });
+const config = new Configuration({ basePath: "http://localhost:8080" });
 
 // Switch tenant context
 const tenants = new V1TenantsApi(config);
-await tenants.switchActiveTenant({ switchTenantRequest: { tenantId: 'tenant_123' } });
+await tenants.switchActiveTenant({
+	switchTenantRequest: { tenantId: "tenant_123" },
+});
 
 // Create a checkout session
 const payments = new V1PaymentsApi(config);
 const { data } = await payments.createCheckout({
-  createCheckoutRequest: {
-    priceId: 'pro_monthly',
-    successUrl: 'https://yourapp.com/success',
-  },
+	createCheckoutRequest: {
+		priceId: "pro_monthly",
+		successUrl: "https://yourapp.com/success",
+	},
 });
 ```
 
@@ -75,9 +77,9 @@ const { data } = await payments.createCheckout({
 
 ## Links
 
-| Resource | Link |
-|----------|------|
-| Documentation | [docs.omnibase.tech](https://docs.omnibase.tech) |
+| Resource         | Link                                                            |
+| ---------------- | --------------------------------------------------------------- |
+| Documentation    | [docs.omnibase.tech](https://docs.omnibase.tech)                |
 | Quickstart Guide | [Getting Started](https://docs.omnibase.tech/guides/quickstart) |
 
 ---
@@ -86,10 +88,10 @@ const { data } = await payments.createCheckout({
 
 Features still being implemented:
 
-| Feature | Progress |
-|---------|----------|
-| Emailing Service | 0% |
-| Managed-Hosting Platform | 50% |
+| Feature                  | Progress |
+| ------------------------ | -------- |
+| Emailing Service         | 0%       |
+| Managed-Hosting Platform | 50%      |
 
 ---
 

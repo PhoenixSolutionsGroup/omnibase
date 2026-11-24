@@ -12,558 +12,731 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  ApplyEnterpriseCustomRequest,
-  ApplyEnterpriseTemplateRequest,
-  CalculatePriceCostRequest,
-  CalculatePriceCostResponse,
-  ConvertStripeIDResponse,
-  EnterpriseApplyResponse,
-  EnterprisePricesResponse,
-  ErrorModel,
-  GetMeterResponse,
-  GetPriceResponse,
-  GetProductResponse,
-  ListWebhooksResponse,
-  StripeConfigResponse,
-} from '../models/index';
+	ApplyEnterpriseCustomRequest,
+	ApplyEnterpriseTemplateRequest,
+	CalculatePriceCostRequest,
+	CalculatePriceCostResponse,
+	ConvertStripeIDResponse,
+	EnterpriseApplyResponse,
+	EnterprisePricesResponse,
+	ErrorModel,
+	GetMeterResponse,
+	GetPriceResponse,
+	GetProductResponse,
+	ListWebhooksResponse,
+	StripeConfigResponse,
+} from "../models/index";
 import {
-    ApplyEnterpriseCustomRequestFromJSON,
-    ApplyEnterpriseCustomRequestToJSON,
-    ApplyEnterpriseTemplateRequestFromJSON,
-    ApplyEnterpriseTemplateRequestToJSON,
-    CalculatePriceCostRequestFromJSON,
-    CalculatePriceCostRequestToJSON,
-    CalculatePriceCostResponseFromJSON,
-    CalculatePriceCostResponseToJSON,
-    ConvertStripeIDResponseFromJSON,
-    ConvertStripeIDResponseToJSON,
-    EnterpriseApplyResponseFromJSON,
-    EnterpriseApplyResponseToJSON,
-    EnterprisePricesResponseFromJSON,
-    EnterprisePricesResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    GetMeterResponseFromJSON,
-    GetMeterResponseToJSON,
-    GetPriceResponseFromJSON,
-    GetPriceResponseToJSON,
-    GetProductResponseFromJSON,
-    GetProductResponseToJSON,
-    ListWebhooksResponseFromJSON,
-    ListWebhooksResponseToJSON,
-    StripeConfigResponseFromJSON,
-    StripeConfigResponseToJSON,
-} from '../models/index';
+	ApplyEnterpriseCustomRequestFromJSON,
+	ApplyEnterpriseCustomRequestToJSON,
+	ApplyEnterpriseTemplateRequestFromJSON,
+	ApplyEnterpriseTemplateRequestToJSON,
+	CalculatePriceCostRequestFromJSON,
+	CalculatePriceCostRequestToJSON,
+	CalculatePriceCostResponseFromJSON,
+	CalculatePriceCostResponseToJSON,
+	ConvertStripeIDResponseFromJSON,
+	ConvertStripeIDResponseToJSON,
+	EnterpriseApplyResponseFromJSON,
+	EnterpriseApplyResponseToJSON,
+	EnterprisePricesResponseFromJSON,
+	EnterprisePricesResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	GetMeterResponseFromJSON,
+	GetMeterResponseToJSON,
+	GetPriceResponseFromJSON,
+	GetPriceResponseToJSON,
+	GetProductResponseFromJSON,
+	GetProductResponseToJSON,
+	ListWebhooksResponseFromJSON,
+	ListWebhooksResponseToJSON,
+	StripeConfigResponseFromJSON,
+	StripeConfigResponseToJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface ApplyEnterpriseCustomOperationRequest {
-    applyEnterpriseCustomRequest: ApplyEnterpriseCustomRequest;
+	applyEnterpriseCustomRequest: ApplyEnterpriseCustomRequest;
 }
 
 export interface ApplyEnterpriseTemplateOperationRequest {
-    applyEnterpriseTemplateRequest: ApplyEnterpriseTemplateRequest;
+	applyEnterpriseTemplateRequest: ApplyEnterpriseTemplateRequest;
 }
 
 export interface CalculatePriceCostOperationRequest {
-    priceId: string;
-    calculatePriceCostRequest: CalculatePriceCostRequest;
+	priceId: string;
+	calculatePriceCostRequest: CalculatePriceCostRequest;
 }
 
 export interface ConvertStripeIDToConfigIDRequest {
-    stripeId: string;
+	stripeId: string;
 }
 
 export interface GetEnterprisePricesByIDRequest {
-    enterpriseId: string;
+	enterpriseId: string;
 }
 
 export interface GetEnterprisePricesByTemplateRequest {
-    template: string;
+	template: string;
 }
 
 export interface GetMeterByIDRequest {
-    meterId: string;
+	meterId: string;
 }
 
 export interface GetPriceByIDRequest {
-    priceId: string;
+	priceId: string;
 }
 
 export interface GetProductByIDRequest {
-    productId: string;
+	productId: string;
 }
 
 /**
- * 
+ *
  */
 export class V1StripeApi extends runtime.BaseAPI {
-
-    /**
-     * Apply custom enterprise pricing
-     */
-    async applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
-        if (requestParameters['applyEnterpriseCustomRequest'] == null) {
-            throw new runtime.RequiredError(
-                'applyEnterpriseCustomRequest',
-                'Required parameter "applyEnterpriseCustomRequest" was null or undefined when calling applyEnterpriseCustom().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/enterprise/apply-custom`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ApplyEnterpriseCustomRequestToJSON(requestParameters['applyEnterpriseCustomRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => EnterpriseApplyResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Apply custom enterprise pricing
-     */
-    async applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse> {
-        const response = await this.applyEnterpriseCustomRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Apply enterprise template pricing
-     */
-    async applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
-        if (requestParameters['applyEnterpriseTemplateRequest'] == null) {
-            throw new runtime.RequiredError(
-                'applyEnterpriseTemplateRequest',
-                'Required parameter "applyEnterpriseTemplateRequest" was null or undefined when calling applyEnterpriseTemplate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/enterprise/apply-template`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ApplyEnterpriseTemplateRequestToJSON(requestParameters['applyEnterpriseTemplateRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => EnterpriseApplyResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Apply enterprise template pricing
-     */
-    async applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse> {
-        const response = await this.applyEnterpriseTemplateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Calculate cost for a price
-     */
-    async calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
-        if (requestParameters['priceId'] == null) {
-            throw new runtime.RequiredError(
-                'priceId',
-                'Required parameter "priceId" was null or undefined when calling calculatePriceCost().'
-            );
-        }
-
-        if (requestParameters['calculatePriceCostRequest'] == null) {
-            throw new runtime.RequiredError(
-                'calculatePriceCostRequest',
-                'Required parameter "calculatePriceCostRequest" was null or undefined when calling calculatePriceCost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-
-        let urlPath = `/api/v1/stripe/config/prices/{price_id}/calculate`;
-        urlPath = urlPath.replace(`{${"price_id"}}`, encodeURIComponent(String(requestParameters['priceId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CalculatePriceCostRequestToJSON(requestParameters['calculatePriceCostRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CalculatePriceCostResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Calculate cost for a price
-     */
-    async calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCostResponse> {
-        const response = await this.calculatePriceCostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Convert Stripe ID to config ID
-     */
-    async convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConvertStripeIDResponse>> {
-        if (requestParameters['stripeId'] == null) {
-            throw new runtime.RequiredError(
-                'stripeId',
-                'Required parameter "stripeId" was null or undefined when calling convertStripeIDToConfigID().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/convert/stripe-id/{stripe_id}`;
-        urlPath = urlPath.replace(`{${"stripe_id"}}`, encodeURIComponent(String(requestParameters['stripeId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ConvertStripeIDResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Convert Stripe ID to config ID
-     */
-    async convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConvertStripeIDResponse> {
-        const response = await this.convertStripeIDToConfigIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get enterprise prices by ID
-     */
-    async getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
-        if (requestParameters['enterpriseId'] == null) {
-            throw new runtime.RequiredError(
-                'enterpriseId',
-                'Required parameter "enterpriseId" was null or undefined when calling getEnterprisePricesByID().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}`;
-        urlPath = urlPath.replace(`{${"enterprise_id"}}`, encodeURIComponent(String(requestParameters['enterpriseId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => EnterprisePricesResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get enterprise prices by ID
-     */
-    async getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse> {
-        const response = await this.getEnterprisePricesByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get enterprise prices by template
-     */
-    async getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
-        if (requestParameters['template'] == null) {
-            throw new runtime.RequiredError(
-                'template',
-                'Required parameter "template" was null or undefined when calling getEnterprisePricesByTemplate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/enterprise/prices/by-template/{template}`;
-        urlPath = urlPath.replace(`{${"template"}}`, encodeURIComponent(String(requestParameters['template'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => EnterprisePricesResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get enterprise prices by template
-     */
-    async getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse> {
-        const response = await this.getEnterprisePricesByTemplateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get meter by ID
-     */
-    async getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetMeterResponse>> {
-        if (requestParameters['meterId'] == null) {
-            throw new runtime.RequiredError(
-                'meterId',
-                'Required parameter "meterId" was null or undefined when calling getMeterByID().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/v1/stripe/config/meters/{meter_id}`;
-        urlPath = urlPath.replace(`{${"meter_id"}}`, encodeURIComponent(String(requestParameters['meterId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetMeterResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get meter by ID
-     */
-    async getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetMeterResponse> {
-        const response = await this.getMeterByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get price by ID
-     */
-    async getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPriceResponse>> {
-        if (requestParameters['priceId'] == null) {
-            throw new runtime.RequiredError(
-                'priceId',
-                'Required parameter "priceId" was null or undefined when calling getPriceByID().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/v1/stripe/config/prices/{price_id}`;
-        urlPath = urlPath.replace(`{${"price_id"}}`, encodeURIComponent(String(requestParameters['priceId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetPriceResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get price by ID
-     */
-    async getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetPriceResponse> {
-        const response = await this.getPriceByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get product by ID
-     */
-    async getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetProductResponse>> {
-        if (requestParameters['productId'] == null) {
-            throw new runtime.RequiredError(
-                'productId',
-                'Required parameter "productId" was null or undefined when calling getProductByID().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/v1/stripe/config/products/{product_id}`;
-        urlPath = urlPath.replace(`{${"product_id"}}`, encodeURIComponent(String(requestParameters['productId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetProductResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get product by ID
-     */
-    async getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetProductResponse> {
-        const response = await this.getProductByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get public Stripe config
-     */
-    async getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/v1/stripe/config`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get public Stripe config
-     */
-    async getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
-        const response = await this.getStripeConfigRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get full Stripe config (admin)
-     */
-    async getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/config`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get full Stripe config (admin)
-     */
-    async getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
-        const response = await this.getStripeConfigAdminRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * List all webhooks
-     */
-    async listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooksResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/webhooks`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListWebhooksResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * List all webhooks
-     */
-    async listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooksResponse> {
-        const response = await this.listWebhooksRaw(initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Apply custom enterprise pricing
+	 */
+	async applyEnterpriseCustomRaw(
+		requestParameters: ApplyEnterpriseCustomOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
+		if (requestParameters["applyEnterpriseCustomRequest"] == null) {
+			throw new runtime.RequiredError(
+				"applyEnterpriseCustomRequest",
+				'Required parameter "applyEnterpriseCustomRequest" was null or undefined when calling applyEnterpriseCustom().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		headerParameters["Content-Type"] = "application/json";
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		const urlPath = `/api/v1/stripe/admin/enterprise/apply-custom`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: ApplyEnterpriseCustomRequestToJSON(
+					requestParameters["applyEnterpriseCustomRequest"],
+				),
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			EnterpriseApplyResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Apply custom enterprise pricing
+	 */
+	async applyEnterpriseCustom(
+		requestParameters: ApplyEnterpriseCustomOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<EnterpriseApplyResponse> {
+		const response = await this.applyEnterpriseCustomRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Apply enterprise template pricing
+	 */
+	async applyEnterpriseTemplateRaw(
+		requestParameters: ApplyEnterpriseTemplateOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
+		if (requestParameters["applyEnterpriseTemplateRequest"] == null) {
+			throw new runtime.RequiredError(
+				"applyEnterpriseTemplateRequest",
+				'Required parameter "applyEnterpriseTemplateRequest" was null or undefined when calling applyEnterpriseTemplate().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		headerParameters["Content-Type"] = "application/json";
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		const urlPath = `/api/v1/stripe/admin/enterprise/apply-template`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: ApplyEnterpriseTemplateRequestToJSON(
+					requestParameters["applyEnterpriseTemplateRequest"],
+				),
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			EnterpriseApplyResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Apply enterprise template pricing
+	 */
+	async applyEnterpriseTemplate(
+		requestParameters: ApplyEnterpriseTemplateOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<EnterpriseApplyResponse> {
+		const response = await this.applyEnterpriseTemplateRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Calculate cost for a price
+	 */
+	async calculatePriceCostRaw(
+		requestParameters: CalculatePriceCostOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
+		if (requestParameters["priceId"] == null) {
+			throw new runtime.RequiredError(
+				"priceId",
+				'Required parameter "priceId" was null or undefined when calling calculatePriceCost().',
+			);
+		}
+
+		if (requestParameters["calculatePriceCostRequest"] == null) {
+			throw new runtime.RequiredError(
+				"calculatePriceCostRequest",
+				'Required parameter "calculatePriceCostRequest" was null or undefined when calling calculatePriceCost().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		headerParameters["Content-Type"] = "application/json";
+
+		let urlPath = `/api/v1/stripe/config/prices/{price_id}/calculate`;
+		urlPath = urlPath.replace(
+			`{${"price_id"}}`,
+			encodeURIComponent(String(requestParameters["priceId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CalculatePriceCostRequestToJSON(
+					requestParameters["calculatePriceCostRequest"],
+				),
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CalculatePriceCostResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Calculate cost for a price
+	 */
+	async calculatePriceCost(
+		requestParameters: CalculatePriceCostOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CalculatePriceCostResponse> {
+		const response = await this.calculatePriceCostRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Convert Stripe ID to config ID
+	 */
+	async convertStripeIDToConfigIDRaw(
+		requestParameters: ConvertStripeIDToConfigIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ConvertStripeIDResponse>> {
+		if (requestParameters["stripeId"] == null) {
+			throw new runtime.RequiredError(
+				"stripeId",
+				'Required parameter "stripeId" was null or undefined when calling convertStripeIDToConfigID().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
+
+		let urlPath = `/api/v1/stripe/convert/stripe-id/{stripe_id}`;
+		urlPath = urlPath.replace(
+			`{${"stripe_id"}}`,
+			encodeURIComponent(String(requestParameters["stripeId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ConvertStripeIDResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Convert Stripe ID to config ID
+	 */
+	async convertStripeIDToConfigID(
+		requestParameters: ConvertStripeIDToConfigIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ConvertStripeIDResponse> {
+		const response = await this.convertStripeIDToConfigIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get enterprise prices by ID
+	 */
+	async getEnterprisePricesByIDRaw(
+		requestParameters: GetEnterprisePricesByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
+		if (requestParameters["enterpriseId"] == null) {
+			throw new runtime.RequiredError(
+				"enterpriseId",
+				'Required parameter "enterpriseId" was null or undefined when calling getEnterprisePricesByID().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		let urlPath = `/api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}`;
+		urlPath = urlPath.replace(
+			`{${"enterprise_id"}}`,
+			encodeURIComponent(String(requestParameters["enterpriseId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			EnterprisePricesResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get enterprise prices by ID
+	 */
+	async getEnterprisePricesByID(
+		requestParameters: GetEnterprisePricesByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<EnterprisePricesResponse> {
+		const response = await this.getEnterprisePricesByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get enterprise prices by template
+	 */
+	async getEnterprisePricesByTemplateRaw(
+		requestParameters: GetEnterprisePricesByTemplateRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
+		if (requestParameters["template"] == null) {
+			throw new runtime.RequiredError(
+				"template",
+				'Required parameter "template" was null or undefined when calling getEnterprisePricesByTemplate().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		let urlPath = `/api/v1/stripe/admin/enterprise/prices/by-template/{template}`;
+		urlPath = urlPath.replace(
+			`{${"template"}}`,
+			encodeURIComponent(String(requestParameters["template"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			EnterprisePricesResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get enterprise prices by template
+	 */
+	async getEnterprisePricesByTemplate(
+		requestParameters: GetEnterprisePricesByTemplateRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<EnterprisePricesResponse> {
+		const response = await this.getEnterprisePricesByTemplateRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get meter by ID
+	 */
+	async getMeterByIDRaw(
+		requestParameters: GetMeterByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetMeterResponse>> {
+		if (requestParameters["meterId"] == null) {
+			throw new runtime.RequiredError(
+				"meterId",
+				'Required parameter "meterId" was null or undefined when calling getMeterByID().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		let urlPath = `/api/v1/stripe/config/meters/{meter_id}`;
+		urlPath = urlPath.replace(
+			`{${"meter_id"}}`,
+			encodeURIComponent(String(requestParameters["meterId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetMeterResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get meter by ID
+	 */
+	async getMeterByID(
+		requestParameters: GetMeterByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetMeterResponse> {
+		const response = await this.getMeterByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get price by ID
+	 */
+	async getPriceByIDRaw(
+		requestParameters: GetPriceByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetPriceResponse>> {
+		if (requestParameters["priceId"] == null) {
+			throw new runtime.RequiredError(
+				"priceId",
+				'Required parameter "priceId" was null or undefined when calling getPriceByID().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		let urlPath = `/api/v1/stripe/config/prices/{price_id}`;
+		urlPath = urlPath.replace(
+			`{${"price_id"}}`,
+			encodeURIComponent(String(requestParameters["priceId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetPriceResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get price by ID
+	 */
+	async getPriceByID(
+		requestParameters: GetPriceByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetPriceResponse> {
+		const response = await this.getPriceByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get product by ID
+	 */
+	async getProductByIDRaw(
+		requestParameters: GetProductByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetProductResponse>> {
+		if (requestParameters["productId"] == null) {
+			throw new runtime.RequiredError(
+				"productId",
+				'Required parameter "productId" was null or undefined when calling getProductByID().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		let urlPath = `/api/v1/stripe/config/products/{product_id}`;
+		urlPath = urlPath.replace(
+			`{${"product_id"}}`,
+			encodeURIComponent(String(requestParameters["productId"])),
+		);
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetProductResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get product by ID
+	 */
+	async getProductByID(
+		requestParameters: GetProductByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetProductResponse> {
+		const response = await this.getProductByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
+
+	/**
+	 * Get public Stripe config
+	 */
+	async getStripeConfigRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<StripeConfigResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		const urlPath = `/api/v1/stripe/config`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			StripeConfigResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get public Stripe config
+	 */
+	async getStripeConfig(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<StripeConfigResponse> {
+		const response = await this.getStripeConfigRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Get full Stripe config (admin)
+	 */
+	async getStripeConfigAdminRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<StripeConfigResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		const urlPath = `/api/v1/stripe/admin/config`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			StripeConfigResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get full Stripe config (admin)
+	 */
+	async getStripeConfigAdmin(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<StripeConfigResponse> {
+		const response = await this.getStripeConfigAdminRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * List all webhooks
+	 */
+	async listWebhooksRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ListWebhooksResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		const urlPath = `/api/v1/stripe/admin/webhooks`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ListWebhooksResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * List all webhooks
+	 */
+	async listWebhooks(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ListWebhooksResponse> {
+		const response = await this.listWebhooksRaw(initOverrides);
+		return await response.value();
+	}
 }

@@ -12,97 +12,108 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AddLineItemByPriceRequest
  */
 export interface AddLineItemByPriceRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemByPriceRequest
-     */
-    currency: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemByPriceRequest
-     */
-    description: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof AddLineItemByPriceRequest
-     */
-    metadata?: { [key: string]: string; };
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemByPriceRequest
-     */
-    priceId?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AddLineItemByPriceRequest
-     */
-    quantity: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddLineItemByPriceRequest
-     */
-    stripePriceId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	currency: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	description: string;
+	/**
+	 *
+	 * @type {{ [key: string]: string; }}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	metadata?: { [key: string]: string };
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	priceId?: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	quantity: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AddLineItemByPriceRequest
+	 */
+	stripePriceId?: string;
 }
 
 /**
  * Check if a given object implements the AddLineItemByPriceRequest interface.
  */
-export function instanceOfAddLineItemByPriceRequest(value: object): value is AddLineItemByPriceRequest {
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
-    return true;
+export function instanceOfAddLineItemByPriceRequest(
+	value: object,
+): value is AddLineItemByPriceRequest {
+	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (!("description" in value) || value["description"] === undefined)
+		return false;
+	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	return true;
 }
 
-export function AddLineItemByPriceRequestFromJSON(json: any): AddLineItemByPriceRequest {
-    return AddLineItemByPriceRequestFromJSONTyped(json, false);
+export function AddLineItemByPriceRequestFromJSON(
+	json: any,
+): AddLineItemByPriceRequest {
+	return AddLineItemByPriceRequestFromJSONTyped(json, false);
 }
 
-export function AddLineItemByPriceRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddLineItemByPriceRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'currency': json['currency'],
-        'description': json['description'],
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'priceId': json['price_id'] == null ? undefined : json['price_id'],
-        'quantity': json['quantity'],
-        'stripePriceId': json['stripe_price_id'] == null ? undefined : json['stripe_price_id'],
-    };
+export function AddLineItemByPriceRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AddLineItemByPriceRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		currency: json["currency"],
+		description: json["description"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		priceId: json["price_id"] == null ? undefined : json["price_id"],
+		quantity: json["quantity"],
+		stripePriceId:
+			json["stripe_price_id"] == null ? undefined : json["stripe_price_id"],
+	};
 }
 
-export function AddLineItemByPriceRequestToJSON(json: any): AddLineItemByPriceRequest {
-    return AddLineItemByPriceRequestToJSONTyped(json, false);
+export function AddLineItemByPriceRequestToJSON(
+	json: any,
+): AddLineItemByPriceRequest {
+	return AddLineItemByPriceRequestToJSONTyped(json, false);
 }
 
-export function AddLineItemByPriceRequestToJSONTyped(value?: AddLineItemByPriceRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AddLineItemByPriceRequestToJSONTyped(
+	value?: AddLineItemByPriceRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'currency': value['currency'],
-        'description': value['description'],
-        'metadata': value['metadata'],
-        'price_id': value['priceId'],
-        'quantity': value['quantity'],
-        'stripe_price_id': value['stripePriceId'],
-    };
+	return {
+		currency: value["currency"],
+		description: value["description"],
+		metadata: value["metadata"],
+		price_id: value["priceId"],
+		quantity: value["quantity"],
+		stripe_price_id: value["stripePriceId"],
+	};
 }
-

@@ -1,17 +1,16 @@
-
 # TenantUserResponse
 
 Information about a user in the tenant
 
 ## Properties
 
-Name | Type
------------- | -------------
-`userId` | string
-`firstName` | string
-`lastName` | string
-`email` | string
-`role` | string
+| Name        | Type   |
+| ----------- | ------ |
+| `userId`    | string |
+| `firstName` | string |
+| `lastName`  | string |
+| `email`     | string |
+| `role`      | string |
 
 ## Example
 
@@ -39,5 +38,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Text** | **string** |  | 
-**Unit** | Pointer to **string** |  | [optional] 
-**Value** | Pointer to **float64** |  | [optional] 
+| Name      | Type                   | Description | Notes      |
+| --------- | ---------------------- | ----------- | ---------- |
+| **Text**  | **string**             |             |
+| **Unit**  | Pointer to **string**  |             | [optional] |
+| **Value** | Pointer to **float64** |             | [optional] |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 `func (o *PriceLimit) SetText(v string)`
 
 SetText sets Text field to given value.
-
 
 ### GetUnit
 
@@ -97,7 +96,4 @@ SetValue sets Value field to given value.
 
 HasValue returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

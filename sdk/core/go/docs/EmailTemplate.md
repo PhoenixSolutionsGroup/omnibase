@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**HtmlBody** | **string** |  | 
-**Id** | **string** |  | 
-**Subject** | **string** |  | 
-**TenantId** | **NullableString** |  | 
-**Type** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
+| Name          | Type               | Description | Notes |
+| ------------- | ------------------ | ----------- | ----- |
+| **CreatedAt** | **time.Time**      |             |
+| **HtmlBody**  | **string**         |             |
+| **Id**        | **string**         |             |
+| **Subject**   | **string**         |             |
+| **TenantId**  | **NullableString** |             |
+| **Type**      | **string**         |             |
+| **UpdatedAt** | **time.Time**      |             |
 
 ## Methods
 
@@ -50,7 +50,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetHtmlBody
 
 `func (o *EmailTemplate) GetHtmlBody() string`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailTemplate) SetHtmlBody(v string)`
 
 SetHtmlBody sets HtmlBody field to given value.
-
 
 ### GetId
 
@@ -90,7 +88,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetSubject
 
 `func (o *EmailTemplate) GetSubject() string`
@@ -109,7 +106,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailTemplate) SetSubject(v string)`
 
 SetSubject sets Subject field to given value.
-
 
 ### GetTenantId
 
@@ -130,17 +126,18 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-
 ### SetTenantIdNil
 
 `func (o *EmailTemplate) SetTenantIdNil(b bool)`
 
- SetTenantIdNil sets the value for TenantId to be an explicit nil
+SetTenantIdNil sets the value for TenantId to be an explicit nil
 
 ### UnsetTenantId
+
 `func (o *EmailTemplate) UnsetTenantId()`
 
 UnsetTenantId ensures that no value is present for TenantId, not even an explicit nil
+
 ### GetType
 
 `func (o *EmailTemplate) GetType() string`
@@ -159,7 +156,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailTemplate) SetType(v string)`
 
 SetType sets Type field to given value.
-
 
 ### GetUpdatedAt
 
@@ -180,8 +176,4 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

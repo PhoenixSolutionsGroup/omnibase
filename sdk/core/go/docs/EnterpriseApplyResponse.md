@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Message** | **string** |  | 
-**PricesSwapped** | **int64** |  | 
-**SwappedDetails** | Pointer to **[]string** |  | [optional] 
-**TenantId** | **string** |  | 
+| Name               | Type                    | Description | Notes      |
+| ------------------ | ----------------------- | ----------- | ---------- |
+| **Message**        | **string**              |             |
+| **PricesSwapped**  | **int64**               |             |
+| **SwappedDetails** | Pointer to **[]string** |             | [optional] |
+| **TenantId**       | **string**              |             |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
 ### GetPricesSwapped
 
 `func (o *EnterpriseApplyResponse) GetPricesSwapped() int64`
@@ -66,7 +65,6 @@ and a boolean to check if the value has been set.
 `func (o *EnterpriseApplyResponse) SetPricesSwapped(v int64)`
 
 SetPricesSwapped sets PricesSwapped field to given value.
-
 
 ### GetSwappedDetails
 
@@ -97,12 +95,14 @@ HasSwappedDetails returns a boolean if a field has been set.
 
 `func (o *EnterpriseApplyResponse) SetSwappedDetailsNil(b bool)`
 
- SetSwappedDetailsNil sets the value for SwappedDetails to be an explicit nil
+SetSwappedDetailsNil sets the value for SwappedDetails to be an explicit nil
 
 ### UnsetSwappedDetails
+
 `func (o *EnterpriseApplyResponse) UnsetSwappedDetails()`
 
 UnsetSwappedDetails ensures that no value is present for SwappedDetails, not even an explicit nil
+
 ### GetTenantId
 
 `func (o *EnterpriseApplyResponse) GetTenantId() string`
@@ -122,8 +122,4 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

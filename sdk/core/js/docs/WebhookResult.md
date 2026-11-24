@@ -1,18 +1,16 @@
-
 # WebhookResult
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`stripeId` | string
-`url` | string
-`events` | Array&lt;string&gt;
-`connect` | boolean
-`secret` | string
-`action` | string
+| Name       | Type                |
+| ---------- | ------------------- |
+| `id`       | string              |
+| `stripeId` | string              |
+| `url`      | string              |
+| `events`   | Array&lt;string&gt; |
+| `connect`  | boolean             |
+| `secret`   | string              |
+| `action`   | string              |
 
 ## Example
 
@@ -42,5 +40,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

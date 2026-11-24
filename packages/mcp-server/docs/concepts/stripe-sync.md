@@ -1,4 +1,5 @@
 ---
+
 title: Stripe Sync
 description: How the Stripe configuration sync mechanism works
 ---
@@ -68,6 +69,7 @@ pro_yearly         →    price_GHI789def
 ```
 
 This means:
+
 - Your code always uses stable config IDs
 - Stripe IDs can change (e.g., when recreating resources)
 - Environment portability (same config, different Stripe accounts)
@@ -86,16 +88,16 @@ When you push a configuration, OmniBase:
 
 ```json
 {
-  "products": {
-    "created": [{ "productId": "enterprise", "productName": "Enterprise" }],
-    "updated": [{ "productId": "pro", "productName": "Professional" }],
-    "archived": []
-  },
-  "prices": {
-    "created": [{ "priceId": "enterprise_monthly", "productId": "enterprise" }],
-    "updated": [],
-    "archived": [{ "priceId": "old_price", "productId": "pro" }]
-  }
+	"products": {
+		"created": [{ "productId": "enterprise", "productName": "Enterprise" }],
+		"updated": [{ "productId": "pro", "productName": "Professional" }],
+		"archived": []
+	},
+	"prices": {
+		"created": [{ "priceId": "enterprise_monthly", "productId": "enterprise" }],
+		"updated": [],
+		"archived": [{ "priceId": "old_price", "productId": "pro" }]
+	}
 }
 ```
 
@@ -167,6 +169,7 @@ omnibase stripe pull
 ```
 
 This:
+
 1. Fetches all products, prices, meters from Stripe
 2. Generates config IDs based on Stripe metadata or names
 3. Creates a local configuration file

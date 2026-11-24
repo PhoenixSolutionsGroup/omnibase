@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AmountDue** | **int64** |  | 
-**Currency** | **string** |  | 
-**CustomerId** | **string** |  | 
-**HostedInvoiceUrl** | Pointer to **string** |  | [optional] 
-**Id** | **string** |  | 
-**InvoicePdf** | Pointer to **string** |  | [optional] 
-**Status** | **string** |  | 
+| Name                 | Type                  | Description | Notes      |
+| -------------------- | --------------------- | ----------- | ---------- |
+| **AmountDue**        | **int64**             |             |
+| **Currency**         | **string**            |             |
+| **CustomerId**       | **string**            |             |
+| **HostedInvoiceUrl** | Pointer to **string** |             | [optional] |
+| **Id**               | **string**            |             |
+| **InvoicePdf**       | Pointer to **string** |             | [optional] |
+| **Status**           | **string**            |             |
 
 ## Methods
 
@@ -50,7 +50,6 @@ and a boolean to check if the value has been set.
 
 SetAmountDue sets AmountDue field to given value.
 
-
 ### GetCurrency
 
 `func (o *InvoiceResponse) GetCurrency() string`
@@ -70,7 +69,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-
 ### GetCustomerId
 
 `func (o *InvoiceResponse) GetCustomerId() string`
@@ -89,7 +87,6 @@ and a boolean to check if the value has been set.
 `func (o *InvoiceResponse) SetCustomerId(v string)`
 
 SetCustomerId sets CustomerId field to given value.
-
 
 ### GetHostedInvoiceUrl
 
@@ -135,7 +132,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetInvoicePdf
 
 `func (o *InvoiceResponse) GetInvoicePdf() string`
@@ -180,8 +176,4 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

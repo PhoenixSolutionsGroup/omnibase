@@ -12,64 +12,73 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreateCheckoutResponse
  */
 export interface CreateCheckoutResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateCheckoutResponse
-     */
-    sessionId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateCheckoutResponse
-     */
-    url: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateCheckoutResponse
+	 */
+	sessionId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateCheckoutResponse
+	 */
+	url: string;
 }
 
 /**
  * Check if a given object implements the CreateCheckoutResponse interface.
  */
-export function instanceOfCreateCheckoutResponse(value: object): value is CreateCheckoutResponse {
-    if (!('sessionId' in value) || value['sessionId'] === undefined) return false;
-    if (!('url' in value) || value['url'] === undefined) return false;
-    return true;
+export function instanceOfCreateCheckoutResponse(
+	value: object,
+): value is CreateCheckoutResponse {
+	if (!("sessionId" in value) || value["sessionId"] === undefined) return false;
+	if (!("url" in value) || value["url"] === undefined) return false;
+	return true;
 }
 
-export function CreateCheckoutResponseFromJSON(json: any): CreateCheckoutResponse {
-    return CreateCheckoutResponseFromJSONTyped(json, false);
+export function CreateCheckoutResponseFromJSON(
+	json: any,
+): CreateCheckoutResponse {
+	return CreateCheckoutResponseFromJSONTyped(json, false);
 }
 
-export function CreateCheckoutResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateCheckoutResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'sessionId': json['session_id'],
-        'url': json['url'],
-    };
+export function CreateCheckoutResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateCheckoutResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		sessionId: json["session_id"],
+		url: json["url"],
+	};
 }
 
-export function CreateCheckoutResponseToJSON(json: any): CreateCheckoutResponse {
-    return CreateCheckoutResponseToJSONTyped(json, false);
+export function CreateCheckoutResponseToJSON(
+	json: any,
+): CreateCheckoutResponse {
+	return CreateCheckoutResponseToJSONTyped(json, false);
 }
 
-export function CreateCheckoutResponseToJSONTyped(value?: CreateCheckoutResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateCheckoutResponseToJSONTyped(
+	value?: CreateCheckoutResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'session_id': value['sessionId'],
-        'url': value['url'],
-    };
+	return {
+		session_id: value["sessionId"],
+		url: value["url"],
+	};
 }
-

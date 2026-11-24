@@ -1,6 +1,6 @@
 ---
-title: "Logout"
----
+
+## title: "Logout"
 
 ## Summary
 

@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**ConfigId** | **string** |  | 
-**ConfigUuid** | **string** |  | 
-**ItemType** | **string** |  | 
-**StripeId** | **string** |  | 
+| Name           | Type       | Description | Notes |
+| -------------- | ---------- | ----------- | ----- |
+| **ConfigId**   | **string** |             |
+| **ConfigUuid** | **string** |             |
+| **ItemType**   | **string** |             |
+| **StripeId**   | **string** |             |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetConfigId sets ConfigId field to given value.
 
-
 ### GetConfigUuid
 
 `func (o *ConvertStripeIDResponse) GetConfigUuid() string`
@@ -66,7 +65,6 @@ and a boolean to check if the value has been set.
 `func (o *ConvertStripeIDResponse) SetConfigUuid(v string)`
 
 SetConfigUuid sets ConfigUuid field to given value.
-
 
 ### GetItemType
 
@@ -87,7 +85,6 @@ and a boolean to check if the value has been set.
 
 SetItemType sets ItemType field to given value.
 
-
 ### GetStripeId
 
 `func (o *ConvertStripeIDResponse) GetStripeId() string`
@@ -107,8 +104,4 @@ and a boolean to check if the value has been set.
 
 SetStripeId sets StripeId field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

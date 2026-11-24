@@ -12,309 +12,377 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  ActiveTenantResponse,
-  CreateUserRequest,
-  ErrorModel,
-  Identity,
-  ListTenantsResponse,
-  LogoutResponse,
-  SessionResponse,
-  WhoAmIBody,
-} from '../models/index';
+	ActiveTenantResponse,
+	CreateUserRequest,
+	ErrorModel,
+	Identity,
+	ListTenantsResponse,
+	LogoutResponse,
+	SessionResponse,
+	WhoAmIBody,
+} from "../models/index";
 import {
-    ActiveTenantResponseFromJSON,
-    ActiveTenantResponseToJSON,
-    CreateUserRequestFromJSON,
-    CreateUserRequestToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    IdentityFromJSON,
-    IdentityToJSON,
-    ListTenantsResponseFromJSON,
-    ListTenantsResponseToJSON,
-    LogoutResponseFromJSON,
-    LogoutResponseToJSON,
-    SessionResponseFromJSON,
-    SessionResponseToJSON,
-    WhoAmIBodyFromJSON,
-    WhoAmIBodyToJSON,
-} from '../models/index';
+	ActiveTenantResponseFromJSON,
+	ActiveTenantResponseToJSON,
+	CreateUserRequestFromJSON,
+	CreateUserRequestToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	IdentityFromJSON,
+	IdentityToJSON,
+	ListTenantsResponseFromJSON,
+	ListTenantsResponseToJSON,
+	LogoutResponseFromJSON,
+	LogoutResponseToJSON,
+	SessionResponseFromJSON,
+	SessionResponseToJSON,
+	WhoAmIBodyFromJSON,
+	WhoAmIBodyToJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface CreateUserOperationRequest {
-    createUserRequest: CreateUserRequest;
+	createUserRequest: CreateUserRequest;
 }
 
 export interface LogoutRequest {
-    cookie?: string;
+	cookie?: string;
 }
 
 /**
- * 
+ *
  */
 export class V1AuthApi extends runtime.BaseAPI {
-
-    /**
-     * Create a new user identity
-     */
-    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Identity>> {
-        if (requestParameters['createUserRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createUserRequest',
-                'Required parameter "createUserRequest" was null or undefined when calling createUser().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/users`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateUserRequestToJSON(requestParameters['createUserRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => IdentityFromJSON(jsonValue));
-    }
-
-    /**
-     * Create a new user identity
-     */
-    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Identity> {
-        const response = await this.createUserRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get the active tenant for the authenticated user
-     */
-    async getActiveTenantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ActiveTenantResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/active-tenant`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ActiveTenantResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get the active tenant for the authenticated user
-     */
-    async getActiveTenant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ActiveTenantResponse> {
-        const response = await this.getActiveTenantRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get current identity
-     */
-    async getIdentityRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Identity>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/identity`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => IdentityFromJSON(jsonValue));
-    }
-
-    /**
-     * Get current identity
-     */
-    async getIdentity(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Identity> {
-        const response = await this.getIdentityRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get current session
-     */
-    async getSessionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/session`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SessionResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get current session
-     */
-    async getSession(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SessionResponse> {
-        const response = await this.getSessionRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * List tenants the authenticated user belongs to
-     */
-    async listTenantsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantsResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/tenants`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenantsResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * List tenants the authenticated user belongs to
-     */
-    async listTenants(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantsResponse> {
-        const response = await this.listTenantsRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Logout user
-     */
-    async logoutRaw(requestParameters: LogoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LogoutResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (requestParameters['cookie'] != null) {
-            headerParameters['Cookie'] = String(requestParameters['cookie']);
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/logout`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => LogoutResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Logout user
-     */
-    async logout(requestParameters: LogoutRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LogoutResponse> {
-        const response = await this.logoutRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get authenticated user identity
-     */
-    async whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WhoAmIBody>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/auth/whoami`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => WhoAmIBodyFromJSON(jsonValue));
-    }
-
-    /**
-     * Get authenticated user identity
-     */
-    async whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WhoAmIBody> {
-        const response = await this.whoAmIRaw(initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Create a new user identity
+	 */
+	async createUserRaw(
+		requestParameters: CreateUserOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Identity>> {
+		if (requestParameters["createUserRequest"] == null) {
+			throw new runtime.RequiredError(
+				"createUserRequest",
+				'Required parameter "createUserRequest" was null or undefined when calling createUser().',
+			);
+		}
+
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		headerParameters["Content-Type"] = "application/json";
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/users`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CreateUserRequestToJSON(requestParameters["createUserRequest"]),
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			IdentityFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Create a new user identity
+	 */
+	async createUser(
+		requestParameters: CreateUserOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Identity> {
+		const response = await this.createUserRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Get the active tenant for the authenticated user
+	 */
+	async getActiveTenantRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ActiveTenantResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/active-tenant`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ActiveTenantResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get the active tenant for the authenticated user
+	 */
+	async getActiveTenant(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ActiveTenantResponse> {
+		const response = await this.getActiveTenantRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Get current identity
+	 */
+	async getIdentityRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Identity>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/identity`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			IdentityFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get current identity
+	 */
+	async getIdentity(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Identity> {
+		const response = await this.getIdentityRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Get current session
+	 */
+	async getSessionRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<SessionResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/session`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			SessionResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get current session
+	 */
+	async getSession(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<SessionResponse> {
+		const response = await this.getSessionRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * List tenants the authenticated user belongs to
+	 */
+	async listTenantsRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ListTenantsResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/tenants`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ListTenantsResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * List tenants the authenticated user belongs to
+	 */
+	async listTenants(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ListTenantsResponse> {
+		const response = await this.listTenantsRaw(initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Logout user
+	 */
+	async logoutRaw(
+		requestParameters: LogoutRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<LogoutResponse>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (requestParameters["cookie"] != null) {
+			headerParameters["Cookie"] = String(requestParameters["cookie"]);
+		}
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/logout`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			LogoutResponseFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Logout user
+	 */
+	async logout(
+		requestParameters: LogoutRequest = {},
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<LogoutResponse> {
+		const response = await this.logoutRaw(requestParameters, initOverrides);
+		return await response.value();
+	}
+
+	/**
+	 * Get authenticated user identity
+	 */
+	async whoAmIRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<WhoAmIBody>> {
+		const queryParameters: any = {};
+
+		const headerParameters: runtime.HTTPHeaders = {};
+
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
+
+		const urlPath = `/api/v1/auth/whoami`;
+
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
+
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			WhoAmIBodyFromJSON(jsonValue),
+		);
+	}
+
+	/**
+	 * Get authenticated user identity
+	 */
+	async whoAmI(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<WhoAmIBody> {
+		const response = await this.whoAmIRaw(initOverrides);
+		return await response.value();
+	}
 }

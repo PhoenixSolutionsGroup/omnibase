@@ -1,119 +1,119 @@
-import { Command } from "commander";
+// @ts-expect-error - adm-zip doesn't have types
+import AdmZip from "adm-zip";
+import type { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
-// @ts-ignore - adm-zip doesn't have types
-import AdmZip from "adm-zip";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
-import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
+import { logger } from "../utils/logger";
 
 /**
  * Add migration commands to the CLI
  */
 export function addMigrationCommands(program: Command): void {
-  const migrate = program
-    .command("migration")
-    .description("Apply database migrations to the API");
+	const migrate = program
+		.command("migration")
+		.description("Apply database migrations to the API");
 
-  migrate
-    .command("new")
-    .description("Create a new migration file")
-    .option(
-      "-d, --dir <directory>",
-      "Directory to create migration file in",
-      "omnibase/db"
-    )
-    .option("-n, --name <name>", "Migration name (will prompt if not provided)")
-    .action(async (options) => {
-      try {
-        await createMigration(options.dir, options.name);
-      } catch (error) {
-        await handleCommandError(error);
-      }
-    });
+	migrate
+		.command("new")
+		.description("Create a new migration file")
+		.option(
+			"-d, --dir <directory>",
+			"Directory to create migration file in",
+			"omnibase/db",
+		)
+		.option("-n, --name <name>", "Migration name (will prompt if not provided)")
+		.action(async (options) => {
+			try {
+				await createMigration(options.dir, options.name);
+			} catch (error) {
+				await handleCommandError(error);
+			}
+		});
 
-  migrate
-    .command("push")
-    .description("Push migrations from the db directory")
-    .option(
-      "-d, --dir <directory>",
-      "Directory containing migration files",
-      "omnibase/db"
-    )
-    .action(async (options) => {
-      try {
-        const parentOptions = program.opts();
-        const env = await selectEnvironment(parentOptions.env);
+	migrate
+		.command("push")
+		.description("Push migrations from the db directory")
+		.option(
+			"-d, --dir <directory>",
+			"Directory containing migration files",
+			"omnibase/db",
+		)
+		.action(async (options) => {
+			try {
+				const parentOptions = program.opts();
+				const env = await selectEnvironment(parentOptions.env);
 
-        if (!env.omnibaseServiceKey) {
-          throw new Error(
-            "OMNIBASE_SERVICE_KEY not found in environment configuration"
-          );
-        }
+				if (!env.omnibaseServiceKey) {
+					throw new Error(
+						"OMNIBASE_SERVICE_KEY not found in environment configuration",
+					);
+				}
 
-        await applyMigrations(
-          env.omnibaseApiUrl,
-          env.omnibaseServiceKey,
-          options.dir
-        );
-      } catch (error) {
-        await handleCommandError(error);
-      }
-    });
+				await applyMigrations(
+					env.omnibaseApiUrl,
+					env.omnibaseServiceKey,
+					options.dir,
+				);
+			} catch (error) {
+				await handleCommandError(error);
+			}
+		});
 }
 
 /**
  * Create a new migration file with timestamp prefix
  */
 async function createMigration(
-  migrationsDir: string,
-  name?: string
+	migrationsDir: string,
+	name?: string,
 ): Promise<void> {
-  const projectRoot = findOmnibaseRoot();
-  const migrationsPath = path.join(projectRoot, migrationsDir);
+	const projectRoot = findOmnibaseRoot();
+	const migrationsPath = path.join(projectRoot, migrationsDir);
 
-  // Ensure migrations directory exists
-  if (!fs.existsSync(migrationsPath)) {
-    fs.mkdirSync(migrationsPath, { recursive: true });
-    logger.info(`Created migrations directory: ${migrationsPath}`);
-  }
+	// Ensure migrations directory exists
+	if (!fs.existsSync(migrationsPath)) {
+		fs.mkdirSync(migrationsPath, { recursive: true });
+		logger.info(`Created migrations directory: ${migrationsPath}`);
+	}
 
-  // Get migration name from user if not provided
-  let migrationName = name;
-  if (!migrationName) {
-    const readline = await import("readline");
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
+	// Get migration name from user if not provided
+	let migrationName = name;
+	if (!migrationName) {
+		const readline = await import("readline");
+		const rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout,
+		});
 
-    migrationName = await new Promise<string>((resolve) => {
-      rl.question("Enter migration name: ", resolve);
-    });
+		migrationName = await new Promise<string>((resolve) => {
+			rl.question("Enter migration name: ", resolve);
+		});
 
-    rl.close();
+		rl.close();
 
-    if (!migrationName || migrationName.trim() === "") {
-      throw new Error("Migration name cannot be empty");
-    }
-  }
+		if (!migrationName || migrationName.trim() === "") {
+			throw new Error("Migration name cannot be empty");
+		}
+	}
 
-  // Clean the migration name (remove special characters, replace spaces with underscores)
-  const cleanName = migrationName
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_\s-]/g, "")
-    .replace(/[\s-]+/g, "_");
+	// Clean the migration name (remove special characters, replace spaces with underscores)
+	const cleanName = migrationName
+		.trim()
+		.toLowerCase()
+		.replace(/[^a-z0-9_\s-]/g, "")
+		.replace(/[\s-]+/g, "_");
 
-  // Generate timestamp (Unix timestamp in seconds for simplicity)
-  const timestamp = Math.floor(Date.now() / 1000);
+	// Generate timestamp (Unix timestamp in seconds for simplicity)
+	const timestamp = Math.floor(Date.now() / 1000);
 
-  // Create filename
-  const filename = `${timestamp}_${cleanName}.sql`;
-  const filePath = path.join(migrationsPath, filename);
+	// Create filename
+	const filename = `${timestamp}_${cleanName}.sql`;
+	const filePath = path.join(migrationsPath, filename);
 
-  // Create migration file with template content
-  const template = `-- Migration: ${migrationName}
+	// Create migration file with template content
+	const template = `-- Migration: ${migrationName}
 -- Created: ${new Date().toISOString()}
 
 -- Add your SQL migration here
@@ -125,96 +125,96 @@ async function createMigration(
 -- );
 `;
 
-  fs.writeFileSync(filePath, template);
+	fs.writeFileSync(filePath, template);
 
-  logger.succeed(`Created migration file: ${filename}`);
-  logger.log(`   Location: ${filePath}`);
-  logger.log(`   Edit the file to add your SQL migration commands`);
+	logger.succeed(`Created migration file: ${filename}`);
+	logger.log(`   Location: ${filePath}`);
+	logger.log(`   Edit the file to add your SQL migration commands`);
 }
 
 /**
  * Apply migrations by zipping SQL files and sending to API
  */
 async function applyMigrations(
-  apiUrl: string,
-  apiKey: string,
-  migrationsDir: string
+	apiUrl: string,
+	apiKey: string,
+	migrationsDir: string,
 ): Promise<void> {
-  const projectRoot = findOmnibaseRoot();
-  const migrationsPath = path.join(projectRoot, migrationsDir);
+	const projectRoot = findOmnibaseRoot();
+	const migrationsPath = path.join(projectRoot, migrationsDir);
 
-  // Verify migrations directory exists
-  if (!fs.existsSync(migrationsPath)) {
-    throw new Error(
-      `Migrations directory not found: ${migrationsPath}\n` +
-        `Please ensure the directory exists and contains .sql migration files.`
-    );
-  }
+	// Verify migrations directory exists
+	if (!fs.existsSync(migrationsPath)) {
+		throw new Error(
+			`Migrations directory not found: ${migrationsPath}\n` +
+				`Please ensure the directory exists and contains .sql migration files.`,
+		);
+	}
 
-  // Get all .sql files from the directory
-  const sqlFiles = fs
-    .readdirSync(migrationsPath)
-    .filter((file) => file.endsWith(".sql"))
-    .sort();
+	// Get all .sql files from the directory
+	const sqlFiles = fs
+		.readdirSync(migrationsPath)
+		.filter((file) => file.endsWith(".sql"))
+		.sort();
 
-  if (sqlFiles.length === 0) {
-    throw new Error(
-      `No .sql files found in ${migrationsPath}\n` +
-        `Please add migration files (e.g., 001-seed.sql, 002-rls.sql)`
-    );
-  }
+	if (sqlFiles.length === 0) {
+		throw new Error(
+			`No .sql files found in ${migrationsPath}\n` +
+				`Please add migration files (e.g., 001-seed.sql, 002-rls.sql)`,
+		);
+	}
 
-  logger.log(`Found ${sqlFiles.length} migration file(s):`);
-  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
+	logger.log(`Found ${sqlFiles.length} migration file(s):`);
+	sqlFiles.forEach((file) => logger.log(`   - ${file}`));
 
-  // Create zip file
-  const zip = new AdmZip();
-  for (const file of sqlFiles) {
-    const filePath = path.join(migrationsPath, file);
-    zip.addLocalFile(filePath);
-  }
+	// Create zip file
+	const zip = new AdmZip();
+	for (const file of sqlFiles) {
+		const filePath = path.join(migrationsPath, file);
+		zip.addLocalFile(filePath);
+	}
 
-  // Generate zip buffer
-  const zipBuffer = zip.toBuffer();
-  logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
+	// Generate zip buffer
+	const zipBuffer = zip.toBuffer();
+	logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
-  // Use axios and form-data
-  const FormData = require("form-data");
-  const axios = require("axios");
+	// Use axios and form-data
+	const FormData = require("form-data");
+	const axios = require("axios");
 
-  const formData = new FormData();
-  formData.append("migrations", zipBuffer, {
-    filename: "migrations.zip",
-    contentType: "application/zip",
-  });
+	const formData = new FormData();
+	formData.append("migrations", zipBuffer, {
+		filename: "migrations.zip",
+		contentType: "application/zip",
+	});
 
-  // Send to API
-  const endpoint = `${apiUrl}/api/v1/database/migrations`;
-  logger.start(`Uploading migrations to ${endpoint}...`);
+	// Send to API
+	const endpoint = `${apiUrl}/api/v1/database/migrations`;
+	logger.start(`Uploading migrations to ${endpoint}...`);
 
-  try {
-    const headers: Record<string, string> = {
-      ...formData.getHeaders(),
-    };
+	try {
+		const headers: Record<string, string> = {
+			...formData.getHeaders(),
+		};
 
-    if (apiKey) {
-      headers["X-Service-Key"] = apiKey;
-    }
+		if (apiKey) {
+			headers["X-Service-Key"] = apiKey;
+		}
 
-    const response = await axios.post(endpoint, formData, { headers });
+		const response = await axios.post(endpoint, formData, { headers });
 
-    logger.succeed(response.data.message || "Migrations applied successfully");
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message.includes("fetch")) {
-        throw new Error(
-          `Failed to connect to API at ${apiUrl}\n` +
-            `Please ensure the API is running and accessible.\n` +
-            `Original error: ${error.message}`
-        );
-      }
-      throw error;
-    }
-    throw new Error(`Unknown error occurred: ${error}`);
-  }
+		logger.succeed(response.data.message || "Migrations applied successfully");
+	} catch (error) {
+		if (error instanceof Error) {
+			if (error.message.includes("fetch")) {
+				throw new Error(
+					`Failed to connect to API at ${apiUrl}\n` +
+						`Please ensure the API is running and accessible.\n` +
+						`Original error: ${error.message}`,
+				);
+			}
+			throw error;
+		}
+		throw new Error(`Unknown error occurred: ${error}`);
+	}
 }

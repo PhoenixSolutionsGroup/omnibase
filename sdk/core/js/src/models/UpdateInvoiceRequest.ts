@@ -12,62 +12,67 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface UpdateInvoiceRequest
  */
 export interface UpdateInvoiceRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateInvoiceRequest
-     */
-    description?: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof UpdateInvoiceRequest
-     */
-    metadata?: { [key: string]: string; };
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpdateInvoiceRequest
+	 */
+	description?: string;
+	/**
+	 *
+	 * @type {{ [key: string]: string; }}
+	 * @memberof UpdateInvoiceRequest
+	 */
+	metadata?: { [key: string]: string };
 }
 
 /**
  * Check if a given object implements the UpdateInvoiceRequest interface.
  */
-export function instanceOfUpdateInvoiceRequest(value: object): value is UpdateInvoiceRequest {
-    return true;
+export function instanceOfUpdateInvoiceRequest(
+	value: object,
+): value is UpdateInvoiceRequest {
+	return true;
 }
 
 export function UpdateInvoiceRequestFromJSON(json: any): UpdateInvoiceRequest {
-    return UpdateInvoiceRequestFromJSONTyped(json, false);
+	return UpdateInvoiceRequestFromJSONTyped(json, false);
 }
 
-export function UpdateInvoiceRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpdateInvoiceRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'description': json['description'] == null ? undefined : json['description'],
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-    };
+export function UpdateInvoiceRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpdateInvoiceRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		description: json["description"] == null ? undefined : json["description"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+	};
 }
 
 export function UpdateInvoiceRequestToJSON(json: any): UpdateInvoiceRequest {
-    return UpdateInvoiceRequestToJSONTyped(json, false);
+	return UpdateInvoiceRequestToJSONTyped(json, false);
 }
 
-export function UpdateInvoiceRequestToJSONTyped(value?: UpdateInvoiceRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpdateInvoiceRequestToJSONTyped(
+	value?: UpdateInvoiceRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'description': value['description'],
-        'metadata': value['metadata'],
-    };
+	return {
+		description: value["description"],
+		metadata: value["metadata"],
+	};
 }
-

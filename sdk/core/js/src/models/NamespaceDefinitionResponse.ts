@@ -12,108 +12,132 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { RelationMetadataResponse } from './RelationMetadataResponse';
+import { mapValues } from "../runtime";
+import type { RelationMetadataResponse } from "./RelationMetadataResponse";
 import {
-    RelationMetadataResponseFromJSON,
-    RelationMetadataResponseFromJSONTyped,
-    RelationMetadataResponseToJSON,
-    RelationMetadataResponseToJSONTyped,
-} from './RelationMetadataResponse';
+	RelationMetadataResponseFromJSON,
+	RelationMetadataResponseFromJSONTyped,
+	RelationMetadataResponseToJSON,
+	RelationMetadataResponseToJSONTyped,
+} from "./RelationMetadataResponse";
 
 /**
- * 
+ *
  * @export
  * @interface NamespaceDefinitionResponse
  */
 export interface NamespaceDefinitionResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof NamespaceDefinitionResponse
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof NamespaceDefinitionResponse
-     */
-    namespace: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof NamespaceDefinitionResponse
-     */
-    relations: Array<string> | null;
-    /**
-     * 
-     * @type {Array<RelationMetadataResponse>}
-     * @memberof NamespaceDefinitionResponse
-     */
-    relationsMetadata: Array<RelationMetadataResponse> | null;
-    /**
-     * 
-     * @type {{ [key: string]: Array<string> | null; }}
-     * @memberof NamespaceDefinitionResponse
-     */
-    subjectRelations: { [key: string]: Array<string> | null; };
-    /**
-     * 
-     * @type {Date}
-     * @memberof NamespaceDefinitionResponse
-     */
-    updatedAt: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	namespace: string;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	relations: Array<string> | null;
+	/**
+	 *
+	 * @type {Array<RelationMetadataResponse>}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	relationsMetadata: Array<RelationMetadataResponse> | null;
+	/**
+	 *
+	 * @type {{ [key: string]: Array<string> | null; }}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	subjectRelations: { [key: string]: Array<string> | null };
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof NamespaceDefinitionResponse
+	 */
+	updatedAt: Date;
 }
 
 /**
  * Check if a given object implements the NamespaceDefinitionResponse interface.
  */
-export function instanceOfNamespaceDefinitionResponse(value: object): value is NamespaceDefinitionResponse {
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('namespace' in value) || value['namespace'] === undefined) return false;
-    if (!('relations' in value) || value['relations'] === undefined) return false;
-    if (!('relationsMetadata' in value) || value['relationsMetadata'] === undefined) return false;
-    if (!('subjectRelations' in value) || value['subjectRelations'] === undefined) return false;
-    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
-    return true;
+export function instanceOfNamespaceDefinitionResponse(
+	value: object,
+): value is NamespaceDefinitionResponse {
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("relations" in value) || value["relations"] === undefined) return false;
+	if (
+		!("relationsMetadata" in value) ||
+		value["relationsMetadata"] === undefined
+	)
+		return false;
+	if (!("subjectRelations" in value) || value["subjectRelations"] === undefined)
+		return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	return true;
 }
 
-export function NamespaceDefinitionResponseFromJSON(json: any): NamespaceDefinitionResponse {
-    return NamespaceDefinitionResponseFromJSONTyped(json, false);
+export function NamespaceDefinitionResponseFromJSON(
+	json: any,
+): NamespaceDefinitionResponse {
+	return NamespaceDefinitionResponseFromJSONTyped(json, false);
 }
 
-export function NamespaceDefinitionResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): NamespaceDefinitionResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'id': json['id'],
-        'namespace': json['namespace'],
-        'relations': json['relations'] == null ? null : json['relations'],
-        'relationsMetadata': (json['relations_metadata'] == null ? null : (json['relations_metadata'] as Array<any>).map(RelationMetadataResponseFromJSON)),
-        'subjectRelations': json['subject_relations'],
-        'updatedAt': (new Date(json['updated_at'])),
-    };
+export function NamespaceDefinitionResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): NamespaceDefinitionResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		id: json["id"],
+		namespace: json["namespace"],
+		relations: json["relations"] == null ? null : json["relations"],
+		relationsMetadata:
+			json["relations_metadata"] == null
+				? null
+				: (json["relations_metadata"] as Array<any>).map(
+						RelationMetadataResponseFromJSON,
+					),
+		subjectRelations: json["subject_relations"],
+		updatedAt: new Date(json["updated_at"]),
+	};
 }
 
-export function NamespaceDefinitionResponseToJSON(json: any): NamespaceDefinitionResponse {
-    return NamespaceDefinitionResponseToJSONTyped(json, false);
+export function NamespaceDefinitionResponseToJSON(
+	json: any,
+): NamespaceDefinitionResponse {
+	return NamespaceDefinitionResponseToJSONTyped(json, false);
 }
 
-export function NamespaceDefinitionResponseToJSONTyped(value?: NamespaceDefinitionResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function NamespaceDefinitionResponseToJSONTyped(
+	value?: NamespaceDefinitionResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'id': value['id'],
-        'namespace': value['namespace'],
-        'relations': value['relations'],
-        'relations_metadata': (value['relationsMetadata'] == null ? null : (value['relationsMetadata'] as Array<any>).map(RelationMetadataResponseToJSON)),
-        'subject_relations': value['subjectRelations'],
-        'updated_at': value['updatedAt'].toISOString(),
-    };
+	return {
+		id: value["id"],
+		namespace: value["namespace"],
+		relations: value["relations"],
+		relations_metadata:
+			value["relationsMetadata"] == null
+				? null
+				: (value["relationsMetadata"] as Array<any>).map(
+						RelationMetadataResponseToJSON,
+					),
+		subject_relations: value["subjectRelations"],
+		updated_at: value["updatedAt"].toISOString(),
+	};
 }
-
