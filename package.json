@@ -16,7 +16,8 @@
 		"prepush": "bash .husky/pre-push",
 		"prepare": "husky",
 		"release:preview": "./scripts/preview-releases.sh",
-		"lint-format": "biome check --write"
+		"lint:format": "biome check --write",
+		"lint:format:unsafe": "biome check --write --unsafe"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.6.8",
