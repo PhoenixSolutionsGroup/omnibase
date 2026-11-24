@@ -269,7 +269,7 @@ export default function DomainsPage() {
 			setHostname("");
 			setDialogOpen(false);
 			loadDomains();
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to add domain");
 		} finally {
 			setAdding(false);
@@ -284,7 +284,7 @@ export default function DomainsPage() {
 				setDomains((prev) => prev.map((p) => (p.id === d.id ? data : p)));
 				if (data.status === "active") toast.success(`${d.hostname} is active`);
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to check status");
 		}
 	};
@@ -297,7 +297,7 @@ export default function DomainsPage() {
 			} else {
 				toast.error("Failed to retry validation");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to retry validation");
 		}
 	};
@@ -325,7 +325,7 @@ export default function DomainsPage() {
 			} else {
 				toast.error("Failed to remove domain");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to remove domain");
 		} finally {
 			setDeleting(false);

@@ -30,7 +30,7 @@ export function loadCredentials(): CredentialsConfig {
 	try {
 		const content = fs.readFileSync(credentialsPath, "utf8");
 		return JSON.parse(content);
-	} catch (error) {
+	} catch (_error) {
 		return { profiles: {}, active_profile: "" };
 	}
 }

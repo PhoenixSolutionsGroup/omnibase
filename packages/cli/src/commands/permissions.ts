@@ -155,7 +155,7 @@ export class PermissionsCommand {
 						stdio: "ignore",
 					});
 					logger.log("   Permissions restarted successfully");
-				} catch (error) {
+				} catch (_error) {
 					logger.warn("Failed to restart permissions automatically");
 					logger.log(
 						"   Please run manually: docker compose restart permissions",
@@ -212,7 +212,7 @@ export class PermissionsCommand {
 
 			logger.succeed("All namespace files are valid");
 			return true;
-		} catch (error) {
+		} catch (_error) {
 			logger.fail("Validation failed - TypeScript syntax errors found");
 			return false;
 		}
@@ -225,7 +225,7 @@ export class PermissionsCommand {
 	): Promise<void> {
 		logger.start(`Checking permission: ${subject} -> ${object}#${relation}`);
 
-		const [namespace, subjectId] = subject.includes(":")
+		const [_namespace, subjectId] = subject.includes(":")
 			? subject.split(":")
 			: ["User", subject];
 		const [objectNamespace, objectId] = object.includes(":")
@@ -258,7 +258,7 @@ export class PermissionsCommand {
 	async set(subject: string, object: string, relation: string): Promise<void> {
 		logger.start(`Setting permission: ${subject} -> ${object}#${relation}`);
 
-		const [namespace, subjectId] = subject.includes(":")
+		const [_namespace, subjectId] = subject.includes(":")
 			? subject.split(":")
 			: ["User", subject];
 		const [objectNamespace, objectId] = object.includes(":")

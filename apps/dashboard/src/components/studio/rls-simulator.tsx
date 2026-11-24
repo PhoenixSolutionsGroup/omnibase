@@ -70,7 +70,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
 			} else {
 				toast.error(result.error || "Failed to load tenants");
 			}
-		} catch (e: any) {
+		} catch (_e: any) {
 			toast.error("Failed to load tenants");
 		} finally {
 			setLoadingTenants(false);
@@ -91,7 +91,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
 			} else {
 				toast.error(result.error || "Failed to load users");
 			}
-		} catch (e: any) {
+		} catch (_e: any) {
 			toast.error("Failed to load users");
 		} finally {
 			setLoadingUsers(false);

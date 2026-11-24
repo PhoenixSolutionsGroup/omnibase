@@ -263,7 +263,7 @@ export class DatabaseMigrationService {
 			});
 			if (!res) throw new Error();
 			logger.succeed(res.message || `Rolled back ${steps} migration(s)`);
-		} catch (error) {
+		} catch (_error) {
 			logger.fail("Failed to rollback migrations");
 		}
 	}

@@ -124,7 +124,7 @@ interface RegionComboboxProps {
 	autoSelectLowestLatency?: boolean;
 }
 
-function RegionCombobox({
+function _RegionCombobox({
 	regions,
 	value,
 	onSelect,
@@ -413,7 +413,7 @@ export function ProvisioningForm({
 	projectId,
 	projectName,
 }: ProvisioningFormProps) {
-	const client = new V1PaymentsApi(); // TODO: add cookie
+	const _client = new V1PaymentsApi(); // TODO: add cookie
 
 	const router = useRouter();
 	const [loading, setLoading] = React.useState(true);
@@ -482,7 +482,7 @@ export function ProvisioningForm({
 		[plans, formData.plan_id],
 	);
 
-	const selectedPrice = React.useMemo(
+	const _selectedPrice = React.useMemo(
 		() =>
 			selectedPlan?.prices.find((p) => p.interval === paymentInterval) ?? null,
 		[selectedPlan, paymentInterval],

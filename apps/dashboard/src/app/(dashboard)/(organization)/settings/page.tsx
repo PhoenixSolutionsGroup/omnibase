@@ -63,7 +63,7 @@ export default async function page() {
 	try {
 		users = await usersClient.listTenantUsers();
 		roles = await rolesClient.listRoles();
-	} catch (error) {}
+	} catch (_error) {}
 
 	// Fetch API keys
 	const apiKeysResponse = await listAPIKeys();

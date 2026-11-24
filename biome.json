@@ -17,7 +17,8 @@
 		"rules": {
 			"preset": "recommended",
 			"correctness": {
-				"noUnusedImports": "error"
+				"noUnusedImports": "error",
+				"noUnusedVariables": "error"
 			}
 		}
 	},

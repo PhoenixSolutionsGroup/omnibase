@@ -102,7 +102,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 			} else {
 				toast.success("OmniBase environment variables copied to clipboard");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy environment variables");
 		} finally {
 			setCopyingEnv(false);
@@ -193,7 +193,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 			} else {
 				toast.success("All environment variables copied to clipboard");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy environment variables");
 		} finally {
 			setCopyingEnv(false);
@@ -303,7 +303,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 				setErrors((prev) => new Map(prev).set(key, result.error!));
 				toast.error(result.error);
 			}
-		} catch (error) {
+		} catch (_error) {
 			const errorMessage = "Failed to decrypt secret";
 			setErrors((prev) => new Map(prev).set(key, errorMessage));
 			toast.error(errorMessage);

@@ -296,7 +296,7 @@ async function deployWorkers(
 	}
 
 	const deployments = getDeployments(root);
-	const config = loadConfig(root);
+	const _config = loadConfig(root);
 	const secrets = loadSecretsMap(root, env.name);
 	let targets: DeploymentConfig[];
 
@@ -342,7 +342,7 @@ async function deployWorkers(
 				stdio: "inherit",
 				env: { ...process.env, ...secrets },
 			});
-		} catch (error) {
+		} catch (_error) {
 			logger.fail(`Build failed for '${dep.name}'. Check the output above.`);
 			failures.push(dep.name);
 			continue;
@@ -761,7 +761,7 @@ export function buildBranchEnv(input: BranchEnvInput): Record<string, string> {
  * matches by name, slug, or id; otherwise a single branch is auto-selected or
  * the user is prompted.
  */
-async function resolveBranch(
+async function _resolveBranch(
 	managedHostingUrl: string,
 	projectId: string,
 	branchFlag?: string,

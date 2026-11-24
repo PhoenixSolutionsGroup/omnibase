@@ -255,7 +255,7 @@ export function loadConfig(projectRoot: string): OmnibaseConfig {
 			env: parsed.env as Record<string, string> | undefined,
 			versions: parsed.versions as Record<string, string> | undefined,
 		};
-	} catch (error) {
+	} catch (_error) {
 		console.warn(`Warning: Could not parse config file at ${configPath}`);
 		return { deployments: [] };
 	}

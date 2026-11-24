@@ -333,7 +333,7 @@ export function TableViewer({
 
 	const [createOpen, setCreateOpen] = useState(false);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [showRLS, setShowRLS] = useState(true);
+	const [_showRLS, _setShowRLS] = useState(true);
 
 	const fetchTableData = useCallback(
 		async (retryCount = 0) => {

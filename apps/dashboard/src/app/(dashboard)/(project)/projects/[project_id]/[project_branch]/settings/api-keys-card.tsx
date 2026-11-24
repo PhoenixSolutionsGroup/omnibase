@@ -129,7 +129,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 				setErrors((prev) => new Map(prev).set(key, result.error!));
 				toast.error(result.error);
 			}
-		} catch (error) {
+		} catch (_error) {
 			const errorMessage = "Failed to decrypt secret";
 			setErrors((prev) => new Map(prev).set(key, errorMessage));
 			toast.error(errorMessage);
@@ -160,7 +160,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 			} else {
 				setRotateError(result.error || "Failed to rotate keys");
 			}
-		} catch (err) {
+		} catch (_err) {
 			setRotateError("An unexpected error occurred");
 		} finally {
 			setIsRotating(false);
