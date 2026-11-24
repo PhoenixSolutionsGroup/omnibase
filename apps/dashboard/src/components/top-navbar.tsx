@@ -97,7 +97,7 @@ export function TopNavbar({
   return (
     <div className="flex h-18 w-full items-center border-b border-border bg-background px-4 md:px-6">
       <Image
-        src="/omnibase-logo-transparent-dark.svg"
+        src="/omnibase-logo.svg"
         alt="Omnibase"
         width={24}
         height={24}
@@ -105,7 +105,7 @@ export function TopNavbar({
         unoptimized
       />
       <Image
-        src="/omnibase-logo-transparent.svg"
+        src="/omnibase-logo-dark.svg"
         alt="Omnibase"
         width={24}
         height={24}
