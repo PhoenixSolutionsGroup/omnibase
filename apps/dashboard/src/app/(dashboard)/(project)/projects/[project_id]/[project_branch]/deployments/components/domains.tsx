@@ -162,8 +162,8 @@ export default function Domains({ projectId, workerName }: DomainProps) {
   const handleDetach = async (domainId: string, hostname: string) => {
     try {
       const res = await fetch(
-        `/api/project_branches/${projectId}/worker-domains/${domainId}`,
-        { method: "DELETE" },
+        `{process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/worker-domains/${domainId}`,
+        { credentials: "include", method: "DELETE" },
       );
       if (res.ok) {
         toast.success(`${hostname} detached from ${workerName}`);

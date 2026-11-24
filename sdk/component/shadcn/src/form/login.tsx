@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Messages } from "../components/ui/messages";
 import { isUiNodeInputAttributes } from "./types";
 import { cn } from "@/lib/utils";
+import { getProviderIcon } from "./components/provider-icons";
 
 export const OIDC_INIT_CODE_COOKIE = "omnibase_oidc_init_code";
 
@@ -255,7 +256,7 @@ export function LoginForm({
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full capitalize"
               disabled={loading || !flow}
             >
               {loading ? "Signing in…" : "Sign in"}
@@ -275,15 +276,17 @@ export function LoginForm({
                 </div>
                 {oidcProviders.map((node) => {
                   const attrs = node.attributes as UiNodeInputAttributes;
+                  const Icon = getProviderIcon(attrs.value);
                   return (
                     <Button
                       key={attrs.value}
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full capitalize"
                       disabled={loading || !flow}
                       onClick={() => onOidcSubmit(attrs.value)}
                     >
+                      {Icon && <Icon />}
                       {node.meta?.label?.text ?? `Continue with ${attrs.value}`}
                     </Button>
                   );
@@ -297,7 +300,7 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <a
                 href={register_url}
-                className="text-primary underline-offset-4 hover:underline"
+                className="text-primary underline-offset-4 hover:underline font-medium"
               >
                 Sign Up
               </a>

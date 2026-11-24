@@ -100,7 +100,7 @@ export function ProjectProvisioningDashboard({
             alt="Omnibase"
             width={64}
             height={64}
-            className="shrink-0 rounded-lg absolute -mt-12"
+            className="shrink-0 rounded-lg absolute -mt-12 animate-bounce"
             unoptimized
           />
         </div>

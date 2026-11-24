@@ -7,6 +7,11 @@ interface SeverityStyle {
 }
 
 const SEVERITY_STYLES: Record<string, SeverityStyle> = {
+  TRACE: {
+    label: "TRACE",
+    text: "text-muted-foreground",
+    badge: "bg-muted-foreground/5 border-muted-foreground/50",
+  },
   DEFAULT: {
     label: "DEFAULT",
     text: "text-success",
@@ -26,6 +31,11 @@ const SEVERITY_STYLES: Record<string, SeverityStyle> = {
     label: "NOTICE",
     text: "text-cyan-700",
     badge: "bg-cyan-50 border-cyan-200",
+  },
+  WARN: {
+    label: "WARNING",
+    text: "text-warning",
+    badge: "bg-warning/5 border-warning/50",
   },
   WARNING: {
     label: "WARNING",

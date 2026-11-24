@@ -33,31 +33,21 @@ interface LogEntry {
   timestamp: string;
   severity: string;
   message: string;
-  source: string;
   labels: {
     source: string;
-    worker_name: string;
-    script_name: string;
-    [key: string]: string;
-  };
-  metadata: {
-    raw_line: string;
   };
 }
 
-interface WorkerLogsData {
-  worker: string;
-  script_name: string;
-  count: number;
-  logs: LogEntry[];
+export interface WorkerLogsResponse {
+  data: {
+    logs: LogEntry[];
+  };
 }
 
 interface ApiResponse<T> {
   status: number;
   data: T;
 }
-
-export type WorkerLogsResponse = ApiResponse<WorkerLogsData>;
 
 async function fetchLogs(
   projectId: string,
@@ -70,7 +60,8 @@ async function fetchLogs(
   });
 
   const response = await fetch(
-    `/api/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectId}/workers/${workerName}/logs?${params}`,
+    { credentials: "include" },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch logs: ${response.status}`);
@@ -78,7 +69,7 @@ async function fetchLogs(
 
   const res = (await response.json()) as WorkerLogsResponse;
   const logs = res.data.logs.filter((l) => l.labels.source === "cloudflare");
-  return { ...res, data: { ...res.data, logs, count: logs.length } };
+  return { data: { logs } };
 }
 
 export default function Logs({
@@ -111,7 +102,7 @@ export default function Logs({
   }, [projectId, workerName, startTime, endTime]);
 
   return (
-    <Card className="pt-0 gap-0">
+    <Card className="py-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
         <div className="grid flex-1">
           <CardTitle>Logs</CardTitle>
@@ -135,7 +126,7 @@ export default function Logs({
         </Select>
       </CardHeader>
       <Separator />
-      <CardContent className="p-0 max-h-96 overflow-scroll">
+      <CardContent className="p-0 max-h-97 overflow-scroll">
         <Table>
           <TableBody>
             {loading ? (

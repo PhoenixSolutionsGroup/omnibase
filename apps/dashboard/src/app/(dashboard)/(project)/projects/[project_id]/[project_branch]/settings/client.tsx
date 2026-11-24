@@ -21,6 +21,7 @@ import { useState } from "react";
 import { ApiKeysCard } from "./api-keys-card";
 import { Project } from "../dashboard/project-provisioning-dashboard";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 interface SettingsClientProps {
   project: Project;
@@ -89,20 +90,21 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
         <ApiKeysCard project={project} onRotateKeys={onRotateKeys} />
 
         {/* Danger Zone */}
-        <Card className="border-destructive">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-destructive">Danger Zone</CardTitle>
+            <CardTitle>Danger Zone</CardTitle>
             <CardDescription>
               Irreversible and destructive actions
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/5 p-4">
-              <div className="space-y-1">
-                <h3 className="font-medium">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col">
+                <p>
+                  {" "}
                   {isMain ? "Delete Project" : `Delete ${branchName} branch`}
-                </h3>
-                <p className="text-sm text-muted-foreground">
+                </p>
+                <p className="text-xs text-muted-foreground">
                   {isMain
                     ? "Permanently delete this project and all of its branches and data. This action cannot be undone."
                     : `Permanently delete the ${branchName} branch and all of its data. This action cannot be undone.`}
@@ -112,6 +114,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
                 onClick={() => setIsDeleteModalOpen(true)}
                 variant="destructive"
               >
+                <Trash />
                 {isMain ? "Delete Project" : `Delete ${branchName} branch`}
               </Button>
             </div>

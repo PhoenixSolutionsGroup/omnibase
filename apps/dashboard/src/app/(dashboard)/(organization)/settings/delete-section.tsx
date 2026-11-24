@@ -19,6 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 interface DeleteSectionProps {
   onDeleteTenant: () => Promise<void>;
@@ -48,18 +49,18 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
 
   return (
     <>
-      <Card className="border-destructive">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardTitle>Danger Zone</CardTitle>
           <CardDescription>
             Irreversible and destructive actions
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/5 p-4">
-            <div className="space-y-1">
-              <h3 className="font-medium">Delete Organization</h3>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col">
+              <p>Delete Organization</p>
+              <p className="text-xs text-muted-foreground">
                 Permanently delete this organization and all of its data. This
                 action cannot be undone.
               </p>
@@ -68,6 +69,7 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
               onClick={() => setIsDeleteModalOpen(true)}
               variant="destructive"
             >
+              <Trash className="w-3 h-3" />
               Delete Organization
             </Button>
           </div>

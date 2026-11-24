@@ -124,7 +124,7 @@ export function RegistrationForm({
                 Already have an account?{" "}
                 <a
                   href={loginHref}
-                  className="text-primary underline-offset-4 hover:underline"
+                  className="text-primary underline-offset-4 hover:underline font-medium"
                 >
                   Sign In
                 </a>

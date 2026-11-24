@@ -486,7 +486,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                             {item.label}
                           </p>
                           <p
-                            className={`mt-1 font-mono text-sm break-all ${
+                            className={`mt-1 text-sm break-all ${
                               error ? "text-destructive" : ""
                             }`}
                           >
@@ -501,7 +501,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                               }
                               disabled={isLoading}
                               title={isRevealed ? "Hide" : "Reveal"}
-                              variant="ghost"
+                              variant="outline"
                             >
                               {isLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -522,6 +522,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                               )
                             }
                             disabled={item.sensitive && !isRevealed}
+                            variant="outline"
                           >
                             Copy
                           </Button>

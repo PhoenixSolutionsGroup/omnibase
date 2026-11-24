@@ -97,11 +97,19 @@ export function TopNavbar({
   return (
     <div className="flex h-18 w-full items-center border-b border-border bg-background px-4 md:px-6">
       <Image
-        src="/omnibase-logo.svg"
+        src="/omnibase-logo-transparent-dark.svg"
         alt="Omnibase"
         width={24}
         height={24}
-        className="shrink-0 rounded-lg"
+        className="shrink-0 rounded-lg dark:hidden block"
+        unoptimized
+      />
+      <Image
+        src="/omnibase-logo-transparent.svg"
+        alt="Omnibase"
+        width={24}
+        height={24}
+        className="shrink-0 rounded-lg hidden dark:block"
         unoptimized
       />
       {/* Tenant Switcher */}

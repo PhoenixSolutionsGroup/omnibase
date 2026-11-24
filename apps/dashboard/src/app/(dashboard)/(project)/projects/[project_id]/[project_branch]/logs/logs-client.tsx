@@ -135,9 +135,9 @@ export function LogsClient({
   }, [projectId, activeService, limit, timeRange]);
 
   return (
-    <div className="max-w-7xl my-8 mx-auto">
-      <div className="mx-16 space-y-4">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+    <div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col py-8">
+      <div className="mx-16 flex min-h-0 flex-1 flex-col gap-4">
+        <div className="flex shrink-0 flex-col items-start justify-between gap-3 md:flex-row">
           <div>
             <h1 className="text-xl font-bold tracking-tight">Logs</h1>
             <p className="text-muted-foreground">
@@ -147,7 +147,7 @@ export function LogsClient({
         </div>
 
         {/* Service Selector */}
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           {services.map((service) => (
             <Link
               key={service.key}
@@ -180,7 +180,7 @@ export function LogsClient({
 
         {/* Loading State */}
         {isLoading && (
-          <div className="border rounded-lg p-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+          <div className="shrink-0 border rounded-lg p-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
             <Loader2 className="h-8 w-8 animate-spin" />
             <p>Loading logs...</p>
           </div>
@@ -188,27 +188,29 @@ export function LogsClient({
 
         {/* Error State */}
         {!isLoading && logsError && (
-          <div className="border rounded-lg p-4 bg-destructive/10 text-destructive">
+          <div className="shrink-0 border rounded-lg p-4 bg-destructive/10 text-destructive">
             Error: {logsError}
           </div>
         )}
 
         {/* Logs Display */}
         {!isLoading && logsData && logsData.logs && (
-          <LogViewer
-            initialLogs={logsData.logs}
-            projectId={projectId}
-            serviceType={activeService}
-            totalCount={logsData.count}
-            limit={limit}
-          />
+          <div className="min-h-0 flex-1">
+            <LogViewer
+              initialLogs={logsData.logs}
+              projectId={projectId}
+              serviceType={activeService}
+              totalCount={logsData.count}
+              limit={limit}
+            />
+          </div>
         )}
 
         {/* No Logs State */}
         {!isLoading &&
           logsData &&
           (!logsData.logs || logsData.logs.length === 0) && (
-            <div className="border rounded-lg p-8 text-center text-muted-foreground">
+            <div className="shrink-0 border rounded-lg p-8 text-center text-muted-foreground">
               No logs found for this service
             </div>
           )}

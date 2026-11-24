@@ -101,7 +101,7 @@ export function APIKeysSection({
     <Card className={!canViewKeys ? "opacity-60" : ""}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <CardTitle>API Keys</CardTitle>
             <CardDescription>
               {canViewKeys
