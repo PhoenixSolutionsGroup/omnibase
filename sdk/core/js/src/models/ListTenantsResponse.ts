@@ -48,7 +48,7 @@ export function ListTenantsResponseFromJSON(json: any): ListTenantsResponse {
 
 export function ListTenantsResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListTenantsResponse {
 	if (json == null) {
 		return json;
@@ -67,7 +67,7 @@ export function ListTenantsResponseToJSON(json: any): ListTenantsResponse {
 
 export function ListTenantsResponseToJSONTyped(
 	value?: ListTenantsResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

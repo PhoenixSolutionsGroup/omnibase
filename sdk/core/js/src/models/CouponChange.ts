@@ -60,7 +60,7 @@ export function CouponChangeFromJSON(json: any): CouponChange {
 
 export function CouponChangeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CouponChange {
 	if (json == null) {
 		return json;
@@ -79,7 +79,7 @@ export function CouponChangeToJSON(json: any): CouponChange {
 
 export function CouponChangeToJSONTyped(
 	value?: CouponChange | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

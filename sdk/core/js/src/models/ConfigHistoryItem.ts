@@ -82,7 +82,7 @@ export function ConfigHistoryItemFromJSON(json: any): ConfigHistoryItem {
 
 export function ConfigHistoryItemFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigHistoryItem {
 	if (json == null) {
 		return json;
@@ -103,7 +103,7 @@ export function ConfigHistoryItemToJSON(json: any): ConfigHistoryItem {
 
 export function ConfigHistoryItemToJSONTyped(
 	value?: ConfigHistoryItem | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

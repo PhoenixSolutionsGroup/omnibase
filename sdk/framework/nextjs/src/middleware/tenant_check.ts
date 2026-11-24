@@ -51,7 +51,7 @@ export const tenantCheckMiddleware = (
 		tenant_check_redirect_url,
 	}: OmnibaseMiddlewareConfig,
 ) => {
-	if (!session || !session.active || !tenant_check) return NextResponse.next();
+	if (!session?.active || !tenant_check) return NextResponse.next();
 
 	const pathname = req.nextUrl.pathname;
 
@@ -59,7 +59,7 @@ export const tenantCheckMiddleware = (
 		if (pattern.endsWith("/*")) {
 			return pathname.startsWith(pattern.slice(0, -2));
 		}
-		return pathname === pattern || pathname.startsWith(pattern + "/");
+		return pathname === pattern || pathname.startsWith(`${pattern}/`);
 	});
 
 	if (!shouldCheckTenant) return NextResponse.next();

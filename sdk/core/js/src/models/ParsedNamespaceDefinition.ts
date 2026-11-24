@@ -85,7 +85,7 @@ export function ParsedNamespaceDefinitionFromJSON(
 
 export function ParsedNamespaceDefinitionFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ParsedNamespaceDefinition {
 	if (json == null) {
 		return json;
@@ -111,7 +111,7 @@ export function ParsedNamespaceDefinitionToJSON(
 
 export function ParsedNamespaceDefinitionToJSONTyped(
 	value?: ParsedNamespaceDefinition | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

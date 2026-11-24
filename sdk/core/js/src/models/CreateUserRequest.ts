@@ -59,7 +59,7 @@ export function CreateUserRequestFromJSON(json: any): CreateUserRequest {
 
 export function CreateUserRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateUserRequest {
 	if (json == null) {
 		return json;
@@ -77,7 +77,7 @@ export function CreateUserRequestToJSON(json: any): CreateUserRequest {
 
 export function CreateUserRequestToJSONTyped(
 	value?: CreateUserRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

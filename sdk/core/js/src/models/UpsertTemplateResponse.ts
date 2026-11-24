@@ -54,7 +54,7 @@ export function UpsertTemplateResponseFromJSON(
 
 export function UpsertTemplateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertTemplateResponse {
 	if (json == null) {
 		return json;
@@ -73,7 +73,7 @@ export function UpsertTemplateResponseToJSON(
 
 export function UpsertTemplateResponseToJSONTyped(
 	value?: UpsertTemplateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

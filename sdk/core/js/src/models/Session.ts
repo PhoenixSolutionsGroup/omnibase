@@ -110,7 +110,7 @@ export function SessionFromJSON(json: any): Session {
 
 export function SessionFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Session {
 	if (json == null) {
 		return json;
@@ -152,7 +152,7 @@ export function SessionToJSON(json: any): Session {
 
 export function SessionToJSONTyped(
 	value?: Session | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

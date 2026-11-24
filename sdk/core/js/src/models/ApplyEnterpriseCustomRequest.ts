@@ -52,7 +52,7 @@ export function ApplyEnterpriseCustomRequestFromJSON(
 
 export function ApplyEnterpriseCustomRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ApplyEnterpriseCustomRequest {
 	if (json == null) {
 		return json;
@@ -71,7 +71,7 @@ export function ApplyEnterpriseCustomRequestToJSON(
 
 export function ApplyEnterpriseCustomRequestToJSONTyped(
 	value?: ApplyEnterpriseCustomRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

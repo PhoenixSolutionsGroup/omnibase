@@ -65,7 +65,7 @@ export function SessionResponseFromJSON(json: any): SessionResponse {
 
 export function SessionResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SessionResponse {
 	if (json == null) {
 		return json;
@@ -84,7 +84,7 @@ export function SessionResponseToJSON(json: any): SessionResponse {
 
 export function SessionResponseToJSONTyped(
 	value?: SessionResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -171,7 +171,7 @@ export function UnifiedSidebar({
 	const pathname = usePathname();
 	const { isCollapsed, toggle } = useSidebar();
 	const [_isOrgCollapsed, _setIsOrgCollapsed] = React.useState(
-		allowOrgCollapse && projectContext ? true : false,
+		!!(allowOrgCollapse && projectContext),
 	);
 
 	const projectNavigationItems = projectContext

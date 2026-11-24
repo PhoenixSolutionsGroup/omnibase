@@ -42,7 +42,7 @@ export function DeleteTenantResponseFromJSON(json: any): DeleteTenantResponse {
 
 export function DeleteTenantResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteTenantResponse {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function DeleteTenantResponseToJSON(json: any): DeleteTenantResponse {
 
 export function DeleteTenantResponseToJSONTyped(
 	value?: DeleteTenantResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

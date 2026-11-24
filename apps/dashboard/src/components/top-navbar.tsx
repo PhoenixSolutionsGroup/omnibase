@@ -61,7 +61,7 @@ export function TopNavbar({
 	projectContext,
 }: TopNavbarProps) {
 	const router = useRouter();
-	const pathname = usePathname();
+	const _pathname = usePathname();
 	const { theme, setTheme } = useTheme();
 
 	const [mounted, setMounted] = React.useState(false);
@@ -75,7 +75,7 @@ export function TopNavbar({
 	React.useEffect(() => {
 		setMenuOpen(false);
 		setProjectOverlayOpen(false);
-	}, [pathname]);
+	}, []);
 
 	const closeMenu = React.useCallback(() => setMenuOpen(false), []);
 	const closeProjectOverlay = React.useCallback(

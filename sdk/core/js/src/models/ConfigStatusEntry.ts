@@ -74,7 +74,7 @@ export function ConfigStatusEntryFromJSON(json: any): ConfigStatusEntry {
 
 export function ConfigStatusEntryFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigStatusEntry {
 	if (json == null) {
 		return json;
@@ -95,7 +95,7 @@ export function ConfigStatusEntryToJSON(json: any): ConfigStatusEntry {
 
 export function ConfigStatusEntryToJSONTyped(
 	value?: ConfigStatusEntry | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -51,7 +51,7 @@ export function PriceDisplayFromJSON(json: any): PriceDisplay {
 
 export function PriceDisplayFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PriceDisplay {
 	if (json == null) {
 		return json;
@@ -69,7 +69,7 @@ export function PriceDisplayToJSON(json: any): PriceDisplay {
 
 export function PriceDisplayToJSONTyped(
 	value?: PriceDisplay | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -60,7 +60,7 @@ export function GetPriceResponseFromJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetPriceResponse {
 	if (json == null) {
 		return json;
@@ -77,7 +77,7 @@ export function GetPriceResponseToJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseToJSONTyped(
 	value?: GetPriceResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -77,7 +77,7 @@ export function IdentityCredentialsFromJSON(json: any): IdentityCredentials {
 
 export function IdentityCredentialsFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): IdentityCredentials {
 	if (json == null) {
 		return json;
@@ -100,7 +100,7 @@ export function IdentityCredentialsToJSON(json: any): IdentityCredentials {
 
 export function IdentityCredentialsToJSONTyped(
 	value?: IdentityCredentials | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

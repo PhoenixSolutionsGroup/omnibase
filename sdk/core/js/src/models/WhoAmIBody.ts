@@ -48,7 +48,7 @@ export function WhoAmIBodyFromJSON(json: any): WhoAmIBody {
 
 export function WhoAmIBodyFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): WhoAmIBody {
 	if (json == null) {
 		return json;
@@ -65,7 +65,7 @@ export function WhoAmIBodyToJSON(json: any): WhoAmIBody {
 
 export function WhoAmIBodyToJSONTyped(
 	value?: WhoAmIBody | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

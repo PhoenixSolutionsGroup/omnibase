@@ -92,7 +92,7 @@ export function ListRolesByTenantRowFromJSON(json: any): ListRolesByTenantRow {
 
 export function ListRolesByTenantRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListRolesByTenantRow {
 	if (json == null) {
 		return json;
@@ -115,7 +115,7 @@ export function ListRolesByTenantRowToJSON(json: any): ListRolesByTenantRow {
 
 export function ListRolesByTenantRowToJSONTyped(
 	value?: ListRolesByTenantRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

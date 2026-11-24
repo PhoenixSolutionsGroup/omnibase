@@ -57,7 +57,7 @@ export function CreateTenantRequestFromJSON(json: any): CreateTenantRequest {
 
 export function CreateTenantRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateTenantRequest {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function CreateTenantRequestToJSON(json: any): CreateTenantRequest {
 
 export function CreateTenantRequestToJSONTyped(
 	value?: CreateTenantRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

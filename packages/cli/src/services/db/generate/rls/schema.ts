@@ -23,7 +23,7 @@ function ensureSchema(): void {
 
 function getModel(modelName: string): DMMF.Model {
 	ensureSchema();
-	const model = _schema!.get(modelName.toLowerCase());
+	const model = _schema?.get(modelName.toLowerCase());
 	if (!model) {
 		throw new Error(
 			`Model "${modelName}" not found in DMMF; check loadSchema() received the correct Prisma.dmmf.`,

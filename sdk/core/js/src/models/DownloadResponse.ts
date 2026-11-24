@@ -43,7 +43,7 @@ export function DownloadResponseFromJSON(json: any): DownloadResponse {
 
 export function DownloadResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DownloadResponse {
 	if (json == null) {
 		return json;
@@ -59,7 +59,7 @@ export function DownloadResponseToJSON(json: any): DownloadResponse {
 
 export function DownloadResponseToJSONTyped(
 	value?: DownloadResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -62,7 +62,7 @@ export function SendHTMLRequestFromJSON(json: any): SendHTMLRequest {
 
 export function SendHTMLRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SendHTMLRequest {
 	if (json == null) {
 		return json;
@@ -81,7 +81,7 @@ export function SendHTMLRequestToJSON(json: any): SendHTMLRequest {
 
 export function SendHTMLRequestToJSONTyped(
 	value?: SendHTMLRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

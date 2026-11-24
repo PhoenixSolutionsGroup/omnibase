@@ -99,7 +99,7 @@ export function GetTenantByStripeCustomerIDRowFromJSON(
 
 export function GetTenantByStripeCustomerIDRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetTenantByStripeCustomerIDRow {
 	if (json == null) {
 		return json;
@@ -124,7 +124,7 @@ export function GetTenantByStripeCustomerIDRowToJSON(
 
 export function GetTenantByStripeCustomerIDRowToJSONTyped(
 	value?: GetTenantByStripeCustomerIDRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

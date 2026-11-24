@@ -72,7 +72,7 @@ export function ErrorModelFromJSON(json: any): ErrorModel {
 
 export function ErrorModelFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ErrorModel {
 	if (json == null) {
 		return json;
@@ -96,7 +96,7 @@ export function ErrorModelToJSON(json: any): ErrorModel {
 
 export function ErrorModelToJSONTyped(
 	value?: ErrorModel | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

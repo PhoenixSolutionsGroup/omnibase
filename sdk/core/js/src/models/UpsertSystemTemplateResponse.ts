@@ -57,7 +57,7 @@ export function UpsertSystemTemplateResponseFromJSON(
 
 export function UpsertSystemTemplateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertSystemTemplateResponse {
 	if (json == null) {
 		return json;
@@ -76,7 +76,7 @@ export function UpsertSystemTemplateResponseToJSON(
 
 export function UpsertSystemTemplateResponseToJSONTyped(
 	value?: UpsertSystemTemplateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -150,7 +150,7 @@ export function PriceWithStripeIDFromJSON(json: any): PriceWithStripeID {
 
 export function PriceWithStripeIDFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PriceWithStripeID {
 	if (json == null) {
 		return json;
@@ -192,7 +192,7 @@ export function PriceWithStripeIDToJSON(json: any): PriceWithStripeID {
 
 export function PriceWithStripeIDToJSONTyped(
 	value?: PriceWithStripeID | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

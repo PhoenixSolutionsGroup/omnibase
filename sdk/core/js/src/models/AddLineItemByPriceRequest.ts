@@ -77,7 +77,7 @@ export function AddLineItemByPriceRequestFromJSON(
 
 export function AddLineItemByPriceRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AddLineItemByPriceRequest {
 	if (json == null) {
 		return json;
@@ -101,7 +101,7 @@ export function AddLineItemByPriceRequestToJSON(
 
 export function AddLineItemByPriceRequestToJSONTyped(
 	value?: AddLineItemByPriceRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

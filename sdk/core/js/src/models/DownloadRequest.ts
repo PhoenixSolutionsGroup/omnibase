@@ -42,7 +42,7 @@ export function DownloadRequestFromJSON(json: any): DownloadRequest {
 
 export function DownloadRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DownloadRequest {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function DownloadRequestToJSON(json: any): DownloadRequest {
 
 export function DownloadRequestToJSONTyped(
 	value?: DownloadRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

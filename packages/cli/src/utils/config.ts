@@ -1,6 +1,6 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { parse as dotenvParse } from "dotenv";
-import * as fs from "fs";
-import * as path from "path";
 import * as TOML from "smol-toml";
 
 export interface DeploymentConfig {

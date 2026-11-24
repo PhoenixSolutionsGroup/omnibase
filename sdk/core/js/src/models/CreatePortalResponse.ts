@@ -42,7 +42,7 @@ export function CreatePortalResponseFromJSON(json: any): CreatePortalResponse {
 
 export function CreatePortalResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreatePortalResponse {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function CreatePortalResponseToJSON(json: any): CreatePortalResponse {
 
 export function CreatePortalResponseToJSONTyped(
 	value?: CreatePortalResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

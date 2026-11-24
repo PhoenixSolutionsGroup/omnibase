@@ -55,7 +55,7 @@ export function UserTenantListItemFromJSON(json: any): UserTenantListItem {
 
 export function UserTenantListItemFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UserTenantListItem {
 	if (json == null) {
 		return json;
@@ -72,7 +72,7 @@ export function UserTenantListItemToJSON(json: any): UserTenantListItem {
 
 export function UserTenantListItemToJSONTyped(
 	value?: UserTenantListItem | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

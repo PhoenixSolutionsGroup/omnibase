@@ -40,7 +40,7 @@ export function SendResponseFromJSON(json: any): SendResponse {
 
 export function SendResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SendResponse {
 	if (json == null) {
 		return json;
@@ -56,7 +56,7 @@ export function SendResponseToJSON(json: any): SendResponse {
 
 export function SendResponseToJSONTyped(
 	value?: SendResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

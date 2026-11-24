@@ -19,7 +19,7 @@ class Logger {
 			this.spinner.succeed(message);
 			this.spinner = null;
 		} else {
-			console.log(chalk.green("✓") + " " + message);
+			console.log(`${chalk.green("✓")} ${message}`);
 		}
 	}
 
@@ -28,7 +28,7 @@ class Logger {
 			this.spinner.fail(message);
 			this.spinner = null;
 		} else {
-			console.error(chalk.red("✗") + " " + message);
+			console.error(`${chalk.red("✗")} ${message}`);
 		}
 	}
 
@@ -37,7 +37,7 @@ class Logger {
 			this.spinner.warn(message);
 			this.spinner = null;
 		} else {
-			console.warn(chalk.yellow("!") + " " + message);
+			console.warn(`${chalk.yellow("!")} ${message}`);
 		}
 	}
 
@@ -47,7 +47,7 @@ class Logger {
 			this.spinner.info(message);
 			this.spinner = ora(currentText).start();
 		} else {
-			console.log(chalk.blue("i") + " " + message);
+			console.log(`${chalk.blue("i")} ${message}`);
 		}
 	}
 

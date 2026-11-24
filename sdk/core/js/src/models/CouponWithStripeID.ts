@@ -109,7 +109,7 @@ export function CouponWithStripeIDFromJSON(json: any): CouponWithStripeID {
 
 export function CouponWithStripeIDFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CouponWithStripeID {
 	if (json == null) {
 		return json;
@@ -138,7 +138,7 @@ export function CouponWithStripeIDToJSON(json: any): CouponWithStripeID {
 
 export function CouponWithStripeIDToJSONTyped(
 	value?: CouponWithStripeID | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

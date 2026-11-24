@@ -51,7 +51,7 @@ export function ErrorDetailFromJSON(json: any): ErrorDetail {
 
 export function ErrorDetailFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ErrorDetail {
 	if (json == null) {
 		return json;
@@ -69,7 +69,7 @@ export function ErrorDetailToJSON(json: any): ErrorDetail {
 
 export function ErrorDetailToJSONTyped(
 	value?: ErrorDetail | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

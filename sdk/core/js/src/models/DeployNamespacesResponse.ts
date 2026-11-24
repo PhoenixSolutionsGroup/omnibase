@@ -78,7 +78,7 @@ export function DeployNamespacesResponseFromJSON(
 
 export function DeployNamespacesResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeployNamespacesResponse {
 	if (json == null) {
 		return json;
@@ -102,7 +102,7 @@ export function DeployNamespacesResponseToJSON(
 
 export function DeployNamespacesResponseToJSONTyped(
 	value?: DeployNamespacesResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

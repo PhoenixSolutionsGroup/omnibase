@@ -105,7 +105,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 					result = await fetchProjectSecretKey(project.id);
 					if (result?.success && result.serviceKey) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.serviceKey!),
+							new Map(prev).set(key, result?.serviceKey!),
 						);
 					}
 					break;
@@ -113,19 +113,19 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 					result = await fetchAPIServiceKey(project.id);
 					if (result?.success && result.apiServiceKey) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.apiServiceKey!),
+							new Map(prev).set(key, result?.apiServiceKey!),
 						);
 					}
 					break;
 			}
 
-			if (result && result.success) {
+			if (result?.success) {
 				setRevealedSecrets((prev) => {
 					const newSet = new Set(prev);
 					newSet.add(key);
 					return newSet;
 				});
-			} else if (result && result.error) {
+			} else if (result?.error) {
 				setErrors((prev) => new Map(prev).set(key, result.error!));
 				toast.error(result.error);
 			}

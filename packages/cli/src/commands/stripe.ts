@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { checkbox } from "@inquirer/prompts";
 import {
 	type ConfigChanges,
@@ -10,8 +12,6 @@ import {
 	V1StripeApi,
 } from "@omnibase/core-js";
 import type { Command } from "commander";
-import * as fs from "fs";
-import * as path from "path";
 import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { loadSecretsMap } from "../utils/config";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
@@ -704,8 +704,8 @@ export function addStripeCommands(program: Command): void {
 				const configApi = new V1ConfigurationApi(sdkConfig);
 
 				const response = await configApi.getStripeConfigHistory({
-					limit: parseInt(options.limit),
-					offset: parseInt(options.offset),
+					limit: parseInt(options.limit, 10),
+					offset: parseInt(options.offset, 10),
 				});
 
 				logger.succeed("Configuration history retrieved successfully!");
@@ -742,7 +742,7 @@ export function addStripeCommands(program: Command): void {
 						logger.newline();
 						logger.log(
 							`Tip: Use --offset ${
-								parseInt(options.offset) + parseInt(options.limit)
+								parseInt(options.offset, 10) + parseInt(options.limit, 10)
 							} to see more results`,
 						);
 					}
@@ -940,7 +940,7 @@ export function addStripeCommands(program: Command): void {
 				: "managed Stripe resources";
 			try {
 				if (!options.yes) {
-					const readline = await import("readline");
+					const readline = await import("node:readline");
 					const rl = readline.createInterface({
 						input: process.stdin,
 						output: process.stdout,

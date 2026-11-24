@@ -12,11 +12,18 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import {
+	mkdir,
+	readdir,
+	readFile,
+	rename,
+	rm,
+	writeFile,
+} from "node:fs/promises";
+import { basename, dirname, join } from "node:path";
 import { spawn } from "bun";
 import type { Command } from "commander";
-import { existsSync } from "fs";
-import { mkdir, readdir, readFile, rename, rm, writeFile } from "fs/promises";
-import { basename, dirname, join } from "path";
 
 import { program } from "../packages/cli/src/index";
 import { generateChangelogs } from "./generate-changelogs";
@@ -268,7 +275,7 @@ async function splitMarkdownByH2(filePath: string): Promise<void> {
 
 		const sectionLines = lines.slice(section.startLine, endLine);
 		// Convert H2 to H1 for the split file
-		sectionLines[0] = "# " + section.title;
+		sectionLines[0] = `# ${section.title}`;
 
 		const sectionContent = sectionLines.join("\n").trim();
 		const slug = slugify(section.title);
@@ -433,7 +440,7 @@ async function collapseUnchangedVersion(
 	aliases[section] = sectionAliases;
 	await writeFileAtomic(
 		VERSION_ALIASES,
-		JSON.stringify(aliases, null, 2) + "\n",
+		`${JSON.stringify(aliases, null, 2)}\n`,
 	);
 
 	await rm(previousDir, { recursive: true });
@@ -708,7 +715,7 @@ function renderOperationMarkdown(
 		}
 	}
 
-	return lines.join("\n").trim() + "\n";
+	return `${lines.join("\n").trim()}\n`;
 }
 
 async function generateOpenAPIDocs(): Promise<void> {
@@ -842,7 +849,7 @@ async function generateOpenAPIDocs(): Promise<void> {
 		const { bundled } = await openapi.getSchema("./openapi.yaml");
 		await writeFile(
 			join(ROOT, "apps/docs/openapi.json"),
-			JSON.stringify(bundled) + "\n",
+			`${JSON.stringify(bundled)}\n`,
 		);
 
 		// Generate meta.json files from OpenAPI tags
@@ -1047,7 +1054,7 @@ async function generateOpenAPIDocs(): Promise<void> {
 		if (Object.keys(apiLlms).length > 0) {
 			await writeFileAtomic(
 				join(ROOT, "apps/docs/content/api-llms.json"),
-				JSON.stringify(apiLlms, null, 2) + "\n",
+				`${JSON.stringify(apiLlms, null, 2)}\n`,
 			);
 		}
 
@@ -1093,7 +1100,7 @@ async function generateCommandDocPage(
 ): Promise<void> {
 	const isLeaf = cmd.commands.length === 0;
 	const slug = cmd.name();
-	const fullUrl = urlPrefix + "/" + slug;
+	const fullUrl = `${urlPrefix}/${slug}`;
 
 	// Display name like "db migrate generate"
 	const baseRe = /^\/cli\/[^/]+\/?/;
@@ -1101,7 +1108,7 @@ async function generateCommandDocPage(
 		.replace(baseRe, "")
 		.replace(/^\//, "")
 		.replace(/\//g, " ");
-	const displayName = cmdPath ? cmdPath + " " + slug : slug;
+	const displayName = cmdPath ? `${cmdPath} ${slug}` : slug;
 
 	const aliases = cmd.aliases();
 	const rawArgs: any[] = (cmd as any)._args ?? [];
@@ -1162,7 +1169,7 @@ async function generateCommandDocPage(
 			"## Subcommands",
 			"",
 			...cmd.commands.map((sub) => {
-				const subUrl = fullUrl + "/" + sub.name();
+				const subUrl = `${fullUrl}/${sub.name()}`;
 				const desc = cmdShort(sub);
 				return `- [\`${sub.name()}\`](${subUrl})${desc ? ` — ${desc}` : ""}`;
 			}),
@@ -1190,7 +1197,7 @@ async function generateCommandDocPage(
 		}
 	} else {
 		// Write as leaf file: slug.md
-		await writeFile(join(parentDir, slug + ".md"), lines.join("\n"));
+		await writeFile(join(parentDir, `${slug}.md`), lines.join("\n"));
 	}
 }
 
@@ -1239,7 +1246,7 @@ async function generateCliCommandDocs(): Promise<void> {
 						"## Commands",
 						"",
 						...program.commands.map((cmd) => {
-							const cmdUrl = rootUrl + "/" + cmd.name();
+							const cmdUrl = `${rootUrl}/${cmd.name()}`;
 							const desc = cmdShort(cmd);
 							return `- [\`${cmd.name()}\`](${cmdUrl})${desc ? ` — ${desc}` : ""}`;
 						}),
@@ -1302,7 +1309,7 @@ async function writeVersionsManifest(): Promise<void> {
 	}
 	await writeFileAtomic(
 		join(ROOT, "apps/docs/content/versions.json"),
-		JSON.stringify(manifest, null, 2) + "\n",
+		`${JSON.stringify(manifest, null, 2)}\n`,
 	);
 }
 

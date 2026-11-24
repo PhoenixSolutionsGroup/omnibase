@@ -79,7 +79,7 @@ export function CreateCheckoutRequestFromJSON(
 
 export function CreateCheckoutRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateCheckoutRequest {
 	if (json == null) {
 		return json;
@@ -108,7 +108,7 @@ export function CreateCheckoutRequestToJSON(json: any): CreateCheckoutRequest {
 
 export function CreateCheckoutRequestToJSONTyped(
 	value?: CreateCheckoutRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

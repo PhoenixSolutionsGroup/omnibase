@@ -57,7 +57,7 @@ export function EnterprisePricesResponseFromJSON(
 
 export function EnterprisePricesResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): EnterprisePricesResponse {
 	if (json == null) {
 		return json;
@@ -79,7 +79,7 @@ export function EnterprisePricesResponseToJSON(
 
 export function EnterprisePricesResponseToJSONTyped(
 	value?: EnterprisePricesResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -42,7 +42,7 @@ export function SwitchActiveRequestFromJSON(json: any): SwitchActiveRequest {
 
 export function SwitchActiveRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SwitchActiveRequest {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function SwitchActiveRequestToJSON(json: any): SwitchActiveRequest {
 
 export function SwitchActiveRequestToJSONTyped(
 	value?: SwitchActiveRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

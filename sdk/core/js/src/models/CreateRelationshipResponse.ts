@@ -44,7 +44,7 @@ export function CreateRelationshipResponseFromJSON(
 
 export function CreateRelationshipResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateRelationshipResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function CreateRelationshipResponseToJSON(
 
 export function CreateRelationshipResponseToJSONTyped(
 	value?: CreateRelationshipResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

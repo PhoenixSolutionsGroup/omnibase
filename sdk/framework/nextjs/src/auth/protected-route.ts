@@ -44,6 +44,6 @@ import { getServerSession } from "./provider";
  */
 export async function protectedRoute(redirectTo: string = "/auth/login") {
 	const session = await getServerSession();
-	if (!session || !session.active) redirect(redirectTo);
+	if (!session?.active) redirect(redirectTo);
 	return session;
 }

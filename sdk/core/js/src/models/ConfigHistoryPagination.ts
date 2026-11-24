@@ -79,7 +79,7 @@ export function ConfigHistoryPaginationFromJSON(
 
 export function ConfigHistoryPaginationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigHistoryPagination {
 	if (json == null) {
 		return json;
@@ -102,7 +102,7 @@ export function ConfigHistoryPaginationToJSON(
 
 export function ConfigHistoryPaginationToJSONTyped(
 	value?: ConfigHistoryPagination | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

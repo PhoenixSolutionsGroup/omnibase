@@ -97,7 +97,7 @@ export function GetTenantByIDRowFromJSON(json: any): GetTenantByIDRow {
 
 export function GetTenantByIDRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetTenantByIDRow {
 	if (json == null) {
 		return json;
@@ -120,7 +120,7 @@ export function GetTenantByIDRowToJSON(json: any): GetTenantByIDRow {
 
 export function GetTenantByIDRowToJSONTyped(
 	value?: GetTenantByIDRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

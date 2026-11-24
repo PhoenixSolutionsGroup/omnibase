@@ -57,7 +57,7 @@ export function RemoveResponseFromJSON(json: any): RemoveResponse {
 
 export function RemoveResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RemoveResponse {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function RemoveResponseToJSON(json: any): RemoveResponse {
 
 export function RemoveResponseToJSONTyped(
 	value?: RemoveResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

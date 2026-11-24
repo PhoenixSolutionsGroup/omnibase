@@ -76,7 +76,7 @@ export function RecoveryIdentityAddressFromJSON(
 
 export function RecoveryIdentityAddressFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RecoveryIdentityAddress {
 	if (json == null) {
 		return json;
@@ -100,7 +100,7 @@ export function RecoveryIdentityAddressToJSON(
 
 export function RecoveryIdentityAddressToJSONTyped(
 	value?: RecoveryIdentityAddress | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

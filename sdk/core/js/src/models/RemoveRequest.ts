@@ -40,7 +40,7 @@ export function RemoveRequestFromJSON(json: any): RemoveRequest {
 
 export function RemoveRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RemoveRequest {
 	if (json == null) {
 		return json;
@@ -56,7 +56,7 @@ export function RemoveRequestToJSON(json: any): RemoveRequest {
 
 export function RemoveRequestToJSONTyped(
 	value?: RemoveRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

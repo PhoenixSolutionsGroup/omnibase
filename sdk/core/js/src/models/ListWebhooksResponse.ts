@@ -55,7 +55,7 @@ export function ListWebhooksResponseFromJSON(json: any): ListWebhooksResponse {
 
 export function ListWebhooksResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListWebhooksResponse {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function ListWebhooksResponseToJSON(json: any): ListWebhooksResponse {
 
 export function ListWebhooksResponseToJSONTyped(
 	value?: ListWebhooksResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

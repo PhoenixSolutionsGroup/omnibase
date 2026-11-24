@@ -53,7 +53,7 @@ async function applyInfraSql(shadowUrl: string): Promise<void> {
 		.filter((f) => f !== "000000_users.up.sql")
 		.map((f) => {
 			const sql = readFileSync(join(infraDir, f), "utf-8").trimEnd();
-			return sql.endsWith(";") ? sql + "\n" : sql + ";\n";
+			return sql.endsWith(";") ? `${sql}\n` : `${sql};\n`;
 		})
 		.join("\n");
 
@@ -163,10 +163,10 @@ export async function generate(options: GenerateOptions): Promise<string[]> {
 			const dirName = `${timestamp()}_${options.migrationName}`;
 			const dir = join(migrationsDir, dirName);
 			mkdirSync(dir, { recursive: true });
-			writeFileSync(join(dir, "migration.sql"), upSQL + "\n");
+			writeFileSync(join(dir, "migration.sql"), `${upSQL}\n`);
 			writeFileSync(
 				join(dir, "down.sql"),
-				downSQL ? downSQL + "\n" : "-- no down.sql generated\n",
+				downSQL ? `${downSQL}\n` : "-- no down.sql generated\n",
 			);
 		}
 	} finally {
@@ -237,7 +237,7 @@ export async function generate(options: GenerateOptions): Promise<string[]> {
 
 			writeFileSync(
 				mfile,
-				readFileSync(mfile, "utf-8") + `\n-- RLS policies\n${upSQL}\n`,
+				`${readFileSync(mfile, "utf-8")}\n-- RLS policies\n${upSQL}\n`,
 			);
 
 			if (downSQL.trim()) {

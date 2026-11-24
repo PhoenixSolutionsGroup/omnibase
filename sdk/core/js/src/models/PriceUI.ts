@@ -68,7 +68,7 @@ export function PriceUIFromJSON(json: any): PriceUI {
 
 export function PriceUIFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PriceUI {
 	if (json == null) {
 		return json;
@@ -95,7 +95,7 @@ export function PriceUIToJSON(json: any): PriceUI {
 
 export function PriceUIToJSONTyped(
 	value?: PriceUI | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

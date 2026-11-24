@@ -44,7 +44,7 @@ export function MigrationsDownResponseFromJSON(
 
 export function MigrationsDownResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MigrationsDownResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function MigrationsDownResponseToJSON(
 
 export function MigrationsDownResponseToJSONTyped(
 	value?: MigrationsDownResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

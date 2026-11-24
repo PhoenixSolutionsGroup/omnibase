@@ -30,7 +30,7 @@ test("packageWorkerBundle interpolates {VAR} from the secrets map", async () => 
 		});
 
 		const zip = await JSZip.loadAsync(bundle);
-		const config = JSON.parse(await zip.file("wrangler.json")!.async("string"));
+		const config = JSON.parse(await zip.file("wrangler.json")?.async("string"));
 
 		expect(config.vars.WEBSITE_URL).toBe("https://dev.omnibase.tech");
 		expect(config.vars.DATABASE_URL).toBe("literal-db-url");
@@ -47,7 +47,7 @@ test("packageWorkerBundle leaves undeclared vars and unresolved {VAR} untouched"
 		});
 
 		const zip = await JSZip.loadAsync(bundle);
-		const config = JSON.parse(await zip.file("wrangler.json")!.async("string"));
+		const config = JSON.parse(await zip.file("wrangler.json")?.async("string"));
 
 		expect(config.vars.WEBSITE_URL).toBe("{WEBSITE_URL}");
 		expect(config.vars.DATABASE_URL).toBe("literal-db-url");

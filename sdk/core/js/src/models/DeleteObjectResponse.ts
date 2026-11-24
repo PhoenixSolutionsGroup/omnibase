@@ -42,7 +42,7 @@ export function DeleteObjectResponseFromJSON(json: any): DeleteObjectResponse {
 
 export function DeleteObjectResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteObjectResponse {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function DeleteObjectResponseToJSON(json: any): DeleteObjectResponse {
 
 export function DeleteObjectResponseToJSONTyped(
 	value?: DeleteObjectResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -1,3 +1,6 @@
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { V1ConfigurationApi } from "@omnibase/core-js";
 import {
 	type CreateRelationshipBody,
@@ -5,10 +8,7 @@ import {
 	type PostCheckPermissionBody,
 	RelationshipApi,
 } from "@ory/client";
-import { execSync } from "child_process";
 import type { Command } from "commander";
-import fs from "fs";
-import path from "path";
 import {
 	createManagedHostingClient,
 	createOmnibaseSDKConfig,
@@ -71,7 +71,7 @@ export class PermissionsCommand {
 				.replace(/^export\s+(class\s+)/gm, "$1")
 				.replace(/\r\n/g, "\n");
 
-			mergedContent += withoutImports + "\n\n";
+			mergedContent += `${withoutImports}\n\n`;
 		});
 
 		const rolesConfigPath = path.join(permissionsDir, "roles.config.json");

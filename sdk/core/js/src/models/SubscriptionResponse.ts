@@ -111,7 +111,7 @@ export function SubscriptionResponseFromJSON(json: any): SubscriptionResponse {
 
 export function SubscriptionResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SubscriptionResponse {
 	if (json == null) {
 		return json;
@@ -136,7 +136,7 @@ export function SubscriptionResponseToJSON(json: any): SubscriptionResponse {
 
 export function SubscriptionResponseToJSONTyped(
 	value?: SubscriptionResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

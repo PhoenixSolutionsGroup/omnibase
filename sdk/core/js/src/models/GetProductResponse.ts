@@ -48,7 +48,7 @@ export function GetProductResponseFromJSON(json: any): GetProductResponse {
 
 export function GetProductResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetProductResponse {
 	if (json == null) {
 		return json;
@@ -64,7 +64,7 @@ export function GetProductResponseToJSON(json: any): GetProductResponse {
 
 export function GetProductResponseToJSONTyped(
 	value?: GetProductResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

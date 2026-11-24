@@ -62,7 +62,7 @@ export function ConfigHistoryResponseFromJSON(
 
 export function ConfigHistoryResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigHistoryResponse {
 	if (json == null) {
 		return json;
@@ -82,7 +82,7 @@ export function ConfigHistoryResponseToJSON(json: any): ConfigHistoryResponse {
 
 export function ConfigHistoryResponseToJSONTyped(
 	value?: ConfigHistoryResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -52,7 +52,7 @@ export function TierFromJSON(json: any): Tier {
 
 export function TierFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Tier {
 	if (json == null) {
 		return json;
@@ -70,7 +70,7 @@ export function TierToJSON(json: any): Tier {
 
 export function TierToJSONTyped(
 	value?: Tier | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

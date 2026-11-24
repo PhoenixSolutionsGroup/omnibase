@@ -55,7 +55,7 @@ export function ApplyEnterpriseTemplateRequestFromJSON(
 
 export function ApplyEnterpriseTemplateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ApplyEnterpriseTemplateRequest {
 	if (json == null) {
 		return json;
@@ -74,7 +74,7 @@ export function ApplyEnterpriseTemplateRequestToJSON(
 
 export function ApplyEnterpriseTemplateRequestToJSONTyped(
 	value?: ApplyEnterpriseTemplateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -78,7 +78,7 @@ export function RelationMetadataFromJSON(json: any): RelationMetadata {
 
 export function RelationMetadataFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RelationMetadata {
 	if (json == null) {
 		return json;
@@ -99,7 +99,7 @@ export function RelationMetadataToJSON(json: any): RelationMetadata {
 
 export function RelationMetadataToJSONTyped(
 	value?: RelationMetadata | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

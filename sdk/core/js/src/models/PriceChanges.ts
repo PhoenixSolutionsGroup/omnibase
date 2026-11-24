@@ -54,7 +54,7 @@ export function PriceChangesFromJSON(json: any): PriceChanges {
 
 export function PriceChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PriceChanges {
 	if (json == null) {
 		return json;
@@ -81,7 +81,7 @@ export function PriceChangesToJSON(json: any): PriceChanges {
 
 export function PriceChangesToJSONTyped(
 	value?: PriceChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

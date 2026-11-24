@@ -44,7 +44,7 @@ export function UpdateUserRoleResponseFromJSON(
 
 export function UpdateUserRoleResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateUserRoleResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function UpdateUserRoleResponseToJSON(
 
 export function UpdateUserRoleResponseToJSONTyped(
 	value?: UpdateUserRoleResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

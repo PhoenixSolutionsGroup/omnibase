@@ -50,7 +50,7 @@ export function MeterCustomerMappingFromJSON(json: any): MeterCustomerMapping {
 
 export function MeterCustomerMappingFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterCustomerMapping {
 	if (json == null) {
 		return json;
@@ -67,7 +67,7 @@ export function MeterCustomerMappingToJSON(json: any): MeterCustomerMapping {
 
 export function MeterCustomerMappingToJSONTyped(
 	value?: MeterCustomerMapping | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

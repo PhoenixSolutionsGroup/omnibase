@@ -46,7 +46,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
 		if (expanded && tenants.length === 0 && !loadingTenants) {
 			loadTenants();
 		}
-	}, [expanded]);
+	}, [expanded, loadTenants, tenants.length, loadingTenants]);
 
 	// Fetch users when tenant changes
 	useEffect(() => {
@@ -56,7 +56,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
 			setUsers([]);
 			setUserId("");
 		}
-	}, [tenantId]);
+	}, [tenantId, loadUsers]);
 
 	const loadTenants = async () => {
 		setLoadingTenants(true);

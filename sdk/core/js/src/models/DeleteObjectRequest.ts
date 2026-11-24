@@ -42,7 +42,7 @@ export function DeleteObjectRequestFromJSON(json: any): DeleteObjectRequest {
 
 export function DeleteObjectRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteObjectRequest {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function DeleteObjectRequestToJSON(json: any): DeleteObjectRequest {
 
 export function DeleteObjectRequestToJSONTyped(
 	value?: DeleteObjectRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

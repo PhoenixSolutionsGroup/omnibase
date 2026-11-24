@@ -64,7 +64,7 @@ export function SessionDeviceFromJSON(json: any): SessionDevice {
 
 export function SessionDeviceFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SessionDevice {
 	if (json == null) {
 		return json;
@@ -85,7 +85,7 @@ export function SessionDeviceToJSON(json: any): SessionDevice {
 
 export function SessionDeviceToJSONTyped(
 	value?: SessionDevice | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

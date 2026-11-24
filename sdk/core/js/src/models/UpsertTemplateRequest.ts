@@ -58,7 +58,7 @@ export function UpsertTemplateRequestFromJSON(
 
 export function UpsertTemplateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertTemplateRequest {
 	if (json == null) {
 		return json;
@@ -76,7 +76,7 @@ export function UpsertTemplateRequestToJSON(json: any): UpsertTemplateRequest {
 
 export function UpsertTemplateRequestToJSONTyped(
 	value?: UpsertTemplateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -82,7 +82,7 @@ export function EmailTemplateFromJSON(json: any): EmailTemplate {
 
 export function EmailTemplateFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): EmailTemplate {
 	if (json == null) {
 		return json;
@@ -104,7 +104,7 @@ export function EmailTemplateToJSON(json: any): EmailTemplate {
 
 export function EmailTemplateToJSONTyped(
 	value?: EmailTemplate | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

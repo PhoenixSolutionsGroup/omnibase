@@ -49,7 +49,7 @@ export function AppliedMigrationFromJSON(json: any): AppliedMigration {
 
 export function AppliedMigrationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AppliedMigration {
 	if (json == null) {
 		return json;
@@ -66,7 +66,7 @@ export function AppliedMigrationToJSON(json: any): AppliedMigration {
 
 export function AppliedMigrationToJSONTyped(
 	value?: AppliedMigration | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -122,7 +122,7 @@ async function checkVersion(): Promise<void> {
 
 function consumeWarning(): string {
 	if (!versionWarning) return "";
-	const warning = versionWarning + "\n\n";
+	const warning = `${versionWarning}\n\n`;
 	versionWarning = null;
 	return warning;
 }
@@ -174,7 +174,7 @@ server.addTool({
 	}),
 	execute: async (args) => {
 		const doc = docs.find((d) => d.path === args.path);
-		if (!doc) return consumeWarning() + `Document not found: ${args.path}`;
+		if (!doc) return `${consumeWarning()}Document not found: ${args.path}`;
 		return consumeWarning() + doc.content;
 	},
 });

@@ -48,7 +48,7 @@ export function GetMeterResponseFromJSON(json: any): GetMeterResponse {
 
 export function GetMeterResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetMeterResponse {
 	if (json == null) {
 		return json;
@@ -64,7 +64,7 @@ export function GetMeterResponseToJSON(json: any): GetMeterResponse {
 
 export function GetMeterResponseToJSONTyped(
 	value?: GetMeterResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

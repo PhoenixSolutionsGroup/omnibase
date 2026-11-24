@@ -107,7 +107,7 @@ export function CouponFromJSON(json: any): Coupon {
 
 export function CouponFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Coupon {
 	if (json == null) {
 		return json;
@@ -136,7 +136,7 @@ export function CouponToJSON(json: any): Coupon {
 
 export function CouponToJSONTyped(
 	value?: Coupon | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

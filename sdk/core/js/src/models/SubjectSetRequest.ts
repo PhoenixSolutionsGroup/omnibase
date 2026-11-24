@@ -55,7 +55,7 @@ export function SubjectSetRequestFromJSON(json: any): SubjectSetRequest {
 
 export function SubjectSetRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SubjectSetRequest {
 	if (json == null) {
 		return json;
@@ -73,7 +73,7 @@ export function SubjectSetRequestToJSON(json: any): SubjectSetRequest {
 
 export function SubjectSetRequestToJSONTyped(
 	value?: SubjectSetRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

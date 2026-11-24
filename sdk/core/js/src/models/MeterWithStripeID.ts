@@ -102,7 +102,7 @@ export function MeterWithStripeIDFromJSON(json: any): MeterWithStripeID {
 
 export function MeterWithStripeIDFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterWithStripeID {
 	if (json == null) {
 		return json;
@@ -132,7 +132,7 @@ export function MeterWithStripeIDToJSON(json: any): MeterWithStripeID {
 
 export function MeterWithStripeIDToJSONTyped(
 	value?: MeterWithStripeID | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

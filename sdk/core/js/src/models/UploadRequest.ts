@@ -46,7 +46,7 @@ export function UploadRequestFromJSON(json: any): UploadRequest {
 
 export function UploadRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UploadRequest {
 	if (json == null) {
 		return json;
@@ -63,7 +63,7 @@ export function UploadRequestToJSON(json: any): UploadRequest {
 
 export function UploadRequestToJSONTyped(
 	value?: UploadRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

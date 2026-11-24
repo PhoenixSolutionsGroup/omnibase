@@ -95,7 +95,7 @@ export function VerifiableIdentityAddressFromJSON(
 
 export function VerifiableIdentityAddressFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): VerifiableIdentityAddress {
 	if (json == null) {
 		return json;
@@ -123,7 +123,7 @@ export function VerifiableIdentityAddressToJSON(
 
 export function VerifiableIdentityAddressToJSONTyped(
 	value?: VerifiableIdentityAddress | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

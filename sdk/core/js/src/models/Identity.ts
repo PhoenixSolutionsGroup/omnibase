@@ -144,7 +144,7 @@ export function IdentityFromJSON(json: any): Identity {
 
 export function IdentityFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Identity {
 	if (json == null) {
 		return json;
@@ -194,7 +194,7 @@ export function IdentityToJSON(json: any): Identity {
 
 export function IdentityToJSONTyped(
 	value?: Identity | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

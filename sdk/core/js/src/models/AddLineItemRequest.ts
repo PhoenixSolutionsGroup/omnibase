@@ -57,7 +57,7 @@ export function AddLineItemRequestFromJSON(json: any): AddLineItemRequest {
 
 export function AddLineItemRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AddLineItemRequest {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function AddLineItemRequestToJSON(json: any): AddLineItemRequest {
 
 export function AddLineItemRequestToJSONTyped(
 	value?: AddLineItemRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

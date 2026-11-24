@@ -85,7 +85,7 @@ export function ConfigChangesFromJSON(json: any): ConfigChanges {
 
 export function ConfigChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigChanges {
 	if (json == null) {
 		return json;
@@ -112,7 +112,7 @@ export function ConfigChangesToJSON(json: any): ConfigChanges {
 
 export function ConfigChangesToJSONTyped(
 	value?: ConfigChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

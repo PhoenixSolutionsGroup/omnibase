@@ -56,7 +56,7 @@ export function ProductChangesFromJSON(json: any): ProductChanges {
 
 export function ProductChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ProductChanges {
 	if (json == null) {
 		return json;
@@ -83,7 +83,7 @@ export function ProductChangesToJSON(json: any): ProductChanges {
 
 export function ProductChangesToJSONTyped(
 	value?: ProductChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

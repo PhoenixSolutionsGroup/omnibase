@@ -63,7 +63,7 @@ export function WebhookEndpointConfigFromJSON(
 
 export function WebhookEndpointConfigFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): WebhookEndpointConfig {
 	if (json == null) {
 		return json;
@@ -82,7 +82,7 @@ export function WebhookEndpointConfigToJSON(json: any): WebhookEndpointConfig {
 
 export function WebhookEndpointConfigToJSONTyped(
 	value?: WebhookEndpointConfig | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

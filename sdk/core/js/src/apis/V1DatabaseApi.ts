@@ -61,7 +61,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -109,7 +109,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -166,7 +166,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -245,7 +245,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}

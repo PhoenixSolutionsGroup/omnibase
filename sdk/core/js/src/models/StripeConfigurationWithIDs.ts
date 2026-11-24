@@ -90,7 +90,7 @@ export function StripeConfigurationWithIDsFromJSON(
 
 export function StripeConfigurationWithIDsFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): StripeConfigurationWithIDs {
 	if (json == null) {
 		return json;
@@ -126,7 +126,7 @@ export function StripeConfigurationWithIDsToJSON(
 
 export function StripeConfigurationWithIDsToJSONTyped(
 	value?: StripeConfigurationWithIDs | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

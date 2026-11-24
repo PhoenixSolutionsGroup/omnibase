@@ -56,7 +56,7 @@ export function SendTemplateRequestFromJSON(json: any): SendTemplateRequest {
 
 export function SendTemplateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SendTemplateRequest {
 	if (json == null) {
 		return json;
@@ -74,7 +74,7 @@ export function SendTemplateRequestToJSON(json: any): SendTemplateRequest {
 
 export function SendTemplateRequestToJSONTyped(
 	value?: SendTemplateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

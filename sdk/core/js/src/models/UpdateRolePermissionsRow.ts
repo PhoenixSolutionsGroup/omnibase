@@ -94,7 +94,7 @@ export function UpdateRolePermissionsRowFromJSON(
 
 export function UpdateRolePermissionsRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateRolePermissionsRow {
 	if (json == null) {
 		return json;
@@ -119,7 +119,7 @@ export function UpdateRolePermissionsRowToJSON(
 
 export function UpdateRolePermissionsRowToJSONTyped(
 	value?: UpdateRolePermissionsRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

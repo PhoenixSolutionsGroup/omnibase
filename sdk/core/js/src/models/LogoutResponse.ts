@@ -50,7 +50,7 @@ export function LogoutResponseFromJSON(json: any): LogoutResponse {
 
 export function LogoutResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): LogoutResponse {
 	if (json == null) {
 		return json;
@@ -67,7 +67,7 @@ export function LogoutResponseToJSON(json: any): LogoutResponse {
 
 export function LogoutResponseToJSONTyped(
 	value?: LogoutResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

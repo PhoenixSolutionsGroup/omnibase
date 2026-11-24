@@ -90,7 +90,7 @@ export function CreateRoleRowFromJSON(json: any): CreateRoleRow {
 
 export function CreateRoleRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateRoleRow {
 	if (json == null) {
 		return json;
@@ -113,7 +113,7 @@ export function CreateRoleRowToJSON(json: any): CreateRoleRow {
 
 export function CreateRoleRowToJSONTyped(
 	value?: CreateRoleRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

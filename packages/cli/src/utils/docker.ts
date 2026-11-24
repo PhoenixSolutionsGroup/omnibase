@@ -4,10 +4,10 @@ import {
 	type StdioOptions,
 	spawn,
 	spawnSync,
-} from "child_process";
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
+} from "node:child_process";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import {
 	assertValidVersions,
 	interpolateValue,
@@ -173,7 +173,7 @@ export function buildEffectiveEnvFile(envName: string): string {
 		.map(([k, v]) => `${k}=${v}`)
 		.join("\n");
 	const body =
-		(fileText.endsWith("\n") || fileText === "" ? fileText : fileText + "\n") +
+		(fileText.endsWith("\n") || fileText === "" ? fileText : `${fileText}\n`) +
 		"\n# --- derived from omnibase.toml (overrides the above) ---\n" +
 		appended +
 		"\n";

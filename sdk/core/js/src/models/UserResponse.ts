@@ -68,7 +68,7 @@ export function UserResponseFromJSON(json: any): UserResponse {
 
 export function UserResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UserResponse {
 	if (json == null) {
 		return json;
@@ -88,7 +88,7 @@ export function UserResponseToJSON(json: any): UserResponse {
 
 export function UserResponseToJSONTyped(
 	value?: UserResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

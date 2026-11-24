@@ -53,7 +53,7 @@ export function RequirementsFromJSON(json: any): Requirements {
 
 export function RequirementsFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Requirements {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function RequirementsToJSON(json: any): Requirements {
 
 export function RequirementsToJSONTyped(
 	value?: Requirements | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

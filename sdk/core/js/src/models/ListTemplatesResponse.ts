@@ -54,7 +54,7 @@ export function ListTemplatesResponseFromJSON(
 
 export function ListTemplatesResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListTemplatesResponse {
 	if (json == null) {
 		return json;
@@ -74,7 +74,7 @@ export function ListTemplatesResponseToJSON(json: any): ListTemplatesResponse {
 
 export function ListTemplatesResponseToJSONTyped(
 	value?: ListTemplatesResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -66,17 +66,17 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -133,7 +133,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -192,7 +192,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}

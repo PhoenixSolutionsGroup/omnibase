@@ -44,7 +44,7 @@ export function DeleteSystemTemplateResponseFromJSON(
 
 export function DeleteSystemTemplateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteSystemTemplateResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function DeleteSystemTemplateResponseToJSON(
 
 export function DeleteSystemTemplateResponseToJSONTyped(
 	value?: DeleteSystemTemplateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

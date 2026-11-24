@@ -198,7 +198,7 @@ export function LogViewer({
 		}, 5000); // Poll every 5 seconds
 
 		return () => clearInterval(interval);
-	}, [logs, projectId, serviceType]);
+	}, [logs, checkNewLogs]);
 
 	return (
 		<div className="border rounded-lg overflow-hidden bg-background">

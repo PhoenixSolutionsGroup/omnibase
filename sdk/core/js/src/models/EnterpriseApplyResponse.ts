@@ -65,7 +65,7 @@ export function EnterpriseApplyResponseFromJSON(
 
 export function EnterpriseApplyResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): EnterpriseApplyResponse {
 	if (json == null) {
 		return json;
@@ -87,7 +87,7 @@ export function EnterpriseApplyResponseToJSON(
 
 export function EnterpriseApplyResponseToJSONTyped(
 	value?: EnterpriseApplyResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

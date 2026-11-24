@@ -49,7 +49,7 @@ export function AcceptResponseFromJSON(json: any): AcceptResponse {
 
 export function AcceptResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AcceptResponse {
 	if (json == null) {
 		return json;
@@ -66,7 +66,7 @@ export function AcceptResponseToJSON(json: any): AcceptResponse {
 
 export function AcceptResponseToJSONTyped(
 	value?: AcceptResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

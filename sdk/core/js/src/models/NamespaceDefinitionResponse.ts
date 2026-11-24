@@ -87,7 +87,7 @@ export function NamespaceDefinitionResponseFromJSON(
 
 export function NamespaceDefinitionResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): NamespaceDefinitionResponse {
 	if (json == null) {
 		return json;
@@ -115,7 +115,7 @@ export function NamespaceDefinitionResponseToJSON(
 
 export function NamespaceDefinitionResponseToJSONTyped(
 	value?: NamespaceDefinitionResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

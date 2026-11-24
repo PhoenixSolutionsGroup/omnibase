@@ -40,7 +40,7 @@ export function CheckResponseFromJSON(json: any): CheckResponse {
 
 export function CheckResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CheckResponse {
 	if (json == null) {
 		return json;
@@ -56,7 +56,7 @@ export function CheckResponseToJSON(json: any): CheckResponse {
 
 export function CheckResponseToJSONTyped(
 	value?: CheckResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

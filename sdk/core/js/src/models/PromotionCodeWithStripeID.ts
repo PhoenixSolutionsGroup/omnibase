@@ -106,7 +106,7 @@ export function PromotionCodeWithStripeIDFromJSON(
 
 export function PromotionCodeWithStripeIDFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PromotionCodeWithStripeID {
 	if (json == null) {
 		return json;
@@ -142,7 +142,7 @@ export function PromotionCodeWithStripeIDToJSON(
 
 export function PromotionCodeWithStripeIDToJSONTyped(
 	value?: PromotionCodeWithStripeID | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

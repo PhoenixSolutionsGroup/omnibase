@@ -71,7 +71,7 @@ export function DeleteRelationshipRequestFromJSON(
 
 export function DeleteRelationshipRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteRelationshipRequest {
 	if (json == null) {
 		return json;
@@ -92,7 +92,7 @@ export function DeleteRelationshipRequestToJSON(
 
 export function DeleteRelationshipRequestToJSONTyped(
 	value?: DeleteRelationshipRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

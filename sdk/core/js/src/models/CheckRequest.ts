@@ -67,7 +67,7 @@ export function CheckRequestFromJSON(json: any): CheckRequest {
 
 export function CheckRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CheckRequest {
 	if (json == null) {
 		return json;
@@ -86,7 +86,7 @@ export function CheckRequestToJSON(json: any): CheckRequest {
 
 export function CheckRequestToJSONTyped(
 	value?: CheckRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

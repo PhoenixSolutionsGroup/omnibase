@@ -47,7 +47,7 @@ export function ActiveTenantResponseFromJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ActiveTenantResponse {
 	if (json == null) {
 		return json;
@@ -64,7 +64,7 @@ export function ActiveTenantResponseToJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseToJSONTyped(
 	value?: ActiveTenantResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

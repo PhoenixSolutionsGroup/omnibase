@@ -54,7 +54,7 @@ export function AddRequestFromJSON(json: any): AddRequest {
 
 export function AddRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AddRequest {
 	if (json == null) {
 		return json;
@@ -72,7 +72,7 @@ export function AddRequestToJSON(json: any): AddRequest {
 
 export function AddRequestToJSONTyped(
 	value?: AddRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

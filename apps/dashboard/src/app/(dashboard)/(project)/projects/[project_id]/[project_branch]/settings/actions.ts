@@ -71,51 +71,46 @@ export async function fetchProjectSecretKey(branchId: string) {
 
 	const apiUrl =
 		process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
-
-	try {
-		const response = await fetch(
-			`${apiUrl}/api/v1/project_branches/${branchId}/api-service-key`,
-			{
-				method: "GET",
-				headers: {
-					Cookie: cookieHeader,
-				},
-				credentials: "include",
+	const response = await fetch(
+		`${apiUrl}/api/v1/project_branches/${branchId}/api-service-key`,
+		{
+			method: "GET",
+			headers: {
+				Cookie: cookieHeader,
 			},
-		);
+			credentials: "include",
+		},
+	);
 
-		if (!response.ok) {
-			const error = await response.json();
+	if (!response.ok) {
+		const error = await response.json();
 
-			if (response.status === 403) {
-				return {
-					success: false,
-					error: "You do not have permission to view the secret key",
-				};
-			}
-
-			if (response.status === 404) {
-				return {
-					success: false,
-					error: "Secret key not yet provisioned",
-				};
-			}
-
+		if (response.status === 403) {
 			return {
 				success: false,
-				error: error.message || "Failed to fetch secret key",
+				error: "You do not have permission to view the secret key",
 			};
 		}
 
-		const data = await response.json();
+		if (response.status === 404) {
+			return {
+				success: false,
+				error: "Secret key not yet provisioned",
+			};
+		}
 
 		return {
-			success: true,
-			serviceKey: data.api_service_key,
+			success: false,
+			error: error.message || "Failed to fetch secret key",
 		};
-	} catch (error) {
-		throw error;
 	}
+
+	const data = await response.json();
+
+	return {
+		success: true,
+		serviceKey: data.api_service_key,
+	};
 }
 
 export async function fetchDatabasePassword(branchId: string) {

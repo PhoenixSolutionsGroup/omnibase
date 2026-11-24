@@ -44,7 +44,7 @@ export function DeleteRelationshipResponseFromJSON(
 
 export function DeleteRelationshipResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteRelationshipResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function DeleteRelationshipResponseToJSON(
 
 export function DeleteRelationshipResponseToJSONTyped(
 	value?: DeleteRelationshipResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

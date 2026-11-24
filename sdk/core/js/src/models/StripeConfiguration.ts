@@ -87,7 +87,7 @@ export function StripeConfigurationFromJSON(json: any): StripeConfiguration {
 
 export function StripeConfigurationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): StripeConfiguration {
 	if (json == null) {
 		return json;
@@ -123,7 +123,7 @@ export function StripeConfigurationToJSON(json: any): StripeConfiguration {
 
 export function StripeConfigurationToJSONTyped(
 	value?: StripeConfiguration | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

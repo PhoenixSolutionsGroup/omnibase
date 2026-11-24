@@ -47,7 +47,7 @@ export function UpdateInvoiceRequestFromJSON(json: any): UpdateInvoiceRequest {
 
 export function UpdateInvoiceRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateInvoiceRequest {
 	if (json == null) {
 		return json;
@@ -64,7 +64,7 @@ export function UpdateInvoiceRequestToJSON(json: any): UpdateInvoiceRequest {
 
 export function UpdateInvoiceRequestToJSONTyped(
 	value?: UpdateInvoiceRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

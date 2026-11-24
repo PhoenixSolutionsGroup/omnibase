@@ -52,7 +52,7 @@ export function CreateTenantResponseFromJSON(json: any): CreateTenantResponse {
 
 export function CreateTenantResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateTenantResponse {
 	if (json == null) {
 		return json;
@@ -69,7 +69,7 @@ export function CreateTenantResponseToJSON(json: any): CreateTenantResponse {
 
 export function CreateTenantResponseToJSONTyped(
 	value?: CreateTenantResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -73,13 +73,13 @@ export function ProjectDashboardClient({
 		{
 			name: "API",
 			url: project.api_url,
-			health_url: project.api_url + "/health",
+			health_url: `${project.api_url}/health`,
 			serviceType: "api",
 		},
 		{
 			name: "PostgREST",
 			url: project.postgrest_url,
-			health_url: project.postgrest_url + "/ready",
+			health_url: `${project.postgrest_url}/ready`,
 			serviceType: "postgrest",
 		},
 	].filter(
@@ -104,7 +104,7 @@ export function ProjectDashboardClient({
 	): Promise<ServiceStatus[]> => {
 		try {
 			// Call the edge function health check endpoint
-			const response = await fetch(OMNIBASE_WORKER_URL + "/api/health-check", {
+			const response = await fetch(`${OMNIBASE_WORKER_URL}/api/health-check`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -236,12 +236,12 @@ export function ProjectDashboardClient({
 	};
 	useEffect(() => {
 		runHealthChecks();
-	}, []);
+	}, [runHealthChecks]);
 
 	// Fetch logs on mount
 	useEffect(() => {
 		fetchLogs();
-	}, []);
+	}, [fetchLogs]);
 
 	const region = "Unknown";
 

@@ -76,7 +76,7 @@ export function StripeConfigResponseFromJSON(json: any): StripeConfigResponse {
 
 export function StripeConfigResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): StripeConfigResponse {
 	if (json == null) {
 		return json;
@@ -96,7 +96,7 @@ export function StripeConfigResponseToJSON(json: any): StripeConfigResponse {
 
 export function StripeConfigResponseToJSONTyped(
 	value?: StripeConfigResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

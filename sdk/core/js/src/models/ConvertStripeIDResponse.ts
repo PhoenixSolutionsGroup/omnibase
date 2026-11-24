@@ -65,7 +65,7 @@ export function ConvertStripeIDResponseFromJSON(
 
 export function ConvertStripeIDResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConvertStripeIDResponse {
 	if (json == null) {
 		return json;
@@ -86,7 +86,7 @@ export function ConvertStripeIDResponseToJSON(
 
 export function ConvertStripeIDResponseToJSONTyped(
 	value?: ConvertStripeIDResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

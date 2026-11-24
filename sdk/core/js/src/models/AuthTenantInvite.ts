@@ -98,7 +98,7 @@ export function AuthTenantInviteFromJSON(json: any): AuthTenantInvite {
 
 export function AuthTenantInviteFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AuthTenantInvite {
 	if (json == null) {
 		return json;
@@ -122,7 +122,7 @@ export function AuthTenantInviteToJSON(json: any): AuthTenantInvite {
 
 export function AuthTenantInviteToJSONTyped(
 	value?: AuthTenantInvite | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

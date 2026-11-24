@@ -40,7 +40,7 @@ export function RLSViewer({
 
 	useEffect(() => {
 		fetchPolicies();
-	}, [tableName, schemaName]);
+	}, [fetchPolicies]);
 
 	const fetchPolicies = async () => {
 		setLoading(true);

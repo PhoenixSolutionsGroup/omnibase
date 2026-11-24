@@ -68,7 +68,7 @@ export function ConfigResponseFromJSON(json: any): ConfigResponse {
 
 export function ConfigResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigResponse {
 	if (json == null) {
 		return json;
@@ -91,7 +91,7 @@ export function ConfigResponseToJSON(json: any): ConfigResponse {
 
 export function ConfigResponseToJSONTyped(
 	value?: ConfigResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

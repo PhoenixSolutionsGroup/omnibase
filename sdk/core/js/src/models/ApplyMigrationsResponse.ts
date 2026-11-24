@@ -51,7 +51,7 @@ export function ApplyMigrationsResponseFromJSON(
 
 export function ApplyMigrationsResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ApplyMigrationsResponse {
 	if (json == null) {
 		return json;
@@ -70,7 +70,7 @@ export function ApplyMigrationsResponseToJSON(
 
 export function ApplyMigrationsResponseToJSONTyped(
 	value?: ApplyMigrationsResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

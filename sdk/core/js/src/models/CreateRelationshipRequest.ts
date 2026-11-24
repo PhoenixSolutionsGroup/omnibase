@@ -71,7 +71,7 @@ export function CreateRelationshipRequestFromJSON(
 
 export function CreateRelationshipRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateRelationshipRequest {
 	if (json == null) {
 		return json;
@@ -92,7 +92,7 @@ export function CreateRelationshipRequestToJSON(
 
 export function CreateRelationshipRequestToJSONTyped(
 	value?: CreateRelationshipRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

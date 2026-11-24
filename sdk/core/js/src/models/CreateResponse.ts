@@ -55,7 +55,7 @@ export function CreateResponseFromJSON(json: any): CreateResponse {
 
 export function CreateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateResponse {
 	if (json == null) {
 		return json;
@@ -72,7 +72,7 @@ export function CreateResponseToJSON(json: any): CreateResponse {
 
 export function CreateResponseToJSONTyped(
 	value?: CreateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

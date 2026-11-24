@@ -61,7 +61,7 @@ export function MeterChangeFromJSON(json: any): MeterChange {
 
 export function MeterChangeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterChange {
 	if (json == null) {
 		return json;
@@ -80,7 +80,7 @@ export function MeterChangeToJSON(json: any): MeterChange {
 
 export function MeterChangeToJSONTyped(
 	value?: MeterChange | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

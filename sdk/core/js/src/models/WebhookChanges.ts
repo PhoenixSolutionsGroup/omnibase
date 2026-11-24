@@ -62,7 +62,7 @@ export function WebhookChangesFromJSON(json: any): WebhookChanges {
 
 export function WebhookChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): WebhookChanges {
 	if (json == null) {
 		return json;
@@ -93,7 +93,7 @@ export function WebhookChangesToJSON(json: any): WebhookChanges {
 
 export function WebhookChangesToJSONTyped(
 	value?: WebhookChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -80,7 +80,7 @@ export function ArchiveAllResponseFromJSON(json: any): ArchiveAllResponse {
 
 export function ArchiveAllResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ArchiveAllResponse {
 	if (json == null) {
 		return json;
@@ -101,7 +101,7 @@ export function ArchiveAllResponseToJSON(json: any): ArchiveAllResponse {
 
 export function ArchiveAllResponseToJSONTyped(
 	value?: ArchiveAllResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

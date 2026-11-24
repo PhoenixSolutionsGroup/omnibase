@@ -94,7 +94,7 @@ export function ProductWithStripeIDsFromJSON(json: any): ProductWithStripeIDs {
 
 export function ProductWithStripeIDsFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ProductWithStripeIDs {
 	if (json == null) {
 		return json;
@@ -120,7 +120,7 @@ export function ProductWithStripeIDsToJSON(json: any): ProductWithStripeIDs {
 
 export function ProductWithStripeIDsToJSONTyped(
 	value?: ProductWithStripeIDs | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

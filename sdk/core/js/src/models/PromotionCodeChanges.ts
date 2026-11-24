@@ -59,7 +59,7 @@ export function PromotionCodeChangesFromJSON(json: any): PromotionCodeChanges {
 
 export function PromotionCodeChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PromotionCodeChanges {
 	if (json == null) {
 		return json;
@@ -86,7 +86,7 @@ export function PromotionCodeChangesToJSON(json: any): PromotionCodeChanges {
 
 export function PromotionCodeChangesToJSONTyped(
 	value?: PromotionCodeChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

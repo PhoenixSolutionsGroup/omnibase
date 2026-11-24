@@ -89,7 +89,7 @@ export function ProductFromJSON(json: any): Product {
 
 export function ProductFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Product {
 	if (json == null) {
 		return json;
@@ -115,7 +115,7 @@ export function ProductToJSON(json: any): Product {
 
 export function ProductToJSONTyped(
 	value?: Product | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -56,7 +56,7 @@ export function ConfigStatusSummaryFromJSON(json: any): ConfigStatusSummary {
 
 export function ConfigStatusSummaryFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigStatusSummary {
 	if (json == null) {
 		return json;
@@ -74,7 +74,7 @@ export function ConfigStatusSummaryToJSON(json: any): ConfigStatusSummary {
 
 export function ConfigStatusSummaryToJSONTyped(
 	value?: ConfigStatusSummary | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

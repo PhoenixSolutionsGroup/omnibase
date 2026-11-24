@@ -82,7 +82,7 @@ export function CreateInvoiceRequestFromJSON(json: any): CreateInvoiceRequest {
 
 export function CreateInvoiceRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateInvoiceRequest {
 	if (json == null) {
 		return json;
@@ -104,7 +104,7 @@ export function CreateInvoiceRequestToJSON(json: any): CreateInvoiceRequest {
 
 export function CreateInvoiceRequestToJSONTyped(
 	value?: CreateInvoiceRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

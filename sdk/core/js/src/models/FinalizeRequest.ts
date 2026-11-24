@@ -41,7 +41,7 @@ export function FinalizeRequestFromJSON(json: any): FinalizeRequest {
 
 export function FinalizeRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): FinalizeRequest {
 	if (json == null) {
 		return json;
@@ -57,7 +57,7 @@ export function FinalizeRequestToJSON(json: any): FinalizeRequest {
 
 export function FinalizeRequestToJSONTyped(
 	value?: FinalizeRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -44,7 +44,7 @@ export function BillingStatusResponseFromJSON(
 
 export function BillingStatusResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): BillingStatusResponse {
 	if (json == null) {
 		return json;
@@ -60,7 +60,7 @@ export function BillingStatusResponseToJSON(json: any): BillingStatusResponse {
 
 export function BillingStatusResponseToJSONTyped(
 	value?: BillingStatusResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

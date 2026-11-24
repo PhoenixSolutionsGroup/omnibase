@@ -86,7 +86,7 @@ export function TenantPayloadFromJSON(json: any): TenantPayload {
 
 export function TenantPayloadFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): TenantPayload {
 	if (json == null) {
 		return json;
@@ -111,7 +111,7 @@ export function TenantPayloadToJSON(json: any): TenantPayload {
 
 export function TenantPayloadToJSONTyped(
 	value?: TenantPayload | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

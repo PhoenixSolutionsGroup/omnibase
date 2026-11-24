@@ -54,7 +54,7 @@ export function CreateRequestFromJSON(json: any): CreateRequest {
 
 export function CreateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateRequest {
 	if (json == null) {
 		return json;
@@ -72,7 +72,7 @@ export function CreateRequestToJSON(json: any): CreateRequest {
 
 export function CreateRequestToJSONTyped(
 	value?: CreateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

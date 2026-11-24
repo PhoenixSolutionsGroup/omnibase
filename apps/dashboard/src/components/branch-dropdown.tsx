@@ -36,9 +36,7 @@ export function BranchDropdown({
 
 		// Replace the current branch in the URL with the new one
 		const pathSegments = pathname.split("/");
-		const branchIndex = pathSegments.findIndex(
-			(segment) => segment === currentBranch,
-		);
+		const branchIndex = pathSegments.indexOf(currentBranch);
 
 		if (branchIndex !== -1) {
 			pathSegments[branchIndex] = newBranch;

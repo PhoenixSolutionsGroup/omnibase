@@ -57,7 +57,7 @@ export function ListSystemTemplatesResponseFromJSON(
 
 export function ListSystemTemplatesResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListSystemTemplatesResponse {
 	if (json == null) {
 		return json;
@@ -79,7 +79,7 @@ export function ListSystemTemplatesResponseToJSON(
 
 export function ListSystemTemplatesResponseToJSONTyped(
 	value?: ListSystemTemplatesResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -43,7 +43,7 @@ export function MeterValueSettingsFromJSON(json: any): MeterValueSettings {
 
 export function MeterValueSettingsFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterValueSettings {
 	if (json == null) {
 		return json;
@@ -59,7 +59,7 @@ export function MeterValueSettingsToJSON(json: any): MeterValueSettings {
 
 export function MeterValueSettingsToJSONTyped(
 	value?: MeterValueSettings | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

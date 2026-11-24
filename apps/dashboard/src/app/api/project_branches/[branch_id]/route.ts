@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL;
 
 export async function DELETE(
-	request: NextRequest,
+	_request: NextRequest,
 	{ params }: { params: Promise<{ branch_id: string }> },
 ) {
 	try {

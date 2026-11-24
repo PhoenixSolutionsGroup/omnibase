@@ -44,7 +44,7 @@ export function DeleteTemplateResponseFromJSON(
 
 export function DeleteTemplateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteTemplateResponse {
 	if (json == null) {
 		return json;
@@ -62,7 +62,7 @@ export function DeleteTemplateResponseToJSON(
 
 export function DeleteTemplateResponseToJSONTyped(
 	value?: DeleteTemplateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -54,7 +54,7 @@ export function CouponChangesFromJSON(json: any): CouponChanges {
 
 export function CouponChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CouponChanges {
 	if (json == null) {
 		return json;
@@ -81,7 +81,7 @@ export function CouponChangesToJSON(json: any): CouponChanges {
 
 export function CouponChangesToJSONTyped(
 	value?: CouponChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

@@ -100,7 +100,7 @@ export function MeterFromJSON(json: any): Meter {
 
 export function MeterFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Meter {
 	if (json == null) {
 		return json;
@@ -130,7 +130,7 @@ export function MeterToJSON(json: any): Meter {
 
 export function MeterToJSONTyped(
 	value?: Meter | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

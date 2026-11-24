@@ -73,7 +73,7 @@ export function SessionAuthenticationMethodFromJSON(
 
 export function SessionAuthenticationMethodFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SessionAuthenticationMethod {
 	if (json == null) {
 		return json;
@@ -98,7 +98,7 @@ export function SessionAuthenticationMethodToJSON(
 
 export function SessionAuthenticationMethodToJSONTyped(
 	value?: SessionAuthenticationMethod | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

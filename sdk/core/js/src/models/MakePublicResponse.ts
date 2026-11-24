@@ -49,7 +49,7 @@ export function MakePublicResponseFromJSON(json: any): MakePublicResponse {
 
 export function MakePublicResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MakePublicResponse {
 	if (json == null) {
 		return json;
@@ -66,7 +66,7 @@ export function MakePublicResponseToJSON(json: any): MakePublicResponse {
 
 export function MakePublicResponseToJSONTyped(
 	value?: MakePublicResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

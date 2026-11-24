@@ -38,7 +38,7 @@ export default function Studio({ project }: StudioProps) {
 						success: keyResult.success,
 						error: keyResult.error,
 						serviceKeyLength: keyResult.serviceKey?.length,
-						serviceKeyPreview: keyResult.serviceKey?.substring(0, 50) + "...",
+						serviceKeyPreview: `${keyResult.serviceKey?.substring(0, 50)}...`,
 						serviceKeyParts: keyResult.serviceKey?.split(".").length,
 					});
 					if (!keyResult.success || !keyResult.serviceKey) {
@@ -58,7 +58,7 @@ export default function Studio({ project }: StudioProps) {
 				console.log("[Studio] Using token:", {
 					isSimulated: !!simulatedToken,
 					tokenLength: token?.length,
-					tokenPreview: token?.substring(0, 50) + "...",
+					tokenPreview: `${token?.substring(0, 50)}...`,
 					tokenParts: token?.split(".").length,
 				});
 

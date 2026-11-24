@@ -42,7 +42,7 @@ export function SwitchActiveResponseFromJSON(json: any): SwitchActiveResponse {
 
 export function SwitchActiveResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SwitchActiveResponse {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function SwitchActiveResponseToJSON(json: any): SwitchActiveResponse {
 
 export function SwitchActiveResponseToJSONTyped(
 	value?: SwitchActiveResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

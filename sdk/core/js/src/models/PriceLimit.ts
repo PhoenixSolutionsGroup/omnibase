@@ -52,7 +52,7 @@ export function PriceLimitFromJSON(json: any): PriceLimit {
 
 export function PriceLimitFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PriceLimit {
 	if (json == null) {
 		return json;
@@ -70,7 +70,7 @@ export function PriceLimitToJSON(json: any): PriceLimit {
 
 export function PriceLimitToJSONTyped(
 	value?: PriceLimit | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

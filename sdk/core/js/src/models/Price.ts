@@ -148,7 +148,7 @@ export function PriceFromJSON(json: any): Price {
 
 export function PriceFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Price {
 	if (json == null) {
 		return json;
@@ -190,7 +190,7 @@ export function PriceToJSON(json: any): Price {
 
 export function PriceToJSONTyped(
 	value?: Price | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

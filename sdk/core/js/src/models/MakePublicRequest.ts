@@ -42,7 +42,7 @@ export function MakePublicRequestFromJSON(json: any): MakePublicRequest {
 
 export function MakePublicRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MakePublicRequest {
 	if (json == null) {
 		return json;
@@ -58,7 +58,7 @@ export function MakePublicRequestToJSON(json: any): MakePublicRequest {
 
 export function MakePublicRequestToJSONTyped(
 	value?: MakePublicRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

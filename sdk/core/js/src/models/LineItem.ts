@@ -46,7 +46,7 @@ export function LineItemFromJSON(json: any): LineItem {
 
 export function LineItemFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): LineItem {
 	if (json == null) {
 		return json;
@@ -63,7 +63,7 @@ export function LineItemToJSON(json: any): LineItem {
 
 export function LineItemToJSONTyped(
 	value?: LineItem | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

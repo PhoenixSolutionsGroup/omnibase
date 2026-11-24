@@ -55,7 +55,7 @@ export function AddResponseFromJSON(json: any): AddResponse {
 
 export function AddResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AddResponse {
 	if (json == null) {
 		return json;
@@ -73,7 +73,7 @@ export function AddResponseToJSON(json: any): AddResponse {
 
 export function AddResponseToJSONTyped(
 	value?: AddResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

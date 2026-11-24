@@ -51,7 +51,7 @@ export function CreateCheckoutResponseFromJSON(
 
 export function CreateCheckoutResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateCheckoutResponse {
 	if (json == null) {
 		return json;
@@ -70,7 +70,7 @@ export function CreateCheckoutResponseToJSON(
 
 export function CreateCheckoutResponseToJSONTyped(
 	value?: CreateCheckoutResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

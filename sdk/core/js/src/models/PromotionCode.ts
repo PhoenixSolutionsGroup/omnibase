@@ -102,7 +102,7 @@ export function PromotionCodeFromJSON(json: any): PromotionCode {
 
 export function PromotionCodeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PromotionCode {
 	if (json == null) {
 		return json;
@@ -136,7 +136,7 @@ export function PromotionCodeToJSON(json: any): PromotionCode {
 
 export function PromotionCodeToJSONTyped(
 	value?: PromotionCode | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

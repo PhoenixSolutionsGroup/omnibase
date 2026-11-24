@@ -59,7 +59,7 @@ export function InvoiceLineItemResponseFromJSON(
 
 export function InvoiceLineItemResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): InvoiceLineItemResponse {
 	if (json == null) {
 		return json;
@@ -79,7 +79,7 @@ export function InvoiceLineItemResponseToJSON(
 
 export function InvoiceLineItemResponseToJSONTyped(
 	value?: InvoiceLineItemResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

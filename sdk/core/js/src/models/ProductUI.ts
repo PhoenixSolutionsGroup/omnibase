@@ -75,7 +75,7 @@ export function ProductUIFromJSON(json: any): ProductUI {
 
 export function ProductUIFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ProductUI {
 	if (json == null) {
 		return json;
@@ -97,7 +97,7 @@ export function ProductUIToJSON(json: any): ProductUI {
 
 export function ProductUIToJSONTyped(
 	value?: ProductUI | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

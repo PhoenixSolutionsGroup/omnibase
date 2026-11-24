@@ -56,7 +56,7 @@ export function RecordUsageRequestFromJSON(json: any): RecordUsageRequest {
 
 export function RecordUsageRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RecordUsageRequest {
 	if (json == null) {
 		return json;
@@ -75,7 +75,7 @@ export function RecordUsageRequestToJSON(json: any): RecordUsageRequest {
 
 export function RecordUsageRequestToJSONTyped(
 	value?: RecordUsageRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

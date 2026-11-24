@@ -47,7 +47,7 @@ export function IdentityNameFromJSON(json: any): IdentityName {
 
 export function IdentityNameFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): IdentityName {
 	if (json == null) {
 		return json;
@@ -64,7 +64,7 @@ export function IdentityNameToJSON(json: any): IdentityName {
 
 export function IdentityNameToJSONTyped(
 	value?: IdentityName | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

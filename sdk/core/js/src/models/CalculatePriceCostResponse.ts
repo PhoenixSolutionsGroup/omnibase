@@ -90,7 +90,7 @@ export function CalculatePriceCostResponseFromJSON(
 
 export function CalculatePriceCostResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CalculatePriceCostResponse {
 	if (json == null) {
 		return json;
@@ -114,7 +114,7 @@ export function CalculatePriceCostResponseToJSON(
 
 export function CalculatePriceCostResponseToJSONTyped(
 	value?: CalculatePriceCostResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

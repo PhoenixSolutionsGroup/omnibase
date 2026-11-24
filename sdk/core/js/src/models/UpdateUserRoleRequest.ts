@@ -51,7 +51,7 @@ export function UpdateUserRoleRequestFromJSON(
 
 export function UpdateUserRoleRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateUserRoleRequest {
 	if (json == null) {
 		return json;
@@ -68,7 +68,7 @@ export function UpdateUserRoleRequestToJSON(json: any): UpdateUserRoleRequest {
 
 export function UpdateUserRoleRequestToJSONTyped(
 	value?: UpdateUserRoleRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

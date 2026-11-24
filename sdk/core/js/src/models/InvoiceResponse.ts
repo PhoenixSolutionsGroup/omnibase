@@ -82,7 +82,7 @@ export function InvoiceResponseFromJSON(json: any): InvoiceResponse {
 
 export function InvoiceResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): InvoiceResponse {
 	if (json == null) {
 		return json;
@@ -105,7 +105,7 @@ export function InvoiceResponseToJSON(json: any): InvoiceResponse {
 
 export function InvoiceResponseToJSONTyped(
 	value?: InvoiceResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

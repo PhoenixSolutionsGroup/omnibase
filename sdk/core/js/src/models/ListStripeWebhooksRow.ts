@@ -100,7 +100,7 @@ export function ListStripeWebhooksRowFromJSON(
 
 export function ListStripeWebhooksRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListStripeWebhooksRow {
 	if (json == null) {
 		return json;
@@ -124,7 +124,7 @@ export function ListStripeWebhooksRowToJSON(json: any): ListStripeWebhooksRow {
 
 export function ListStripeWebhooksRowToJSONTyped(
 	value?: ListStripeWebhooksRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;

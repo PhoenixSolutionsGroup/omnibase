@@ -83,7 +83,7 @@ const DropdownMenuCheckboxItem = ({
 }: any) => {
 	return (
 		<DropdownMenuItem
-			onClick={(e) => {
+			onClick={(_e) => {
 				onCheckedChange(!checked);
 			}}
 			{...props}
@@ -394,18 +394,26 @@ export function TableViewer({
 				setLoading(false);
 			}
 		},
-		[client, tableName, page, pageSize, sort, filters],
+		[
+			client,
+			tableName,
+			page,
+			pageSize,
+			sort,
+			filters,
+			tableDefinition.schemaName,
+		],
 	);
 
 	useEffect(() => {
 		setPage(0);
 		setSelectedRows(new Set());
 		fetchTableData();
-	}, [tableName, sort, pageSize, filters]);
+	}, [fetchTableData]);
 
 	useEffect(() => {
 		fetchTableData();
-	}, [page]);
+	}, [fetchTableData]);
 
 	const handleSort = (column: string) => {
 		if (sort?.column === column) {

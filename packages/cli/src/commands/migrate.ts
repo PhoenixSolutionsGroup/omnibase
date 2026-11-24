@@ -1,8 +1,7 @@
-// @ts-expect-error - adm-zip doesn't have types
+import * as fs from "node:fs";
+import * as path from "node:path";
 import AdmZip from "adm-zip";
 import type { Command } from "commander";
-import * as fs from "fs";
-import * as path from "path";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
 import { handleCommandError } from "../utils/errors";
 import { logger } from "../utils/logger";
@@ -81,7 +80,7 @@ async function createMigration(
 	// Get migration name from user if not provided
 	let migrationName = name;
 	if (!migrationName) {
-		const readline = await import("readline");
+		const readline = await import("node:readline");
 		const rl = readline.createInterface({
 			input: process.stdin,
 			output: process.stdout,

@@ -64,7 +64,7 @@ export function UpsertSystemTemplateRequestFromJSON(
 
 export function UpsertSystemTemplateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertSystemTemplateRequest {
 	if (json == null) {
 		return json;
@@ -86,7 +86,7 @@ export function UpsertSystemTemplateRequestToJSON(
 
 export function UpsertSystemTemplateRequestToJSONTyped(
 	value?: UpsertSystemTemplateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
