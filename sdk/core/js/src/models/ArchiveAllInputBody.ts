@@ -47,7 +47,7 @@ export function ArchiveAllInputBodyFromJSONTyped(
 		return json;
 	}
 	return {
-		force: json["force"] == null ? undefined : json["force"],
+		force: json.force == null ? undefined : json.force,
 	};
 }
 
@@ -64,6 +64,6 @@ export function ArchiveAllInputBodyToJSONTyped(
 	}
 
 	return {
-		force: value["force"],
+		force: value.force,
 	};
 }

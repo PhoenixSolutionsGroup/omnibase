@@ -30,7 +30,7 @@ export interface CheckResponse {
  * Check if a given object implements the CheckResponse interface.
  */
 export function instanceOfCheckResponse(value: object): value is CheckResponse {
-	if (!("allowed" in value) || value["allowed"] === undefined) return false;
+	if (!("allowed" in value) || value.allowed === undefined) return false;
 	return true;
 }
 
@@ -46,7 +46,7 @@ export function CheckResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		allowed: json["allowed"],
+		allowed: json.allowed,
 	};
 }
 
@@ -63,6 +63,6 @@ export function CheckResponseToJSONTyped(
 	}
 
 	return {
-		allowed: value["allowed"],
+		allowed: value.allowed,
 	};
 }

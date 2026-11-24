@@ -50,9 +50,9 @@ export interface PromotionCodeChange {
 export function instanceOfPromotionCodeChange(
 	value: object,
 ): value is PromotionCodeChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("code" in value) || value["code"] === undefined) return false;
-	if (!("promoId" in value) || value["promoId"] === undefined) return false;
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("code" in value) || value.code === undefined) return false;
+	if (!("promoId" in value) || value.promoId === undefined) return false;
 	return true;
 }
 
@@ -68,10 +68,10 @@ export function PromotionCodeChangeFromJSONTyped(
 		return json;
 	}
 	return {
-		action: json["action"],
-		code: json["code"],
-		promoId: json["promo_id"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		action: json.action,
+		code: json.code,
+		promoId: json.promo_id,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -88,9 +88,9 @@ export function PromotionCodeChangeToJSONTyped(
 	}
 
 	return {
-		action: value["action"],
-		code: value["code"],
-		promo_id: value["promoId"],
-		stripe_id: value["stripeId"],
+		action: value.action,
+		code: value.code,
+		promo_id: value.promoId,
+		stripe_id: value.stripeId,
 	};
 }

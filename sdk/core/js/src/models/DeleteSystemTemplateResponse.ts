@@ -32,7 +32,7 @@ export interface DeleteSystemTemplateResponse {
 export function instanceOfDeleteSystemTemplateResponse(
 	value: object,
 ): value is DeleteSystemTemplateResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function DeleteSystemTemplateResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function DeleteSystemTemplateResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

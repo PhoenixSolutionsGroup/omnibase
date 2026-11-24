@@ -13,10 +13,7 @@
  */
 
 import type { ProductChange } from "./ProductChange";
-import {
-	ProductChangeFromJSON,
-	ProductChangeToJSON,
-} from "./ProductChange";
+import { ProductChangeFromJSON, ProductChangeToJSON } from "./ProductChange";
 
 /**
  *
@@ -66,17 +63,17 @@ export function ProductChangesFromJSONTyped(
 	}
 	return {
 		archived:
-			json["archived"] == null
+			json.archived == null
 				? undefined
-				: (json["archived"] as Array<any>).map(ProductChangeFromJSON),
+				: (json.archived as Array<any>).map(ProductChangeFromJSON),
 		created:
-			json["created"] == null
+			json.created == null
 				? undefined
-				: (json["created"] as Array<any>).map(ProductChangeFromJSON),
+				: (json.created as Array<any>).map(ProductChangeFromJSON),
 		updated:
-			json["updated"] == null
+			json.updated == null
 				? undefined
-				: (json["updated"] as Array<any>).map(ProductChangeFromJSON),
+				: (json.updated as Array<any>).map(ProductChangeFromJSON),
 	};
 }
 
@@ -94,16 +91,16 @@ export function ProductChangesToJSONTyped(
 
 	return {
 		archived:
-			value["archived"] == null
+			value.archived == null
 				? undefined
-				: (value["archived"] as Array<any>).map(ProductChangeToJSON),
+				: (value.archived as Array<any>).map(ProductChangeToJSON),
 		created:
-			value["created"] == null
+			value.created == null
 				? undefined
-				: (value["created"] as Array<any>).map(ProductChangeToJSON),
+				: (value.created as Array<any>).map(ProductChangeToJSON),
 		updated:
-			value["updated"] == null
+			value.updated == null
 				? undefined
-				: (value["updated"] as Array<any>).map(ProductChangeToJSON),
+				: (value.updated as Array<any>).map(ProductChangeToJSON),
 	};
 }

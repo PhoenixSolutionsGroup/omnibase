@@ -30,7 +30,7 @@ export interface DeleteRequest {
  * Check if a given object implements the DeleteRequest interface.
  */
 export function instanceOfDeleteRequest(value: object): value is DeleteRequest {
-	if (!("userId" in value) || value["userId"] === undefined) return false;
+	if (!("userId" in value) || value.userId === undefined) return false;
 	return true;
 }
 
@@ -46,7 +46,7 @@ export function DeleteRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		userId: json["user_id"],
+		userId: json.user_id,
 	};
 }
 
@@ -63,6 +63,6 @@ export function DeleteRequestToJSONTyped(
 	}
 
 	return {
-		user_id: value["userId"],
+		user_id: value.userId,
 	};
 }

@@ -62,7 +62,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 		requestParameters: DeleteObjectOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DeleteObjectResponse>> {
-		if (requestParameters["deleteObjectRequest"] == null) {
+		if (requestParameters.deleteObjectRequest == null) {
 			throw new runtime.RequiredError(
 				"deleteObjectRequest",
 				'Required parameter "deleteObjectRequest" was null or undefined when calling deleteObject().',
@@ -98,9 +98,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 				method: "DELETE",
 				headers: headerParameters,
 				query: queryParameters,
-				body: DeleteObjectRequestToJSON(
-					requestParameters["deleteObjectRequest"],
-				),
+				body: DeleteObjectRequestToJSON(requestParameters.deleteObjectRequest),
 			},
 			initOverrides,
 		);
@@ -133,7 +131,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 		requestParameters: DownloadFileRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DownloadResponse>> {
-		if (requestParameters["downloadRequest"] == null) {
+		if (requestParameters.downloadRequest == null) {
 			throw new runtime.RequiredError(
 				"downloadRequest",
 				'Required parameter "downloadRequest" was null or undefined when calling downloadFile().',
@@ -169,7 +167,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: DownloadRequestToJSON(requestParameters["downloadRequest"]),
+				body: DownloadRequestToJSON(requestParameters.downloadRequest),
 			},
 			initOverrides,
 		);
@@ -202,7 +200,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 		requestParameters: MakeFilePublicRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<MakePublicResponse>> {
-		if (requestParameters["makePublicRequest"] == null) {
+		if (requestParameters.makePublicRequest == null) {
 			throw new runtime.RequiredError(
 				"makePublicRequest",
 				'Required parameter "makePublicRequest" was null or undefined when calling makeFilePublic().',
@@ -238,7 +236,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: MakePublicRequestToJSON(requestParameters["makePublicRequest"]),
+				body: MakePublicRequestToJSON(requestParameters.makePublicRequest),
 			},
 			initOverrides,
 		);
@@ -271,7 +269,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 		requestParameters: UploadFileRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UploadResponse>> {
-		if (requestParameters["uploadRequest"] == null) {
+		if (requestParameters.uploadRequest == null) {
 			throw new runtime.RequiredError(
 				"uploadRequest",
 				'Required parameter "uploadRequest" was null or undefined when calling uploadFile().',
@@ -307,7 +305,7 @@ export class V1StorageApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: UploadRequestToJSON(requestParameters["uploadRequest"]),
+				body: UploadRequestToJSON(requestParameters.uploadRequest),
 			},
 			initOverrides,
 		);

@@ -80,15 +80,15 @@ export interface AuthTenantInvite {
 export function instanceOfAuthTenantInvite(
 	value: object,
 ): value is AuthTenantInvite {
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("email" in value) || value["email"] === undefined) return false;
-	if (!("expiresAt" in value) || value["expiresAt"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("inviterId" in value) || value["inviterId"] === undefined) return false;
-	if (!("role" in value) || value["role"] === undefined) return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
-	if (!("token" in value) || value["token"] === undefined) return false;
-	if (!("usedAt" in value) || value["usedAt"] === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("email" in value) || value.email === undefined) return false;
+	if (!("expiresAt" in value) || value.expiresAt === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("inviterId" in value) || value.inviterId === undefined) return false;
+	if (!("role" in value) || value.role === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
+	if (!("token" in value) || value.token === undefined) return false;
+	if (!("usedAt" in value) || value.usedAt === undefined) return false;
 	return true;
 }
 
@@ -104,15 +104,15 @@ export function AuthTenantInviteFromJSONTyped(
 		return json;
 	}
 	return {
-		createdAt: new Date(json["created_at"]),
-		email: json["email"],
-		expiresAt: new Date(json["expires_at"]),
-		id: json["id"],
-		inviterId: json["inviter_id"],
-		role: json["role"],
-		tenantId: json["tenant_id"],
-		token: json["token"],
-		usedAt: json["used_at"] == null ? null : new Date(json["used_at"]),
+		createdAt: new Date(json.created_at),
+		email: json.email,
+		expiresAt: new Date(json.expires_at),
+		id: json.id,
+		inviterId: json.inviter_id,
+		role: json.role,
+		tenantId: json.tenant_id,
+		token: json.token,
+		usedAt: json.used_at == null ? null : new Date(json.used_at),
 	};
 }
 
@@ -129,15 +129,14 @@ export function AuthTenantInviteToJSONTyped(
 	}
 
 	return {
-		created_at: value["createdAt"].toISOString(),
-		email: value["email"],
-		expires_at: value["expiresAt"].toISOString(),
-		id: value["id"],
-		inviter_id: value["inviterId"],
-		role: value["role"],
-		tenant_id: value["tenantId"],
-		token: value["token"],
-		used_at:
-			value["usedAt"] == null ? value["usedAt"] : value["usedAt"].toISOString(),
+		created_at: value.createdAt.toISOString(),
+		email: value.email,
+		expires_at: value.expiresAt.toISOString(),
+		id: value.id,
+		inviter_id: value.inviterId,
+		role: value.role,
+		tenant_id: value.tenantId,
+		token: value.token,
+		used_at: value.usedAt == null ? value.usedAt : value.usedAt.toISOString(),
 	};
 }

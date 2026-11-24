@@ -32,7 +32,7 @@ export interface DeleteObjectResponse {
 export function instanceOfDeleteObjectResponse(
 	value: object,
 ): value is DeleteObjectResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function DeleteObjectResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -65,6 +65,6 @@ export function DeleteObjectResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

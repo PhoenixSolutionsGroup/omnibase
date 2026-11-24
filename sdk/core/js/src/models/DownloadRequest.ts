@@ -32,7 +32,7 @@ export interface DownloadRequest {
 export function instanceOfDownloadRequest(
 	value: object,
 ): value is DownloadRequest {
-	if (!("path" in value) || value["path"] === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function DownloadRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		path: json["path"],
+		path: json.path,
 	};
 }
 
@@ -65,6 +65,6 @@ export function DownloadRequestToJSONTyped(
 	}
 
 	return {
-		path: value["path"],
+		path: value.path,
 	};
 }

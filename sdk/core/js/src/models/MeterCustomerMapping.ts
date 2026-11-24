@@ -38,9 +38,9 @@ export interface MeterCustomerMapping {
 export function instanceOfMeterCustomerMapping(
 	value: object,
 ): value is MeterCustomerMapping {
-	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
+	if (!("eventPayloadKey" in value) || value.eventPayloadKey === undefined)
 		return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
 	return true;
 }
 
@@ -56,8 +56,8 @@ export function MeterCustomerMappingFromJSONTyped(
 		return json;
 	}
 	return {
-		eventPayloadKey: json["event_payload_key"],
-		type: json["type"],
+		eventPayloadKey: json.event_payload_key,
+		type: json.type,
 	};
 }
 
@@ -74,7 +74,7 @@ export function MeterCustomerMappingToJSONTyped(
 	}
 
 	return {
-		event_payload_key: value["eventPayloadKey"],
-		type: value["type"],
+		event_payload_key: value.eventPayloadKey,
+		type: value.type,
 	};
 }

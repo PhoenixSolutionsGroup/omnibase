@@ -30,7 +30,7 @@ export interface SendResponse {
  * Check if a given object implements the SendResponse interface.
  */
 export function instanceOfSendResponse(value: object): value is SendResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -46,7 +46,7 @@ export function SendResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -63,6 +63,6 @@ export function SendResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

@@ -32,7 +32,7 @@ export interface SwitchActiveResponse {
 export function instanceOfSwitchActiveResponse(
 	value: object,
 ): value is SwitchActiveResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function SwitchActiveResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -65,6 +65,6 @@ export function SwitchActiveResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

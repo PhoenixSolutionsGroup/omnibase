@@ -49,8 +49,8 @@ export interface GetPriceResponse {
 export function instanceOfGetPriceResponse(
 	value: object,
 ): value is GetPriceResponse {
-	if (!("price" in value) || value["price"] === undefined) return false;
-	if (!("product" in value) || value["product"] === undefined) return false;
+	if (!("price" in value) || value.price === undefined) return false;
+	if (!("product" in value) || value.product === undefined) return false;
 	return true;
 }
 
@@ -66,8 +66,8 @@ export function GetPriceResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		price: PriceWithStripeIDFromJSON(json["price"]),
-		product: ProductWithStripeIDsFromJSON(json["product"]),
+		price: PriceWithStripeIDFromJSON(json.price),
+		product: ProductWithStripeIDsFromJSON(json.product),
 	};
 }
 
@@ -84,7 +84,7 @@ export function GetPriceResponseToJSONTyped(
 	}
 
 	return {
-		price: PriceWithStripeIDToJSON(value["price"]),
-		product: ProductWithStripeIDsToJSON(value["product"]),
+		price: PriceWithStripeIDToJSON(value.price),
+		product: ProductWithStripeIDsToJSON(value.product),
 	};
 }

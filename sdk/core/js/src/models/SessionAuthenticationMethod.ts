@@ -80,16 +80,13 @@ export function SessionAuthenticationMethodFromJSONTyped(
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		aal: json["aal"] == null ? undefined : json["aal"],
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		aal: json.aal == null ? undefined : json.aal,
 		completedAt:
-			json["completed_at"] == null ? undefined : new Date(json["completed_at"]),
-		method: json["method"] == null ? undefined : json["method"],
-		organization:
-			json["organization"] == null ? undefined : json["organization"],
-		provider: json["provider"] == null ? undefined : json["provider"],
+			json.completed_at == null ? undefined : new Date(json.completed_at),
+		method: json.method == null ? undefined : json.method,
+		organization: json.organization == null ? undefined : json.organization,
+		provider: json.provider == null ? undefined : json.provider,
 	};
 }
 
@@ -108,14 +105,14 @@ export function SessionAuthenticationMethodToJSONTyped(
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
-		aal: value["aal"],
+		AdditionalProperties: value.additionalProperties,
+		aal: value.aal,
 		completed_at:
-			value["completedAt"] == null
-				? value["completedAt"]
-				: value["completedAt"].toISOString(),
-		method: value["method"],
-		organization: value["organization"],
-		provider: value["provider"],
+			value.completedAt == null
+				? value.completedAt
+				: value.completedAt.toISOString(),
+		method: value.method,
+		organization: value.organization,
+		provider: value.provider,
 	};
 }

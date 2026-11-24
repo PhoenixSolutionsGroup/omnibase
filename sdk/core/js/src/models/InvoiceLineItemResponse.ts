@@ -44,10 +44,10 @@ export interface InvoiceLineItemResponse {
 export function instanceOfInvoiceLineItemResponse(
 	value: object,
 ): value is InvoiceLineItemResponse {
-	if (!("amount" in value) || value["amount"] === undefined) return false;
-	if (!("description" in value) || value["description"] === undefined)
+	if (!("amount" in value) || value.amount === undefined) return false;
+	if (!("description" in value) || value.description === undefined)
 		return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -65,9 +65,9 @@ export function InvoiceLineItemResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		amount: json["amount"],
-		description: json["description"],
-		id: json["id"],
+		amount: json.amount,
+		description: json.description,
+		id: json.id,
 	};
 }
 
@@ -86,8 +86,8 @@ export function InvoiceLineItemResponseToJSONTyped(
 	}
 
 	return {
-		amount: value["amount"],
-		description: value["description"],
-		id: value["id"],
+		amount: value.amount,
+		description: value.description,
+		id: value.id,
 	};
 }

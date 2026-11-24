@@ -32,7 +32,7 @@ export interface MeterValueSettings {
 export function instanceOfMeterValueSettings(
 	value: object,
 ): value is MeterValueSettings {
-	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
+	if (!("eventPayloadKey" in value) || value.eventPayloadKey === undefined)
 		return false;
 	return true;
 }
@@ -49,7 +49,7 @@ export function MeterValueSettingsFromJSONTyped(
 		return json;
 	}
 	return {
-		eventPayloadKey: json["event_payload_key"],
+		eventPayloadKey: json.event_payload_key,
 	};
 }
 
@@ -66,6 +66,6 @@ export function MeterValueSettingsToJSONTyped(
 	}
 
 	return {
-		event_payload_key: value["eventPayloadKey"],
+		event_payload_key: value.eventPayloadKey,
 	};
 }

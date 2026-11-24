@@ -18,15 +18,9 @@ import {
 	GetTenantByIDRowToJSON,
 } from "./GetTenantByIDRow";
 import type { Identity } from "./Identity";
-import {
-	IdentityFromJSON,
-	IdentityToJSON,
-} from "./Identity";
+import { IdentityFromJSON, IdentityToJSON } from "./Identity";
 import type { Session } from "./Session";
-import {
-	SessionFromJSON,
-	SessionToJSON,
-} from "./Session";
+import { SessionFromJSON, SessionToJSON } from "./Session";
 
 /**
  *
@@ -60,8 +54,8 @@ export interface SessionResponse {
 export function instanceOfSessionResponse(
 	value: object,
 ): value is SessionResponse {
-	if (!("identity" in value) || value["identity"] === undefined) return false;
-	if (!("session" in value) || value["session"] === undefined) return false;
+	if (!("identity" in value) || value.identity === undefined) return false;
+	if (!("session" in value) || value.session === undefined) return false;
 	return true;
 }
 
@@ -77,12 +71,10 @@ export function SessionResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		identity: IdentityFromJSON(json["identity"]),
-		session: SessionFromJSON(json["session"]),
+		identity: IdentityFromJSON(json.identity),
+		session: SessionFromJSON(json.session),
 		tenant:
-			json["tenant"] == null
-				? undefined
-				: GetTenantByIDRowFromJSON(json["tenant"]),
+			json.tenant == null ? undefined : GetTenantByIDRowFromJSON(json.tenant),
 	};
 }
 
@@ -99,8 +91,8 @@ export function SessionResponseToJSONTyped(
 	}
 
 	return {
-		identity: IdentityToJSON(value["identity"]),
-		session: SessionToJSON(value["session"]),
-		tenant: GetTenantByIDRowToJSON(value["tenant"]),
+		identity: IdentityToJSON(value.identity),
+		session: SessionToJSON(value.session),
+		tenant: GetTenantByIDRowToJSON(value.tenant),
 	};
 }

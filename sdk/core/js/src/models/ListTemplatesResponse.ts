@@ -13,10 +13,7 @@
  */
 
 import type { EmailTemplate } from "./EmailTemplate";
-import {
-	EmailTemplateFromJSON,
-	EmailTemplateToJSON,
-} from "./EmailTemplate";
+import { EmailTemplateFromJSON, EmailTemplateToJSON } from "./EmailTemplate";
 
 /**
  *
@@ -44,8 +41,8 @@ export interface ListTemplatesResponse {
 export function instanceOfListTemplatesResponse(
 	value: object,
 ): value is ListTemplatesResponse {
-	if (!("count" in value) || value["count"] === undefined) return false;
-	if (!("templates" in value) || value["templates"] === undefined) return false;
+	if (!("count" in value) || value.count === undefined) return false;
+	if (!("templates" in value) || value.templates === undefined) return false;
 	return true;
 }
 
@@ -63,11 +60,11 @@ export function ListTemplatesResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		count: json["count"],
+		count: json.count,
 		templates:
-			json["templates"] == null
+			json.templates == null
 				? null
-				: (json["templates"] as Array<any>).map(EmailTemplateFromJSON),
+				: (json.templates as Array<any>).map(EmailTemplateFromJSON),
 	};
 }
 
@@ -84,10 +81,10 @@ export function ListTemplatesResponseToJSONTyped(
 	}
 
 	return {
-		count: value["count"],
+		count: value.count,
 		templates:
-			value["templates"] == null
+			value.templates == null
 				? null
-				: (value["templates"] as Array<any>).map(EmailTemplateToJSON),
+				: (value.templates as Array<any>).map(EmailTemplateToJSON),
 	};
 }

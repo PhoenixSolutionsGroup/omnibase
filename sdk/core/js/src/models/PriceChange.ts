@@ -48,9 +48,9 @@ export interface PriceChange {
  * Check if a given object implements the PriceChange interface.
  */
 export function instanceOfPriceChange(value: object): value is PriceChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("priceId" in value) || value["priceId"] === undefined) return false;
-	if (!("productId" in value) || value["productId"] === undefined) return false;
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("priceId" in value) || value.priceId === undefined) return false;
+	if (!("productId" in value) || value.productId === undefined) return false;
 	return true;
 }
 
@@ -66,10 +66,10 @@ export function PriceChangeFromJSONTyped(
 		return json;
 	}
 	return {
-		action: json["action"],
-		priceId: json["price_id"],
-		productId: json["product_id"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		action: json.action,
+		priceId: json.price_id,
+		productId: json.product_id,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -86,9 +86,9 @@ export function PriceChangeToJSONTyped(
 	}
 
 	return {
-		action: value["action"],
-		price_id: value["priceId"],
-		product_id: value["productId"],
-		stripe_id: value["stripeId"],
+		action: value.action,
+		price_id: value.priceId,
+		product_id: value.productId,
+		stripe_id: value.stripeId,
 	};
 }

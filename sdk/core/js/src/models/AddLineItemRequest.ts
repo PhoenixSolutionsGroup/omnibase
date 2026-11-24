@@ -44,9 +44,9 @@ export interface AddLineItemRequest {
 export function instanceOfAddLineItemRequest(
 	value: object,
 ): value is AddLineItemRequest {
-	if (!("amount" in value) || value["amount"] === undefined) return false;
-	if (!("currency" in value) || value["currency"] === undefined) return false;
-	if (!("description" in value) || value["description"] === undefined)
+	if (!("amount" in value) || value.amount === undefined) return false;
+	if (!("currency" in value) || value.currency === undefined) return false;
+	if (!("description" in value) || value.description === undefined)
 		return false;
 	return true;
 }
@@ -63,9 +63,9 @@ export function AddLineItemRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		amount: json["amount"],
-		currency: json["currency"],
-		description: json["description"],
+		amount: json.amount,
+		currency: json.currency,
+		description: json.description,
 	};
 }
 
@@ -82,8 +82,8 @@ export function AddLineItemRequestToJSONTyped(
 	}
 
 	return {
-		amount: value["amount"],
-		currency: value["currency"],
-		description: value["description"],
+		amount: value.amount,
+		currency: value.currency,
+		description: value.description,
 	};
 }

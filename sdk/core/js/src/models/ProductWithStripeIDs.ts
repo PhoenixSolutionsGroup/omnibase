@@ -18,10 +18,7 @@ import {
 	PriceWithStripeIDToJSON,
 } from "./PriceWithStripeID";
 import type { ProductUI } from "./ProductUI";
-import {
-	ProductUIFromJSON,
-	ProductUIToJSON,
-} from "./ProductUI";
+import { ProductUIFromJSON, ProductUIToJSON } from "./ProductUI";
 
 /**
  *
@@ -85,9 +82,9 @@ export interface ProductWithStripeIDs {
 export function instanceOfProductWithStripeIDs(
 	value: object,
 ): value is ProductWithStripeIDs {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("prices" in value) || value["prices"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("prices" in value) || value.prices === undefined) return false;
 	return true;
 }
 
@@ -103,17 +100,17 @@ export function ProductWithStripeIDsFromJSONTyped(
 		return json;
 	}
 	return {
-		description: json["description"] == null ? undefined : json["description"],
-		id: json["id"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
-		name: json["name"],
+		description: json.description == null ? undefined : json.description,
+		id: json.id,
+		metadata: json.metadata == null ? undefined : json.metadata,
+		name: json.name,
 		prices:
-			json["prices"] == null
+			json.prices == null
 				? null
-				: (json["prices"] as Array<any>).map(PriceWithStripeIDFromJSON),
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
-		type: json["type"] == null ? undefined : json["type"],
-		ui: json["ui"] == null ? undefined : ProductUIFromJSON(json["ui"]),
+				: (json.prices as Array<any>).map(PriceWithStripeIDFromJSON),
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
+		type: json.type == null ? undefined : json.type,
+		ui: json.ui == null ? undefined : ProductUIFromJSON(json.ui),
 	};
 }
 
@@ -130,16 +127,16 @@ export function ProductWithStripeIDsToJSONTyped(
 	}
 
 	return {
-		description: value["description"],
-		id: value["id"],
-		metadata: value["metadata"],
-		name: value["name"],
+		description: value.description,
+		id: value.id,
+		metadata: value.metadata,
+		name: value.name,
 		prices:
-			value["prices"] == null
+			value.prices == null
 				? null
-				: (value["prices"] as Array<any>).map(PriceWithStripeIDToJSON),
-		stripe_id: value["stripeId"],
-		type: value["type"],
-		ui: ProductUIToJSON(value["ui"]),
+				: (value.prices as Array<any>).map(PriceWithStripeIDToJSON),
+		stripe_id: value.stripeId,
+		type: value.type,
+		ui: ProductUIToJSON(value.ui),
 	};
 }

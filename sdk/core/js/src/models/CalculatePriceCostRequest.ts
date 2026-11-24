@@ -32,7 +32,7 @@ export interface CalculatePriceCostRequest {
 export function instanceOfCalculatePriceCostRequest(
 	value: object,
 ): value is CalculatePriceCostRequest {
-	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	if (!("quantity" in value) || value.quantity === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function CalculatePriceCostRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		quantity: json["quantity"],
+		quantity: json.quantity,
 	};
 }
 
@@ -69,6 +69,6 @@ export function CalculatePriceCostRequestToJSONTyped(
 	}
 
 	return {
-		quantity: value["quantity"],
+		quantity: value.quantity,
 	};
 }

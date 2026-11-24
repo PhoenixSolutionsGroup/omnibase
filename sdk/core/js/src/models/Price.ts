@@ -13,15 +13,9 @@
  */
 
 import type { PriceUI } from "./PriceUI";
-import {
-	PriceUIFromJSON,
-	PriceUIToJSON,
-} from "./PriceUI";
+import { PriceUIFromJSON, PriceUIToJSON } from "./PriceUI";
 import type { Tier } from "./Tier";
-import {
-	TierFromJSON,
-	TierToJSON,
-} from "./Tier";
+import { TierFromJSON, TierToJSON } from "./Tier";
 
 /**
  *
@@ -143,8 +137,8 @@ export interface Price {
  * Check if a given object implements the Price interface.
  */
 export function instanceOfPrice(value: object): value is Price {
-	if (!("currency" in value) || value["currency"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("currency" in value) || value.currency === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -160,36 +154,33 @@ export function PriceFromJSONTyped(
 		return json;
 	}
 	return {
-		amount: json["amount"] == null ? undefined : json["amount"],
+		amount: json.amount == null ? undefined : json.amount,
 		billingScheme:
-			json["billing_scheme"] == null ? undefined : json["billing_scheme"],
-		currency: json["currency"],
-		_default: json["default"] == null ? undefined : json["default"],
-		enterpriseId:
-			json["enterprise_id"] == null ? undefined : json["enterprise_id"],
+			json.billing_scheme == null ? undefined : json.billing_scheme,
+		currency: json.currency,
+		_default: json.default == null ? undefined : json.default,
+		enterpriseId: json.enterprise_id == null ? undefined : json.enterprise_id,
 		enterpriseTemplate:
-			json["enterprise_template"] == null
-				? undefined
-				: json["enterprise_template"],
-		id: json["id"],
-		interval: json["interval"] == null ? undefined : json["interval"],
+			json.enterprise_template == null ? undefined : json.enterprise_template,
+		id: json.id,
+		interval: json.interval == null ? undefined : json.interval,
 		intervalCount:
-			json["interval_count"] == null ? undefined : json["interval_count"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
-		meter: json["meter"] == null ? undefined : json["meter"],
-		_public: json["public"] == null ? undefined : json["public"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+			json.interval_count == null ? undefined : json.interval_count,
+		metadata: json.metadata == null ? undefined : json.metadata,
+		meter: json.meter == null ? undefined : json.meter,
+		_public: json.public == null ? undefined : json.public,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 		taxIncludedInPrice:
-			json["tax_included_in_price"] == null
+			json.tax_included_in_price == null
 				? undefined
-				: json["tax_included_in_price"],
+				: json.tax_included_in_price,
 		tiers:
-			json["tiers"] == null
+			json.tiers == null
 				? undefined
-				: (json["tiers"] as Array<any>).map(TierFromJSON),
-		tiersMode: json["tiers_mode"] == null ? undefined : json["tiers_mode"],
-		ui: json["ui"] == null ? undefined : PriceUIFromJSON(json["ui"]),
-		usageType: json["usage_type"] == null ? undefined : json["usage_type"],
+				: (json.tiers as Array<any>).map(TierFromJSON),
+		tiersMode: json.tiers_mode == null ? undefined : json.tiers_mode,
+		ui: json.ui == null ? undefined : PriceUIFromJSON(json.ui),
+		usageType: json.usage_type == null ? undefined : json.usage_type,
 	};
 }
 
@@ -206,26 +197,26 @@ export function PriceToJSONTyped(
 	}
 
 	return {
-		amount: value["amount"],
-		billing_scheme: value["billingScheme"],
-		currency: value["currency"],
-		default: value["_default"],
-		enterprise_id: value["enterpriseId"],
-		enterprise_template: value["enterpriseTemplate"],
-		id: value["id"],
-		interval: value["interval"],
-		interval_count: value["intervalCount"],
-		metadata: value["metadata"],
-		meter: value["meter"],
-		public: value["_public"],
-		stripe_id: value["stripeId"],
-		tax_included_in_price: value["taxIncludedInPrice"],
+		amount: value.amount,
+		billing_scheme: value.billingScheme,
+		currency: value.currency,
+		default: value._default,
+		enterprise_id: value.enterpriseId,
+		enterprise_template: value.enterpriseTemplate,
+		id: value.id,
+		interval: value.interval,
+		interval_count: value.intervalCount,
+		metadata: value.metadata,
+		meter: value.meter,
+		public: value._public,
+		stripe_id: value.stripeId,
+		tax_included_in_price: value.taxIncludedInPrice,
 		tiers:
-			value["tiers"] == null
+			value.tiers == null
 				? undefined
-				: (value["tiers"] as Array<any>).map(TierToJSON),
-		tiers_mode: value["tiersMode"],
-		ui: PriceUIToJSON(value["ui"]),
-		usage_type: value["usageType"],
+				: (value.tiers as Array<any>).map(TierToJSON),
+		tiers_mode: value.tiersMode,
+		ui: PriceUIToJSON(value.ui),
+		usage_type: value.usageType,
 	};
 }

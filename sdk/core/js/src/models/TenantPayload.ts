@@ -72,11 +72,11 @@ export interface TenantPayload {
  * Check if a given object implements the TenantPayload interface.
  */
 export function instanceOfTenantPayload(value: object): value is TenantPayload {
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
 	return true;
 }
 
@@ -92,21 +92,16 @@ export function TenantPayloadFromJSONTyped(
 		return json;
 	}
 	return {
-		createdAt: new Date(json["created_at"]),
-		enterpriseId:
-			json["enterprise_id"] == null ? undefined : json["enterprise_id"],
+		createdAt: new Date(json.created_at),
+		enterpriseId: json.enterprise_id == null ? undefined : json.enterprise_id,
 		enterpriseTemplate:
-			json["enterprise_template"] == null
-				? undefined
-				: json["enterprise_template"],
-		id: json["id"],
-		name: json["name"],
+			json.enterprise_template == null ? undefined : json.enterprise_template,
+		id: json.id,
+		name: json.name,
 		stripeCustomerId:
-			json["stripe_customer_id"] == null
-				? undefined
-				: json["stripe_customer_id"],
-		type: json["type"],
-		updatedAt: new Date(json["updated_at"]),
+			json.stripe_customer_id == null ? undefined : json.stripe_customer_id,
+		type: json.type,
+		updatedAt: new Date(json.updated_at),
 	};
 }
 
@@ -123,13 +118,13 @@ export function TenantPayloadToJSONTyped(
 	}
 
 	return {
-		created_at: value["createdAt"].toISOString(),
-		enterprise_id: value["enterpriseId"],
-		enterprise_template: value["enterpriseTemplate"],
-		id: value["id"],
-		name: value["name"],
-		stripe_customer_id: value["stripeCustomerId"],
-		type: value["type"],
-		updated_at: value["updatedAt"].toISOString(),
+		created_at: value.createdAt.toISOString(),
+		enterprise_id: value.enterpriseId,
+		enterprise_template: value.enterpriseTemplate,
+		id: value.id,
+		name: value.name,
+		stripe_customer_id: value.stripeCustomerId,
+		type: value.type,
+		updated_at: value.updatedAt.toISOString(),
 	};
 }

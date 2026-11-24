@@ -50,11 +50,11 @@ export interface RelationMetadataResponse {
 export function instanceOfRelationMetadataResponse(
 	value: object,
 ): value is RelationMetadataResponse {
-	if (!("displayName" in value) || value["displayName"] === undefined)
+	if (!("displayName" in value) || value.displayName === undefined)
 		return false;
-	if (!("group" in value) || value["group"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("subGroup" in value) || value["subGroup"] === undefined) return false;
+	if (!("group" in value) || value.group === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("subGroup" in value) || value.subGroup === undefined) return false;
 	return true;
 }
 
@@ -72,10 +72,10 @@ export function RelationMetadataResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		displayName: json["display_name"],
-		group: json["group"],
-		name: json["name"],
-		subGroup: json["sub_group"],
+		displayName: json.display_name,
+		group: json.group,
+		name: json.name,
+		subGroup: json.sub_group,
 	};
 }
 
@@ -94,9 +94,9 @@ export function RelationMetadataResponseToJSONTyped(
 	}
 
 	return {
-		display_name: value["displayName"],
-		group: value["group"],
-		name: value["name"],
-		sub_group: value["subGroup"],
+		display_name: value.displayName,
+		group: value.group,
+		name: value.name,
+		sub_group: value.subGroup,
 	};
 }

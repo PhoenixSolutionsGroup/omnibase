@@ -84,17 +84,13 @@ export function IdentityCredentialsFromJSONTyped(
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		config: json["config"] == null ? undefined : json["config"],
-		createdAt:
-			json["created_at"] == null ? undefined : new Date(json["created_at"]),
-		identifiers: json["identifiers"] == null ? undefined : json["identifiers"],
-		type: json["type"] == null ? undefined : json["type"],
-		updatedAt:
-			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
-		version: json["version"] == null ? undefined : json["version"],
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		config: json.config == null ? undefined : json.config,
+		createdAt: json.created_at == null ? undefined : new Date(json.created_at),
+		identifiers: json.identifiers == null ? undefined : json.identifiers,
+		type: json.type == null ? undefined : json.type,
+		updatedAt: json.updated_at == null ? undefined : new Date(json.updated_at),
+		version: json.version == null ? undefined : json.version,
 	};
 }
 
@@ -111,18 +107,14 @@ export function IdentityCredentialsToJSONTyped(
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
-		config: value["config"],
+		AdditionalProperties: value.additionalProperties,
+		config: value.config,
 		created_at:
-			value["createdAt"] == null
-				? value["createdAt"]
-				: value["createdAt"].toISOString(),
-		identifiers: value["identifiers"],
-		type: value["type"],
+			value.createdAt == null ? value.createdAt : value.createdAt.toISOString(),
+		identifiers: value.identifiers,
+		type: value.type,
 		updated_at:
-			value["updatedAt"] == null
-				? value["updatedAt"]
-				: value["updatedAt"].toISOString(),
-		version: value["version"],
+			value.updatedAt == null ? value.updatedAt : value.updatedAt.toISOString(),
+		version: value.version,
 	};
 }

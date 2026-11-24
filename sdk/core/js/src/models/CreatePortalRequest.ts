@@ -32,7 +32,7 @@ export interface CreatePortalRequest {
 export function instanceOfCreatePortalRequest(
 	value: object,
 ): value is CreatePortalRequest {
-	if (!("returnUrl" in value) || value["returnUrl"] === undefined) return false;
+	if (!("returnUrl" in value) || value.returnUrl === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function CreatePortalRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		returnUrl: json["return_url"],
+		returnUrl: json.return_url,
 	};
 }
 
@@ -65,6 +65,6 @@ export function CreatePortalRequestToJSONTyped(
 	}
 
 	return {
-		return_url: value["returnUrl"],
+		return_url: value.returnUrl,
 	};
 }

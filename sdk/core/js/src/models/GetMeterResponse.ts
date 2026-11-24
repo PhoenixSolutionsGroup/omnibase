@@ -38,7 +38,7 @@ export interface GetMeterResponse {
 export function instanceOfGetMeterResponse(
 	value: object,
 ): value is GetMeterResponse {
-	if (!("meter" in value) || value["meter"] === undefined) return false;
+	if (!("meter" in value) || value.meter === undefined) return false;
 	return true;
 }
 
@@ -54,7 +54,7 @@ export function GetMeterResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		meter: MeterWithStripeIDFromJSON(json["meter"]),
+		meter: MeterWithStripeIDFromJSON(json.meter),
 	};
 }
 
@@ -71,6 +71,6 @@ export function GetMeterResponseToJSONTyped(
 	}
 
 	return {
-		meter: MeterWithStripeIDToJSON(value["meter"]),
+		meter: MeterWithStripeIDToJSON(value.meter),
 	};
 }

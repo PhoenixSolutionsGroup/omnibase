@@ -62,11 +62,11 @@ export interface StripeConfigResponse {
 export function instanceOfStripeConfigResponse(
 	value: object,
 ): value is StripeConfigResponse {
-	if (!("config" in value) || value["config"] === undefined) return false;
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
-	if (!("version" in value) || value["version"] === undefined) return false;
+	if (!("config" in value) || value.config === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
+	if (!("version" in value) || value.version === undefined) return false;
 	return true;
 }
 
@@ -82,11 +82,11 @@ export function StripeConfigResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		config: StripeConfigurationWithIDsFromJSON(json["config"]),
-		createdAt: json["created_at"],
-		id: json["id"],
-		updatedAt: json["updated_at"],
-		version: json["version"],
+		config: StripeConfigurationWithIDsFromJSON(json.config),
+		createdAt: json.created_at,
+		id: json.id,
+		updatedAt: json.updated_at,
+		version: json.version,
 	};
 }
 
@@ -103,10 +103,10 @@ export function StripeConfigResponseToJSONTyped(
 	}
 
 	return {
-		config: StripeConfigurationWithIDsToJSON(value["config"]),
-		created_at: value["createdAt"],
-		id: value["id"],
-		updated_at: value["updatedAt"],
-		version: value["version"],
+		config: StripeConfigurationWithIDsToJSON(value.config),
+		created_at: value.createdAt,
+		id: value.id,
+		updated_at: value.updatedAt,
+		version: value.version,
 	};
 }

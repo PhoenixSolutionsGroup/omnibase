@@ -44,9 +44,9 @@ export interface SendTemplateRequest {
 export function instanceOfSendTemplateRequest(
 	value: object,
 ): value is SendTemplateRequest {
-	if (!("templateType" in value) || value["templateType"] === undefined)
+	if (!("templateType" in value) || value.templateType === undefined)
 		return false;
-	if (!("to" in value) || value["to"] === undefined) return false;
+	if (!("to" in value) || value.to === undefined) return false;
 	return true;
 }
 
@@ -62,9 +62,9 @@ export function SendTemplateRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		data: json["data"] == null ? undefined : json["data"],
-		templateType: json["template_type"],
-		to: json["to"],
+		data: json.data == null ? undefined : json.data,
+		templateType: json.template_type,
+		to: json.to,
 	};
 }
 
@@ -81,8 +81,8 @@ export function SendTemplateRequestToJSONTyped(
 	}
 
 	return {
-		data: value["data"],
-		template_type: value["templateType"],
-		to: value["to"],
+		data: value.data,
+		template_type: value.templateType,
+		to: value.to,
 	};
 }

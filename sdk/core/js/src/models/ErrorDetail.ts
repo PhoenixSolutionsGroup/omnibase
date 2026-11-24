@@ -57,9 +57,9 @@ export function ErrorDetailFromJSONTyped(
 		return json;
 	}
 	return {
-		location: json["location"] == null ? undefined : json["location"],
-		message: json["message"] == null ? undefined : json["message"],
-		value: json["value"] == null ? undefined : json["value"],
+		location: json.location == null ? undefined : json.location,
+		message: json.message == null ? undefined : json.message,
+		value: json.value == null ? undefined : json.value,
 	};
 }
 
@@ -76,8 +76,8 @@ export function ErrorDetailToJSONTyped(
 	}
 
 	return {
-		location: value["location"],
-		message: value["message"],
-		value: value["value"],
+		location: value.location,
+		message: value.message,
+		value: value.value,
 	};
 }

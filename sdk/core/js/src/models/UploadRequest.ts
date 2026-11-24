@@ -36,7 +36,7 @@ export interface UploadRequest {
  * Check if a given object implements the UploadRequest interface.
  */
 export function instanceOfUploadRequest(value: object): value is UploadRequest {
-	if (!("path" in value) || value["path"] === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
 	return true;
 }
 
@@ -52,8 +52,8 @@ export function UploadRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
-		path: json["path"],
+		metadata: json.metadata == null ? undefined : json.metadata,
+		path: json.path,
 	};
 }
 
@@ -70,7 +70,7 @@ export function UploadRequestToJSONTyped(
 	}
 
 	return {
-		metadata: value["metadata"],
-		path: value["path"],
+		metadata: value.metadata,
+		path: value.path,
 	};
 }

@@ -42,7 +42,7 @@ export interface Tier {
  * Check if a given object implements the Tier interface.
  */
 export function instanceOfTier(value: object): value is Tier {
-	if (!("upTo" in value) || value["upTo"] === undefined) return false;
+	if (!("upTo" in value) || value.upTo === undefined) return false;
 	return true;
 }
 
@@ -58,9 +58,9 @@ export function TierFromJSONTyped(
 		return json;
 	}
 	return {
-		flatAmount: json["flat_amount"] == null ? undefined : json["flat_amount"],
-		unitAmount: json["unit_amount"] == null ? undefined : json["unit_amount"],
-		upTo: json["up_to"],
+		flatAmount: json.flat_amount == null ? undefined : json.flat_amount,
+		unitAmount: json.unit_amount == null ? undefined : json.unit_amount,
+		upTo: json.up_to,
 	};
 }
 
@@ -77,8 +77,8 @@ export function TierToJSONTyped(
 	}
 
 	return {
-		flat_amount: value["flatAmount"],
-		unit_amount: value["unitAmount"],
-		up_to: value["upTo"],
+		flat_amount: value.flatAmount,
+		unit_amount: value.unitAmount,
+		up_to: value.upTo,
 	};
 }

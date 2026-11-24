@@ -44,9 +44,9 @@ export interface RecordUsageRequest {
 export function instanceOfRecordUsageRequest(
 	value: object,
 ): value is RecordUsageRequest {
-	if (!("meterEventName" in value) || value["meterEventName"] === undefined)
+	if (!("meterEventName" in value) || value.meterEventName === undefined)
 		return false;
-	if (!("value" in value) || value["value"] === undefined) return false;
+	if (!("value" in value) || value.value === undefined) return false;
 	return true;
 }
 
@@ -63,9 +63,9 @@ export function RecordUsageRequestFromJSONTyped(
 	}
 	return {
 		idempotencyKey:
-			json["idempotency_key"] == null ? undefined : json["idempotency_key"],
-		meterEventName: json["meter_event_name"],
-		value: json["value"],
+			json.idempotency_key == null ? undefined : json.idempotency_key,
+		meterEventName: json.meter_event_name,
+		value: json.value,
 	};
 }
 
@@ -82,8 +82,8 @@ export function RecordUsageRequestToJSONTyped(
 	}
 
 	return {
-		idempotency_key: value["idempotencyKey"],
-		meter_event_name: value["meterEventName"],
-		value: value["value"],
+		idempotency_key: value.idempotencyKey,
+		meter_event_name: value.meterEventName,
+		value: value.value,
 	};
 }

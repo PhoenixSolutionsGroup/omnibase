@@ -98,8 +98,8 @@ export interface CouponWithStripeID {
 export function instanceOfCouponWithStripeID(
 	value: object,
 ): value is CouponWithStripeID {
-	if (!("duration" in value) || value["duration"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("duration" in value) || value.duration === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -115,22 +115,20 @@ export function CouponWithStripeIDFromJSONTyped(
 		return json;
 	}
 	return {
-		amountOff: json["amount_off"] == null ? undefined : json["amount_off"],
-		appliesTo: json["applies_to"] == null ? undefined : json["applies_to"],
-		currency: json["currency"] == null ? undefined : json["currency"],
-		duration: json["duration"],
+		amountOff: json.amount_off == null ? undefined : json.amount_off,
+		appliesTo: json.applies_to == null ? undefined : json.applies_to,
+		currency: json.currency == null ? undefined : json.currency,
+		duration: json.duration,
 		durationInMonths:
-			json["duration_in_months"] == null
-				? undefined
-				: json["duration_in_months"],
-		id: json["id"],
+			json.duration_in_months == null ? undefined : json.duration_in_months,
+		id: json.id,
 		maxRedemptions:
-			json["max_redemptions"] == null ? undefined : json["max_redemptions"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
-		name: json["name"] == null ? undefined : json["name"],
-		percentOff: json["percent_off"] == null ? undefined : json["percent_off"],
-		redeemBy: json["redeem_by"] == null ? undefined : json["redeem_by"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+			json.max_redemptions == null ? undefined : json.max_redemptions,
+		metadata: json.metadata == null ? undefined : json.metadata,
+		name: json.name == null ? undefined : json.name,
+		percentOff: json.percent_off == null ? undefined : json.percent_off,
+		redeemBy: json.redeem_by == null ? undefined : json.redeem_by,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -147,17 +145,17 @@ export function CouponWithStripeIDToJSONTyped(
 	}
 
 	return {
-		amount_off: value["amountOff"],
-		applies_to: value["appliesTo"],
-		currency: value["currency"],
-		duration: value["duration"],
-		duration_in_months: value["durationInMonths"],
-		id: value["id"],
-		max_redemptions: value["maxRedemptions"],
-		metadata: value["metadata"],
-		name: value["name"],
-		percent_off: value["percentOff"],
-		redeem_by: value["redeemBy"],
-		stripe_id: value["stripeId"],
+		amount_off: value.amountOff,
+		applies_to: value.appliesTo,
+		currency: value.currency,
+		duration: value.duration,
+		duration_in_months: value.durationInMonths,
+		id: value.id,
+		max_redemptions: value.maxRedemptions,
+		metadata: value.metadata,
+		name: value.name,
+		percent_off: value.percentOff,
+		redeem_by: value.redeemBy,
+		stripe_id: value.stripeId,
 	};
 }

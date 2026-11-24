@@ -48,8 +48,8 @@ export interface WebhookChange {
  * Check if a given object implements the WebhookChange interface.
  */
 export function instanceOfWebhookChange(value: object): value is WebhookChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("url" in value) || value["url"] === undefined) return false;
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("url" in value) || value.url === undefined) return false;
 	return true;
 }
 
@@ -65,10 +65,10 @@ export function WebhookChangeFromJSONTyped(
 		return json;
 	}
 	return {
-		action: json["action"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
-		url: json["url"],
-		webhookId: json["webhook_id"] == null ? undefined : json["webhook_id"],
+		action: json.action,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
+		url: json.url,
+		webhookId: json.webhook_id == null ? undefined : json.webhook_id,
 	};
 }
 
@@ -85,9 +85,9 @@ export function WebhookChangeToJSONTyped(
 	}
 
 	return {
-		action: value["action"],
-		stripe_id: value["stripeId"],
-		url: value["url"],
-		webhook_id: value["webhookId"],
+		action: value.action,
+		stripe_id: value.stripeId,
+		url: value.url,
+		webhook_id: value.webhookId,
 	};
 }

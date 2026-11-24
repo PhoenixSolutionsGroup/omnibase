@@ -72,7 +72,7 @@ export type CreateInvoiceRequestCollectionMethodEnum =
 export function instanceOfCreateInvoiceRequest(
 	value: object,
 ): value is CreateInvoiceRequest {
-	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (!("currency" in value) || value.currency === undefined) return false;
 	return true;
 }
 
@@ -88,15 +88,13 @@ export function CreateInvoiceRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		autoAdvance:
-			json["auto_advance"] == null ? undefined : json["auto_advance"],
+		autoAdvance: json.auto_advance == null ? undefined : json.auto_advance,
 		collectionMethod:
-			json["collection_method"] == null ? undefined : json["collection_method"],
-		currency: json["currency"],
-		daysUntilDue:
-			json["days_until_due"] == null ? undefined : json["days_until_due"],
-		description: json["description"] == null ? undefined : json["description"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
+			json.collection_method == null ? undefined : json.collection_method,
+		currency: json.currency,
+		daysUntilDue: json.days_until_due == null ? undefined : json.days_until_due,
+		description: json.description == null ? undefined : json.description,
+		metadata: json.metadata == null ? undefined : json.metadata,
 	};
 }
 
@@ -113,11 +111,11 @@ export function CreateInvoiceRequestToJSONTyped(
 	}
 
 	return {
-		auto_advance: value["autoAdvance"],
-		collection_method: value["collectionMethod"],
-		currency: value["currency"],
-		days_until_due: value["daysUntilDue"],
-		description: value["description"],
-		metadata: value["metadata"],
+		auto_advance: value.autoAdvance,
+		collection_method: value.collectionMethod,
+		currency: value.currency,
+		days_until_due: value.daysUntilDue,
+		description: value.description,
+		metadata: value.metadata,
 	};
 }

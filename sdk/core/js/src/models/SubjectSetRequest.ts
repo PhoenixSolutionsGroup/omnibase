@@ -44,8 +44,8 @@ export interface SubjectSetRequest {
 export function instanceOfSubjectSetRequest(
 	value: object,
 ): value is SubjectSetRequest {
-	if (!("namespace" in value) || value["namespace"] === undefined) return false;
-	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("namespace" in value) || value.namespace === undefined) return false;
+	if (!("object" in value) || value.object === undefined) return false;
 	return true;
 }
 
@@ -61,9 +61,9 @@ export function SubjectSetRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		namespace: json["namespace"],
-		object: json["object"],
-		relation: json["relation"] == null ? undefined : json["relation"],
+		namespace: json.namespace,
+		object: json.object,
+		relation: json.relation == null ? undefined : json.relation,
 	};
 }
 
@@ -80,8 +80,8 @@ export function SubjectSetRequestToJSONTyped(
 	}
 
 	return {
-		namespace: value["namespace"],
-		object: value["object"],
-		relation: value["relation"],
+		namespace: value.namespace,
+		object: value.object,
+		relation: value.relation,
 	};
 }

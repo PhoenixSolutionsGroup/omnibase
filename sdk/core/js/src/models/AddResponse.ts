@@ -42,9 +42,9 @@ export interface AddResponse {
  * Check if a given object implements the AddResponse interface.
  */
 export function instanceOfAddResponse(value: object): value is AddResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("status" in value) || value["status"] === undefined) return false;
-	if (!("subscriptionId" in value) || value["subscriptionId"] === undefined)
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("status" in value) || value.status === undefined) return false;
+	if (!("subscriptionId" in value) || value.subscriptionId === undefined)
 		return false;
 	return true;
 }
@@ -61,9 +61,9 @@ export function AddResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
-		status: json["status"],
-		subscriptionId: json["subscription_id"],
+		message: json.message,
+		status: json.status,
+		subscriptionId: json.subscription_id,
 	};
 }
 
@@ -80,8 +80,8 @@ export function AddResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
-		status: value["status"],
-		subscription_id: value["subscriptionId"],
+		message: value.message,
+		status: value.status,
+		subscription_id: value.subscriptionId,
 	};
 }

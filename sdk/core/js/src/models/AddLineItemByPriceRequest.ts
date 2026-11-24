@@ -62,10 +62,10 @@ export interface AddLineItemByPriceRequest {
 export function instanceOfAddLineItemByPriceRequest(
 	value: object,
 ): value is AddLineItemByPriceRequest {
-	if (!("currency" in value) || value["currency"] === undefined) return false;
-	if (!("description" in value) || value["description"] === undefined)
+	if (!("currency" in value) || value.currency === undefined) return false;
+	if (!("description" in value) || value.description === undefined)
 		return false;
-	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	if (!("quantity" in value) || value.quantity === undefined) return false;
 	return true;
 }
 
@@ -83,13 +83,13 @@ export function AddLineItemByPriceRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		currency: json["currency"],
-		description: json["description"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
-		priceId: json["price_id"] == null ? undefined : json["price_id"],
-		quantity: json["quantity"],
+		currency: json.currency,
+		description: json.description,
+		metadata: json.metadata == null ? undefined : json.metadata,
+		priceId: json.price_id == null ? undefined : json.price_id,
+		quantity: json.quantity,
 		stripePriceId:
-			json["stripe_price_id"] == null ? undefined : json["stripe_price_id"],
+			json.stripe_price_id == null ? undefined : json.stripe_price_id,
 	};
 }
 
@@ -108,11 +108,11 @@ export function AddLineItemByPriceRequestToJSONTyped(
 	}
 
 	return {
-		currency: value["currency"],
-		description: value["description"],
-		metadata: value["metadata"],
-		price_id: value["priceId"],
-		quantity: value["quantity"],
-		stripe_price_id: value["stripePriceId"],
+		currency: value.currency,
+		description: value.description,
+		metadata: value.metadata,
+		price_id: value.priceId,
+		quantity: value.quantity,
+		stripe_price_id: value.stripePriceId,
 	};
 }

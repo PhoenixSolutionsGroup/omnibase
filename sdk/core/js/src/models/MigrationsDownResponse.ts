@@ -32,7 +32,7 @@ export interface MigrationsDownResponse {
 export function instanceOfMigrationsDownResponse(
 	value: object,
 ): value is MigrationsDownResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function MigrationsDownResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function MigrationsDownResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

@@ -68,14 +68,14 @@ export interface EmailSystemTemplate {
 export function instanceOfEmailSystemTemplate(
 	value: object,
 ): value is EmailSystemTemplate {
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("plaintextBody" in value) || value["plaintextBody"] === undefined)
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("htmlBody" in value) || value.htmlBody === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("plaintextBody" in value) || value.plaintextBody === undefined)
 		return false;
-	if (!("subject" in value) || value["subject"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("subject" in value) || value.subject === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
 	return true;
 }
 
@@ -91,13 +91,13 @@ export function EmailSystemTemplateFromJSONTyped(
 		return json;
 	}
 	return {
-		createdAt: new Date(json["created_at"]),
-		htmlBody: json["html_body"],
-		id: json["id"],
-		name: json["name"],
-		plaintextBody: json["plaintext_body"],
-		subject: json["subject"],
-		updatedAt: new Date(json["updated_at"]),
+		createdAt: new Date(json.created_at),
+		htmlBody: json.html_body,
+		id: json.id,
+		name: json.name,
+		plaintextBody: json.plaintext_body,
+		subject: json.subject,
+		updatedAt: new Date(json.updated_at),
 	};
 }
 
@@ -114,12 +114,12 @@ export function EmailSystemTemplateToJSONTyped(
 	}
 
 	return {
-		created_at: value["createdAt"].toISOString(),
-		html_body: value["htmlBody"],
-		id: value["id"],
-		name: value["name"],
-		plaintext_body: value["plaintextBody"],
-		subject: value["subject"],
-		updated_at: value["updatedAt"].toISOString(),
+		created_at: value.createdAt.toISOString(),
+		html_body: value.htmlBody,
+		id: value.id,
+		name: value.name,
+		plaintext_body: value.plaintextBody,
+		subject: value.subject,
+		updated_at: value.updatedAt.toISOString(),
 	};
 }

@@ -48,11 +48,11 @@ export interface FormFile {
  * Check if a given object implements the FormFile interface.
  */
 export function instanceOfFormFile(value: object): value is FormFile {
-	if (!("contentType" in value) || value["contentType"] === undefined)
+	if (!("contentType" in value) || value.contentType === undefined)
 		return false;
-	if (!("filename" in value) || value["filename"] === undefined) return false;
-	if (!("isSet" in value) || value["isSet"] === undefined) return false;
-	if (!("size" in value) || value["size"] === undefined) return false;
+	if (!("filename" in value) || value.filename === undefined) return false;
+	if (!("isSet" in value) || value.isSet === undefined) return false;
+	if (!("size" in value) || value.size === undefined) return false;
 	return true;
 }
 
@@ -68,10 +68,10 @@ export function FormFileFromJSONTyped(
 		return json;
 	}
 	return {
-		contentType: json["ContentType"],
-		filename: json["Filename"],
-		isSet: json["IsSet"],
-		size: json["Size"],
+		contentType: json.ContentType,
+		filename: json.Filename,
+		isSet: json.IsSet,
+		size: json.Size,
 	};
 }
 
@@ -88,9 +88,9 @@ export function FormFileToJSONTyped(
 	}
 
 	return {
-		ContentType: value["contentType"],
-		Filename: value["filename"],
-		IsSet: value["isSet"],
-		Size: value["size"],
+		ContentType: value.contentType,
+		Filename: value.filename,
+		IsSet: value.isSet,
+		Size: value.size,
 	};
 }

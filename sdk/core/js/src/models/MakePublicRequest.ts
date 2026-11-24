@@ -32,7 +32,7 @@ export interface MakePublicRequest {
 export function instanceOfMakePublicRequest(
 	value: object,
 ): value is MakePublicRequest {
-	if (!("path" in value) || value["path"] === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function MakePublicRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		path: json["path"],
+		path: json.path,
 	};
 }
 
@@ -65,6 +65,6 @@ export function MakePublicRequestToJSONTyped(
 	}
 
 	return {
-		path: value["path"],
+		path: value.path,
 	};
 }

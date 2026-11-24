@@ -36,7 +36,7 @@ export interface LineItem {
  * Check if a given object implements the LineItem interface.
  */
 export function instanceOfLineItem(value: object): value is LineItem {
-	if (!("priceId" in value) || value["priceId"] === undefined) return false;
+	if (!("priceId" in value) || value.priceId === undefined) return false;
 	return true;
 }
 
@@ -52,8 +52,8 @@ export function LineItemFromJSONTyped(
 		return json;
 	}
 	return {
-		priceId: json["price_id"],
-		quantity: json["quantity"] == null ? undefined : json["quantity"],
+		priceId: json.price_id,
+		quantity: json.quantity == null ? undefined : json.quantity,
 	};
 }
 
@@ -70,7 +70,7 @@ export function LineItemToJSONTyped(
 	}
 
 	return {
-		price_id: value["priceId"],
-		quantity: value["quantity"],
+		price_id: value.priceId,
+		quantity: value.quantity,
 	};
 }

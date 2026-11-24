@@ -44,9 +44,9 @@ export interface UpsertTemplateRequest {
 export function instanceOfUpsertTemplateRequest(
 	value: object,
 ): value is UpsertTemplateRequest {
-	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
-	if (!("subject" in value) || value["subject"] === undefined) return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
+	if (!("htmlBody" in value) || value.htmlBody === undefined) return false;
+	if (!("subject" in value) || value.subject === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
 	return true;
 }
 
@@ -64,9 +64,9 @@ export function UpsertTemplateRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		htmlBody: json["html_body"],
-		subject: json["subject"],
-		type: json["type"],
+		htmlBody: json.html_body,
+		subject: json.subject,
+		type: json.type,
 	};
 }
 
@@ -83,8 +83,8 @@ export function UpsertTemplateRequestToJSONTyped(
 	}
 
 	return {
-		html_body: value["htmlBody"],
-		subject: value["subject"],
-		type: value["type"],
+		html_body: value.htmlBody,
+		subject: value.subject,
+		type: value.type,
 	};
 }

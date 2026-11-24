@@ -30,7 +30,7 @@ export interface AcceptRequest {
  * Check if a given object implements the AcceptRequest interface.
  */
 export function instanceOfAcceptRequest(value: object): value is AcceptRequest {
-	if (!("token" in value) || value["token"] === undefined) return false;
+	if (!("token" in value) || value.token === undefined) return false;
 	return true;
 }
 
@@ -46,7 +46,7 @@ export function AcceptRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		token: json["token"],
+		token: json.token,
 	};
 }
 
@@ -63,6 +63,6 @@ export function AcceptRequestToJSONTyped(
 	}
 
 	return {
-		token: value["token"],
+		token: value.token,
 	};
 }

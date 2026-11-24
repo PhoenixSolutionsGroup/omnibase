@@ -62,9 +62,9 @@ export interface RecoveryIdentityAddress {
 export function instanceOfRecoveryIdentityAddress(
 	value: object,
 ): value is RecoveryIdentityAddress {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("value" in value) || value["value"] === undefined) return false;
-	if (!("via" in value) || value["via"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("value" in value) || value.value === undefined) return false;
+	if (!("via" in value) || value.via === undefined) return false;
 	return true;
 }
 
@@ -83,16 +83,12 @@ export function RecoveryIdentityAddressFromJSONTyped(
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		createdAt:
-			json["created_at"] == null ? undefined : new Date(json["created_at"]),
-		id: json["id"],
-		updatedAt:
-			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
-		value: json["value"],
-		via: json["via"],
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		createdAt: json.created_at == null ? undefined : new Date(json.created_at),
+		id: json.id,
+		updatedAt: json.updated_at == null ? undefined : new Date(json.updated_at),
+		value: json.value,
+		via: json.via,
 	};
 }
 
@@ -111,17 +107,13 @@ export function RecoveryIdentityAddressToJSONTyped(
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
+		AdditionalProperties: value.additionalProperties,
 		created_at:
-			value["createdAt"] == null
-				? value["createdAt"]
-				: value["createdAt"].toISOString(),
-		id: value["id"],
+			value.createdAt == null ? value.createdAt : value.createdAt.toISOString(),
+		id: value.id,
 		updated_at:
-			value["updatedAt"] == null
-				? value["updatedAt"]
-				: value["updatedAt"].toISOString(),
-		value: value["value"],
-		via: value["via"],
+			value.updatedAt == null ? value.updatedAt : value.updatedAt.toISOString(),
+		value: value.value,
+		via: value.via,
 	};
 }

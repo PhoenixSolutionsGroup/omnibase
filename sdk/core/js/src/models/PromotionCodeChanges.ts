@@ -66,17 +66,17 @@ export function PromotionCodeChangesFromJSONTyped(
 	}
 	return {
 		created:
-			json["created"] == null
+			json.created == null
 				? undefined
-				: (json["created"] as Array<any>).map(PromotionCodeChangeFromJSON),
+				: (json.created as Array<any>).map(PromotionCodeChangeFromJSON),
 		deactivated:
-			json["deactivated"] == null
+			json.deactivated == null
 				? undefined
-				: (json["deactivated"] as Array<any>).map(PromotionCodeChangeFromJSON),
+				: (json.deactivated as Array<any>).map(PromotionCodeChangeFromJSON),
 		updated:
-			json["updated"] == null
+			json.updated == null
 				? undefined
-				: (json["updated"] as Array<any>).map(PromotionCodeChangeFromJSON),
+				: (json.updated as Array<any>).map(PromotionCodeChangeFromJSON),
 	};
 }
 
@@ -94,16 +94,16 @@ export function PromotionCodeChangesToJSONTyped(
 
 	return {
 		created:
-			value["created"] == null
+			value.created == null
 				? undefined
-				: (value["created"] as Array<any>).map(PromotionCodeChangeToJSON),
+				: (value.created as Array<any>).map(PromotionCodeChangeToJSON),
 		deactivated:
-			value["deactivated"] == null
+			value.deactivated == null
 				? undefined
-				: (value["deactivated"] as Array<any>).map(PromotionCodeChangeToJSON),
+				: (value.deactivated as Array<any>).map(PromotionCodeChangeToJSON),
 		updated:
-			value["updated"] == null
+			value.updated == null
 				? undefined
-				: (value["updated"] as Array<any>).map(PromotionCodeChangeToJSON),
+				: (value.updated as Array<any>).map(PromotionCodeChangeToJSON),
 	};
 }

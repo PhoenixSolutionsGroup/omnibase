@@ -32,7 +32,7 @@ export interface UpdateUserRoleResponse {
 export function instanceOfUpdateUserRoleResponse(
 	value: object,
 ): value is UpdateUserRoleResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function UpdateUserRoleResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function UpdateUserRoleResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

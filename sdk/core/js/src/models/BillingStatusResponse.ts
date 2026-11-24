@@ -32,7 +32,7 @@ export interface BillingStatusResponse {
 export function instanceOfBillingStatusResponse(
 	value: object,
 ): value is BillingStatusResponse {
-	if (!("isActive" in value) || value["isActive"] === undefined) return false;
+	if (!("isActive" in value) || value.isActive === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function BillingStatusResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		isActive: json["is_active"],
+		isActive: json.is_active,
 	};
 }
 
@@ -67,6 +67,6 @@ export function BillingStatusResponseToJSONTyped(
 	}
 
 	return {
-		is_active: value["isActive"],
+		is_active: value.isActive,
 	};
 }

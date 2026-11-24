@@ -38,7 +38,7 @@ export interface ListTenantsResponse {
 export function instanceOfListTenantsResponse(
 	value: object,
 ): value is ListTenantsResponse {
-	if (!("tenants" in value) || value["tenants"] === undefined) return false;
+	if (!("tenants" in value) || value.tenants === undefined) return false;
 	return true;
 }
 
@@ -55,9 +55,9 @@ export function ListTenantsResponseFromJSONTyped(
 	}
 	return {
 		tenants:
-			json["tenants"] == null
+			json.tenants == null
 				? null
-				: (json["tenants"] as Array<any>).map(UserTenantListItemFromJSON),
+				: (json.tenants as Array<any>).map(UserTenantListItemFromJSON),
 	};
 }
 
@@ -75,8 +75,8 @@ export function ListTenantsResponseToJSONTyped(
 
 	return {
 		tenants:
-			value["tenants"] == null
+			value.tenants == null
 				? null
-				: (value["tenants"] as Array<any>).map(UserTenantListItemToJSON),
+				: (value.tenants as Array<any>).map(UserTenantListItemToJSON),
 	};
 }

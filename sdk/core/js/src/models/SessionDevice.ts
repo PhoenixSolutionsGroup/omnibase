@@ -54,7 +54,7 @@ export interface SessionDevice {
  * Check if a given object implements the SessionDevice interface.
  */
 export function instanceOfSessionDevice(value: object): value is SessionDevice {
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -71,13 +71,11 @@ export function SessionDeviceFromJSONTyped(
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		id: json["id"],
-		ipAddress: json["ip_address"] == null ? undefined : json["ip_address"],
-		location: json["location"] == null ? undefined : json["location"],
-		userAgent: json["user_agent"] == null ? undefined : json["user_agent"],
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		id: json.id,
+		ipAddress: json.ip_address == null ? undefined : json.ip_address,
+		location: json.location == null ? undefined : json.location,
+		userAgent: json.user_agent == null ? undefined : json.user_agent,
 	};
 }
 
@@ -94,10 +92,10 @@ export function SessionDeviceToJSONTyped(
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
-		id: value["id"],
-		ip_address: value["ipAddress"],
-		location: value["location"],
-		user_agent: value["userAgent"],
+		AdditionalProperties: value.additionalProperties,
+		id: value.id,
+		ip_address: value.ipAddress,
+		location: value.location,
+		user_agent: value.userAgent,
 	};
 }

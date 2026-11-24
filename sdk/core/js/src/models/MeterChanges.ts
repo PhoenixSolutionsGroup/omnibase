@@ -13,10 +13,7 @@
  */
 
 import type { MeterChange } from "./MeterChange";
-import {
-	MeterChangeFromJSON,
-	MeterChangeToJSON,
-} from "./MeterChange";
+import { MeterChangeFromJSON, MeterChangeToJSON } from "./MeterChange";
 
 /**
  *
@@ -64,17 +61,17 @@ export function MeterChangesFromJSONTyped(
 	}
 	return {
 		archived:
-			json["archived"] == null
+			json.archived == null
 				? undefined
-				: (json["archived"] as Array<any>).map(MeterChangeFromJSON),
+				: (json.archived as Array<any>).map(MeterChangeFromJSON),
 		created:
-			json["created"] == null
+			json.created == null
 				? undefined
-				: (json["created"] as Array<any>).map(MeterChangeFromJSON),
+				: (json.created as Array<any>).map(MeterChangeFromJSON),
 		updated:
-			json["updated"] == null
+			json.updated == null
 				? undefined
-				: (json["updated"] as Array<any>).map(MeterChangeFromJSON),
+				: (json.updated as Array<any>).map(MeterChangeFromJSON),
 	};
 }
 
@@ -92,16 +89,16 @@ export function MeterChangesToJSONTyped(
 
 	return {
 		archived:
-			value["archived"] == null
+			value.archived == null
 				? undefined
-				: (value["archived"] as Array<any>).map(MeterChangeToJSON),
+				: (value.archived as Array<any>).map(MeterChangeToJSON),
 		created:
-			value["created"] == null
+			value.created == null
 				? undefined
-				: (value["created"] as Array<any>).map(MeterChangeToJSON),
+				: (value.created as Array<any>).map(MeterChangeToJSON),
 		updated:
-			value["updated"] == null
+			value.updated == null
 				? undefined
-				: (value["updated"] as Array<any>).map(MeterChangeToJSON),
+				: (value.updated as Array<any>).map(MeterChangeToJSON),
 	};
 }

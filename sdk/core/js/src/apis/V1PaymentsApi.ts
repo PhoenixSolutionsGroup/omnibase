@@ -93,14 +93,14 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: AddInvoiceLineItemRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceLineItemResponse>> {
-		if (requestParameters["invoiceId"] == null) {
+		if (requestParameters.invoiceId == null) {
 			throw new runtime.RequiredError(
 				"invoiceId",
 				'Required parameter "invoiceId" was null or undefined when calling addInvoiceLineItem().',
 			);
 		}
 
-		if (requestParameters["addLineItemRequest"] == null) {
+		if (requestParameters.addLineItemRequest == null) {
 			throw new runtime.RequiredError(
 				"addLineItemRequest",
 				'Required parameter "addLineItemRequest" was null or undefined when calling addInvoiceLineItem().',
@@ -121,7 +121,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/payments/invoices/{invoice_id}/items`;
 		urlPath = urlPath.replace(
 			`{${"invoice_id"}}`,
-			encodeURIComponent(String(requestParameters["invoiceId"])),
+			encodeURIComponent(String(requestParameters.invoiceId)),
 		);
 
 		const response = await this.request(
@@ -130,7 +130,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: AddLineItemRequestToJSON(requestParameters["addLineItemRequest"]),
+				body: AddLineItemRequestToJSON(requestParameters.addLineItemRequest),
 			},
 			initOverrides,
 		);
@@ -161,14 +161,14 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: AddInvoiceLineItemWithPriceIdRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceLineItemResponse>> {
-		if (requestParameters["invoiceId"] == null) {
+		if (requestParameters.invoiceId == null) {
 			throw new runtime.RequiredError(
 				"invoiceId",
 				'Required parameter "invoiceId" was null or undefined when calling addInvoiceLineItemWithPriceId().',
 			);
 		}
 
-		if (requestParameters["addLineItemByPriceRequest"] == null) {
+		if (requestParameters.addLineItemByPriceRequest == null) {
 			throw new runtime.RequiredError(
 				"addLineItemByPriceRequest",
 				'Required parameter "addLineItemByPriceRequest" was null or undefined when calling addInvoiceLineItemWithPriceId().',
@@ -189,7 +189,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/payments/invoices/{invoice_id}/items/price`;
 		urlPath = urlPath.replace(
 			`{${"invoice_id"}}`,
-			encodeURIComponent(String(requestParameters["invoiceId"])),
+			encodeURIComponent(String(requestParameters.invoiceId)),
 		);
 
 		const response = await this.request(
@@ -199,7 +199,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: AddLineItemByPriceRequestToJSON(
-					requestParameters["addLineItemByPriceRequest"],
+					requestParameters.addLineItemByPriceRequest,
 				),
 			},
 			initOverrides,
@@ -231,7 +231,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: CreateCheckoutOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateCheckoutResponse>> {
-		if (requestParameters["createCheckoutRequest"] == null) {
+		if (requestParameters.createCheckoutRequest == null) {
 			throw new runtime.RequiredError(
 				"createCheckoutRequest",
 				'Required parameter "createCheckoutRequest" was null or undefined when calling createCheckout().',
@@ -268,7 +268,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: CreateCheckoutRequestToJSON(
-					requestParameters["createCheckoutRequest"],
+					requestParameters.createCheckoutRequest,
 				),
 			},
 			initOverrides,
@@ -300,7 +300,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: CreateCustomerPortalRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreatePortalResponse>> {
-		if (requestParameters["createPortalRequest"] == null) {
+		if (requestParameters.createPortalRequest == null) {
 			throw new runtime.RequiredError(
 				"createPortalRequest",
 				'Required parameter "createPortalRequest" was null or undefined when calling createCustomerPortal().',
@@ -336,9 +336,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreatePortalRequestToJSON(
-					requestParameters["createPortalRequest"],
-				),
+				body: CreatePortalRequestToJSON(requestParameters.createPortalRequest),
 			},
 			initOverrides,
 		);
@@ -369,7 +367,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: CreateInvoiceOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceResponse>> {
-		if (requestParameters["createInvoiceRequest"] == null) {
+		if (requestParameters.createInvoiceRequest == null) {
 			throw new runtime.RequiredError(
 				"createInvoiceRequest",
 				'Required parameter "createInvoiceRequest" was null or undefined when calling createInvoice().',
@@ -396,7 +394,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: CreateInvoiceRequestToJSON(
-					requestParameters["createInvoiceRequest"],
+					requestParameters.createInvoiceRequest,
 				),
 			},
 			initOverrides,
@@ -428,14 +426,14 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: FinalizeInvoiceRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceResponse>> {
-		if (requestParameters["invoiceId"] == null) {
+		if (requestParameters.invoiceId == null) {
 			throw new runtime.RequiredError(
 				"invoiceId",
 				'Required parameter "invoiceId" was null or undefined when calling finalizeInvoice().',
 			);
 		}
 
-		if (requestParameters["finalizeRequest"] == null) {
+		if (requestParameters.finalizeRequest == null) {
 			throw new runtime.RequiredError(
 				"finalizeRequest",
 				'Required parameter "finalizeRequest" was null or undefined when calling finalizeInvoice().',
@@ -456,7 +454,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/payments/invoices/{invoice_id}/finalize`;
 		urlPath = urlPath.replace(
 			`{${"invoice_id"}}`,
-			encodeURIComponent(String(requestParameters["invoiceId"])),
+			encodeURIComponent(String(requestParameters.invoiceId)),
 		);
 
 		const response = await this.request(
@@ -465,7 +463,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: FinalizeRequestToJSON(requestParameters["finalizeRequest"]),
+				body: FinalizeRequestToJSON(requestParameters.finalizeRequest),
 			},
 			initOverrides,
 		);
@@ -496,7 +494,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: GetInvoiceRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceResponse>> {
-		if (requestParameters["invoiceId"] == null) {
+		if (requestParameters.invoiceId == null) {
 			throw new runtime.RequiredError(
 				"invoiceId",
 				'Required parameter "invoiceId" was null or undefined when calling getInvoice().',
@@ -515,7 +513,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/payments/invoices/{invoice_id}`;
 		urlPath = urlPath.replace(
 			`{${"invoice_id"}}`,
-			encodeURIComponent(String(requestParameters["invoiceId"])),
+			encodeURIComponent(String(requestParameters.invoiceId)),
 		);
 
 		const response = await this.request(
@@ -551,7 +549,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: RecordUsageOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<any>> {
-		if (requestParameters["recordUsageRequest"] == null) {
+		if (requestParameters.recordUsageRequest == null) {
 			throw new runtime.RequiredError(
 				"recordUsageRequest",
 				'Required parameter "recordUsageRequest" was null or undefined when calling recordUsage().',
@@ -577,7 +575,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: RecordUsageRequestToJSON(requestParameters["recordUsageRequest"]),
+				body: RecordUsageRequestToJSON(requestParameters.recordUsageRequest),
 			},
 			initOverrides,
 		);
@@ -610,14 +608,14 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		requestParameters: UpdateInvoiceOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<InvoiceResponse>> {
-		if (requestParameters["invoiceId"] == null) {
+		if (requestParameters.invoiceId == null) {
 			throw new runtime.RequiredError(
 				"invoiceId",
 				'Required parameter "invoiceId" was null or undefined when calling updateInvoice().',
 			);
 		}
 
-		if (requestParameters["updateInvoiceRequest"] == null) {
+		if (requestParameters.updateInvoiceRequest == null) {
 			throw new runtime.RequiredError(
 				"updateInvoiceRequest",
 				'Required parameter "updateInvoiceRequest" was null or undefined when calling updateInvoice().',
@@ -638,7 +636,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/payments/invoices/{invoice_id}`;
 		urlPath = urlPath.replace(
 			`{${"invoice_id"}}`,
-			encodeURIComponent(String(requestParameters["invoiceId"])),
+			encodeURIComponent(String(requestParameters.invoiceId)),
 		);
 
 		const response = await this.request(
@@ -648,7 +646,7 @@ export class V1PaymentsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: UpdateInvoiceRequestToJSON(
-					requestParameters["updateInvoiceRequest"],
+					requestParameters.updateInvoiceRequest,
 				),
 			},
 			initOverrides,

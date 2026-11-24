@@ -68,11 +68,11 @@ export interface ConfigHistoryItem {
 export function instanceOfConfigHistoryItem(
 	value: object,
 ): value is ConfigHistoryItem {
-	if (!("config" in value) || value["config"] === undefined) return false;
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
-	if (!("version" in value) || value["version"] === undefined) return false;
+	if (!("config" in value) || value.config === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
+	if (!("version" in value) || value.version === undefined) return false;
 	return true;
 }
 
@@ -88,12 +88,12 @@ export function ConfigHistoryItemFromJSONTyped(
 		return json;
 	}
 	return {
-		config: StripeConfigurationWithIDsFromJSON(json["config"]),
-		createdAt: json["created_at"],
-		id: json["id"],
-		parseError: json["parse_error"] == null ? undefined : json["parse_error"],
-		updatedAt: json["updated_at"],
-		version: json["version"],
+		config: StripeConfigurationWithIDsFromJSON(json.config),
+		createdAt: json.created_at,
+		id: json.id,
+		parseError: json.parse_error == null ? undefined : json.parse_error,
+		updatedAt: json.updated_at,
+		version: json.version,
 	};
 }
 
@@ -110,11 +110,11 @@ export function ConfigHistoryItemToJSONTyped(
 	}
 
 	return {
-		config: StripeConfigurationWithIDsToJSON(value["config"]),
-		created_at: value["createdAt"],
-		id: value["id"],
-		parse_error: value["parseError"],
-		updated_at: value["updatedAt"],
-		version: value["version"],
+		config: StripeConfigurationWithIDsToJSON(value.config),
+		created_at: value.createdAt,
+		id: value.id,
+		parse_error: value.parseError,
+		updated_at: value.updatedAt,
+		version: value.version,
 	};
 }

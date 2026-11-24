@@ -1,11 +1,6 @@
 #!/usr/bin/env bun
 
-import {
-	readdirSync,
-	readFileSync,
-	renameSync,
-	writeFileSync,
-} from "node:fs";
+import { readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 
 const DOCS_DIR = resolve(import.meta.dirname, "..", "docs");

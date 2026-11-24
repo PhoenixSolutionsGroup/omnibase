@@ -32,7 +32,7 @@ export interface DeleteRelationshipResponse {
 export function instanceOfDeleteRelationshipResponse(
 	value: object,
 ): value is DeleteRelationshipResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function DeleteRelationshipResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function DeleteRelationshipResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

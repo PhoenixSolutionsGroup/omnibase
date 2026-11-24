@@ -32,7 +32,7 @@ export interface CreateRelationshipResponse {
 export function instanceOfCreateRelationshipResponse(
 	value: object,
 ): value is CreateRelationshipResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function CreateRelationshipResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function CreateRelationshipResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

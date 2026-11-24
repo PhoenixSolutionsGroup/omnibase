@@ -13,10 +13,7 @@
  */
 
 import type { LineItem } from "./LineItem";
-import {
-	LineItemFromJSON,
-	LineItemToJSON,
-} from "./LineItem";
+import { LineItemFromJSON, LineItemToJSON } from "./LineItem";
 
 /**
  *
@@ -68,10 +65,9 @@ export interface CreateCheckoutRequest {
 export function instanceOfCreateCheckoutRequest(
 	value: object,
 ): value is CreateCheckoutRequest {
-	if (!("cancelUrl" in value) || value["cancelUrl"] === undefined) return false;
-	if (!("lineItems" in value) || value["lineItems"] === undefined) return false;
-	if (!("successUrl" in value) || value["successUrl"] === undefined)
-		return false;
+	if (!("cancelUrl" in value) || value.cancelUrl === undefined) return false;
+	if (!("lineItems" in value) || value.lineItems === undefined) return false;
+	if (!("successUrl" in value) || value.successUrl === undefined) return false;
 	return true;
 }
 
@@ -90,19 +86,19 @@ export function CreateCheckoutRequestFromJSONTyped(
 	}
 	return {
 		allowPromotionCodes:
-			json["allow_promotion_codes"] == null
+			json.allow_promotion_codes == null
 				? undefined
-				: json["allow_promotion_codes"],
-		cancelUrl: json["cancel_url"],
+				: json.allow_promotion_codes,
+		cancelUrl: json.cancel_url,
 		lineItems:
-			json["line_items"] == null
+			json.line_items == null
 				? null
-				: (json["line_items"] as Array<any>).map(LineItemFromJSON),
+				: (json.line_items as Array<any>).map(LineItemFromJSON),
 		promotionCode:
-			json["promotion_code"] == null ? undefined : json["promotion_code"],
-		successUrl: json["success_url"],
+			json.promotion_code == null ? undefined : json.promotion_code,
+		successUrl: json.success_url,
 		trialPeriodDays:
-			json["trial_period_days"] == null ? undefined : json["trial_period_days"],
+			json.trial_period_days == null ? undefined : json.trial_period_days,
 	};
 }
 
@@ -119,14 +115,14 @@ export function CreateCheckoutRequestToJSONTyped(
 	}
 
 	return {
-		allow_promotion_codes: value["allowPromotionCodes"],
-		cancel_url: value["cancelUrl"],
+		allow_promotion_codes: value.allowPromotionCodes,
+		cancel_url: value.cancelUrl,
 		line_items:
-			value["lineItems"] == null
+			value.lineItems == null
 				? null
-				: (value["lineItems"] as Array<any>).map(LineItemToJSON),
-		promotion_code: value["promotionCode"],
-		success_url: value["successUrl"],
-		trial_period_days: value["trialPeriodDays"],
+				: (value.lineItems as Array<any>).map(LineItemToJSON),
+		promotion_code: value.promotionCode,
+		success_url: value.successUrl,
+		trial_period_days: value.trialPeriodDays,
 	};
 }

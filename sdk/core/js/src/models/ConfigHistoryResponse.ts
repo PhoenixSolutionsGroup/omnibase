@@ -49,9 +49,8 @@ export interface ConfigHistoryResponse {
 export function instanceOfConfigHistoryResponse(
 	value: object,
 ): value is ConfigHistoryResponse {
-	if (!("configs" in value) || value["configs"] === undefined) return false;
-	if (!("pagination" in value) || value["pagination"] === undefined)
-		return false;
+	if (!("configs" in value) || value.configs === undefined) return false;
+	if (!("pagination" in value) || value.pagination === undefined) return false;
 	return true;
 }
 
@@ -70,10 +69,10 @@ export function ConfigHistoryResponseFromJSONTyped(
 	}
 	return {
 		configs:
-			json["configs"] == null
+			json.configs == null
 				? null
-				: (json["configs"] as Array<any>).map(ConfigHistoryItemFromJSON),
-		pagination: ConfigHistoryPaginationFromJSON(json["pagination"]),
+				: (json.configs as Array<any>).map(ConfigHistoryItemFromJSON),
+		pagination: ConfigHistoryPaginationFromJSON(json.pagination),
 	};
 }
 
@@ -91,9 +90,9 @@ export function ConfigHistoryResponseToJSONTyped(
 
 	return {
 		configs:
-			value["configs"] == null
+			value.configs == null
 				? null
-				: (value["configs"] as Array<any>).map(ConfigHistoryItemToJSON),
-		pagination: ConfigHistoryPaginationToJSON(value["pagination"]),
+				: (value.configs as Array<any>).map(ConfigHistoryItemToJSON),
+		pagination: ConfigHistoryPaginationToJSON(value.pagination),
 	};
 }

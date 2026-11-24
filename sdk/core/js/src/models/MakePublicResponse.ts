@@ -38,8 +38,8 @@ export interface MakePublicResponse {
 export function instanceOfMakePublicResponse(
 	value: object,
 ): value is MakePublicResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("path" in value) || value["path"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
 	return true;
 }
 
@@ -55,8 +55,8 @@ export function MakePublicResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
-		path: json["path"],
+		message: json.message,
+		path: json.path,
 	};
 }
 
@@ -73,7 +73,7 @@ export function MakePublicResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
-		path: value["path"],
+		message: value.message,
+		path: value.path,
 	};
 }

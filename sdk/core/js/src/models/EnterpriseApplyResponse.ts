@@ -50,10 +50,10 @@ export interface EnterpriseApplyResponse {
 export function instanceOfEnterpriseApplyResponse(
 	value: object,
 ): value is EnterpriseApplyResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("pricesSwapped" in value) || value["pricesSwapped"] === undefined)
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("pricesSwapped" in value) || value.pricesSwapped === undefined)
 		return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -71,11 +71,11 @@ export function EnterpriseApplyResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
-		pricesSwapped: json["prices_swapped"],
+		message: json.message,
+		pricesSwapped: json.prices_swapped,
 		swappedDetails:
-			json["swapped_details"] == null ? undefined : json["swapped_details"],
-		tenantId: json["tenant_id"],
+			json.swapped_details == null ? undefined : json.swapped_details,
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -94,9 +94,9 @@ export function EnterpriseApplyResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
-		prices_swapped: value["pricesSwapped"],
-		swapped_details: value["swappedDetails"],
-		tenant_id: value["tenantId"],
+		message: value.message,
+		prices_swapped: value.pricesSwapped,
+		swapped_details: value.swappedDetails,
+		tenant_id: value.tenantId,
 	};
 }

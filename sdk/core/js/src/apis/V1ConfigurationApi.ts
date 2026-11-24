@@ -126,7 +126,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: ArchiveAllStripeConfigRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<ArchiveAllResponse>> {
-		if (requestParameters["archiveAllInputBody"] == null) {
+		if (requestParameters.archiveAllInputBody == null) {
 			throw new runtime.RequiredError(
 				"archiveAllInputBody",
 				'Required parameter "archiveAllInputBody" was null or undefined when calling archiveAllStripeConfig().',
@@ -152,9 +152,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: ArchiveAllInputBodyToJSON(
-					requestParameters["archiveAllInputBody"],
-				),
+				body: ArchiveAllInputBodyToJSON(requestParameters.archiveAllInputBody),
 			},
 			initOverrides,
 		);
@@ -185,7 +183,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: CreateOrUpdateEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UpsertTemplateResponse>> {
-		if (requestParameters["upsertTemplateRequest"] == null) {
+		if (requestParameters.upsertTemplateRequest == null) {
 			throw new runtime.RequiredError(
 				"upsertTemplateRequest",
 				'Required parameter "upsertTemplateRequest" was null or undefined when calling createOrUpdateEmailTemplate().',
@@ -222,7 +220,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: UpsertTemplateRequestToJSON(
-					requestParameters["upsertTemplateRequest"],
+					requestParameters.upsertTemplateRequest,
 				),
 			},
 			initOverrides,
@@ -254,7 +252,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: CreateOrUpdateSystemEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UpsertSystemTemplateResponse>> {
-		if (requestParameters["upsertSystemTemplateRequest"] == null) {
+		if (requestParameters.upsertSystemTemplateRequest == null) {
 			throw new runtime.RequiredError(
 				"upsertSystemTemplateRequest",
 				'Required parameter "upsertSystemTemplateRequest" was null or undefined when calling createOrUpdateSystemEmailTemplate().',
@@ -281,7 +279,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: UpsertSystemTemplateRequestToJSON(
-					requestParameters["upsertSystemTemplateRequest"],
+					requestParameters.upsertSystemTemplateRequest,
 				),
 			},
 			initOverrides,
@@ -313,7 +311,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: DeleteEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DeleteTemplateResponse>> {
-		if (requestParameters["type"] == null) {
+		if (requestParameters.type == null) {
 			throw new runtime.RequiredError(
 				"type",
 				'Required parameter "type" was null or undefined when calling deleteEmailTemplate().',
@@ -342,7 +340,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/email/templates/{type}`;
 		urlPath = urlPath.replace(
 			`{${"type"}}`,
-			encodeURIComponent(String(requestParameters["type"])),
+			encodeURIComponent(String(requestParameters.type)),
 		);
 
 		const response = await this.request(
@@ -381,7 +379,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: DeleteSystemEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DeleteSystemTemplateResponse>> {
-		if (requestParameters["name"] == null) {
+		if (requestParameters.name == null) {
 			throw new runtime.RequiredError(
 				"name",
 				'Required parameter "name" was null or undefined when calling deleteSystemEmailTemplate().',
@@ -400,7 +398,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/email/system-templates/{name}`;
 		urlPath = urlPath.replace(
 			`{${"name"}}`,
-			encodeURIComponent(String(requestParameters["name"])),
+			encodeURIComponent(String(requestParameters.name)),
 		);
 
 		const response = await this.request(
@@ -439,7 +437,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: DeployPermissionNamespacesRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DeployNamespacesResponse>> {
-		if (requestParameters["namespaces"] == null) {
+		if (requestParameters.namespaces == null) {
 			throw new runtime.RequiredError(
 				"namespaces",
 				'Required parameter "namespaces" was null or undefined when calling deployPermissionNamespaces().',
@@ -471,8 +469,8 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 			formParams = new URLSearchParams();
 		}
 
-		if (requestParameters["namespaces"] != null) {
-			formParams.append("namespaces", requestParameters["namespaces"] as any);
+		if (requestParameters.namespaces != null) {
+			formParams.append("namespaces", requestParameters.namespaces as any);
 		}
 
 		const urlPath = `/api/v1/permissions/namespaces`;
@@ -605,12 +603,12 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 	): Promise<runtime.ApiResponse<ConfigHistoryResponse>> {
 		const queryParameters: any = {};
 
-		if (requestParameters["limit"] != null) {
-			queryParameters["limit"] = requestParameters["limit"];
+		if (requestParameters.limit != null) {
+			queryParameters.limit = requestParameters.limit;
 		}
 
-		if (requestParameters["offset"] != null) {
-			queryParameters["offset"] = requestParameters["offset"];
+		if (requestParameters.offset != null) {
+			queryParameters.offset = requestParameters.offset;
 		}
 
 		const headerParameters: runtime.HTTPHeaders = {};
@@ -697,7 +695,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: GetStripeConfigStatusRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<ConfigStatus>> {
-		if (requestParameters["body"] == null) {
+		if (requestParameters.body == null) {
 			throw new runtime.RequiredError(
 				"body",
 				'Required parameter "body" was null or undefined when calling getStripeConfigStatus().',
@@ -723,7 +721,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: requestParameters["body"] as any,
+				body: requestParameters.body as any,
 			},
 			initOverrides,
 		);
@@ -838,7 +836,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: SendEmailRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<SendResponse>> {
-		if (requestParameters["sendTemplateRequest"] == null) {
+		if (requestParameters.sendTemplateRequest == null) {
 			throw new runtime.RequiredError(
 				"sendTemplateRequest",
 				'Required parameter "sendTemplateRequest" was null or undefined when calling sendEmail().',
@@ -874,9 +872,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: SendTemplateRequestToJSON(
-					requestParameters["sendTemplateRequest"],
-				),
+				body: SendTemplateRequestToJSON(requestParameters.sendTemplateRequest),
 			},
 			initOverrides,
 		);
@@ -904,7 +900,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: SendEmailHTMLRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<SendResponse>> {
-		if (requestParameters["sendHTMLRequest"] == null) {
+		if (requestParameters.sendHTMLRequest == null) {
 			throw new runtime.RequiredError(
 				"sendHTMLRequest",
 				'Required parameter "sendHTMLRequest" was null or undefined when calling sendEmailHTML().',
@@ -940,7 +936,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: SendHTMLRequestToJSON(requestParameters["sendHTMLRequest"]),
+				body: SendHTMLRequestToJSON(requestParameters.sendHTMLRequest),
 			},
 			initOverrides,
 		);
@@ -971,14 +967,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: ServeEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<string>> {
-		if (requestParameters["templateName"] == null) {
+		if (requestParameters.templateName == null) {
 			throw new runtime.RequiredError(
 				"templateName",
 				'Required parameter "templateName" was null or undefined when calling serveEmailTemplate().',
 			);
 		}
 
-		if (requestParameters["type"] == null) {
+		if (requestParameters.type == null) {
 			throw new runtime.RequiredError(
 				"type",
 				'Required parameter "type" was null or undefined when calling serveEmailTemplate().',
@@ -1007,11 +1003,11 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/email/templates/{template_name}/{type}`;
 		urlPath = urlPath.replace(
 			`{${"template_name"}}`,
-			encodeURIComponent(String(requestParameters["templateName"])),
+			encodeURIComponent(String(requestParameters.templateName)),
 		);
 		urlPath = urlPath.replace(
 			`{${"type"}}`,
-			encodeURIComponent(String(requestParameters["type"])),
+			encodeURIComponent(String(requestParameters.type)),
 		);
 
 		const response = await this.request(
@@ -1052,14 +1048,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: ServeSystemEmailTemplateRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<string>> {
-		if (requestParameters["name"] == null) {
+		if (requestParameters.name == null) {
 			throw new runtime.RequiredError(
 				"name",
 				'Required parameter "name" was null or undefined when calling serveSystemEmailTemplate().',
 			);
 		}
 
-		if (requestParameters["type"] == null) {
+		if (requestParameters.type == null) {
 			throw new runtime.RequiredError(
 				"type",
 				'Required parameter "type" was null or undefined when calling serveSystemEmailTemplate().',
@@ -1078,11 +1074,11 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/email/system-templates/{name}/{type}`;
 		urlPath = urlPath.replace(
 			`{${"name"}}`,
-			encodeURIComponent(String(requestParameters["name"])),
+			encodeURIComponent(String(requestParameters.name)),
 		);
 		urlPath = urlPath.replace(
 			`{${"type"}}`,
-			encodeURIComponent(String(requestParameters["type"])),
+			encodeURIComponent(String(requestParameters.type)),
 		);
 
 		const response = await this.request(
@@ -1123,7 +1119,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: UpdateStripeConfigRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<ConfigResponse>> {
-		if (requestParameters["body"] == null) {
+		if (requestParameters.body == null) {
 			throw new runtime.RequiredError(
 				"body",
 				'Required parameter "body" was null or undefined when calling updateStripeConfig().',
@@ -1149,7 +1145,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: requestParameters["body"] as any,
+				body: requestParameters.body as any,
 			},
 			initOverrides,
 		);
@@ -1180,7 +1176,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 		requestParameters: ValidateStripeConfigRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<string>> {
-		if (requestParameters["body"] == null) {
+		if (requestParameters.body == null) {
 			throw new runtime.RequiredError(
 				"body",
 				'Required parameter "body" was null or undefined when calling validateStripeConfig().',
@@ -1206,7 +1202,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: requestParameters["body"] as any,
+				body: requestParameters.body as any,
 			},
 			initOverrides,
 		);

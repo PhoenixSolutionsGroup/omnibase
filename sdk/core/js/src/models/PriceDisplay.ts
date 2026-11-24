@@ -57,10 +57,9 @@ export function PriceDisplayFromJSONTyped(
 		return json;
 	}
 	return {
-		customText: json["custom_text"] == null ? undefined : json["custom_text"],
-		showCurrency:
-			json["show_currency"] == null ? undefined : json["show_currency"],
-		suffix: json["suffix"] == null ? undefined : json["suffix"],
+		customText: json.custom_text == null ? undefined : json.custom_text,
+		showCurrency: json.show_currency == null ? undefined : json.show_currency,
+		suffix: json.suffix == null ? undefined : json.suffix,
 	};
 }
 
@@ -77,8 +76,8 @@ export function PriceDisplayToJSONTyped(
 	}
 
 	return {
-		custom_text: value["customText"],
-		show_currency: value["showCurrency"],
-		suffix: value["suffix"],
+		custom_text: value.customText,
+		show_currency: value.showCurrency,
+		suffix: value.suffix,
 	};
 }

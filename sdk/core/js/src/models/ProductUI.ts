@@ -81,14 +81,13 @@ export function ProductUIFromJSONTyped(
 		return json;
 	}
 	return {
-		badge: json["badge"] == null ? undefined : json["badge"],
-		ctaText: json["cta_text"] == null ? undefined : json["cta_text"],
-		displayName:
-			json["display_name"] == null ? undefined : json["display_name"],
-		features: json["features"] == null ? undefined : json["features"],
-		highlighted: json["highlighted"] == null ? undefined : json["highlighted"],
-		sortOrder: json["sort_order"] == null ? undefined : json["sort_order"],
-		tagline: json["tagline"] == null ? undefined : json["tagline"],
+		badge: json.badge == null ? undefined : json.badge,
+		ctaText: json.cta_text == null ? undefined : json.cta_text,
+		displayName: json.display_name == null ? undefined : json.display_name,
+		features: json.features == null ? undefined : json.features,
+		highlighted: json.highlighted == null ? undefined : json.highlighted,
+		sortOrder: json.sort_order == null ? undefined : json.sort_order,
+		tagline: json.tagline == null ? undefined : json.tagline,
 	};
 }
 
@@ -105,12 +104,12 @@ export function ProductUIToJSONTyped(
 	}
 
 	return {
-		badge: value["badge"],
-		cta_text: value["ctaText"],
-		display_name: value["displayName"],
-		features: value["features"],
-		highlighted: value["highlighted"],
-		sort_order: value["sortOrder"],
-		tagline: value["tagline"],
+		badge: value.badge,
+		cta_text: value.ctaText,
+		display_name: value.displayName,
+		features: value.features,
+		highlighted: value.highlighted,
+		sort_order: value.sortOrder,
+		tagline: value.tagline,
 	};
 }

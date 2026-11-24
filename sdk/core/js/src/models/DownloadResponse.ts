@@ -32,7 +32,7 @@ export interface DownloadResponse {
 export function instanceOfDownloadResponse(
 	value: object,
 ): value is DownloadResponse {
-	if (!("downloadUrl" in value) || value["downloadUrl"] === undefined)
+	if (!("downloadUrl" in value) || value.downloadUrl === undefined)
 		return false;
 	return true;
 }
@@ -49,7 +49,7 @@ export function DownloadResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		downloadUrl: json["download_url"],
+		downloadUrl: json.download_url,
 	};
 }
 
@@ -66,6 +66,6 @@ export function DownloadResponseToJSONTyped(
 	}
 
 	return {
-		download_url: value["downloadUrl"],
+		download_url: value.downloadUrl,
 	};
 }

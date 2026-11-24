@@ -38,8 +38,8 @@ export interface CreateCheckoutResponse {
 export function instanceOfCreateCheckoutResponse(
 	value: object,
 ): value is CreateCheckoutResponse {
-	if (!("sessionId" in value) || value["sessionId"] === undefined) return false;
-	if (!("url" in value) || value["url"] === undefined) return false;
+	if (!("sessionId" in value) || value.sessionId === undefined) return false;
+	if (!("url" in value) || value.url === undefined) return false;
 	return true;
 }
 
@@ -57,8 +57,8 @@ export function CreateCheckoutResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		sessionId: json["session_id"],
-		url: json["url"],
+		sessionId: json.session_id,
+		url: json.url,
 	};
 }
 
@@ -77,7 +77,7 @@ export function CreateCheckoutResponseToJSONTyped(
 	}
 
 	return {
-		session_id: value["sessionId"],
-		url: value["url"],
+		session_id: value.sessionId,
+		url: value.url,
 	};
 }

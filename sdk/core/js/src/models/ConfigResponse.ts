@@ -13,10 +13,7 @@
  */
 
 import type { ConfigChanges } from "./ConfigChanges";
-import {
-	ConfigChangesFromJSON,
-	ConfigChangesToJSON,
-} from "./ConfigChanges";
+import { ConfigChangesFromJSON, ConfigChangesToJSON } from "./ConfigChanges";
 import type { StripeConfiguration } from "./StripeConfiguration";
 import {
 	StripeConfigurationFromJSON,
@@ -61,7 +58,7 @@ export interface ConfigResponse {
 export function instanceOfConfigResponse(
 	value: object,
 ): value is ConfigResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -78,15 +75,13 @@ export function ConfigResponseFromJSONTyped(
 	}
 	return {
 		changes:
-			json["changes"] == null
-				? undefined
-				: ConfigChangesFromJSON(json["changes"]),
+			json.changes == null ? undefined : ConfigChangesFromJSON(json.changes),
 		config:
-			json["config"] == null
+			json.config == null
 				? undefined
-				: StripeConfigurationFromJSON(json["config"]),
-		errors: json["errors"] == null ? undefined : json["errors"],
-		message: json["message"],
+				: StripeConfigurationFromJSON(json.config),
+		errors: json.errors == null ? undefined : json.errors,
+		message: json.message,
 	};
 }
 
@@ -103,9 +98,9 @@ export function ConfigResponseToJSONTyped(
 	}
 
 	return {
-		changes: ConfigChangesToJSON(value["changes"]),
-		config: StripeConfigurationToJSON(value["config"]),
-		errors: value["errors"],
-		message: value["message"],
+		changes: ConfigChangesToJSON(value.changes),
+		config: StripeConfigurationToJSON(value.config),
+		errors: value.errors,
+		message: value.message,
 	};
 }

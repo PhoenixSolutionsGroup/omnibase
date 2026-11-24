@@ -68,17 +68,14 @@ export interface NamespaceDefinitionResponse {
 export function instanceOfNamespaceDefinitionResponse(
 	value: object,
 ): value is NamespaceDefinitionResponse {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("namespace" in value) || value["namespace"] === undefined) return false;
-	if (!("relations" in value) || value["relations"] === undefined) return false;
-	if (
-		!("relationsMetadata" in value) ||
-		value["relationsMetadata"] === undefined
-	)
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("namespace" in value) || value.namespace === undefined) return false;
+	if (!("relations" in value) || value.relations === undefined) return false;
+	if (!("relationsMetadata" in value) || value.relationsMetadata === undefined)
 		return false;
-	if (!("subjectRelations" in value) || value["subjectRelations"] === undefined)
+	if (!("subjectRelations" in value) || value.subjectRelations === undefined)
 		return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
 	return true;
 }
 
@@ -96,17 +93,17 @@ export function NamespaceDefinitionResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		id: json["id"],
-		namespace: json["namespace"],
-		relations: json["relations"] == null ? null : json["relations"],
+		id: json.id,
+		namespace: json.namespace,
+		relations: json.relations == null ? null : json.relations,
 		relationsMetadata:
-			json["relations_metadata"] == null
+			json.relations_metadata == null
 				? null
-				: (json["relations_metadata"] as Array<any>).map(
+				: (json.relations_metadata as Array<any>).map(
 						RelationMetadataResponseFromJSON,
 					),
-		subjectRelations: json["subject_relations"],
-		updatedAt: new Date(json["updated_at"]),
+		subjectRelations: json.subject_relations,
+		updatedAt: new Date(json.updated_at),
 	};
 }
 
@@ -125,16 +122,16 @@ export function NamespaceDefinitionResponseToJSONTyped(
 	}
 
 	return {
-		id: value["id"],
-		namespace: value["namespace"],
-		relations: value["relations"],
+		id: value.id,
+		namespace: value.namespace,
+		relations: value.relations,
 		relations_metadata:
-			value["relationsMetadata"] == null
+			value.relationsMetadata == null
 				? null
-				: (value["relationsMetadata"] as Array<any>).map(
+				: (value.relationsMetadata as Array<any>).map(
 						RelationMetadataResponseToJSON,
 					),
-		subject_relations: value["subjectRelations"],
-		updated_at: value["updatedAt"].toISOString(),
+		subject_relations: value.subjectRelations,
+		updated_at: value.updatedAt.toISOString(),
 	};
 }

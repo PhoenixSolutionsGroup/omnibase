@@ -68,17 +68,17 @@ export interface CalculatePriceCostResponse {
 export function instanceOfCalculatePriceCostResponse(
 	value: object,
 ): value is CalculatePriceCostResponse {
-	if (!("billingScheme" in value) || value["billingScheme"] === undefined)
+	if (!("billingScheme" in value) || value.billingScheme === undefined)
 		return false;
-	if (!("costCents" in value) || value["costCents"] === undefined) return false;
-	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (!("costCents" in value) || value.costCents === undefined) return false;
+	if (!("currency" in value) || value.currency === undefined) return false;
 	if (
 		!("effectiveUnitCostCents" in value) ||
-		value["effectiveUnitCostCents"] === undefined
+		value.effectiveUnitCostCents === undefined
 	)
 		return false;
-	if (!("priceId" in value) || value["priceId"] === undefined) return false;
-	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	if (!("priceId" in value) || value.priceId === undefined) return false;
+	if (!("quantity" in value) || value.quantity === undefined) return false;
 	return true;
 }
 
@@ -96,13 +96,13 @@ export function CalculatePriceCostResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		billingScheme: json["billing_scheme"],
-		costCents: json["cost_cents"],
-		currency: json["currency"],
-		effectiveUnitCostCents: json["effective_unit_cost_cents"],
-		priceId: json["price_id"],
-		quantity: json["quantity"],
-		tiersMode: json["tiers_mode"] == null ? undefined : json["tiers_mode"],
+		billingScheme: json.billing_scheme,
+		costCents: json.cost_cents,
+		currency: json.currency,
+		effectiveUnitCostCents: json.effective_unit_cost_cents,
+		priceId: json.price_id,
+		quantity: json.quantity,
+		tiersMode: json.tiers_mode == null ? undefined : json.tiers_mode,
 	};
 }
 
@@ -121,12 +121,12 @@ export function CalculatePriceCostResponseToJSONTyped(
 	}
 
 	return {
-		billing_scheme: value["billingScheme"],
-		cost_cents: value["costCents"],
-		currency: value["currency"],
-		effective_unit_cost_cents: value["effectiveUnitCostCents"],
-		price_id: value["priceId"],
-		quantity: value["quantity"],
-		tiers_mode: value["tiersMode"],
+		billing_scheme: value.billingScheme,
+		cost_cents: value.costCents,
+		currency: value.currency,
+		effective_unit_cost_cents: value.effectiveUnitCostCents,
+		price_id: value.priceId,
+		quantity: value.quantity,
+		tiers_mode: value.tiersMode,
 	};
 }

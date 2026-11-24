@@ -44,8 +44,8 @@ export interface CreateResponse {
 export function instanceOfCreateResponse(
 	value: object,
 ): value is CreateResponse {
-	if (!("invite" in value) || value["invite"] === undefined) return false;
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("invite" in value) || value.invite === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -61,8 +61,8 @@ export function CreateResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		invite: AuthTenantInviteFromJSON(json["invite"]),
-		message: json["message"],
+		invite: AuthTenantInviteFromJSON(json.invite),
+		message: json.message,
 	};
 }
 
@@ -79,7 +79,7 @@ export function CreateResponseToJSONTyped(
 	}
 
 	return {
-		invite: AuthTenantInviteToJSON(value["invite"]),
-		message: value["message"],
+		invite: AuthTenantInviteToJSON(value.invite),
+		message: value.message,
 	};
 }

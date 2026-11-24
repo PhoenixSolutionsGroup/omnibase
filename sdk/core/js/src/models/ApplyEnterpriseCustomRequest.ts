@@ -38,9 +38,9 @@ export interface ApplyEnterpriseCustomRequest {
 export function instanceOfApplyEnterpriseCustomRequest(
 	value: object,
 ): value is ApplyEnterpriseCustomRequest {
-	if (!("enterpriseId" in value) || value["enterpriseId"] === undefined)
+	if (!("enterpriseId" in value) || value.enterpriseId === undefined)
 		return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -58,8 +58,8 @@ export function ApplyEnterpriseCustomRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		enterpriseId: json["enterprise_id"],
-		tenantId: json["tenant_id"],
+		enterpriseId: json.enterprise_id,
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -78,7 +78,7 @@ export function ApplyEnterpriseCustomRequestToJSONTyped(
 	}
 
 	return {
-		enterprise_id: value["enterpriseId"],
-		tenant_id: value["tenantId"],
+		enterprise_id: value.enterpriseId,
+		tenant_id: value.tenantId,
 	};
 }

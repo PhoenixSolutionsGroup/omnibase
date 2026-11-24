@@ -44,9 +44,9 @@ export interface RemoveResponse {
 export function instanceOfRemoveResponse(
 	value: object,
 ): value is RemoveResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("status" in value) || value["status"] === undefined) return false;
-	if (!("subscriptionId" in value) || value["subscriptionId"] === undefined)
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("status" in value) || value.status === undefined) return false;
+	if (!("subscriptionId" in value) || value.subscriptionId === undefined)
 		return false;
 	return true;
 }
@@ -63,9 +63,9 @@ export function RemoveResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
-		status: json["status"],
-		subscriptionId: json["subscription_id"],
+		message: json.message,
+		status: json.status,
+		subscriptionId: json.subscription_id,
 	};
 }
 
@@ -82,8 +82,8 @@ export function RemoveResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
-		status: value["status"],
-		subscription_id: value["subscriptionId"],
+		message: value.message,
+		status: value.status,
+		subscription_id: value.subscriptionId,
 	};
 }

@@ -44,9 +44,9 @@ export interface UploadResponse {
 export function instanceOfUploadResponse(
 	value: object,
 ): value is UploadResponse {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("path" in value) || value["path"] === undefined) return false;
-	if (!("uploadUrl" in value) || value["uploadUrl"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
+	if (!("uploadUrl" in value) || value.uploadUrl === undefined) return false;
 	return true;
 }
 
@@ -62,9 +62,9 @@ export function UploadResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		id: json["id"],
-		path: json["path"],
-		uploadUrl: json["upload_url"],
+		id: json.id,
+		path: json.path,
+		uploadUrl: json.upload_url,
 	};
 }
 
@@ -81,8 +81,8 @@ export function UploadResponseToJSONTyped(
 	}
 
 	return {
-		id: value["id"],
-		path: value["path"],
-		upload_url: value["uploadUrl"],
+		id: value.id,
+		path: value.path,
+		upload_url: value.uploadUrl,
 	};
 }

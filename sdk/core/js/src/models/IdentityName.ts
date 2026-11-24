@@ -36,8 +36,8 @@ export interface IdentityName {
  * Check if a given object implements the IdentityName interface.
  */
 export function instanceOfIdentityName(value: object): value is IdentityName {
-	if (!("first" in value) || value["first"] === undefined) return false;
-	if (!("last" in value) || value["last"] === undefined) return false;
+	if (!("first" in value) || value.first === undefined) return false;
+	if (!("last" in value) || value.last === undefined) return false;
 	return true;
 }
 
@@ -53,8 +53,8 @@ export function IdentityNameFromJSONTyped(
 		return json;
 	}
 	return {
-		first: json["first"],
-		last: json["last"],
+		first: json.first,
+		last: json.last,
 	};
 }
 
@@ -71,7 +71,7 @@ export function IdentityNameToJSONTyped(
 	}
 
 	return {
-		first: value["first"],
-		last: value["last"],
+		first: value.first,
+		last: value.last,
 	};
 }

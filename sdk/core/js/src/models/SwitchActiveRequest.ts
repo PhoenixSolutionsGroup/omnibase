@@ -32,7 +32,7 @@ export interface SwitchActiveRequest {
 export function instanceOfSwitchActiveRequest(
 	value: object,
 ): value is SwitchActiveRequest {
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -48,7 +48,7 @@ export function SwitchActiveRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		tenantId: json["tenant_id"],
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -65,6 +65,6 @@ export function SwitchActiveRequestToJSONTyped(
 	}
 
 	return {
-		tenant_id: value["tenantId"],
+		tenant_id: value.tenantId,
 	};
 }

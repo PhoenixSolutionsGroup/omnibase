@@ -51,7 +51,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 		requestParameters: CreateUserOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<Identity>> {
-		if (requestParameters["createUserRequest"] == null) {
+		if (requestParameters.createUserRequest == null) {
 			throw new runtime.RequiredError(
 				"createUserRequest",
 				'Required parameter "createUserRequest" was null or undefined when calling createUser().',
@@ -77,7 +77,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateUserRequestToJSON(requestParameters["createUserRequest"]),
+				body: CreateUserRequestToJSON(requestParameters.createUserRequest),
 			},
 			initOverrides,
 		);
@@ -297,8 +297,8 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (requestParameters["cookie"] != null) {
-			headerParameters["Cookie"] = String(requestParameters["cookie"]);
+		if (requestParameters.cookie != null) {
+			headerParameters.Cookie = String(requestParameters.cookie);
 		}
 
 		if (this.configuration && this.configuration.apiKey) {

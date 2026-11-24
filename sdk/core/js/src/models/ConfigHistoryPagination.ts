@@ -62,13 +62,12 @@ export interface ConfigHistoryPagination {
 export function instanceOfConfigHistoryPagination(
 	value: object,
 ): value is ConfigHistoryPagination {
-	if (!("hasNext" in value) || value["hasNext"] === undefined) return false;
-	if (!("hasPrev" in value) || value["hasPrev"] === undefined) return false;
-	if (!("page" in value) || value["page"] === undefined) return false;
-	if (!("perPage" in value) || value["perPage"] === undefined) return false;
-	if (!("total" in value) || value["total"] === undefined) return false;
-	if (!("totalPages" in value) || value["totalPages"] === undefined)
-		return false;
+	if (!("hasNext" in value) || value.hasNext === undefined) return false;
+	if (!("hasPrev" in value) || value.hasPrev === undefined) return false;
+	if (!("page" in value) || value.page === undefined) return false;
+	if (!("perPage" in value) || value.perPage === undefined) return false;
+	if (!("total" in value) || value.total === undefined) return false;
+	if (!("totalPages" in value) || value.totalPages === undefined) return false;
 	return true;
 }
 
@@ -86,12 +85,12 @@ export function ConfigHistoryPaginationFromJSONTyped(
 		return json;
 	}
 	return {
-		hasNext: json["has_next"],
-		hasPrev: json["has_prev"],
-		page: json["page"],
-		perPage: json["per_page"],
-		total: json["total"],
-		totalPages: json["total_pages"],
+		hasNext: json.has_next,
+		hasPrev: json.has_prev,
+		page: json.page,
+		perPage: json.per_page,
+		total: json.total,
+		totalPages: json.total_pages,
 	};
 }
 
@@ -110,11 +109,11 @@ export function ConfigHistoryPaginationToJSONTyped(
 	}
 
 	return {
-		has_next: value["hasNext"],
-		has_prev: value["hasPrev"],
-		page: value["page"],
-		per_page: value["perPage"],
-		total: value["total"],
-		total_pages: value["totalPages"],
+		has_next: value.hasNext,
+		has_prev: value.hasPrev,
+		page: value.page,
+		per_page: value.perPage,
+		total: value.total,
+		total_pages: value.totalPages,
 	};
 }

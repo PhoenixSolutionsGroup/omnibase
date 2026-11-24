@@ -36,8 +36,8 @@ export interface ModelFile {
  * Check if a given object implements the ModelFile interface.
  */
 export function instanceOfModelFile(value: object): value is ModelFile {
-	if (!("contents" in value) || value["contents"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("contents" in value) || value.contents === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
 	return true;
 }
 
@@ -53,8 +53,8 @@ export function ModelFileFromJSONTyped(
 		return json;
 	}
 	return {
-		contents: json["contents"],
-		name: json["name"],
+		contents: json.contents,
+		name: json.name,
 	};
 }
 
@@ -71,7 +71,7 @@ export function ModelFileToJSONTyped(
 	}
 
 	return {
-		contents: value["contents"],
-		name: value["name"],
+		contents: value.contents,
+		name: value.name,
 	};
 }

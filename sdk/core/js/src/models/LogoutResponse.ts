@@ -38,9 +38,9 @@ export interface LogoutResponse {
 export function instanceOfLogoutResponse(
 	value: object,
 ): value is LogoutResponse {
-	if (!("logoutToken" in value) || value["logoutToken"] === undefined)
+	if (!("logoutToken" in value) || value.logoutToken === undefined)
 		return false;
-	if (!("logoutUrl" in value) || value["logoutUrl"] === undefined) return false;
+	if (!("logoutUrl" in value) || value.logoutUrl === undefined) return false;
 	return true;
 }
 
@@ -56,8 +56,8 @@ export function LogoutResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		logoutToken: json["logout_token"],
-		logoutUrl: json["logout_url"],
+		logoutToken: json.logout_token,
+		logoutUrl: json.logout_url,
 	};
 }
 
@@ -74,7 +74,7 @@ export function LogoutResponseToJSONTyped(
 	}
 
 	return {
-		logout_token: value["logoutToken"],
-		logout_url: value["logoutUrl"],
+		logout_token: value.logoutToken,
+		logout_url: value.logoutUrl,
 	};
 }

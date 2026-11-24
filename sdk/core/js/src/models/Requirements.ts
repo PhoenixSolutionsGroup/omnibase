@@ -42,9 +42,8 @@ export interface Requirements {
  * Check if a given object implements the Requirements interface.
  */
 export function instanceOfRequirements(value: object): value is Requirements {
-	if (!("files" in value) || value["files"] === undefined) return false;
-	if (!("namespaces" in value) || value["namespaces"] === undefined)
-		return false;
+	if (!("files" in value) || value.files === undefined) return false;
+	if (!("namespaces" in value) || value.namespaces === undefined) return false;
 	return true;
 }
 
@@ -60,11 +59,11 @@ export function RequirementsFromJSONTyped(
 		return json;
 	}
 	return {
-		files: json["files"] == null ? null : json["files"],
+		files: json.files == null ? null : json.files,
 		namespaces:
-			json["namespaces"] == null
+			json.namespaces == null
 				? null
-				: (json["namespaces"] as Array<any>).map(
+				: (json.namespaces as Array<any>).map(
 						ParsedNamespaceDefinitionFromJSON,
 					),
 	};
@@ -83,12 +82,10 @@ export function RequirementsToJSONTyped(
 	}
 
 	return {
-		files: value["files"],
+		files: value.files,
 		namespaces:
-			value["namespaces"] == null
+			value.namespaces == null
 				? null
-				: (value["namespaces"] as Array<any>).map(
-						ParsedNamespaceDefinitionToJSON,
-					),
+				: (value.namespaces as Array<any>).map(ParsedNamespaceDefinitionToJSON),
 	};
 }

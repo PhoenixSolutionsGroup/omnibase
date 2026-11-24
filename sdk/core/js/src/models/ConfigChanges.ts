@@ -13,35 +13,20 @@
  */
 
 import type { CouponChanges } from "./CouponChanges";
-import {
-	CouponChangesFromJSON,
-	CouponChangesToJSON,
-} from "./CouponChanges";
+import { CouponChangesFromJSON, CouponChangesToJSON } from "./CouponChanges";
 import type { MeterChanges } from "./MeterChanges";
-import {
-	MeterChangesFromJSON,
-	MeterChangesToJSON,
-} from "./MeterChanges";
+import { MeterChangesFromJSON, MeterChangesToJSON } from "./MeterChanges";
 import type { PriceChanges } from "./PriceChanges";
-import {
-	PriceChangesFromJSON,
-	PriceChangesToJSON,
-} from "./PriceChanges";
+import { PriceChangesFromJSON, PriceChangesToJSON } from "./PriceChanges";
 import type { ProductChanges } from "./ProductChanges";
-import {
-	ProductChangesFromJSON,
-	ProductChangesToJSON,
-} from "./ProductChanges";
+import { ProductChangesFromJSON, ProductChangesToJSON } from "./ProductChanges";
 import type { PromotionCodeChanges } from "./PromotionCodeChanges";
 import {
 	PromotionCodeChangesFromJSON,
 	PromotionCodeChangesToJSON,
 } from "./PromotionCodeChanges";
 import type { WebhookChanges } from "./WebhookChanges";
-import {
-	WebhookChangesFromJSON,
-	WebhookChangesToJSON,
-} from "./WebhookChanges";
+import { WebhookChangesFromJSON, WebhookChangesToJSON } from "./WebhookChanges";
 
 /**
  *
@@ -107,25 +92,17 @@ export function ConfigChangesFromJSONTyped(
 	}
 	return {
 		coupons:
-			json["coupons"] == null
-				? undefined
-				: CouponChangesFromJSON(json["coupons"]),
-		meters:
-			json["meters"] == null ? undefined : MeterChangesFromJSON(json["meters"]),
-		prices:
-			json["prices"] == null ? undefined : PriceChangesFromJSON(json["prices"]),
+			json.coupons == null ? undefined : CouponChangesFromJSON(json.coupons),
+		meters: json.meters == null ? undefined : MeterChangesFromJSON(json.meters),
+		prices: json.prices == null ? undefined : PriceChangesFromJSON(json.prices),
 		products:
-			json["products"] == null
-				? undefined
-				: ProductChangesFromJSON(json["products"]),
+			json.products == null ? undefined : ProductChangesFromJSON(json.products),
 		promotionCodes:
-			json["promotion_codes"] == null
+			json.promotion_codes == null
 				? undefined
-				: PromotionCodeChangesFromJSON(json["promotion_codes"]),
+				: PromotionCodeChangesFromJSON(json.promotion_codes),
 		webhooks:
-			json["webhooks"] == null
-				? undefined
-				: WebhookChangesFromJSON(json["webhooks"]),
+			json.webhooks == null ? undefined : WebhookChangesFromJSON(json.webhooks),
 	};
 }
 
@@ -142,11 +119,11 @@ export function ConfigChangesToJSONTyped(
 	}
 
 	return {
-		coupons: CouponChangesToJSON(value["coupons"]),
-		meters: MeterChangesToJSON(value["meters"]),
-		prices: PriceChangesToJSON(value["prices"]),
-		products: ProductChangesToJSON(value["products"]),
-		promotion_codes: PromotionCodeChangesToJSON(value["promotionCodes"]),
-		webhooks: WebhookChangesToJSON(value["webhooks"]),
+		coupons: CouponChangesToJSON(value.coupons),
+		meters: MeterChangesToJSON(value.meters),
+		prices: PriceChangesToJSON(value.prices),
+		products: ProductChangesToJSON(value.products),
+		promotion_codes: PromotionCodeChangesToJSON(value.promotionCodes),
+		webhooks: WebhookChangesToJSON(value.webhooks),
 	};
 }

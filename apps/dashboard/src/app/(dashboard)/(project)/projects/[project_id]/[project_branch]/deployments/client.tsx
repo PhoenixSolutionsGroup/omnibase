@@ -45,7 +45,7 @@ function getProjectState(status: string): ProjectState {
 	if (status === "active" || status === "pending") {
 		return PROJECT_STATES[status];
 	}
-	return PROJECT_STATES["pending"];
+	return PROJECT_STATES.pending;
 }
 
 const HOUR_MS = 60 * 60 * 1000;

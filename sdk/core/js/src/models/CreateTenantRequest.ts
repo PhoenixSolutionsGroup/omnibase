@@ -44,10 +44,10 @@ export interface CreateTenantRequest {
 export function instanceOfCreateTenantRequest(
 	value: object,
 ): value is CreateTenantRequest {
-	if (!("billingEmail" in value) || value["billingEmail"] === undefined)
+	if (!("billingEmail" in value) || value.billingEmail === undefined)
 		return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
 	return true;
 }
 
@@ -63,9 +63,9 @@ export function CreateTenantRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		billingEmail: json["billing_email"],
-		name: json["name"],
-		type: json["type"],
+		billingEmail: json.billing_email,
+		name: json.name,
+		type: json.type,
 	};
 }
 
@@ -82,8 +82,8 @@ export function CreateTenantRequestToJSONTyped(
 	}
 
 	return {
-		billing_email: value["billingEmail"],
-		name: value["name"],
-		type: value["type"],
+		billing_email: value.billingEmail,
+		name: value.name,
+		type: value.type,
 	};
 }

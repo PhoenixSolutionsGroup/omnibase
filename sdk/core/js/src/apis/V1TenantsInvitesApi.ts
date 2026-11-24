@@ -45,7 +45,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 		requestParameters: AcceptInviteRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<AcceptResponse>> {
-		if (requestParameters["acceptRequest"] == null) {
+		if (requestParameters.acceptRequest == null) {
 			throw new runtime.RequiredError(
 				"acceptRequest",
 				'Required parameter "acceptRequest" was null or undefined when calling acceptInvite().',
@@ -81,7 +81,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 				method: "PUT",
 				headers: headerParameters,
 				query: queryParameters,
-				body: AcceptRequestToJSON(requestParameters["acceptRequest"]),
+				body: AcceptRequestToJSON(requestParameters.acceptRequest),
 			},
 			initOverrides,
 		);
@@ -112,7 +112,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 		requestParameters: CreateInviteRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateResponse>> {
-		if (requestParameters["createRequest"] == null) {
+		if (requestParameters.createRequest == null) {
 			throw new runtime.RequiredError(
 				"createRequest",
 				'Required parameter "createRequest" was null or undefined when calling createInvite().',
@@ -148,7 +148,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateRequestToJSON(requestParameters["createRequest"]),
+				body: CreateRequestToJSON(requestParameters.createRequest),
 			},
 			initOverrides,
 		);

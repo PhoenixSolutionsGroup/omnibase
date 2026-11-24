@@ -40,10 +40,10 @@ export function instanceOfApplyEnterpriseTemplateRequest(
 ): value is ApplyEnterpriseTemplateRequest {
 	if (
 		!("enterpriseTemplate" in value) ||
-		value["enterpriseTemplate"] === undefined
+		value.enterpriseTemplate === undefined
 	)
 		return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -61,8 +61,8 @@ export function ApplyEnterpriseTemplateRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		enterpriseTemplate: json["enterprise_template"],
-		tenantId: json["tenant_id"],
+		enterpriseTemplate: json.enterprise_template,
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -81,7 +81,7 @@ export function ApplyEnterpriseTemplateRequestToJSONTyped(
 	}
 
 	return {
-		enterprise_template: value["enterpriseTemplate"],
-		tenant_id: value["tenantId"],
+		enterprise_template: value.enterpriseTemplate,
+		tenant_id: value.tenantId,
 	};
 }

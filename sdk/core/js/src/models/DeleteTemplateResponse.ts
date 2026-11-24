@@ -32,7 +32,7 @@ export interface DeleteTemplateResponse {
 export function instanceOfDeleteTemplateResponse(
 	value: object,
 ): value is DeleteTemplateResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -50,7 +50,7 @@ export function DeleteTemplateResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -69,6 +69,6 @@ export function DeleteTemplateResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

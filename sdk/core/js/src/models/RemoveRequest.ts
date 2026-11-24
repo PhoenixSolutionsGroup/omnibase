@@ -30,7 +30,7 @@ export interface RemoveRequest {
  * Check if a given object implements the RemoveRequest interface.
  */
 export function instanceOfRemoveRequest(value: object): value is RemoveRequest {
-	if (!("planId" in value) || value["planId"] === undefined) return false;
+	if (!("planId" in value) || value.planId === undefined) return false;
 	return true;
 }
 
@@ -46,7 +46,7 @@ export function RemoveRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		planId: json["plan_id"],
+		planId: json.plan_id,
 	};
 }
 
@@ -63,6 +63,6 @@ export function RemoveRequestToJSONTyped(
 	}
 
 	return {
-		plan_id: value["planId"],
+		plan_id: value.planId,
 	};
 }

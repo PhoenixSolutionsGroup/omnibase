@@ -42,9 +42,9 @@ export interface AddRequest {
  * Check if a given object implements the AddRequest interface.
  */
 export function instanceOfAddRequest(value: object): value is AddRequest {
-	if (!("idempotencyKey" in value) || value["idempotencyKey"] === undefined)
+	if (!("idempotencyKey" in value) || value.idempotencyKey === undefined)
 		return false;
-	if (!("planId" in value) || value["planId"] === undefined) return false;
+	if (!("planId" in value) || value.planId === undefined) return false;
 	return true;
 }
 
@@ -60,9 +60,9 @@ export function AddRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		idempotencyKey: json["idempotency_key"],
-		planId: json["plan_id"],
-		quantity: json["quantity"] == null ? undefined : json["quantity"],
+		idempotencyKey: json.idempotency_key,
+		planId: json.plan_id,
+		quantity: json.quantity == null ? undefined : json.quantity,
 	};
 }
 
@@ -79,8 +79,8 @@ export function AddRequestToJSONTyped(
 	}
 
 	return {
-		idempotency_key: value["idempotencyKey"],
-		plan_id: value["planId"],
-		quantity: value["quantity"],
+		idempotency_key: value.idempotencyKey,
+		plan_id: value.planId,
+		quantity: value.quantity,
 	};
 }

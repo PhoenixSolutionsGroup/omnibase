@@ -53,7 +53,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 		requestParameters: AddSubscriptionRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<AddResponse>> {
-		if (requestParameters["addRequest"] == null) {
+		if (requestParameters.addRequest == null) {
 			throw new runtime.RequiredError(
 				"addRequest",
 				'Required parameter "addRequest" was null or undefined when calling addSubscription().',
@@ -89,7 +89,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: AddRequestToJSON(requestParameters["addRequest"]),
+				body: AddRequestToJSON(requestParameters.addRequest),
 			},
 			initOverrides,
 		);
@@ -172,7 +172,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 		requestParameters: GetTenantSubscriptionRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<SubscriptionResponse>> {
-		if (requestParameters["configPriceId"] == null) {
+		if (requestParameters.configPriceId == null) {
 			throw new runtime.RequiredError(
 				"configPriceId",
 				'Required parameter "configPriceId" was null or undefined when calling getTenantSubscription().',
@@ -201,7 +201,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/tenants/subscriptions/{config_price_id}`;
 		urlPath = urlPath.replace(
 			`{${"config_price_id"}}`,
-			encodeURIComponent(String(requestParameters["configPriceId"])),
+			encodeURIComponent(String(requestParameters.configPriceId)),
 		);
 
 		const response = await this.request(
@@ -292,7 +292,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 		requestParameters: RemoveSubscriptionRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<RemoveResponse>> {
-		if (requestParameters["removeRequest"] == null) {
+		if (requestParameters.removeRequest == null) {
 			throw new runtime.RequiredError(
 				"removeRequest",
 				'Required parameter "removeRequest" was null or undefined when calling removeSubscription().',
@@ -328,7 +328,7 @@ export class V1TenantsSubscriptionsApi extends runtime.BaseAPI {
 				method: "DELETE",
 				headers: headerParameters,
 				query: queryParameters,
-				body: RemoveRequestToJSON(requestParameters["removeRequest"]),
+				body: RemoveRequestToJSON(requestParameters.removeRequest),
 			},
 			initOverrides,
 		);

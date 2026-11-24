@@ -47,8 +47,7 @@ export function FinalizeRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		autoAdvance:
-			json["auto_advance"] == null ? undefined : json["auto_advance"],
+		autoAdvance: json.auto_advance == null ? undefined : json.auto_advance,
 	};
 }
 
@@ -65,6 +64,6 @@ export function FinalizeRequestToJSONTyped(
 	}
 
 	return {
-		auto_advance: value["autoAdvance"],
+		auto_advance: value.autoAdvance,
 	};
 }

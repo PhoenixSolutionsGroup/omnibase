@@ -86,24 +86,21 @@ export interface SubscriptionResponse {
 export function instanceOfSubscriptionResponse(
 	value: object,
 ): value is SubscriptionResponse {
-	if (
-		!("cancelAtPeriodEnd" in value) ||
-		value["cancelAtPeriodEnd"] === undefined
-	)
+	if (!("cancelAtPeriodEnd" in value) || value.cancelAtPeriodEnd === undefined)
 		return false;
-	if (!("configPriceId" in value) || value["configPriceId"] === undefined)
+	if (!("configPriceId" in value) || value.configPriceId === undefined)
 		return false;
-	if (!("currentPeriodEnd" in value) || value["currentPeriodEnd"] === undefined)
+	if (!("currentPeriodEnd" in value) || value.currentPeriodEnd === undefined)
 		return false;
 	if (
 		!("currentPeriodStart" in value) ||
-		value["currentPeriodStart"] === undefined
+		value.currentPeriodStart === undefined
 	)
 		return false;
-	if (!("isLegacyPrice" in value) || value["isLegacyPrice"] === undefined)
+	if (!("isLegacyPrice" in value) || value.isLegacyPrice === undefined)
 		return false;
-	if (!("status" in value) || value["status"] === undefined) return false;
-	if (!("subscriptionId" in value) || value["subscriptionId"] === undefined)
+	if (!("status" in value) || value.status === undefined) return false;
+	if (!("subscriptionId" in value) || value.subscriptionId === undefined)
 		return false;
 	return true;
 }
@@ -120,16 +117,16 @@ export function SubscriptionResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		cancelAtPeriodEnd: json["cancel_at_period_end"],
-		canceledAt: json["canceled_at"] == null ? undefined : json["canceled_at"],
-		configPriceId: json["config_price_id"],
-		currentPeriodEnd: json["current_period_end"],
-		currentPeriodStart: json["current_period_start"],
-		isLegacyPrice: json["is_legacy_price"],
-		status: json["status"],
-		subscriptionId: json["subscription_id"],
-		trialEnd: json["trial_end"] == null ? undefined : json["trial_end"],
-		trialStart: json["trial_start"] == null ? undefined : json["trial_start"],
+		cancelAtPeriodEnd: json.cancel_at_period_end,
+		canceledAt: json.canceled_at == null ? undefined : json.canceled_at,
+		configPriceId: json.config_price_id,
+		currentPeriodEnd: json.current_period_end,
+		currentPeriodStart: json.current_period_start,
+		isLegacyPrice: json.is_legacy_price,
+		status: json.status,
+		subscriptionId: json.subscription_id,
+		trialEnd: json.trial_end == null ? undefined : json.trial_end,
+		trialStart: json.trial_start == null ? undefined : json.trial_start,
 	};
 }
 
@@ -146,15 +143,15 @@ export function SubscriptionResponseToJSONTyped(
 	}
 
 	return {
-		cancel_at_period_end: value["cancelAtPeriodEnd"],
-		canceled_at: value["canceledAt"],
-		config_price_id: value["configPriceId"],
-		current_period_end: value["currentPeriodEnd"],
-		current_period_start: value["currentPeriodStart"],
-		is_legacy_price: value["isLegacyPrice"],
-		status: value["status"],
-		subscription_id: value["subscriptionId"],
-		trial_end: value["trialEnd"],
-		trial_start: value["trialStart"],
+		cancel_at_period_end: value.cancelAtPeriodEnd,
+		canceled_at: value.canceledAt,
+		config_price_id: value.configPriceId,
+		current_period_end: value.currentPeriodEnd,
+		current_period_start: value.currentPeriodStart,
+		is_legacy_price: value.isLegacyPrice,
+		status: value.status,
+		subscription_id: value.subscriptionId,
+		trial_end: value.trialEnd,
+		trial_start: value.trialStart,
 	};
 }

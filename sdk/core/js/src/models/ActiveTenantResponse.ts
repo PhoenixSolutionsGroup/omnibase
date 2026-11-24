@@ -54,9 +54,7 @@ export function ActiveTenantResponseFromJSONTyped(
 	}
 	return {
 		tenant:
-			json["tenant"] == null
-				? undefined
-				: GetTenantByIDRowFromJSON(json["tenant"]),
+			json.tenant == null ? undefined : GetTenantByIDRowFromJSON(json.tenant),
 	};
 }
 
@@ -73,6 +71,6 @@ export function ActiveTenantResponseToJSONTyped(
 	}
 
 	return {
-		tenant: GetTenantByIDRowToJSON(value["tenant"]),
+		tenant: GetTenantByIDRowToJSON(value.tenant),
 	};
 }

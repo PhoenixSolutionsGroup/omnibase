@@ -38,9 +38,9 @@ export interface CreateRoleRequest {
 export function instanceOfCreateRoleRequest(
 	value: object,
 ): value is CreateRoleRequest {
-	if (!("permissions" in value) || value["permissions"] === undefined)
+	if (!("permissions" in value) || value.permissions === undefined)
 		return false;
-	if (!("roleName" in value) || value["roleName"] === undefined) return false;
+	if (!("roleName" in value) || value.roleName === undefined) return false;
 	return true;
 }
 
@@ -56,8 +56,8 @@ export function CreateRoleRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		permissions: json["permissions"] == null ? null : json["permissions"],
-		roleName: json["role_name"],
+		permissions: json.permissions == null ? null : json.permissions,
+		roleName: json.role_name,
 	};
 }
 
@@ -74,7 +74,7 @@ export function CreateRoleRequestToJSONTyped(
 	}
 
 	return {
-		permissions: value["permissions"],
-		role_name: value["roleName"],
+		permissions: value.permissions,
+		role_name: value.roleName,
 	};
 }

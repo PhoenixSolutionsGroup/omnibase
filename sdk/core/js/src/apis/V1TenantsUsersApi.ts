@@ -97,7 +97,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 		requestParameters: RemoveTenantUserRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<any>> {
-		if (requestParameters["deleteRequest"] == null) {
+		if (requestParameters.deleteRequest == null) {
 			throw new runtime.RequiredError(
 				"deleteRequest",
 				'Required parameter "deleteRequest" was null or undefined when calling removeTenantUser().',
@@ -133,7 +133,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 				method: "DELETE",
 				headers: headerParameters,
 				query: queryParameters,
-				body: DeleteRequestToJSON(requestParameters["deleteRequest"]),
+				body: DeleteRequestToJSON(requestParameters.deleteRequest),
 			},
 			initOverrides,
 		);
@@ -166,7 +166,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 		requestParameters: UpdateTenantUserRoleRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UpdateUserRoleResponse>> {
-		if (requestParameters["updateUserRoleRequest"] == null) {
+		if (requestParameters.updateUserRoleRequest == null) {
 			throw new runtime.RequiredError(
 				"updateUserRoleRequest",
 				'Required parameter "updateUserRoleRequest" was null or undefined when calling updateTenantUserRole().',
@@ -203,7 +203,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: UpdateUserRoleRequestToJSON(
-					requestParameters["updateUserRoleRequest"],
+					requestParameters.updateUserRoleRequest,
 				),
 			},
 			initOverrides,

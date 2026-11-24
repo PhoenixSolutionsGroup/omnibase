@@ -62,7 +62,7 @@ function getDomainState(status: string): ProjectState {
 	if (status === "active" || status === "pending") {
 		return DOMAIN_STATES[status];
 	}
-	return DOMAIN_STATES["pending"];
+	return DOMAIN_STATES.pending;
 }
 
 export default function Domains({ projectId, workerName }: DomainProps) {

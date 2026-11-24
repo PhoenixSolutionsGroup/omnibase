@@ -74,20 +74,20 @@ export interface GetTenantByIDRow {
 export function instanceOfGetTenantByIDRow(
 	value: object,
 ): value is GetTenantByIDRow {
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("enterpriseId" in value) || value["enterpriseId"] === undefined)
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("enterpriseId" in value) || value.enterpriseId === undefined)
 		return false;
 	if (
 		!("enterpriseTemplate" in value) ||
-		value["enterpriseTemplate"] === undefined
+		value.enterpriseTemplate === undefined
 	)
 		return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("stripeCustomerId" in value) || value["stripeCustomerId"] === undefined)
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("stripeCustomerId" in value) || value.stripeCustomerId === undefined)
 		return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
 	return true;
 }
 
@@ -103,14 +103,14 @@ export function GetTenantByIDRowFromJSONTyped(
 		return json;
 	}
 	return {
-		createdAt: new Date(json["created_at"]),
-		enterpriseId: json["enterprise_id"],
-		enterpriseTemplate: json["enterprise_template"],
-		id: json["id"],
-		name: json["name"],
-		stripeCustomerId: json["stripe_customer_id"],
-		type: json["type"],
-		updatedAt: new Date(json["updated_at"]),
+		createdAt: new Date(json.created_at),
+		enterpriseId: json.enterprise_id,
+		enterpriseTemplate: json.enterprise_template,
+		id: json.id,
+		name: json.name,
+		stripeCustomerId: json.stripe_customer_id,
+		type: json.type,
+		updatedAt: new Date(json.updated_at),
 	};
 }
 
@@ -127,13 +127,13 @@ export function GetTenantByIDRowToJSONTyped(
 	}
 
 	return {
-		created_at: value["createdAt"].toISOString(),
-		enterprise_id: value["enterpriseId"],
-		enterprise_template: value["enterpriseTemplate"],
-		id: value["id"],
-		name: value["name"],
-		stripe_customer_id: value["stripeCustomerId"],
-		type: value["type"],
-		updated_at: value["updatedAt"].toISOString(),
+		created_at: value.createdAt.toISOString(),
+		enterprise_id: value.enterpriseId,
+		enterprise_template: value.enterpriseTemplate,
+		id: value.id,
+		name: value.name,
+		stripe_customer_id: value.stripeCustomerId,
+		type: value.type,
+		updated_at: value.updatedAt.toISOString(),
 	};
 }

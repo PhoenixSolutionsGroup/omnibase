@@ -68,12 +68,11 @@ export interface InvoiceResponse {
 export function instanceOfInvoiceResponse(
 	value: object,
 ): value is InvoiceResponse {
-	if (!("amountDue" in value) || value["amountDue"] === undefined) return false;
-	if (!("currency" in value) || value["currency"] === undefined) return false;
-	if (!("customerId" in value) || value["customerId"] === undefined)
-		return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("status" in value) || value["status"] === undefined) return false;
+	if (!("amountDue" in value) || value.amountDue === undefined) return false;
+	if (!("currency" in value) || value.currency === undefined) return false;
+	if (!("customerId" in value) || value.customerId === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("status" in value) || value.status === undefined) return false;
 	return true;
 }
 
@@ -89,16 +88,14 @@ export function InvoiceResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		amountDue: json["amount_due"],
-		currency: json["currency"],
-		customerId: json["customer_id"],
+		amountDue: json.amount_due,
+		currency: json.currency,
+		customerId: json.customer_id,
 		hostedInvoiceUrl:
-			json["hosted_invoice_url"] == null
-				? undefined
-				: json["hosted_invoice_url"],
-		id: json["id"],
-		invoicePdf: json["invoice_pdf"] == null ? undefined : json["invoice_pdf"],
-		status: json["status"],
+			json.hosted_invoice_url == null ? undefined : json.hosted_invoice_url,
+		id: json.id,
+		invoicePdf: json.invoice_pdf == null ? undefined : json.invoice_pdf,
+		status: json.status,
 	};
 }
 
@@ -115,12 +112,12 @@ export function InvoiceResponseToJSONTyped(
 	}
 
 	return {
-		amount_due: value["amountDue"],
-		currency: value["currency"],
-		customer_id: value["customerId"],
-		hosted_invoice_url: value["hostedInvoiceUrl"],
-		id: value["id"],
-		invoice_pdf: value["invoicePdf"],
-		status: value["status"],
+		amount_due: value.amountDue,
+		currency: value.currency,
+		customer_id: value.customerId,
+		hosted_invoice_url: value.hostedInvoiceUrl,
+		id: value.id,
+		invoice_pdf: value.invoicePdf,
+		status: value.status,
 	};
 }

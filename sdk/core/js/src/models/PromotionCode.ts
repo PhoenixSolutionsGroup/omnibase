@@ -90,9 +90,9 @@ export interface PromotionCode {
  * Check if a given object implements the PromotionCode interface.
  */
 export function instanceOfPromotionCode(value: object): value is PromotionCode {
-	if (!("code" in value) || value["code"] === undefined) return false;
-	if (!("coupon" in value) || value["coupon"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("code" in value) || value.code === undefined) return false;
+	if (!("coupon" in value) || value.coupon === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -108,25 +108,25 @@ export function PromotionCodeFromJSONTyped(
 		return json;
 	}
 	return {
-		active: json["active"] == null ? undefined : json["active"],
-		code: json["code"],
-		coupon: json["coupon"],
-		expiresAt: json["expires_at"] == null ? undefined : json["expires_at"],
+		active: json.active == null ? undefined : json.active,
+		code: json.code,
+		coupon: json.coupon,
+		expiresAt: json.expires_at == null ? undefined : json.expires_at,
 		firstTimeTransaction:
-			json["first_time_transaction"] == null
+			json.first_time_transaction == null
 				? undefined
-				: json["first_time_transaction"],
-		id: json["id"],
+				: json.first_time_transaction,
+		id: json.id,
 		maxRedemptions:
-			json["max_redemptions"] == null ? undefined : json["max_redemptions"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
+			json.max_redemptions == null ? undefined : json.max_redemptions,
+		metadata: json.metadata == null ? undefined : json.metadata,
 		minimumAmount:
-			json["minimum_amount"] == null ? undefined : json["minimum_amount"],
+			json.minimum_amount == null ? undefined : json.minimum_amount,
 		minimumAmountCurrency:
-			json["minimum_amount_currency"] == null
+			json.minimum_amount_currency == null
 				? undefined
-				: json["minimum_amount_currency"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+				: json.minimum_amount_currency,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -143,16 +143,16 @@ export function PromotionCodeToJSONTyped(
 	}
 
 	return {
-		active: value["active"],
-		code: value["code"],
-		coupon: value["coupon"],
-		expires_at: value["expiresAt"],
-		first_time_transaction: value["firstTimeTransaction"],
-		id: value["id"],
-		max_redemptions: value["maxRedemptions"],
-		metadata: value["metadata"],
-		minimum_amount: value["minimumAmount"],
-		minimum_amount_currency: value["minimumAmountCurrency"],
-		stripe_id: value["stripeId"],
+		active: value.active,
+		code: value.code,
+		coupon: value.coupon,
+		expires_at: value.expiresAt,
+		first_time_transaction: value.firstTimeTransaction,
+		id: value.id,
+		max_redemptions: value.maxRedemptions,
+		metadata: value.metadata,
+		minimum_amount: value.minimumAmount,
+		minimum_amount_currency: value.minimumAmountCurrency,
+		stripe_id: value.stripeId,
 	};
 }

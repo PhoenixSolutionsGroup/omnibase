@@ -42,7 +42,7 @@ export interface PriceLimit {
  * Check if a given object implements the PriceLimit interface.
  */
 export function instanceOfPriceLimit(value: object): value is PriceLimit {
-	if (!("text" in value) || value["text"] === undefined) return false;
+	if (!("text" in value) || value.text === undefined) return false;
 	return true;
 }
 
@@ -58,9 +58,9 @@ export function PriceLimitFromJSONTyped(
 		return json;
 	}
 	return {
-		text: json["text"],
-		unit: json["unit"] == null ? undefined : json["unit"],
-		value: json["value"] == null ? undefined : json["value"],
+		text: json.text,
+		unit: json.unit == null ? undefined : json.unit,
+		value: json.value == null ? undefined : json.value,
 	};
 }
 
@@ -77,8 +77,8 @@ export function PriceLimitToJSONTyped(
 	}
 
 	return {
-		text: value["text"],
-		unit: value["unit"],
-		value: value["value"],
+		text: value.text,
+		unit: value.unit,
+		value: value.value,
 	};
 }

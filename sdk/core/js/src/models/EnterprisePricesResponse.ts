@@ -44,8 +44,8 @@ export interface EnterprisePricesResponse {
 export function instanceOfEnterprisePricesResponse(
 	value: object,
 ): value is EnterprisePricesResponse {
-	if (!("count" in value) || value["count"] === undefined) return false;
-	if (!("prices" in value) || value["prices"] === undefined) return false;
+	if (!("count" in value) || value.count === undefined) return false;
+	if (!("prices" in value) || value.prices === undefined) return false;
 	return true;
 }
 
@@ -63,11 +63,11 @@ export function EnterprisePricesResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		count: json["count"],
+		count: json.count,
 		prices:
-			json["prices"] == null
+			json.prices == null
 				? null
-				: (json["prices"] as Array<any>).map(PriceWithStripeIDFromJSON),
+				: (json.prices as Array<any>).map(PriceWithStripeIDFromJSON),
 	};
 }
 
@@ -86,10 +86,10 @@ export function EnterprisePricesResponseToJSONTyped(
 	}
 
 	return {
-		count: value["count"],
+		count: value.count,
 		prices:
-			value["prices"] == null
+			value.prices == null
 				? null
-				: (value["prices"] as Array<any>).map(PriceWithStripeIDToJSON),
+				: (value.prices as Array<any>).map(PriceWithStripeIDToJSON),
 	};
 }

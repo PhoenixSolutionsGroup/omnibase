@@ -36,9 +36,9 @@ export interface WhoAmIBody {
  * Check if a given object implements the WhoAmIBody interface.
  */
 export function instanceOfWhoAmIBody(value: object): value is WhoAmIBody {
-	if (!("authenticated" in value) || value["authenticated"] === undefined)
+	if (!("authenticated" in value) || value.authenticated === undefined)
 		return false;
-	if (!("userId" in value) || value["userId"] === undefined) return false;
+	if (!("userId" in value) || value.userId === undefined) return false;
 	return true;
 }
 
@@ -54,8 +54,8 @@ export function WhoAmIBodyFromJSONTyped(
 		return json;
 	}
 	return {
-		authenticated: json["authenticated"],
-		userId: json["user_id"],
+		authenticated: json.authenticated,
+		userId: json.user_id,
 	};
 }
 
@@ -72,7 +72,7 @@ export function WhoAmIBodyToJSONTyped(
 	}
 
 	return {
-		authenticated: value["authenticated"],
-		user_id: value["userId"],
+		authenticated: value.authenticated,
+		user_id: value.userId,
 	};
 }

@@ -13,10 +13,7 @@
  */
 
 import type { TenantPayload } from "./TenantPayload";
-import {
-	TenantPayloadFromJSON,
-	TenantPayloadToJSON,
-} from "./TenantPayload";
+import { TenantPayloadFromJSON, TenantPayloadToJSON } from "./TenantPayload";
 
 /**
  *
@@ -44,8 +41,8 @@ export interface CreateTenantResponse {
 export function instanceOfCreateTenantResponse(
 	value: object,
 ): value is CreateTenantResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("tenant" in value) || value["tenant"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("tenant" in value) || value.tenant === undefined) return false;
 	return true;
 }
 
@@ -61,8 +58,8 @@ export function CreateTenantResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		message: json["message"],
-		tenant: TenantPayloadFromJSON(json["tenant"]),
+		message: json.message,
+		tenant: TenantPayloadFromJSON(json.tenant),
 	};
 }
 
@@ -79,7 +76,7 @@ export function CreateTenantResponseToJSONTyped(
 	}
 
 	return {
-		message: value["message"],
-		tenant: TenantPayloadToJSON(value["tenant"]),
+		message: value.message,
+		tenant: TenantPayloadToJSON(value.tenant),
 	};
 }

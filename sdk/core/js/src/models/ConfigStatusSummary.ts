@@ -44,9 +44,9 @@ export interface ConfigStatusSummary {
 export function instanceOfConfigStatusSummary(
 	value: object,
 ): value is ConfigStatusSummary {
-	if (!("drift" in value) || value["drift"] === undefined) return false;
-	if (!("pending" in value) || value["pending"] === undefined) return false;
-	if (!("untracked" in value) || value["untracked"] === undefined) return false;
+	if (!("drift" in value) || value.drift === undefined) return false;
+	if (!("pending" in value) || value.pending === undefined) return false;
+	if (!("untracked" in value) || value.untracked === undefined) return false;
 	return true;
 }
 
@@ -62,9 +62,9 @@ export function ConfigStatusSummaryFromJSONTyped(
 		return json;
 	}
 	return {
-		drift: json["drift"],
-		pending: json["pending"],
-		untracked: json["untracked"],
+		drift: json.drift,
+		pending: json.pending,
+		untracked: json.untracked,
 	};
 }
 
@@ -81,8 +81,8 @@ export function ConfigStatusSummaryToJSONTyped(
 	}
 
 	return {
-		drift: value["drift"],
-		pending: value["pending"],
-		untracked: value["untracked"],
+		drift: value.drift,
+		pending: value.pending,
+		untracked: value.untracked,
 	};
 }

@@ -44,8 +44,8 @@ export interface ListWebhooksResponse {
 export function instanceOfListWebhooksResponse(
 	value: object,
 ): value is ListWebhooksResponse {
-	if (!("count" in value) || value["count"] === undefined) return false;
-	if (!("webhooks" in value) || value["webhooks"] === undefined) return false;
+	if (!("count" in value) || value.count === undefined) return false;
+	if (!("webhooks" in value) || value.webhooks === undefined) return false;
 	return true;
 }
 
@@ -61,11 +61,11 @@ export function ListWebhooksResponseFromJSONTyped(
 		return json;
 	}
 	return {
-		count: json["count"],
+		count: json.count,
 		webhooks:
-			json["webhooks"] == null
+			json.webhooks == null
 				? null
-				: (json["webhooks"] as Array<any>).map(ListStripeWebhooksRowFromJSON),
+				: (json.webhooks as Array<any>).map(ListStripeWebhooksRowFromJSON),
 	};
 }
 
@@ -82,10 +82,10 @@ export function ListWebhooksResponseToJSONTyped(
 	}
 
 	return {
-		count: value["count"],
+		count: value.count,
 		webhooks:
-			value["webhooks"] == null
+			value.webhooks == null
 				? null
-				: (value["webhooks"] as Array<any>).map(ListStripeWebhooksRowToJSON),
+				: (value.webhooks as Array<any>).map(ListStripeWebhooksRowToJSON),
 	};
 }

@@ -53,8 +53,8 @@ export function UpdateInvoiceRequestFromJSONTyped(
 		return json;
 	}
 	return {
-		description: json["description"] == null ? undefined : json["description"],
-		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		description: json.description == null ? undefined : json.description,
+		metadata: json.metadata == null ? undefined : json.metadata,
 	};
 }
 
@@ -71,7 +71,7 @@ export function UpdateInvoiceRequestToJSONTyped(
 	}
 
 	return {
-		description: value["description"],
-		metadata: value["metadata"],
+		description: value.description,
+		metadata: value.metadata,
 	};
 }
