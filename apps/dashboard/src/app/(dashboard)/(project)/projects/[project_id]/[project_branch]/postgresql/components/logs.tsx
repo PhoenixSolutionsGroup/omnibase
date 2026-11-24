@@ -59,7 +59,7 @@ async function fetchLogs(
   if (severity) params.set("severity", severity);
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectBranchId}/postgresql/logs?${params}`,
+    `${process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL}/api/v1/project_branches/${projectBranchId}/postgresql/logs?${params}`,
     { credentials: "include" },
   );
   if (!response.ok) {

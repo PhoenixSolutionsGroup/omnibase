@@ -72,7 +72,7 @@ async function fetchQueries(
   projectBranchId: string,
 ): Promise<PostgresQueriesResponse> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/project_branches/${projectBranchId}/postgresql`,
+    `${process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL}/api/v1/project_branches/${projectBranchId}/postgresql`,
     { credentials: "include" },
   );
   if (!response.ok) {
