@@ -8,7 +8,6 @@ import {
 	Check,
 	ChevronLeft,
 	ChevronRight,
-	Filter,
 	GripVertical,
 	Loader2,
 	MoreHorizontal,

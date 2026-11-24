@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	Boxes,
 	ChevronDown,
 	Cloud,
 	Copy,

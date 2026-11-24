@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { SubjectSetRequest } from "./SubjectSetRequest";
 import {
 	SubjectSetRequestFromJSON,
-	SubjectSetRequestFromJSONTyped,
 	SubjectSetRequestToJSON,
-	SubjectSetRequestToJSONTyped,
 } from "./SubjectSetRequest";
 
 /**

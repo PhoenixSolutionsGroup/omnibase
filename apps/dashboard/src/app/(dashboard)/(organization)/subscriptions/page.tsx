@@ -7,7 +7,6 @@ import {
 import { PricingTable } from "@omnibase/shadcn";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import React from "react";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { CustomerPortalButton } from "./customer-portal-button";
 

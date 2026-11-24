@@ -12,27 +12,20 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { MeterCustomerMapping } from "./MeterCustomerMapping";
 import {
 	MeterCustomerMappingFromJSON,
-	MeterCustomerMappingFromJSONTyped,
 	MeterCustomerMappingToJSON,
-	MeterCustomerMappingToJSONTyped,
 } from "./MeterCustomerMapping";
 import type { MeterDefaultAggregation } from "./MeterDefaultAggregation";
 import {
 	MeterDefaultAggregationFromJSON,
-	MeterDefaultAggregationFromJSONTyped,
 	MeterDefaultAggregationToJSON,
-	MeterDefaultAggregationToJSONTyped,
 } from "./MeterDefaultAggregation";
 import type { MeterValueSettings } from "./MeterValueSettings";
 import {
 	MeterValueSettingsFromJSON,
-	MeterValueSettingsFromJSONTyped,
 	MeterValueSettingsToJSON,
-	MeterValueSettingsToJSONTyped,
 } from "./MeterValueSettings";
 
 /**

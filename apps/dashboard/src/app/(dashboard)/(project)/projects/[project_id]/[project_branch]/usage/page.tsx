@@ -1,4 +1,4 @@
-import React from "react";
+
 import { getProjectBranch } from "@/utils/get-project";
 import { UsageClient } from "./client";
 

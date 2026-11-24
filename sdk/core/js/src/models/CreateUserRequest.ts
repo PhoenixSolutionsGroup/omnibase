@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { IdentityName } from "./IdentityName";
 import {
 	IdentityNameFromJSON,
-	IdentityNameFromJSONTyped,
 	IdentityNameToJSON,
-	IdentityNameToJSONTyped,
 } from "./IdentityName";
 
 /**

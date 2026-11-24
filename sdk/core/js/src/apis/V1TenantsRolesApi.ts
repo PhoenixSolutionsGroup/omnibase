@@ -15,26 +15,17 @@
 import type {
 	CreateRoleRequest,
 	CreateRoleRow,
-	ErrorModel,
 	ListRolesByTenantRow,
 	NamespaceDefinitionResponse,
 	UpdateRolePermissionsRow,
 	UpdateRoleRequest,
 } from "../models/index";
 import {
-	CreateRoleRequestFromJSON,
 	CreateRoleRequestToJSON,
 	CreateRoleRowFromJSON,
-	CreateRoleRowToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
 	ListRolesByTenantRowFromJSON,
-	ListRolesByTenantRowToJSON,
 	NamespaceDefinitionResponseFromJSON,
-	NamespaceDefinitionResponseToJSON,
 	UpdateRolePermissionsRowFromJSON,
-	UpdateRolePermissionsRowToJSON,
-	UpdateRoleRequestFromJSON,
 	UpdateRoleRequestToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";

@@ -12,20 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { PriceDisplay } from "./PriceDisplay";
 import {
 	PriceDisplayFromJSON,
-	PriceDisplayFromJSONTyped,
 	PriceDisplayToJSON,
-	PriceDisplayToJSONTyped,
 } from "./PriceDisplay";
 import type { PriceLimit } from "./PriceLimit";
 import {
 	PriceLimitFromJSON,
-	PriceLimitFromJSONTyped,
 	PriceLimitToJSON,
-	PriceLimitToJSONTyped,
 } from "./PriceLimit";
 
 /**

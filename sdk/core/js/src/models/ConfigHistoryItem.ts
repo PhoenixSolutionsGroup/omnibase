@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { StripeConfigurationWithIDs } from "./StripeConfigurationWithIDs";
 import {
 	StripeConfigurationWithIDsFromJSON,
-	StripeConfigurationWithIDsFromJSONTyped,
 	StripeConfigurationWithIDsToJSON,
-	StripeConfigurationWithIDsToJSONTyped,
 } from "./StripeConfigurationWithIDs";
 
 /**

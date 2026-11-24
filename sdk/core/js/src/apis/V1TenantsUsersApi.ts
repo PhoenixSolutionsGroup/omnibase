@@ -14,22 +14,15 @@
 
 import type {
 	DeleteRequest,
-	ErrorModel,
 	UpdateUserRoleRequest,
 	UpdateUserRoleResponse,
 	UserResponse,
 } from "../models/index";
 import {
-	DeleteRequestFromJSON,
 	DeleteRequestToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
-	UpdateUserRoleRequestFromJSON,
 	UpdateUserRoleRequestToJSON,
 	UpdateUserRoleResponseFromJSON,
-	UpdateUserRoleResponseToJSON,
 	UserResponseFromJSON,
-	UserResponseToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";
 

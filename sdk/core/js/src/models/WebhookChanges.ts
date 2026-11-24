@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { WebhookChange } from "./WebhookChange";
 import {
 	WebhookChangeFromJSON,
-	WebhookChangeFromJSONTyped,
 	WebhookChangeToJSON,
-	WebhookChangeToJSONTyped,
 } from "./WebhookChange";
 
 /**

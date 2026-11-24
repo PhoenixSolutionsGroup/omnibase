@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { TenantPayload } from "./TenantPayload";
 import {
 	TenantPayloadFromJSON,
-	TenantPayloadFromJSONTyped,
 	TenantPayloadToJSON,
-	TenantPayloadToJSONTyped,
 } from "./TenantPayload";
 
 /**

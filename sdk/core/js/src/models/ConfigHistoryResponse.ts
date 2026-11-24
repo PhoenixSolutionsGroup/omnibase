@@ -12,20 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ConfigHistoryItem } from "./ConfigHistoryItem";
 import {
 	ConfigHistoryItemFromJSON,
-	ConfigHistoryItemFromJSONTyped,
 	ConfigHistoryItemToJSON,
-	ConfigHistoryItemToJSONTyped,
 } from "./ConfigHistoryItem";
 import type { ConfigHistoryPagination } from "./ConfigHistoryPagination";
 import {
 	ConfigHistoryPaginationFromJSON,
-	ConfigHistoryPaginationFromJSONTyped,
 	ConfigHistoryPaginationToJSON,
-	ConfigHistoryPaginationToJSONTyped,
 } from "./ConfigHistoryPagination";
 
 /**

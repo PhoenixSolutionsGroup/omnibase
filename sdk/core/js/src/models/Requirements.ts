@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ParsedNamespaceDefinition } from "./ParsedNamespaceDefinition";
 import {
 	ParsedNamespaceDefinitionFromJSON,
-	ParsedNamespaceDefinitionFromJSONTyped,
 	ParsedNamespaceDefinitionToJSON,
-	ParsedNamespaceDefinitionToJSONTyped,
 } from "./ParsedNamespaceDefinition";
 
 /**

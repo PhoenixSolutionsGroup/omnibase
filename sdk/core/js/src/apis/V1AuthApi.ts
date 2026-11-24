@@ -15,7 +15,6 @@
 import type {
 	ActiveTenantResponse,
 	CreateUserRequest,
-	ErrorModel,
 	Identity,
 	ListTenantsResponse,
 	LogoutResponse,
@@ -24,21 +23,12 @@ import type {
 } from "../models/index";
 import {
 	ActiveTenantResponseFromJSON,
-	ActiveTenantResponseToJSON,
-	CreateUserRequestFromJSON,
 	CreateUserRequestToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
 	IdentityFromJSON,
-	IdentityToJSON,
 	ListTenantsResponseFromJSON,
-	ListTenantsResponseToJSON,
 	LogoutResponseFromJSON,
-	LogoutResponseToJSON,
 	SessionResponseFromJSON,
-	SessionResponseToJSON,
 	WhoAmIBodyFromJSON,
-	WhoAmIBodyToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";
 

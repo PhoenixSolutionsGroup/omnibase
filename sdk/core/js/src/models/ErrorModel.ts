@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ErrorDetail } from "./ErrorDetail";
 import {
 	ErrorDetailFromJSON,
-	ErrorDetailFromJSONTyped,
 	ErrorDetailToJSON,
-	ErrorDetailToJSONTyped,
 } from "./ErrorDetail";
 
 /**

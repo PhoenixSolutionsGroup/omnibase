@@ -15,18 +15,12 @@
 import type {
 	AppliedMigration,
 	ApplyMigrationsResponse,
-	ErrorModel,
 	MigrationsDownResponse,
 } from "../models/index";
 import {
 	AppliedMigrationFromJSON,
-	AppliedMigrationToJSON,
 	ApplyMigrationsResponseFromJSON,
-	ApplyMigrationsResponseToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
 	MigrationsDownResponseFromJSON,
-	MigrationsDownResponseToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";
 

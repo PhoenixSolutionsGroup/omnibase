@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { PromotionCodeChange } from "./PromotionCodeChange";
 import {
 	PromotionCodeChangeFromJSON,
-	PromotionCodeChangeFromJSONTyped,
 	PromotionCodeChangeToJSON,
-	PromotionCodeChangeToJSONTyped,
 } from "./PromotionCodeChange";
 
 /**

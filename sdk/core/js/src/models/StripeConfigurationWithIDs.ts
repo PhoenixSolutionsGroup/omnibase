@@ -12,34 +12,25 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { CouponWithStripeID } from "./CouponWithStripeID";
 import {
 	CouponWithStripeIDFromJSON,
-	CouponWithStripeIDFromJSONTyped,
 	CouponWithStripeIDToJSON,
-	CouponWithStripeIDToJSONTyped,
 } from "./CouponWithStripeID";
 import type { MeterWithStripeID } from "./MeterWithStripeID";
 import {
 	MeterWithStripeIDFromJSON,
-	MeterWithStripeIDFromJSONTyped,
 	MeterWithStripeIDToJSON,
-	MeterWithStripeIDToJSONTyped,
 } from "./MeterWithStripeID";
 import type { ProductWithStripeIDs } from "./ProductWithStripeIDs";
 import {
 	ProductWithStripeIDsFromJSON,
-	ProductWithStripeIDsFromJSONTyped,
 	ProductWithStripeIDsToJSON,
-	ProductWithStripeIDsToJSONTyped,
 } from "./ProductWithStripeIDs";
 import type { PromotionCodeWithStripeID } from "./PromotionCodeWithStripeID";
 import {
 	PromotionCodeWithStripeIDFromJSON,
-	PromotionCodeWithStripeIDFromJSONTyped,
 	PromotionCodeWithStripeIDToJSON,
-	PromotionCodeWithStripeIDToJSONTyped,
 } from "./PromotionCodeWithStripeID";
 
 /**

@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { LineItem } from "./LineItem";
 import {
 	LineItemFromJSON,
-	LineItemFromJSONTyped,
 	LineItemToJSON,
-	LineItemToJSONTyped,
 } from "./LineItem";
 
 /**

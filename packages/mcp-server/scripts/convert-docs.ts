@@ -4,8 +4,6 @@ import {
 	readdirSync,
 	readFileSync,
 	renameSync,
-	statSync,
-	unlinkSync,
 	writeFileSync,
 } from "node:fs";
 import { extname, join, resolve } from "node:path";

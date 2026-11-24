@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ListStripeWebhooksRow } from "./ListStripeWebhooksRow";
 import {
 	ListStripeWebhooksRowFromJSON,
-	ListStripeWebhooksRowFromJSONTyped,
 	ListStripeWebhooksRowToJSON,
-	ListStripeWebhooksRowToJSONTyped,
 } from "./ListStripeWebhooksRow";
 
 /**

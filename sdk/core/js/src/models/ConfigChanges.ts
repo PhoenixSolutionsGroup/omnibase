@@ -12,48 +12,35 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { CouponChanges } from "./CouponChanges";
 import {
 	CouponChangesFromJSON,
-	CouponChangesFromJSONTyped,
 	CouponChangesToJSON,
-	CouponChangesToJSONTyped,
 } from "./CouponChanges";
 import type { MeterChanges } from "./MeterChanges";
 import {
 	MeterChangesFromJSON,
-	MeterChangesFromJSONTyped,
 	MeterChangesToJSON,
-	MeterChangesToJSONTyped,
 } from "./MeterChanges";
 import type { PriceChanges } from "./PriceChanges";
 import {
 	PriceChangesFromJSON,
-	PriceChangesFromJSONTyped,
 	PriceChangesToJSON,
-	PriceChangesToJSONTyped,
 } from "./PriceChanges";
 import type { ProductChanges } from "./ProductChanges";
 import {
 	ProductChangesFromJSON,
-	ProductChangesFromJSONTyped,
 	ProductChangesToJSON,
-	ProductChangesToJSONTyped,
 } from "./ProductChanges";
 import type { PromotionCodeChanges } from "./PromotionCodeChanges";
 import {
 	PromotionCodeChangesFromJSON,
-	PromotionCodeChangesFromJSONTyped,
 	PromotionCodeChangesToJSON,
-	PromotionCodeChangesToJSONTyped,
 } from "./PromotionCodeChanges";
 import type { WebhookChanges } from "./WebhookChanges";
 import {
 	WebhookChangesFromJSON,
-	WebhookChangesFromJSONTyped,
 	WebhookChangesToJSON,
-	WebhookChangesToJSONTyped,
 } from "./WebhookChanges";
 
 /**

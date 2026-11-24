@@ -1,5 +1,5 @@
 import { createOryMiddleware } from "@ory/nextjs/middleware";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, } from "next/server";
 import { getServerSession } from "../auth";
 import { tenantCheckMiddleware } from "./tenant_check";
 

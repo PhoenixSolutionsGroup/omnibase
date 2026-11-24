@@ -5,7 +5,6 @@ import {
 	spawn,
 	spawnSync,
 } from "child_process";
-import { config as dotenvConfig } from "dotenv";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";

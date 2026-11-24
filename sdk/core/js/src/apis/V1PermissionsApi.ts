@@ -19,23 +19,14 @@ import type {
 	CreateRelationshipResponse,
 	DeleteRelationshipRequest,
 	DeleteRelationshipResponse,
-	ErrorModel,
 } from "../models/index";
 import {
-	CheckRequestFromJSON,
 	CheckRequestToJSON,
 	CheckResponseFromJSON,
-	CheckResponseToJSON,
-	CreateRelationshipRequestFromJSON,
 	CreateRelationshipRequestToJSON,
 	CreateRelationshipResponseFromJSON,
-	CreateRelationshipResponseToJSON,
-	DeleteRelationshipRequestFromJSON,
 	DeleteRelationshipRequestToJSON,
 	DeleteRelationshipResponseFromJSON,
-	DeleteRelationshipResponseToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";
 

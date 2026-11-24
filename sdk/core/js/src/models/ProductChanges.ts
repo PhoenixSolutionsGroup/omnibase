@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ProductChange } from "./ProductChange";
 import {
 	ProductChangeFromJSON,
-	ProductChangeFromJSONTyped,
 	ProductChangeToJSON,
-	ProductChangeToJSONTyped,
 } from "./ProductChange";
 
 /**

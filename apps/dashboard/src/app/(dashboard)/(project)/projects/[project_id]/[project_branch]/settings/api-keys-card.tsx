@@ -1,7 +1,6 @@
 "use client";
 
 import { Eye, EyeOff, Loader2, RotateCw } from "lucide-react";
-import * as React from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

@@ -12,41 +12,30 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { Coupon } from "./Coupon";
 import {
 	CouponFromJSON,
-	CouponFromJSONTyped,
 	CouponToJSON,
-	CouponToJSONTyped,
 } from "./Coupon";
 import type { Meter } from "./Meter";
 import {
 	MeterFromJSON,
-	MeterFromJSONTyped,
 	MeterToJSON,
-	MeterToJSONTyped,
 } from "./Meter";
 import type { Product } from "./Product";
 import {
 	ProductFromJSON,
-	ProductFromJSONTyped,
 	ProductToJSON,
-	ProductToJSONTyped,
 } from "./Product";
 import type { PromotionCode } from "./PromotionCode";
 import {
 	PromotionCodeFromJSON,
-	PromotionCodeFromJSONTyped,
 	PromotionCodeToJSON,
-	PromotionCodeToJSONTyped,
 } from "./PromotionCode";
 import type { WebhookEndpointConfig } from "./WebhookEndpointConfig";
 import {
 	WebhookEndpointConfigFromJSON,
-	WebhookEndpointConfigFromJSONTyped,
 	WebhookEndpointConfigToJSON,
-	WebhookEndpointConfigToJSONTyped,
 } from "./WebhookEndpointConfig";
 
 /**

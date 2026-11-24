@@ -1,5 +1,4 @@
 import { cookies, headers } from "next/headers";
-import React from "react";
 import { getProjectBranch } from "@/utils/get-project";
 import type { Project } from "../dashboard/project-provisioning-dashboard";
 import { StripeSettingsClient } from "./client";

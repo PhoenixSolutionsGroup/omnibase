@@ -12,20 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { PriceUI } from "./PriceUI";
 import {
 	PriceUIFromJSON,
-	PriceUIFromJSONTyped,
 	PriceUIToJSON,
-	PriceUIToJSONTyped,
 } from "./PriceUI";
 import type { Tier } from "./Tier";
 import {
 	TierFromJSON,
-	TierFromJSONTyped,
 	TierToJSON,
-	TierToJSONTyped,
 } from "./Tier";
 
 /**

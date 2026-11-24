@@ -12,20 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ConfigChanges } from "./ConfigChanges";
 import {
 	ConfigChangesFromJSON,
-	ConfigChangesFromJSONTyped,
 	ConfigChangesToJSON,
-	ConfigChangesToJSONTyped,
 } from "./ConfigChanges";
 import type { StripeConfiguration } from "./StripeConfiguration";
 import {
 	StripeConfigurationFromJSON,
-	StripeConfigurationFromJSONTyped,
 	StripeConfigurationToJSON,
-	StripeConfigurationToJSONTyped,
 } from "./StripeConfiguration";
 
 /**

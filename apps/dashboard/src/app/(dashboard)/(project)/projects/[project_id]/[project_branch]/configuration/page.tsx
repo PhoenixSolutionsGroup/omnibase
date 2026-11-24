@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { createServerClient } from "@/lib/server";
 import { getProjectBranch } from "@/utils/get-project";
 import { ConfigurationClient } from "./client";
 

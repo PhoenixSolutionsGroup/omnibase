@@ -16,7 +16,6 @@ import {
 	assertValidVersions,
 	cloudConfigOf,
 	type DeploymentConfig,
-	getResolvedConfig,
 	interpolateValue,
 	loadConfig,
 	loadSecretsMap,

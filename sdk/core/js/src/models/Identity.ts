@@ -16,23 +16,17 @@ import { mapValues } from "../runtime";
 import type { IdentityCredentials } from "./IdentityCredentials";
 import {
 	IdentityCredentialsFromJSON,
-	IdentityCredentialsFromJSONTyped,
 	IdentityCredentialsToJSON,
-	IdentityCredentialsToJSONTyped,
 } from "./IdentityCredentials";
 import type { RecoveryIdentityAddress } from "./RecoveryIdentityAddress";
 import {
 	RecoveryIdentityAddressFromJSON,
-	RecoveryIdentityAddressFromJSONTyped,
 	RecoveryIdentityAddressToJSON,
-	RecoveryIdentityAddressToJSONTyped,
 } from "./RecoveryIdentityAddress";
 import type { VerifiableIdentityAddress } from "./VerifiableIdentityAddress";
 import {
 	VerifiableIdentityAddressFromJSON,
-	VerifiableIdentityAddressFromJSONTyped,
 	VerifiableIdentityAddressToJSON,
-	VerifiableIdentityAddressToJSONTyped,
 } from "./VerifiableIdentityAddress";
 
 /**

@@ -2,7 +2,6 @@
 
 import { GitBranch, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import * as React from "react";
 import {
 	Select,
 	SelectContent,

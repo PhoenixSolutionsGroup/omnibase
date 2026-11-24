@@ -17,31 +17,20 @@ import type {
 	DeleteObjectResponse,
 	DownloadRequest,
 	DownloadResponse,
-	ErrorModel,
 	MakePublicRequest,
 	MakePublicResponse,
 	UploadRequest,
 	UploadResponse,
 } from "../models/index";
 import {
-	DeleteObjectRequestFromJSON,
 	DeleteObjectRequestToJSON,
 	DeleteObjectResponseFromJSON,
-	DeleteObjectResponseToJSON,
-	DownloadRequestFromJSON,
 	DownloadRequestToJSON,
 	DownloadResponseFromJSON,
-	DownloadResponseToJSON,
-	ErrorModelFromJSON,
-	ErrorModelToJSON,
-	MakePublicRequestFromJSON,
 	MakePublicRequestToJSON,
 	MakePublicResponseFromJSON,
-	MakePublicResponseToJSON,
-	UploadRequestFromJSON,
 	UploadRequestToJSON,
 	UploadResponseFromJSON,
-	UploadResponseToJSON,
 } from "../models/index";
 import * as runtime from "../runtime";
 

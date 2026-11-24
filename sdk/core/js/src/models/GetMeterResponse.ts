@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { MeterWithStripeID } from "./MeterWithStripeID";
 import {
 	MeterWithStripeIDFromJSON,
-	MeterWithStripeIDFromJSONTyped,
 	MeterWithStripeIDToJSON,
-	MeterWithStripeIDToJSONTyped,
 } from "./MeterWithStripeID";
 
 /**

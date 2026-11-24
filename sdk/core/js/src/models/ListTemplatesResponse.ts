@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { EmailTemplate } from "./EmailTemplate";
 import {
 	EmailTemplateFromJSON,
-	EmailTemplateFromJSONTyped,
 	EmailTemplateToJSON,
-	EmailTemplateToJSONTyped,
 } from "./EmailTemplate";
 
 /**

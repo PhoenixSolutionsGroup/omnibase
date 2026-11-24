@@ -12,20 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { ConfigStatusEntry } from "./ConfigStatusEntry";
 import {
 	ConfigStatusEntryFromJSON,
-	ConfigStatusEntryFromJSONTyped,
 	ConfigStatusEntryToJSON,
-	ConfigStatusEntryToJSONTyped,
 } from "./ConfigStatusEntry";
 import type { ConfigStatusSummary } from "./ConfigStatusSummary";
 import {
 	ConfigStatusSummaryFromJSON,
-	ConfigStatusSummaryFromJSONTyped,
 	ConfigStatusSummaryToJSON,
-	ConfigStatusSummaryToJSONTyped,
 } from "./ConfigStatusSummary";
 
 /**

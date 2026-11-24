@@ -6,12 +6,10 @@ import {
 	LoginForm,
 	RecoveryForm,
 	RegistrationForm,
-	SettingsForm,
 	TenantCreator,
 	VerificationForm,
 } from "@omnibase/shadcn";
 import { redirect } from "next/navigation";
-import React from "react";
 import { setSessionTokenAction } from "@/app/auth/actions";
 import { getOmnibaseConfiguration } from "@/lib/server";
 

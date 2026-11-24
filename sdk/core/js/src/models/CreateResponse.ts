@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { AuthTenantInvite } from "./AuthTenantInvite";
 import {
 	AuthTenantInviteFromJSON,
-	AuthTenantInviteFromJSONTyped,
 	AuthTenantInviteToJSON,
-	AuthTenantInviteToJSONTyped,
 } from "./AuthTenantInvite";
 
 /**

@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { MeterChange } from "./MeterChange";
 import {
 	MeterChangeFromJSON,
-	MeterChangeFromJSONTyped,
 	MeterChangeToJSON,
-	MeterChangeToJSONTyped,
 } from "./MeterChange";
 
 /**

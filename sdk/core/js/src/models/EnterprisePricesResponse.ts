@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { PriceWithStripeID } from "./PriceWithStripeID";
 import {
 	PriceWithStripeIDFromJSON,
-	PriceWithStripeIDFromJSONTyped,
 	PriceWithStripeIDToJSON,
-	PriceWithStripeIDToJSONTyped,
 } from "./PriceWithStripeID";
 
 /**

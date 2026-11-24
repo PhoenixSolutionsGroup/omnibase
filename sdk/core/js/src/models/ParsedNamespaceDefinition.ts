@@ -12,13 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { RelationMetadata } from "./RelationMetadata";
 import {
 	RelationMetadataFromJSON,
-	RelationMetadataFromJSONTyped,
 	RelationMetadataToJSON,
-	RelationMetadataToJSONTyped,
 } from "./RelationMetadata";
 
 /**

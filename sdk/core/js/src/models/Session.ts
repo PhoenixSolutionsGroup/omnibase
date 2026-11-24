@@ -12,27 +12,20 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from "../runtime";
 import type { Identity } from "./Identity";
 import {
 	IdentityFromJSON,
-	IdentityFromJSONTyped,
 	IdentityToJSON,
-	IdentityToJSONTyped,
 } from "./Identity";
 import type { SessionAuthenticationMethod } from "./SessionAuthenticationMethod";
 import {
 	SessionAuthenticationMethodFromJSON,
-	SessionAuthenticationMethodFromJSONTyped,
 	SessionAuthenticationMethodToJSON,
-	SessionAuthenticationMethodToJSONTyped,
 } from "./SessionAuthenticationMethod";
 import type { SessionDevice } from "./SessionDevice";
 import {
 	SessionDeviceFromJSON,
-	SessionDeviceFromJSONTyped,
 	SessionDeviceToJSON,
-	SessionDeviceToJSONTyped,
 } from "./SessionDevice";
 
 /**
