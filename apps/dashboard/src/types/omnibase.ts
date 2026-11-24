@@ -175,40 +175,43 @@ export type Database = {
       }
       clusters: {
         Row: {
-          api_server_url: string | null
           created_at: string
           error_message: string | null
+          error_metadata: Json | null
           id: string
           kubeconfig_encrypted: string | null
           label: string
+          provider: Database["public"]["Enums"]["cluster_provider"]
+          provider_id: string | null
           region: string
           status: Database["public"]["Enums"]["cluster_status"]
           updated_at: string
-          vultr_id: string | null
         }
         Insert: {
-          api_server_url?: string | null
           created_at?: string
           error_message?: string | null
+          error_metadata?: Json | null
           id?: string
           kubeconfig_encrypted?: string | null
           label: string
+          provider?: Database["public"]["Enums"]["cluster_provider"]
+          provider_id?: string | null
           region: string
           status?: Database["public"]["Enums"]["cluster_status"]
           updated_at?: string
-          vultr_id?: string | null
         }
         Update: {
-          api_server_url?: string | null
           created_at?: string
           error_message?: string | null
+          error_metadata?: Json | null
           id?: string
           kubeconfig_encrypted?: string | null
           label?: string
+          provider?: Database["public"]["Enums"]["cluster_provider"]
+          provider_id?: string | null
           region?: string
           status?: Database["public"]["Enums"]["cluster_status"]
           updated_at?: string
-          vultr_id?: string | null
         }
         Relationships: []
       }
@@ -226,6 +229,52 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      project_branch_webhook_registrations: {
+        Row: {
+          active: boolean
+          callback_url: string
+          connect: boolean
+          created_at: string
+          events: string[] | null
+          id: string
+          project_branch_id: string
+          secret: string
+          updated_at: string
+          webhook_id: string
+        }
+        Insert: {
+          active?: boolean
+          callback_url: string
+          connect?: boolean
+          created_at?: string
+          events?: string[] | null
+          id?: string
+          project_branch_id: string
+          secret: string
+          updated_at?: string
+          webhook_id: string
+        }
+        Update: {
+          active?: boolean
+          callback_url?: string
+          connect?: boolean
+          created_at?: string
+          events?: string[] | null
+          id?: string
+          project_branch_id?: string
+          secret?: string
+          updated_at?: string
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_branch_webhook_registrations_project_branch_id_fkey"
+            columns: ["project_branch_id"]
+            referencedRelation: "project_branches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_branches: {
         Row: {
@@ -378,96 +427,96 @@ export type Database = {
         }
         Relationships: []
       }
-      usage_metrics: {
+      worker_scripts: {
         Row: {
-          created_at: string | null
-          db_compute_hours: number | null
-          db_storage_gb: number | null
-          email_sends: number | null
-          end_time: string
-          id: string
-          project_group_id: string
+          branch_id: string
+          created_at: string
+          deleted_at: string | null
           project_id: string
-          start_time: string
-          storage_bytes: number | null
-          storage_operations: number | null
+          script_name: string
           tenant_id: string
-          workers_cpu_ms: number | null
-          workers_requests: number | null
+          updated_at: string
+          worker_name: string
         }
         Insert: {
-          created_at?: string | null
-          db_compute_hours?: number | null
-          db_storage_gb?: number | null
-          email_sends?: number | null
-          end_time: string
-          id?: string
-          project_group_id: string
+          branch_id: string
+          created_at?: string
+          deleted_at?: string | null
           project_id: string
-          start_time: string
-          storage_bytes?: number | null
-          storage_operations?: number | null
+          script_name: string
           tenant_id: string
-          workers_cpu_ms?: number | null
-          workers_requests?: number | null
+          updated_at?: string
+          worker_name: string
         }
         Update: {
-          created_at?: string | null
-          db_compute_hours?: number | null
-          db_storage_gb?: number | null
-          email_sends?: number | null
-          end_time?: string
-          id?: string
-          project_group_id?: string
+          branch_id?: string
+          created_at?: string
+          deleted_at?: string | null
           project_id?: string
-          start_time?: string
-          storage_bytes?: number | null
-          storage_operations?: number | null
+          script_name?: string
           tenant_id?: string
-          workers_cpu_ms?: number | null
-          workers_requests?: number | null
+          updated_at?: string
+          worker_name?: string
         }
         Relationships: []
       }
-      webhook_registrations: {
+      worker_usage_minutes: {
         Row: {
-          account_id: string
-          active: boolean
-          callback_url: string
-          connect: boolean
-          created_at: string
-          events: string[] | null
-          id: string
-          secret: string
-          tenant_id: string
+          branch_id: string | null
+          cpu_histogram: number[]
+          cpu_ms: number
+          errors: number
+          minute: string
+          project_id: string | null
+          requests: number
+          script_name: string
+          tenant_id: string | null
           updated_at: string
-          webhook_id: string
+          wall_ms: number
+          worker_name: string | null
         }
         Insert: {
-          account_id: string
-          active?: boolean
-          callback_url: string
-          connect?: boolean
-          created_at?: string
-          events?: string[] | null
-          id?: string
-          secret: string
-          tenant_id: string
+          branch_id?: string | null
+          cpu_histogram?: number[]
+          cpu_ms?: number
+          errors?: number
+          minute: string
+          project_id?: string | null
+          requests?: number
+          script_name: string
+          tenant_id?: string | null
           updated_at?: string
-          webhook_id: string
+          wall_ms?: number
+          worker_name?: string | null
         }
         Update: {
-          account_id?: string
-          active?: boolean
-          callback_url?: string
-          connect?: boolean
-          created_at?: string
-          events?: string[] | null
-          id?: string
-          secret?: string
-          tenant_id?: string
+          branch_id?: string | null
+          cpu_histogram?: number[]
+          cpu_ms?: number
+          errors?: number
+          minute?: string
+          project_id?: string | null
+          requests?: number
+          script_name?: string
+          tenant_id?: string | null
           updated_at?: string
-          webhook_id?: string
+          wall_ms?: number
+          worker_name?: string | null
+        }
+        Relationships: []
+      }
+      worker_usage_objects: {
+        Row: {
+          object_key: string
+          processed_at: string
+        }
+        Insert: {
+          object_key: string
+          processed_at?: string
+        }
+        Update: {
+          object_key?: string
+          processed_at?: string
         }
         Relationships: []
       }
@@ -476,6 +525,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      omnibase_bigint_array_add: {
+        Args: { a: number[]; b: number[] }
+        Returns: number[]
+      }
       uuid_generate_v1: { Args: never; Returns: string }
       uuid_generate_v1mc: { Args: never; Returns: string }
       uuid_generate_v3: {
@@ -494,6 +547,7 @@ export type Database = {
       uuid_ns_x500: { Args: never; Returns: string }
     }
     Enums: {
+      cluster_provider: "vks" | "contabo"
       cluster_status:
         | "provisioning"
         | "active"
@@ -635,6 +689,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      cluster_provider: ["vks", "contabo"],
       cluster_status: [
         "provisioning",
         "active",

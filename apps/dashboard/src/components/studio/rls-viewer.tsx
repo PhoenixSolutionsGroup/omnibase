@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,17 @@ export function RLSViewer({ project, tableName, schemaName, hasRlsPolicies }: RL
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [expanded, setExpanded] = useState(true);
+    const inFlightRef = useRef<string | null>(null);
 
     useEffect(() => {
-        fetchPolicies();
+        const key = `${schemaName}.${tableName}`;
+        if (inFlightRef.current === key) {
+            return;
+        }
+        inFlightRef.current = key;
+        fetchPolicies().finally(() => {
+            inFlightRef.current = null;
+        });
     }, [tableName, schemaName]);
 
     const fetchPolicies = async () => {

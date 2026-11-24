@@ -4,41 +4,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PostgrestClient } from "@supabase/postgrest-js";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { insertTableRow } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 
 interface CreateRowDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     columns: any[];
-    client: PostgrestClient<any>;
+    project: {
+        project_id: string;
+        branch_name: string;
+    };
     tableName: string;
     schemaName: string;
     onSuccess: () => void;
 }
 
-export function CreateRowDialog({ open, onOpenChange, columns, client, tableName, schemaName, onSuccess }: CreateRowDialogProps) {
+export function CreateRowDialog({ open, onOpenChange, columns, project, tableName, schemaName, onSuccess }: CreateRowDialogProps) {
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            // Filter out empty strings if they should be null?
-            // For now sending as is. PostgREST handles type conversion usually.
             const payload = { ...formData };
-            
-            // Clean up payload: remove empty strings if type is not text?
-            // Actually PostgREST might complain if we send "" for UUID.
-            // We should send null or undefined if empty.
-            
+
             Object.keys(payload).forEach(key => {
                 if (payload[key] === "") payload[key] = null;
             });
 
-            const { error } = await client.schema(schemaName).from(tableName).insert(payload);
-            if (error) throw error;
+            const result = await insertTableRow(
+                project.project_id,
+                project.branch_name,
+                schemaName,
+                tableName,
+                payload,
+            );
+            if (!result.success) throw new Error(result.error);
             toast.success("Row created");
             onSuccess();
             onOpenChange(false);

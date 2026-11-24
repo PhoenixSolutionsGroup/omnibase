@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { PostgrestClient } from "@supabase/postgrest-js";
+import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { SchemaBrowser } from "./schema-browser";
 import { TableViewer } from "./table-viewer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
-import { fetchPostgrestServiceKey } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/settings/actions";
 import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 
 interface StudioProps {
@@ -16,65 +14,17 @@ interface StudioProps {
 }
 
 export default function Studio({ project }: StudioProps) {
-  const [client, setClient] = useState<PostgrestClient<any> | null>(null);
   const [schemas, setSchemas] = useState<Record<string, any[]>>({});
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [simulatedToken, setSimulatedToken] = useState<string | null>(null);
-  const serviceKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
       try {
-        if (!project.postgrest_url) {
-          throw new Error("Missing project PostgREST URL");
-        }
-
-        // Fetch decrypted service key if we don't have it yet
-        if (!serviceKeyRef.current) {
-          const keyResult = await fetchPostgrestServiceKey(project.id);
-          console.log("[Studio] fetchPostgrestServiceKey result:", {
-            success: keyResult.success,
-            error: keyResult.error,
-            serviceKeyLength: keyResult.serviceKey?.length,
-            serviceKeyPreview: keyResult.serviceKey?.substring(0, 50) + "...",
-            serviceKeyParts: keyResult.serviceKey?.split(".").length,
-          });
-          if (!keyResult.success || !keyResult.serviceKey) {
-            throw new Error(
-              keyResult.error || "Failed to fetch database service key"
-            );
-          }
-          // Validate that the key is a JWT (has 3 parts separated by dots)
-          if (keyResult.serviceKey.split(".").length !== 3) {
-            throw new Error(
-              "Invalid service key format: expected a JWT token"
-            );
-          }
-          serviceKeyRef.current = keyResult.serviceKey;
-        }
-
-        // Use simulated token for RLS simulation, otherwise use service key
-        const token = simulatedToken || serviceKeyRef.current;
-        console.log("[Studio] Using token:", {
-          isSimulated: !!simulatedToken,
-          tokenLength: token?.length,
-          tokenPreview: token?.substring(0, 50) + "...",
-          tokenParts: token?.split(".").length,
-        });
-
-        const pgClient = new PostgrestClient(project.postgrest_url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setClient(pgClient);
-
-        // Fetch schema info directly from Postgres
         const schemaResult = await fetchSchemaInfo(
           project.project_id,
-          project.branch_name
+          project.branch_name,
         );
         if (!schemaResult.success || !schemaResult.schemas) {
           throw new Error(schemaResult.error || "Failed to fetch schema info");
@@ -83,9 +33,13 @@ export default function Studio({ project }: StudioProps) {
 
         // Auto-select first table in public schema (or first available schema)
         const schemaNames = Object.keys(schemaResult.schemas);
-        const defaultSchema = schemaNames.includes("public") ? "public" : schemaNames[0];
+        const defaultSchema = schemaNames.includes("public")
+          ? "public"
+          : schemaNames[0];
         if (defaultSchema && schemaResult.schemas[defaultSchema]?.length > 0) {
-          setSelectedTable(`${defaultSchema}.${schemaResult.schemas[defaultSchema][0].name}`);
+          setSelectedTable(
+            `${defaultSchema}.${schemaResult.schemas[defaultSchema][0].name}`,
+          );
         }
 
         setLoading(false);
@@ -96,7 +50,7 @@ export default function Studio({ project }: StudioProps) {
       }
     };
     init();
-  }, [project, simulatedToken]);
+  }, [project.project_id, project.branch_name]);
 
   if (loading) {
     return (
@@ -176,10 +130,14 @@ export default function Studio({ project }: StudioProps) {
   }
 
   // selectedTable format is "schema.table"
-  const [selectedSchema, selectedTableName] = selectedTable?.split(".") ?? [null, null];
-  const selectedTableDef = selectedSchema && selectedTableName
-    ? schemas[selectedSchema]?.find((t) => t.name === selectedTableName)
-    : null;
+  const [selectedSchema, selectedTableName] = selectedTable?.split(".") ?? [
+    null,
+    null,
+  ];
+  const selectedTableDef =
+    selectedSchema && selectedTableName
+      ? schemas[selectedSchema]?.find((t) => t.name === selectedTableName)
+      : null;
 
   const handleSelectTable = (tableName: string, schemaName: string) => {
     setSelectedTable(`${schemaName}.${tableName}`);
@@ -201,14 +159,12 @@ export default function Studio({ project }: StudioProps) {
           />
         </div>
         <div className="flex-1 overflow-hidden bg-background">
-          {selectedTableName && client && selectedTableDef ? (
+          {selectedTableName && selectedTableDef ? (
             <TableViewer
-              key={selectedTable} // Force remount on table change
-              client={client}
+              key={selectedTable}
               tableName={selectedTableName}
               tableDefinition={selectedTableDef}
               project={project}
-              onSimulate={setSimulatedToken}
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground bg-muted/5">

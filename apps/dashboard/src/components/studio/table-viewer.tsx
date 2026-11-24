@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { PostgrestClient } from "@supabase/postgrest-js";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -44,8 +43,11 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { CreateRowDialog } from "./create-row-dialog";
 import { RLSViewer } from "./rls-viewer";
-import { RLSSimulator } from "./rls-simulator";
 import { FilterBuilder, FilterItem } from "./filter-builder";
+import {
+  fetchTableRows,
+  deleteTableRows,
+} from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 import {
   Dialog,
   DialogContent,
@@ -64,15 +66,16 @@ interface ColumnDefinition {
 }
 
 interface TableViewerProps {
-  client: PostgrestClient<any>;
   tableName: string;
   tableDefinition: {
     name: string;
     schemaName: string;
     columns: ColumnDefinition[];
   };
-  project: any;
-  onSimulate: (token: string | null) => void;
+  project: {
+    project_id: string;
+    branch_name: string;
+  };
 }
 
 // Local implementation of CheckboxItem for the custom DropdownMenu
@@ -103,11 +106,9 @@ const buttonGhostIcon =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0";
 
 export function TableViewer({
-  client,
   tableName,
   tableDefinition,
   project,
-  onSimulate,
 }: TableViewerProps) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -336,79 +337,73 @@ export function TableViewer({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showRLS, setShowRLS] = useState(true);
 
-  const fetchTableData = useCallback(
-    async (retryCount = 0) => {
-      const maxRetries = 3;
-      setLoading(true);
-      try {
-        let query = client
-          .schema(tableDefinition.schemaName)
-          .from(tableName)
-          .select("*", { count: "exact" });
+  const inFlightRef = useRef<string | null>(null);
 
-        if (sort) {
-          query = query.order(sort.column, { ascending: sort.order === "asc" });
-        }
+  const fetchTableData = useCallback(async () => {
+    const requestKey = JSON.stringify({
+      schemaName: tableDefinition.schemaName,
+      tableName,
+      page,
+      pageSize,
+      sort,
+      filters: filters.map(({ column, operator, value }) => [
+        column,
+        operator,
+        value,
+      ]),
+    });
+    if (inFlightRef.current === requestKey) {
+      return;
+    }
+    inFlightRef.current = requestKey;
+    setLoading(true);
+    try {
+      const result = await fetchTableRows(
+        project.project_id,
+        project.branch_name,
+        tableDefinition.schemaName,
+        tableName,
+        {
+          page,
+          pageSize,
+          sort,
+          filters: filters.map(({ column, operator, value }) => ({
+            column,
+            operator,
+            value,
+          })),
+        },
+      );
 
-        // Apply filters
-        filters.forEach((f) => {
-          if (!f.value && f.operator !== "is") return;
-          let val = f.value;
-          if (f.operator === "ilike" && !val.includes("%")) val = `%${val}%`;
-          query = query.filter(f.column, f.operator, val);
-        });
-
-        const from = page * pageSize;
-        const to = from + pageSize - 1;
-        query = query.range(from, to);
-
-        const { data: rows, error, count } = await query;
-
-        console.log("[TableViewer] Query result:", {
-          tableName,
-          schemaName: tableDefinition.schemaName,
-          rowCount: rows?.length,
-          totalCount: count,
-          error: error ? JSON.stringify(error) : null,
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        setData(rows || []);
-        setTotal(count || 0);
-      } catch (err: any) {
-        const isTransientError =
-          err.message?.includes("schema cache") ||
-          err.message?.includes("Retrying") ||
-          err.code === "PGRST503";
-
-        if (isTransientError && retryCount < maxRetries) {
-          const delay = Math.pow(2, retryCount) * 500;
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          return fetchTableData(retryCount + 1);
-        }
-
-        toast.error(`Error fetching data: ${err.message}`);
-      } finally {
-        setLoading(false);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch rows");
       }
-    },
-    [client, tableName, page, pageSize, sort, filters],
-  );
+
+      setData(result.rows || []);
+      setTotal(result.total || 0);
+    } catch (err: any) {
+      toast.error(`Error fetching data: ${err.message}`);
+    } finally {
+      inFlightRef.current = null;
+      setLoading(false);
+    }
+  }, [
+    project.project_id,
+    project.branch_name,
+    tableDefinition.schemaName,
+    tableName,
+    page,
+    pageSize,
+    sort,
+    filters,
+  ]);
 
   useEffect(() => {
-    setPage(0);
-    setSelectedRows(new Set());
     fetchTableData();
-  }, [tableName, sort, pageSize, filters]);
-
-  useEffect(() => {
-    fetchTableData();
-  }, [page]);
+  }, [fetchTableData]);
 
   const handleSort = (column: string) => {
+    setPage(0);
     if (sort?.column === column) {
       if (sort.order === "asc") {
         setSort({ column, order: "desc" });
@@ -430,12 +425,15 @@ export function TableViewer({
     setSelectedRows(newSelected);
   };
 
-  const pkCol =
-    tableDefinition.columns.find((c) => c.isPrimaryKey)?.name || "id";
+  const primaryKeys = tableDefinition.columns
+    .filter((column) => column.isPrimaryKey)
+    .map((column) => column.name);
 
   const getRowId = (row: any) => {
-    if (row[pkCol] !== undefined) return String(row[pkCol]);
-    return JSON.stringify(row);
+    if (primaryKeys.length > 0) {
+      return primaryKeys.map((key) => String(row[key])).join("|");
+    }
+    return String(row.__studio_ctid);
   };
 
   const handleSelectAll = () => {
@@ -450,21 +448,18 @@ export function TableViewer({
   const handleBulkDelete = async () => {
     setLoading(true);
     try {
-      const ids = Array.from(selectedRows);
-      if (!tableDefinition.columns.find((c) => c.name === pkCol)) {
-        throw new Error(
-          `Cannot delete: No primary key found (assumed '${pkCol}')`,
-        );
-      }
+      const rows = data.filter((row) => selectedRows.has(getRowId(row)));
+      const result = await deleteTableRows(
+        project.project_id,
+        project.branch_name,
+        tableDefinition.schemaName,
+        tableName,
+        primaryKeys,
+        rows,
+      );
+      if (!result.success) throw new Error(result.error);
 
-      const { error } = await client
-        .schema(tableDefinition.schemaName)
-        .from(tableName)
-        .delete()
-        .in(pkCol, ids);
-      if (error) throw error;
-
-      toast.success(`Deleted ${ids.length} rows`);
+      toast.success(`Deleted ${result.deleted ?? rows.length} rows`);
       setSelectedRows(new Set());
       setDeleteDialogOpen(false);
       fetchTableData();
@@ -495,7 +490,10 @@ export function TableViewer({
           </Button>
           <FilterBuilder
             columns={tableDefinition.columns}
-            onApply={setFilters}
+            onApply={(next) => {
+              setFilters(next);
+              setPage(0);
+            }}
           />
 
           <DropdownMenu>
@@ -772,7 +770,10 @@ export function TableViewer({
           </div>
           <Select
             value={String(pageSize)}
-            onValueChange={(v) => setPageSize(Number(v))}
+            onValueChange={(v) => {
+              setPageSize(Number(v));
+              setPage(0);
+            }}
           >
             <SelectTrigger
               className="h-8 w-[100px]"
@@ -809,20 +810,18 @@ export function TableViewer({
         </div>
       </div>
 
-      {/* RLS Panels */}
       <RLSViewer
         project={project}
         tableName={tableName}
         schemaName={tableDefinition.schemaName}
       />
-      <RLSSimulator project={project} onSimulate={onSimulate} />
 
       {/* Dialogs */}
       <CreateRowDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
         columns={tableDefinition.columns}
-        client={client}
+        project={project}
         tableName={tableName}
         schemaName={tableDefinition.schemaName}
         onSuccess={fetchTableData}

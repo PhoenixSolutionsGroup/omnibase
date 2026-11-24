@@ -1,8 +1,69 @@
 "use server";
 
-import { Client } from "pg";
+import { Pool, type PoolClient } from "pg";
 import { getProjectBranch } from "@/utils/get-project";
-import { fetchDatabaseConnectionString } from "../settings/actions";
+import { fetchDatabasePassword } from "../settings/actions";
+
+type BranchDatabase = {
+  id: string;
+  database_host: string | null;
+  database_name: string | null;
+  database_username: string | null;
+};
+
+async function branchConnectionString(branch: BranchDatabase) {
+  if (
+    !branch.database_host ||
+    !branch.database_name ||
+    !branch.database_username
+  ) {
+    throw new Error("Branch database is not provisioned");
+  }
+
+  const passwordResult = await fetchDatabasePassword(branch.id);
+  if (!passwordResult.success || !passwordResult.password) {
+    throw new Error(
+      passwordResult.error || "Failed to fetch database password",
+    );
+  }
+
+  const password = encodeURIComponent(passwordResult.password);
+  return `postgresql://${branch.database_username}:${password}@${branch.database_host}:6432/${branch.database_name}?sslmode=verify-full`;
+}
+
+const pools = new Map<string, Pool>();
+const MAX_POOLS = 50;
+
+async function branchPool(projectId: string, projectBranch: string) {
+  const key = `${projectId}:${projectBranch}`;
+  const existing = pools.get(key);
+  if (existing) {
+    return existing;
+  }
+
+  const project = await getProjectBranch(projectId, projectBranch);
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  const pool = new Pool({
+    connectionString: await branchConnectionString(project),
+    max: 2,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+    query_timeout: 30000,
+  });
+  pool.on("error", (error) => console.error("Branch pool error:", error));
+
+  if (pools.size >= MAX_POOLS) {
+    const [oldestKey, oldestPool] = pools.entries().next().value!;
+    pools.delete(oldestKey);
+    void oldestPool.end();
+  }
+
+  pools.set(key, pool);
+  return pool;
+}
 
 export interface TableColumn {
   name: string;
@@ -25,45 +86,17 @@ export interface SchemaInfo {
 
 export async function fetchSchemaInfo(
   projectId: string,
-  projectBranch: string
+  projectBranch: string,
 ): Promise<{ success: boolean; schemas?: SchemaInfo; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
+  let client: PoolClient;
+  try {
+    const pool = await branchPool(projectId, projectBranch);
+    client = await pool.connect();
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
-
-  // Try to get connection string from managed-hosting, fall back to building from project fields
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-    console.log("[fetchSchemaInfo] Using connection string from managed-hosting");
-  } else {
-    // Fallback: build connection string from project fields
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres"; // default dev password
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-    console.log("[fetchSchemaInfo] Using fallback connection string", { host, port, user, dbName });
-  }
-
-  // Mask password for logging
-  const maskedConnString = connectionString.replace(/:([^@]+)@/, ":***@");
-  console.log("[fetchSchemaInfo] Connecting to:", maskedConnString);
-
-  const client = new Client({
-    connectionString,
-    connectionTimeoutMillis: 10000, // 10 second connection timeout
-    query_timeout: 30000, // 30 second query timeout
-  });
 
   try {
-    console.log("[fetchSchemaInfo] Attempting to connect...");
-    await client.connect();
-    console.log("[fetchSchemaInfo] Connected successfully");
-
     // Get all tables with their schemas using pg_catalog (much faster than information_schema)
     const tablesResult = await client.query(`
       SELECT
@@ -103,7 +136,10 @@ export async function fetchSchemaInfo(
 
     const rlsPolicies = new Map<string, number>();
     for (const row of rlsResult.rows) {
-      rlsPolicies.set(`${row.schemaname}.${row.tablename}`, parseInt(row.policy_count));
+      rlsPolicies.set(
+        `${row.schemaname}.${row.tablename}`,
+        parseInt(row.policy_count),
+      );
     }
 
     // Group by schema and table
@@ -120,7 +156,12 @@ export async function fetchSchemaInfo(
       let table = schemas[schemaName].find((t) => t.name === tableName);
       if (!table) {
         const policyCount = rlsPolicies.get(`${schemaName}.${tableName}`) || 0;
-        table = { name: tableName, schemaName, columns: [], hasRlsPolicies: policyCount > 0 };
+        table = {
+          name: tableName,
+          schemaName,
+          columns: [],
+          hasRlsPolicies: policyCount > 0,
+        };
         schemas[schemaName].push(table);
       }
 
@@ -141,7 +182,7 @@ export async function fetchSchemaInfo(
     console.error("Error fetching schema info:", error.message);
     return { success: false, error: error.message };
   } finally {
-    await client.end();
+    client.release();
   }
 }
 
@@ -159,31 +200,18 @@ export async function fetchRLSPolicies(
   projectId: string,
   projectBranch: string,
   tableName: string,
-  schemaName: string = "public"
+  schemaName: string = "public",
 ): Promise<{ success: boolean; policies?: RLSPolicy[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
+  let client: PoolClient;
+  try {
+    const pool = await branchPool(projectId, projectBranch);
 
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+    client = await pool.connect();
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
-
-  const client = new Client({ connectionString });
 
   try {
-    await client.connect();
-
     const result = await client.query(
       `
       SELECT
@@ -198,7 +226,7 @@ export async function fetchRLSPolicies(
       WHERE tablename = $1 AND schemaname = $2
       ORDER BY policyname
     `,
-      [tableName, schemaName]
+      [tableName, schemaName],
     );
 
     const policies: RLSPolicy[] = result.rows.map((row) => {
@@ -208,7 +236,10 @@ export async function fetchRLSPolicies(
         roles = row.roles;
       } else if (typeof row.roles === "string") {
         // Parse PostgreSQL array string format: {role1,role2}
-        roles = row.roles.replace(/^\{|\}$/g, "").split(",").filter(Boolean);
+        roles = row.roles
+          .replace(/^\{|\}$/g, "")
+          .split(",")
+          .filter(Boolean);
       }
       return {
         policyname: row.policyname,
@@ -226,127 +257,208 @@ export async function fetchRLSPolicies(
     console.error("Error fetching RLS policies:", error.message);
     return { success: false, error: error.message };
   } finally {
-    await client.end();
+    client.release();
   }
 }
 
-export interface Tenant {
-  id: string;
-  name: string;
+const FILTER_OPERATORS: Record<string, string> = {
+  eq: "=",
+  neq: "<>",
+  gt: ">",
+  lt: "<",
+  gte: ">=",
+  lte: "<=",
+  ilike: "ILIKE",
+  like: "LIKE",
+};
+
+const IS_LITERALS = new Set(["null", "true", "false"]);
+
+function quoteIdentifier(name: string) {
+  return `"${name.replace(/"/g, '""')}"`;
 }
 
-export async function fetchTenants(
-  projectId: string,
-  projectBranch: string
-): Promise<{ success: boolean; tenants?: Tenant[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
-
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-  }
-
-  const client = new Client({ connectionString });
-
-  try {
-    await client.connect();
-
-    const result = await client.query(`
-      SELECT id, name FROM auth.tenants ORDER BY name
-    `);
-
-    const tenants: Tenant[] = result.rows.map((row) => ({
-      id: row.id,
-      name: row.name || row.id,
-    }));
-
-    return { success: true, tenants };
-  } catch (error: any) {
-    console.error("Error fetching tenants:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    await client.end();
-  }
-}
-
-export interface TenantUser {
-  id: string;
-  email: string;
-}
-
-export async function fetchTenantUsers(
+async function withBranchConnection<T>(
   projectId: string,
   projectBranch: string,
-  tenantId: string
-): Promise<{ success: boolean; users?: TenantUser[]; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
-
-  let connectionString: string;
-  const connResult = await fetchDatabaseConnectionString(project.id);
-  if (connResult.success && connResult.connectionString) {
-    connectionString = connResult.connectionString;
-  } else {
-    const host = project.database_host || "127.0.0.1";
-    const port = project.database_port || 5432;
-    const user = project.database_username || "postgres";
-    const password = "postgres";
-    const dbName = project.database_name || "db";
-    connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
-  }
-
-  const client = new Client({ connectionString });
-
+  run: (client: PoolClient) => Promise<T>,
+): Promise<{ success: true; result: T } | { success: false; error: string }> {
   try {
-    await client.connect();
-
-    const result = await client.query(
-      `
-      SELECT tu.user_id as id, i.traits->>'email' as email
-      FROM auth.tenant_users tu
-      JOIN auth.identities i ON tu.user_id::uuid = i.id
-      WHERE tu.tenant_id = $1 AND tu.is_active = true
-      ORDER BY i.traits->>'email'
-    `,
-      [tenantId]
-    );
-
-    const users: TenantUser[] = result.rows.map((row) => ({
-      id: row.id,
-      email: row.email || row.id,
-    }));
-
-    return { success: true, users };
+    const pool = await branchPool(projectId, projectBranch);
+    const client = await pool.connect();
+    try {
+      return { success: true, result: await run(client) };
+    } finally {
+      client.release();
+    }
   } catch (error: any) {
-    console.error("Error fetching tenant users:", error.message);
     return { success: false, error: error.message };
-  } finally {
-    await client.end();
   }
 }
 
+export interface TableRowFilter {
+  column: string;
+  operator: string;
+  value: string;
+}
 
-export async function getTenantJWT(
-  _projectId: string,
-  _projectBranch: string,
-  _tenantId: string,
-  _userId: string
-): Promise<{ success: boolean; token?: string; error?: string }> {
-  return {
-    success: false,
-    error: "PostgREST tokens are no longer issued to clients",
-  };
+export interface TableRowOptions {
+  page: number;
+  pageSize: number;
+  sort: { column: string; order: "asc" | "desc" } | null;
+  filters: TableRowFilter[];
+}
+
+export async function fetchTableRows(
+  projectId: string,
+  projectBranch: string,
+  schemaName: string,
+  tableName: string,
+  options: TableRowOptions,
+): Promise<{
+  success: boolean;
+  rows?: Record<string, unknown>[];
+  total?: number;
+  error?: string;
+}> {
+  const params: unknown[] = [];
+  const where: string[] = [];
+
+  for (const filter of options.filters) {
+    if (filter.operator === "is") {
+      const literal = filter.value.trim().toLowerCase();
+      if (!IS_LITERALS.has(literal)) continue;
+      where.push(
+        `${quoteIdentifier(filter.column)} IS ${literal.toUpperCase()}`,
+      );
+      continue;
+    }
+
+    const operator = FILTER_OPERATORS[filter.operator];
+    if (!operator) continue;
+
+    let value = filter.value;
+    if (!value && filter.operator !== "ilike" && filter.operator !== "like") {
+      continue;
+    }
+    if (
+      (filter.operator === "ilike" || filter.operator === "like") &&
+      !value.includes("%")
+    ) {
+      value = `%${value}%`;
+    }
+
+    params.push(value);
+    where.push(
+      `${quoteIdentifier(filter.column)} ${operator} $${params.length}`,
+    );
+  }
+
+  const orderBy = options.sort
+    ? ` ORDER BY ${quoteIdentifier(options.sort.column)} ${
+        options.sort.order === "asc" ? "ASC" : "DESC"
+      }`
+    : "";
+
+  params.push(options.pageSize, options.page * options.pageSize);
+  const sql = `SELECT *, ctid::text AS __studio_ctid, count(*) OVER() AS __studio_total FROM ${quoteIdentifier(
+    schemaName,
+  )}.${quoteIdentifier(tableName)}${
+    where.length > 0 ? ` WHERE ${where.join(" AND ")}` : ""
+  }${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
+
+  return withBranchConnection(projectId, projectBranch, async (client) => {
+    const result = await client.query(sql, params);
+    const rows = result.rows.map((row) => {
+      const { __studio_total, ...rest } = row;
+      return rest;
+    });
+    const total = rows.length > 0 ? Number(result.rows[0].__studio_total) : 0;
+    return { rows, total };
+  }).then((outcome) =>
+    outcome.success
+      ? { success: true, ...outcome.result }
+      : { success: false, error: outcome.error },
+  );
+}
+
+export async function insertTableRow(
+  projectId: string,
+  projectBranch: string,
+  schemaName: string,
+  tableName: string,
+  values: Record<string, unknown>,
+): Promise<{
+  success: boolean;
+  row?: Record<string, unknown>;
+  error?: string;
+}> {
+  const columns = Object.keys(values);
+  const params = columns.map((column) => values[column]);
+  const sql =
+    columns.length > 0
+      ? `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
+          tableName,
+        )} (${columns.map(quoteIdentifier).join(", ")}) VALUES (${columns
+          .map((_, index) => `$${index + 1}`)
+          .join(", ")}) RETURNING *`
+      : `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
+          tableName,
+        )} DEFAULT VALUES RETURNING *`;
+
+  return withBranchConnection(projectId, projectBranch, async (client) => {
+    const result = await client.query(sql, params);
+    return { row: result.rows[0] };
+  }).then((outcome) =>
+    outcome.success
+      ? { success: true, ...outcome.result }
+      : { success: false, error: outcome.error },
+  );
+}
+
+export async function deleteTableRows(
+  projectId: string,
+  projectBranch: string,
+  schemaName: string,
+  tableName: string,
+  primaryKeys: string[],
+  rows: Record<string, unknown>[],
+): Promise<{ success: boolean; deleted?: number; error?: string }> {
+  if (rows.length === 0) {
+    return { success: true, deleted: 0 };
+  }
+
+  const qualified = `${quoteIdentifier(schemaName)}.${quoteIdentifier(
+    tableName,
+  )}`;
+
+  let sql: string;
+  let params: unknown[];
+
+  if (primaryKeys.length > 0) {
+    const values: unknown[] = [];
+    const placeholders = rows.map((row) => {
+      const keys = primaryKeys.map((key) => {
+        values.push(row[key]);
+        return `$${values.length}`;
+      });
+      return `(${keys.join(", ")})`;
+    });
+    sql = `DELETE FROM ${qualified} WHERE (${primaryKeys
+      .map(quoteIdentifier)
+      .join(", ")}) IN (${placeholders.join(", ")})`;
+    params = values;
+  } else {
+    sql = `DELETE FROM ${qualified} WHERE ctid = ANY($1::tid[])`;
+    params = [rows.map((row) => row.__studio_ctid)];
+  }
+
+  return withBranchConnection(projectId, projectBranch, async (client) => {
+    const result = await client.query(sql, params);
+    return { deleted: result.rowCount ?? 0 };
+  }).then((outcome) =>
+    outcome.success
+      ? { success: true, ...outcome.result }
+      : { success: false, error: outcome.error },
+  );
 }
