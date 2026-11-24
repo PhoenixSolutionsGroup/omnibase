@@ -143,6 +143,7 @@ export function StripeSettingsClient({
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
+							aria-label="Custom domains icon"
 						>
 							<path
 								strokeLinecap="round"
@@ -170,6 +171,7 @@ export function StripeSettingsClient({
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
+							aria-label="account settings icon"
 						>
 							<path
 								strokeLinecap="round"

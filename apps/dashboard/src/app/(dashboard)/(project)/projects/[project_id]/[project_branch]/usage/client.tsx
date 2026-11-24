@@ -128,7 +128,7 @@ export function UsageClient({ branchId, branchCreatedAt }: UsageClientProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								{[...Array(3)].map((_, i) => (
+								{[1, 2, 3].map((i) => (
 									<div
 										key={i}
 										className="flex flex-col space-y-2 p-4 border rounded-lg"
