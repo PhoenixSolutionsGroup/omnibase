@@ -100,6 +100,63 @@ func TestCreateCheckoutSessionComputesPaymentFeeFromDecimalAmountAndDiscount(t *
 	require.Equal(t, "1", form.Get("line_items[0][quantity]"))
 }
 
+func TestCreateCheckoutSessionForwardsClientReferenceIDAndMetadata(t *testing.T) {
+	var form url.Values
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/prices/price_test":
+			writeJSON(t, w, map[string]any{
+				"id":        "price_test",
+				"object":    "price",
+				"recurring": map[string]any{"interval": "month"},
+			})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/checkout/sessions":
+			require.NoError(t, r.ParseForm())
+			form = r.PostForm
+			writeJSON(t, w, map[string]any{
+				"id":     "cs_test",
+				"object": "checkout.session",
+				"url":    "https://checkout.stripe.test/cs_test",
+			})
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	service := New(Deps{Stripe: stripe_client.New(config.StripeConfig{
+		SecretKey:  "sk_test",
+		APIBaseURL: server.URL,
+	})})
+
+	_, err := service.CreateCheckoutSession(context.Background(), CreateCheckoutSessionArgs{
+		CheckoutLineItems: []CheckoutLineItem{
+			{StripePriceID: "price_test", Quantity: 1},
+		},
+		SuccessURL:        "https://example.com/success",
+		CancelURL:         "https://example.com/cancel",
+		ClientReferenceID: "intent_123",
+		Metadata: map[string]string{
+			"intent_id": "intent_123",
+			"tenant_id": "tenant_1",
+		},
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, "intent_123", form.Get("client_reference_id"))
+	require.Equal(t, "intent_123", form.Get("metadata[intent_id]"))
+	require.Equal(t, "tenant_1", form.Get("metadata[tenant_id]"))
+}
+
+func TestCreateCheckoutSessionOmitsClientReferenceAndMetadataWhenUnset(t *testing.T) {
+	form := checkoutSessionForm(t, true, "")
+
+	require.Empty(t, form.Get("client_reference_id"))
+	require.Empty(t, form.Get("metadata[intent_id]"))
+}
+
 func TestCreateCheckoutSessionAppliesDiscountOnceAcrossLineItems(t *testing.T) {
 	var form url.Values
 	promoFetches := 0
