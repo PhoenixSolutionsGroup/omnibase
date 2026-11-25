@@ -85,6 +85,10 @@ type StripeConfig struct {
 	PlatformFeePercent float64
 	WebhookSecret      string
 	APIBaseURL         string
+	IsManaged          bool
+	ProxyURL           string
+	ProxyToken         string
+	BranchID           string
 }
 
 type AuthConfig struct {
@@ -140,6 +144,10 @@ func New() *Config {
 			StripeAccountID:    os.Getenv("STRIPE_ACCOUNT_ID"),
 			PlatformFeePercent: getFloat64Env("PLATFORM_FEE_PERCENT", 0),
 			APIBaseURL:         os.Getenv("STRIPE_API_URL"),
+			IsManaged:          os.Getenv("OMNIBASE_MANAGED") == "true",
+			ProxyURL:           os.Getenv("MANAGED_HOSTING_API_URL"),
+			ProxyToken:         os.Getenv("INTERNAL_SERVICE_TOKEN"),
+			BranchID:           os.Getenv("MANAGED_BRANCH_ID"),
 		},
 		AuthConfig: AuthConfig{
 			AuthURL:      os.Getenv("AUTH_URL"),
