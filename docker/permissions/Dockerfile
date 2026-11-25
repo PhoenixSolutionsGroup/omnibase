@@ -2,8 +2,8 @@ FROM oryd/keto:v25.4.0
 
 USER root
 
-# Install AWS CLI for S3-compatible storage (R2) and unzip
-RUN apk add --no-cache aws-cli unzip
+# Install AWS CLI for S3-compatible storage (R2), curl/jq for the credentials API, and unzip
+RUN apk add --no-cache aws-cli unzip curl jq
 
 # Build from the repo root so the API-owned namespace files are the only copy.
 COPY docker/permissions/permissions.yml /etc/config/permissions/permissions.yml

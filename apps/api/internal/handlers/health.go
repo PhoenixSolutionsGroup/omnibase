@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -19,14 +17,16 @@ import (
 const healthCheckTimeout = 15 * time.Second
 
 type HealthHandler struct {
-	cfg *config.Config
-	db  *gorm.DB
+	cfg      *config.Config
+	db       *gorm.DB
+	s3Client *s3.Client
 }
 
-func NewHealthHandler(cfg *config.Config, db *gorm.DB) *HealthHandler {
+func NewHealthHandler(cfg *config.Config, db *gorm.DB, s3Client *s3.Client) *HealthHandler {
 	return &HealthHandler{
-		cfg: cfg,
-		db:  db,
+		cfg:      cfg,
+		db:       db,
+		s3Client: s3Client,
 	}
 }
 
@@ -203,35 +203,14 @@ func (h *HealthHandler) checkStorage() ServiceHealth {
 	start := time.Now()
 	s3cfg := h.cfg.S3Config
 
-	// R2 ignores region but the SDK needs one set; an empty region makes it try
-	// EC2 IMDS for a region lookup, which hangs off-EC2. Default to "auto".
-	region := s3cfg.Region
-	if region == "" {
-		region = "auto"
+	if h.s3Client == nil {
+		return ServiceHealth{Ready: false, Error: "storage client not configured"}
 	}
-
-	awsCfg, err := awsconfig.LoadDefaultConfig(context.TODO(),
-		awsconfig.WithRegion(region),
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			s3cfg.AccessKey, s3cfg.SecretKey, "")),
-	)
-	if err != nil {
-		latency := time.Since(start).Milliseconds()
-		logger.Logger.Warn("Storage health check failed to load AWS config", "error", err, "latency_ms", latency)
-		return ServiceHealth{Ready: false, Latency: latency, Error: err.Error()}
-	}
-
-	client := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
-		if s3cfg.Endpoint != "" {
-			o.BaseEndpoint = aws.String(s3cfg.Endpoint)
-		}
-		o.UsePathStyle = s3cfg.ForcePathStyle
-	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), healthCheckTimeout)
 	defer cancel()
 
-	_, err = client.HeadBucket(ctx, &s3.HeadBucketInput{Bucket: aws.String(s3cfg.BucketName)})
+	_, err := h.s3Client.HeadBucket(ctx, &s3.HeadBucketInput{Bucket: aws.String(s3cfg.BucketName)})
 	latency := time.Since(start).Milliseconds()
 
 	if err != nil {
