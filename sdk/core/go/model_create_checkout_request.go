@@ -24,7 +24,9 @@ var _ MappedNullable = &CreateCheckoutRequest{}
 type CreateCheckoutRequest struct {
 	AllowPromotionCodes *bool `json:"allow_promotion_codes,omitempty"`
 	CancelUrl string `json:"cancel_url"`
+	ClientReferenceId *string `json:"client_reference_id,omitempty"`
 	LineItems []LineItem `json:"line_items"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	PromotionCode *string `json:"promotion_code,omitempty"`
 	SuccessUrl string `json:"success_url"`
 	TrialPeriodDays *int64 `json:"trial_period_days,omitempty"`
@@ -108,6 +110,38 @@ func (o *CreateCheckoutRequest) SetCancelUrl(v string) {
 	o.CancelUrl = v
 }
 
+// GetClientReferenceId returns the ClientReferenceId field value if set, zero value otherwise.
+func (o *CreateCheckoutRequest) GetClientReferenceId() string {
+	if o == nil || IsNil(o.ClientReferenceId) {
+		var ret string
+		return ret
+	}
+	return *o.ClientReferenceId
+}
+
+// GetClientReferenceIdOk returns a tuple with the ClientReferenceId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetClientReferenceIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ClientReferenceId) {
+		return nil, false
+	}
+	return o.ClientReferenceId, true
+}
+
+// HasClientReferenceId returns a boolean if a field has been set.
+func (o *CreateCheckoutRequest) HasClientReferenceId() bool {
+	if o != nil && !IsNil(o.ClientReferenceId) {
+		return true
+	}
+
+	return false
+}
+
+// SetClientReferenceId gets a reference to the given string and assigns it to the ClientReferenceId field.
+func (o *CreateCheckoutRequest) SetClientReferenceId(v string) {
+	o.ClientReferenceId = &v
+}
+
 // GetLineItems returns the LineItems field value
 // If the value is explicit nil, the zero value for []LineItem will be returned
 func (o *CreateCheckoutRequest) GetLineItems() []LineItem {
@@ -132,6 +166,38 @@ func (o *CreateCheckoutRequest) GetLineItemsOk() ([]LineItem, bool) {
 // SetLineItems sets field value
 func (o *CreateCheckoutRequest) SetLineItems(v []LineItem) {
 	o.LineItems = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *CreateCheckoutRequest) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetMetadataOk() (map[string]string, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]string{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *CreateCheckoutRequest) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *CreateCheckoutRequest) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetPromotionCode returns the PromotionCode field value if set, zero value otherwise.
@@ -236,8 +302,14 @@ func (o CreateCheckoutRequest) ToMap() (map[string]interface{}, error) {
 		toSerialize["allow_promotion_codes"] = o.AllowPromotionCodes
 	}
 	toSerialize["cancel_url"] = o.CancelUrl
+	if !IsNil(o.ClientReferenceId) {
+		toSerialize["client_reference_id"] = o.ClientReferenceId
+	}
 	if o.LineItems != nil {
 		toSerialize["line_items"] = o.LineItems
+	}
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if !IsNil(o.PromotionCode) {
 		toSerialize["promotion_code"] = o.PromotionCode

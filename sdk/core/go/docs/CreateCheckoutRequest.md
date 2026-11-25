@@ -6,7 +6,9 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **AllowPromotionCodes** | Pointer to **bool** |  | [optional] 
 **CancelUrl** | **string** |  | 
+**ClientReferenceId** | Pointer to **string** |  | [optional] 
 **LineItems** | [**[]LineItem**](LineItem.md) |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **PromotionCode** | Pointer to **string** |  | [optional] 
 **SuccessUrl** | **string** |  | 
 **TrialPeriodDays** | Pointer to **int64** |  | [optional] 
@@ -75,6 +77,31 @@ and a boolean to check if the value has been set.
 SetCancelUrl sets CancelUrl field to given value.
 
 
+### GetClientReferenceId
+
+`func (o *CreateCheckoutRequest) GetClientReferenceId() string`
+
+GetClientReferenceId returns the ClientReferenceId field if non-nil, zero value otherwise.
+
+### GetClientReferenceIdOk
+
+`func (o *CreateCheckoutRequest) GetClientReferenceIdOk() (*string, bool)`
+
+GetClientReferenceIdOk returns a tuple with the ClientReferenceId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetClientReferenceId
+
+`func (o *CreateCheckoutRequest) SetClientReferenceId(v string)`
+
+SetClientReferenceId sets ClientReferenceId field to given value.
+
+### HasClientReferenceId
+
+`func (o *CreateCheckoutRequest) HasClientReferenceId() bool`
+
+HasClientReferenceId returns a boolean if a field has been set.
+
 ### GetLineItems
 
 `func (o *CreateCheckoutRequest) GetLineItems() []LineItem`
@@ -105,6 +132,31 @@ SetLineItems sets LineItems field to given value.
 `func (o *CreateCheckoutRequest) UnsetLineItems()`
 
 UnsetLineItems ensures that no value is present for LineItems, not even an explicit nil
+### GetMetadata
+
+`func (o *CreateCheckoutRequest) GetMetadata() map[string]string`
+
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+
+### GetMetadataOk
+
+`func (o *CreateCheckoutRequest) GetMetadataOk() (*map[string]string, bool)`
+
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMetadata
+
+`func (o *CreateCheckoutRequest) SetMetadata(v map[string]string)`
+
+SetMetadata sets Metadata field to given value.
+
+### HasMetadata
+
+`func (o *CreateCheckoutRequest) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
+
 ### GetPromotionCode
 
 `func (o *CreateCheckoutRequest) GetPromotionCode() string`

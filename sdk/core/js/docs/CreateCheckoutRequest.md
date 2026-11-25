@@ -8,7 +8,9 @@ Name | Type
 ------------ | -------------
 `allowPromotionCodes` | boolean
 `cancelUrl` | string
+`clientReferenceId` | string
 `lineItems` | [Array&lt;LineItem&gt;](LineItem.md)
+`metadata` | { [key: string]: string; }
 `promotionCode` | string
 `successUrl` | string
 `trialPeriodDays` | number
@@ -22,7 +24,9 @@ import type { CreateCheckoutRequest } from '@omnibase/core-js'
 const example = {
   "allowPromotionCodes": null,
   "cancelUrl": null,
+  "clientReferenceId": null,
   "lineItems": null,
+  "metadata": null,
   "promotionCode": null,
   "successUrl": null,
   "trialPeriodDays": null,

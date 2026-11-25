@@ -41,10 +41,22 @@ export interface CreateCheckoutRequest {
     cancelUrl: string;
     /**
      * 
+     * @type {string}
+     * @memberof CreateCheckoutRequest
+     */
+    clientReferenceId?: string;
+    /**
+     * 
      * @type {Array<LineItem>}
      * @memberof CreateCheckoutRequest
      */
     lineItems: Array<LineItem> | null;
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof CreateCheckoutRequest
+     */
+    metadata?: { [key: string]: string; };
     /**
      * 
      * @type {string}
@@ -87,7 +99,9 @@ export function CreateCheckoutRequestFromJSONTyped(json: any, ignoreDiscriminato
         
         'allowPromotionCodes': json['allow_promotion_codes'] == null ? undefined : json['allow_promotion_codes'],
         'cancelUrl': json['cancel_url'],
+        'clientReferenceId': json['client_reference_id'] == null ? undefined : json['client_reference_id'],
         'lineItems': (json['line_items'] == null ? null : (json['line_items'] as Array<any>).map(LineItemFromJSON)),
+        'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'promotionCode': json['promotion_code'] == null ? undefined : json['promotion_code'],
         'successUrl': json['success_url'],
         'trialPeriodDays': json['trial_period_days'] == null ? undefined : json['trial_period_days'],
@@ -107,7 +121,9 @@ export function CreateCheckoutRequestToJSONTyped(value?: CreateCheckoutRequest |
         
         'allow_promotion_codes': value['allowPromotionCodes'],
         'cancel_url': value['cancelUrl'],
+        'client_reference_id': value['clientReferenceId'],
         'line_items': (value['lineItems'] == null ? null : (value['lineItems'] as Array<any>).map(LineItemToJSON)),
+        'metadata': value['metadata'],
         'promotion_code': value['promotionCode'],
         'success_url': value['successUrl'],
         'trial_period_days': value['trialPeriodDays'],
