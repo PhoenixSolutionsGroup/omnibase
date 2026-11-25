@@ -255,6 +255,77 @@ func writeJSON(t *testing.T, w http.ResponseWriter, payload any) {
 	}
 }
 
+func TestReconcileMovesPriceToNewProductWhenProductBoundaryChanges(t *testing.T) {
+	price := Price{ID: "price_shared", Amount: 1000, Currency: "usd", Interval: "month"}
+	product := Product{ID: "prod_b", Name: "Product B", Type: "service", Prices: []Price{price}}
+	cfg := &StripeConfiguration{Version: "1.0.0", Products: []Product{product}}
+
+	var archivedPrice bool
+	var archivedProduct bool
+	var createdPriceProduct string
+	var transferLookupKey string
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/products":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "prod_old", "object": "product", "active": true, "name": "Product A", "type": "service",
+				"metadata": map[string]string{MetadataKeyConfigID: "prod_a", MetadataKeyManaged: MetadataManagedValue, MetadataKeyHash: "old"},
+			}}})
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/prices":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "price_old", "object": "price", "active": true, "currency": "usd", "unit_amount": 1000,
+				"billing_scheme": "per_unit", "type": "recurring",
+				"recurring":  map[string]any{"interval": "month", "interval_count": 1},
+				"product":    "prod_old",
+				"lookup_key": "price_shared",
+				"metadata":   map[string]string{MetadataKeyConfigID: "price_shared", MetadataKeyManaged: MetadataManagedValue, MetadataKeyHash: priceConfigHash(price)},
+			}}})
+		case r.Method == http.MethodGet && isListPath(r.URL.Path):
+			writeJSON(t, w, map[string]any{"object": "list", "data": []any{}, "has_more": false})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/products":
+			writeJSON(t, w, map[string]any{
+				"id": "prod_new", "object": "product", "active": true, "name": "Product B", "type": "service",
+				"metadata": map[string]string{MetadataKeyConfigID: "prod_b", MetadataKeyManaged: MetadataManagedValue, MetadataKeyHash: productConfigHash(product)},
+			})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/products/prod_old":
+			archivedProduct = true
+			writeJSON(t, w, map[string]any{"id": "prod_old", "object": "product", "active": false})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices":
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("failed to parse price form: %v", err)
+			}
+			createdPriceProduct = r.Form.Get("product")
+			transferLookupKey = r.Form.Get("transfer_lookup_key")
+			writeJSON(t, w, map[string]any{"id": "price_new", "object": "price", "active": true})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices/price_old":
+			archivedPrice = true
+			writeJSON(t, w, map[string]any{"id": "price_old", "object": "price", "active": false})
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+			writeJSON(t, w, map[string]any{"error": map[string]string{"message": "unexpected"}})
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	service := &Service{
+		stripe:    stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL}),
+		validator: NewValidator(),
+	}
+	state := newReconcileState()
+
+	changes, err := service.reconcile(context.Background(), cfg, state)
+	require.NoError(t, err)
+
+	require.True(t, archivedProduct)
+	require.True(t, archivedPrice)
+	require.Equal(t, "prod_new", createdPriceProduct)
+	require.Equal(t, "true", transferLookupKey)
+	require.Len(t, changes.Prices.Updated, 1)
+	require.Equal(t, "price_new", changes.Prices.Updated[0].StripeID)
+	require.Equal(t, "price_new", state.priceStripeIDs["price_shared"])
+}
+
 func TestListManagedPromotionCodesPrefersActiveTwin(t *testing.T) {
 	tags := map[string]string{MetadataKeyConfigID: "promo_a", MetadataKeyManaged: MetadataManagedValue}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
