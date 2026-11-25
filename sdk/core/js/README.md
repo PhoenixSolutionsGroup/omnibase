@@ -98,6 +98,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
 *V1StorageApi* | [**deleteObject**](docs/V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage
 *V1StorageApi* | [**downloadFile**](docs/V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage
+*V1StorageApi* | [**getStorageCredentials**](docs/V1StorageApi.md#getstoragecredentials) | **GET** /api/v1/storage/credentials | Get temporary S3 credentials
 *V1StorageApi* | [**makeFilePublic**](docs/V1StorageApi.md#makefilepublic) | **POST** /api/v1/storage/make-public | Make a file publicly accessible
 *V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
 *V1StripeApi* | [**applyEnterpriseCustom**](docs/V1StripeApi.md#applyenterprisecustomoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
@@ -204,6 +205,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [GetMeterResponse](docs/GetMeterResponse.md)
 - [GetPriceResponse](docs/GetPriceResponse.md)
 - [GetProductResponse](docs/GetProductResponse.md)
+- [GetStorageCredentialsResponse](docs/GetStorageCredentialsResponse.md)
 - [GetTenantByIDRow](docs/GetTenantByIDRow.md)
 - [GetTenantByStripeCustomerIDRow](docs/GetTenantByStripeCustomerIDRow.md)
 - [Identity](docs/Identity.md)

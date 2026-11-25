@@ -85,6 +85,7 @@ docs/FormFile.md
 docs/GetMeterResponse.md
 docs/GetPriceResponse.md
 docs/GetProductResponse.md
+docs/GetStorageCredentialsResponse.md
 docs/GetTenantByIDRow.md
 docs/GetTenantByStripeCustomerIDRow.md
 docs/Identity.md
@@ -253,6 +254,7 @@ model_form_file.go
 model_get_meter_response.go
 model_get_price_response.go
 model_get_product_response.go
+model_get_storage_credentials_response.go
 model_get_tenant_by_id_row.go
 model_get_tenant_by_stripe_customer_id_row.go
 model_identity.go

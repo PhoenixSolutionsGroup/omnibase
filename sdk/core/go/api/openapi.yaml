@@ -2530,6 +2530,60 @@ paths:
       summary: Get required permission namespaces
       tags:
       - V1Configuration
+  /api/v1/storage/credentials:
+    get:
+      description: "Returns short-lived, bucket-scoped S3 credentials for server-side\
+        \ use. Requires the project service key. Do not expose the service key in\
+        \ browser code."
+      operationId: getStorageCredentials
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStorageCredentialsResponse"
+          description: OK
+          headers:
+            Cache-Control:
+              explode: false
+              schema:
+                type: string
+              style: simple
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
+        "503":
+          content:
+            application/problem+json:
+              example:
+                title: Service Unavailable
+                status: 503
+                detail: Service Unavailable
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Service Unavailable
+      security:
+      - ServiceKeyAuth: []
+      summary: Get temporary S3 credentials
+      tags:
+      - V1Storage
   /api/v1/storage/download:
     post:
       description: "Storage object paths are unique across the entire bucket, not\
@@ -8862,6 +8916,42 @@ components:
           $ref: "#/components/schemas/ProductWithStripeIDs"
       required:
       - product
+    GetStorageCredentialsResponse:
+      additionalProperties: false
+      example:
+        session_token: session_token
+        secret_key: secret_key
+        endpoint: endpoint
+        access_key: access_key
+        bucket_name: bucket_name
+        expiration: 2000-01-23T04:56:07.000+00:00
+        region: region
+      properties:
+        access_key:
+          description: S3 access key ID.
+          type: string
+        bucket_name:
+          type: string
+        endpoint:
+          type: string
+        expiration:
+          description: Credential expiration time.
+          format: date-time
+          type: string
+        region:
+          type: string
+        secret_key:
+          description: S3 secret access key.
+          type: string
+        session_token:
+          description: Session token required with temporary credentials.
+          type: string
+      required:
+      - access_key
+      - bucket_name
+      - endpoint
+      - region
+      - secret_key
     GetTenantByIDRow:
       additionalProperties: false
       example:

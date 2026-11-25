@@ -1727,6 +1727,63 @@
         ],
         "type": "object"
       },
+      "GetStorageCredentialsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "access_key": {
+            "description": "S3 access key ID.",
+            "examples": [
+              "..."
+            ],
+            "type": "string"
+          },
+          "bucket_name": {
+            "examples": [
+              "project-branch"
+            ],
+            "type": "string"
+          },
+          "endpoint": {
+            "examples": [
+              "https://account.r2.cloudflarestorage.com"
+            ],
+            "type": "string"
+          },
+          "expiration": {
+            "description": "Credential expiration time.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "region": {
+            "examples": [
+              "auto"
+            ],
+            "type": "string"
+          },
+          "secret_key": {
+            "description": "S3 secret access key.",
+            "examples": [
+              "..."
+            ],
+            "type": "string"
+          },
+          "session_token": {
+            "description": "Session token required with temporary credentials.",
+            "examples": [
+              "jwt/..."
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_key",
+          "secret_key",
+          "bucket_name",
+          "endpoint",
+          "region"
+        ],
+        "type": "object"
+      },
       "GetTenantByIDRow": {
         "additionalProperties": false,
         "properties": {
@@ -8408,6 +8465,85 @@
         "summary": "Get required permission namespaces",
         "tags": [
           "V1Configuration"
+        ]
+      }
+    },
+    "/api/v1/storage/credentials": {
+      "get": {
+        "description": "Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.",
+        "operationId": "getStorageCredentials",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetStorageCredentialsResponse"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Service Unavailable",
+                  "status": 503,
+                  "detail": "Service Unavailable"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          }
+        ],
+        "summary": "Get temporary S3 credentials",
+        "tags": [
+          "V1Storage"
         ]
       }
     },
