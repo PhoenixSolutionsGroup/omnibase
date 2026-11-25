@@ -435,7 +435,7 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 			}
 
 			state.priceStripeIDs[price.ID] = live.ID
-			if !forceRecreate {
+			if !forceRecreate && priceProductMatches(live, state.productStripeIDs[product.ID]) {
 				if priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
 					continue
 				}
@@ -848,6 +848,10 @@ func defaultPriceID(product *stripe.Product) string {
 
 func productNeedsRecreate(desired Product, live *stripe.Product) bool {
 	return productType(desired) != productTypeOf(live)
+}
+
+func priceProductMatches(price *stripe.Price, stripeProductID string) bool {
+	return price.Product != nil && price.Product.ID == stripeProductID
 }
 
 func meterNeedsRecreate(desired Meter, live *stripe.BillingMeter) bool {
