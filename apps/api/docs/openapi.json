@@ -882,6 +882,10 @@
             "minLength": 1,
             "type": "string"
           },
+          "client_reference_id": {
+            "maxLength": 200,
+            "type": "string"
+          },
           "line_items": {
             "items": {
               "$ref": "#/components/schemas/LineItem"
@@ -891,6 +895,12 @@
               "array",
               "null"
             ]
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
           },
           "promotion_code": {
             "type": "string"

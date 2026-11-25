@@ -22,6 +22,8 @@ type CreateCheckoutSessionArgs struct {
 	TrialPeriodDays     *int64
 	PromotionCode       *string
 	AllowPromotionCodes *bool
+	ClientReferenceID   string
+	Metadata            map[string]string
 }
 
 type CheckoutLineItem struct {
@@ -96,6 +98,14 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 
 	if args.AllowPromotionCodes != nil && *args.AllowPromotionCodes {
 		params.AllowPromotionCodes = args.AllowPromotionCodes
+	}
+
+	if args.ClientReferenceID != "" {
+		params.ClientReferenceID = stripe.String(args.ClientReferenceID)
+	}
+
+	if len(args.Metadata) > 0 {
+		params.Metadata = args.Metadata
 	}
 
 	s.stripe.ApplyAccount(params)

@@ -30,10 +30,24 @@ export interface CreateCheckoutRequest {
     cancelUrl: string;
     /**
      *
+     * @type {string}
+     * @memberof CreateCheckoutRequest
+     */
+    clientReferenceId?: string;
+    /**
+     *
      * @type {Array<LineItem>}
      * @memberof CreateCheckoutRequest
      */
     lineItems: Array<LineItem> | null;
+    /**
+     *
+     * @type {{ [key: string]: string; }}
+     * @memberof CreateCheckoutRequest
+     */
+    metadata?: {
+        [key: string]: string;
+    };
     /**
      *
      * @type {string}

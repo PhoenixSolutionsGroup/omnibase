@@ -7916,8 +7916,11 @@ components:
     CreateCheckoutRequest:
       additionalProperties: false
       example:
+        metadata:
+          key: metadata
         allow_promotion_codes: true
         promotion_code: promotion_code
+        client_reference_id: client_reference_id
         line_items:
         - quantity: 0
           price_id: price_id
@@ -7932,12 +7935,18 @@ components:
         cancel_url:
           minLength: 1
           type: string
+        client_reference_id:
+          maxLength: 200
+          type: string
         line_items:
           items:
             $ref: "#/components/schemas/LineItem"
           minItems: 1
           nullable: true
           type: array
+        metadata:
+          additionalProperties:
+            type: string
         promotion_code:
           type: string
         success_url:

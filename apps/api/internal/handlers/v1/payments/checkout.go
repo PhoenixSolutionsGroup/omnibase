@@ -16,12 +16,14 @@ import (
 var CreateCheckoutError = errors.New("Failed to create checkout session")
 
 type CreateCheckoutRequest struct {
-	LineItems           []LineItem `json:"line_items" required:"true" minItems:"1"`
-	SuccessURL          string     `json:"success_url" required:"true" minLength:"1"`
-	CancelURL           string     `json:"cancel_url" required:"true" minLength:"1"`
-	TrialPeriodDays     *int64     `json:"trial_period_days,omitempty"`
-	PromotionCode       string     `json:"promotion_code,omitempty"`
-	AllowPromotionCodes *bool      `json:"allow_promotion_codes,omitempty"`
+	LineItems           []LineItem        `json:"line_items" required:"true" minItems:"1"`
+	SuccessURL          string            `json:"success_url" required:"true" minLength:"1"`
+	CancelURL           string            `json:"cancel_url" required:"true" minLength:"1"`
+	TrialPeriodDays     *int64            `json:"trial_period_days,omitempty"`
+	PromotionCode       string            `json:"promotion_code,omitempty"`
+	AllowPromotionCodes *bool             `json:"allow_promotion_codes,omitempty"`
+	ClientReferenceID   string            `json:"client_reference_id,omitempty" maxLength:"200"`
+	Metadata            map[string]string `json:"metadata,omitempty"`
 }
 
 type LineItem struct {
@@ -79,6 +81,8 @@ func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (
 		TrialPeriodDays:     req.TrialPeriodDays,
 		PromotionCode:       promotionCode,
 		AllowPromotionCodes: req.AllowPromotionCodes,
+		ClientReferenceID:   req.ClientReferenceID,
+		Metadata:            req.Metadata,
 	})
 	if err != nil {
 		if errors.Is(err, billing.CheckoutLineItemModeError) {
