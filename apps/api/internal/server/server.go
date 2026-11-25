@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,6 +15,8 @@ import (
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
 	"api/internal/services/sessioncache"
+	storagesvc "api/internal/services/storage"
+	storage_credentials "api/internal/services/storage/credentials"
 	namespaces "api/permissions"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -89,7 +92,19 @@ func New(cfg *config.Config) *gin.Engine {
 		panic(err)
 	}
 
-	healthHandler := handlers.NewHealthHandler(cfg, db)
+	credentialsSvc, err := storage_credentials.New(cfg)
+	if err != nil {
+		logger.Logger.Error("Failed to initialize storage credentials", "error", err)
+		panic(err)
+	}
+
+	s3Clients, err := storagesvc.NewClients(context.Background(), cfg, credentialsSvc)
+	if err != nil {
+		logger.Logger.Error("Failed to initialize S3 clients", "error", err)
+		panic(err)
+	}
+
+	healthHandler := handlers.NewHealthHandler(cfg, db, s3Clients.Internal)
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
@@ -99,10 +114,13 @@ func New(cfg *config.Config) *gin.Engine {
 	})
 
 	BuildAPI(r, v1_routes.Deps{
-		Cfg:  cfg,
-		Pool: pool,
-		DB:   db,
-		Auth: middleware.NewAuthMiddleware(cfg, db, sessionCache),
+		Cfg:         cfg,
+		Pool:        pool,
+		DB:          db,
+		Auth:        middleware.NewAuthMiddleware(cfg, db, sessionCache),
+		S3:          s3Clients.Internal,
+		S3Public:    s3Clients.Public,
+		Credentials: credentialsSvc,
 	})
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")

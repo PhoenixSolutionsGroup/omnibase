@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { DeleteObjectRequest, DeleteObjectResponse, DownloadRequest, DownloadResponse, MakePublicRequest, MakePublicResponse, UploadRequest, UploadResponse } from '../models/index';
+import type { DeleteObjectRequest, DeleteObjectResponse, DownloadRequest, DownloadResponse, GetStorageCredentialsResponse, MakePublicRequest, MakePublicResponse, UploadRequest, UploadResponse } from '../models/index';
 export interface DeleteObjectOperationRequest {
     deleteObjectRequest: DeleteObjectRequest;
 }
@@ -47,6 +47,16 @@ export declare class V1StorageApi extends runtime.BaseAPI {
      * Download file from storage
      */
     downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadResponse>;
+    /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    getStorageCredentialsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStorageCredentialsResponse>>;
+    /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    getStorageCredentials(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStorageCredentialsResponse>;
     /**
      * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Make a file publicly accessible

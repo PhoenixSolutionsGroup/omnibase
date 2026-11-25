@@ -84,6 +84,7 @@ __exportStar(require("./FormFile"), exports);
 __exportStar(require("./GetMeterResponse"), exports);
 __exportStar(require("./GetPriceResponse"), exports);
 __exportStar(require("./GetProductResponse"), exports);
+__exportStar(require("./GetStorageCredentialsResponse"), exports);
 __exportStar(require("./GetTenantByIDRow"), exports);
 __exportStar(require("./GetTenantByStripeCustomerIDRow"), exports);
 __exportStar(require("./Identity"), exports);

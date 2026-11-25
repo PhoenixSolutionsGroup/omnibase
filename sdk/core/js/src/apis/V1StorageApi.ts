@@ -20,6 +20,7 @@ import type {
   DownloadRequest,
   DownloadResponse,
   ErrorModel,
+  GetStorageCredentialsResponse,
   MakePublicRequest,
   MakePublicResponse,
   UploadRequest,
@@ -36,6 +37,8 @@ import {
     DownloadResponseToJSON,
     ErrorModelFromJSON,
     ErrorModelToJSON,
+    GetStorageCredentialsResponseFromJSON,
+    GetStorageCredentialsResponseToJSON,
     MakePublicRequestFromJSON,
     MakePublicRequestToJSON,
     MakePublicResponseFromJSON,
@@ -170,6 +173,41 @@ export class V1StorageApi extends runtime.BaseAPI {
      */
     async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadResponse> {
         const response = await this.downloadFileRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    async getStorageCredentialsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStorageCredentialsResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/storage/credentials`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetStorageCredentialsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    async getStorageCredentials(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStorageCredentialsResponse> {
+        const response = await this.getStorageCredentialsRaw(initOverrides);
         return await response.value();
     }
 

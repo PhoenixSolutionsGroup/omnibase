@@ -68,6 +68,7 @@ export * from './FormFile';
 export * from './GetMeterResponse';
 export * from './GetPriceResponse';
 export * from './GetProductResponse';
+export * from './GetStorageCredentialsResponse';
 export * from './GetTenantByIDRow';
 export * from './GetTenantByStripeCustomerIDRow';
 export * from './Identity';

@@ -123,6 +123,7 @@ Class | Method | HTTP request | Description
 *V1PermissionsAPI* | [**DeleteRelationship**](docs/V1PermissionsAPI.md#deleterelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship
 *V1StorageAPI* | [**DeleteObject**](docs/V1StorageAPI.md#deleteobject) | **Delete** /api/v1/storage/object | Delete file from storage
 *V1StorageAPI* | [**DownloadFile**](docs/V1StorageAPI.md#downloadfile) | **Post** /api/v1/storage/download | Download file from storage
+*V1StorageAPI* | [**GetStorageCredentials**](docs/V1StorageAPI.md#getstoragecredentials) | **Get** /api/v1/storage/credentials | Get temporary S3 credentials
 *V1StorageAPI* | [**MakeFilePublic**](docs/V1StorageAPI.md#makefilepublic) | **Post** /api/v1/storage/make-public | Make a file publicly accessible
 *V1StorageAPI* | [**UploadFile**](docs/V1StorageAPI.md#uploadfile) | **Post** /api/v1/storage/upload | Upload file to storage
 *V1StripeAPI* | [**ApplyEnterpriseCustom**](docs/V1StripeAPI.md#applyenterprisecustom) | **Post** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
@@ -230,6 +231,7 @@ Class | Method | HTTP request | Description
  - [GetMeterResponse](docs/GetMeterResponse.md)
  - [GetPriceResponse](docs/GetPriceResponse.md)
  - [GetProductResponse](docs/GetProductResponse.md)
+ - [GetStorageCredentialsResponse](docs/GetStorageCredentialsResponse.md)
  - [GetTenantByIDRow](docs/GetTenantByIDRow.md)
  - [GetTenantByStripeCustomerIDRow](docs/GetTenantByStripeCustomerIDRow.md)
  - [Identity](docs/Identity.md)

@@ -1,14 +1,8 @@
 package v1
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
@@ -28,36 +22,15 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	cfg := d.Cfg
 	repo := repository.New(d.Pool)
 
-	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
-		awsconfig.WithRegion(cfg.S3Config.Region),
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			cfg.S3Config.AccessKey, cfg.S3Config.SecretKey, "")),
-	)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load AWS config: %s", err))
-	}
-
-	s3Internal := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
-		if cfg.S3Config.Endpoint != "" {
-			o.BaseEndpoint = aws.String(cfg.S3Config.Endpoint)
-		}
-		o.UsePathStyle = cfg.S3Config.ForcePathStyle
-	})
-	s3Public := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
-		if cfg.S3Config.PublicEndpoint != "" {
-			o.BaseEndpoint = aws.String(cfg.S3Config.PublicEndpoint)
-		}
-		o.UsePathStyle = cfg.S3Config.ForcePathStyle
-	})
-
 	perms := permissions.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 
 	handler := storage.New(storage.Deps{
-		Repo:       repo,
-		Perms:      perms,
-		S3:         s3Internal,
-		S3Public:   s3Public,
-		BucketName: cfg.S3Config.BucketName,
+		Repo:        repo,
+		Perms:       perms,
+		S3:          d.S3,
+		S3Public:    d.S3Public,
+		BucketName:  cfg.S3Config.BucketName,
+		Credentials: d.Credentials,
 	})
 
 	register(api, d.Auth, huma.Operation{
@@ -99,6 +72,16 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.MakePublic)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "getStorageCredentials",
+		Errors:      []int{401, 500, 503},
+		Method:      http.MethodGet,
+		Path:        "/api/v1/storage/credentials",
+		Summary:     "Get temporary S3 credentials",
+		Description: "Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.",
+		Tags:        []string{"V1Storage"},
+	}, authn.AuthServiceKey, nil, handler.GetCredentials)
 
 	logger.Logger.Info("Storage routes registration completed")
 }

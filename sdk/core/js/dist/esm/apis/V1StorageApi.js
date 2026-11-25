@@ -147,6 +147,37 @@ class V1StorageApi extends runtime.BaseAPI {
         });
     }
     /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    getStorageCredentialsRaw(initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queryParameters = {};
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/storage/credentials`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetStorageCredentialsResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
+     * Get temporary S3 credentials
+     */
+    getStorageCredentials(initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.getStorageCredentialsRaw(initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
      * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Make a file publicly accessible
      */

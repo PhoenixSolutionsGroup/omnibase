@@ -1,14 +1,8 @@
 package v1
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
@@ -24,27 +18,12 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	cfg := d.Cfg
 	repo := repository.New(d.Pool)
 
-	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
-		awsconfig.WithRegion(cfg.S3Config.Region),
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			cfg.S3Config.AccessKey, cfg.S3Config.SecretKey, "")),
-	)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load AWS config: %s", err))
-	}
-	s3Client := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
-		if cfg.S3Config.Endpoint != "" {
-			o.BaseEndpoint = aws.String(cfg.S3Config.Endpoint)
-		}
-		o.UsePathStyle = cfg.S3Config.ForcePathStyle
-	})
-
 	perms := permsvc.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 
 	handler := permissions.New(permissions.Deps{
 		Repo:       repo,
 		Perms:      perms,
-		S3:         s3Client,
+		S3:         d.S3,
 		BucketName: cfg.S3Config.BucketName,
 		TenantID:   cfg.ManagedHostingConfig.TenantID,
 		IsManaged:  cfg.ManagedHostingConfig.IsManaged,

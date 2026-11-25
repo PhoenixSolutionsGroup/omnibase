@@ -69,6 +69,7 @@ docs/FormFile.md
 docs/GetMeterResponse.md
 docs/GetPriceResponse.md
 docs/GetProductResponse.md
+docs/GetStorageCredentialsResponse.md
 docs/GetTenantByIDRow.md
 docs/GetTenantByStripeCustomerIDRow.md
 docs/Identity.md
@@ -249,6 +250,7 @@ src/models/FormFile.ts
 src/models/GetMeterResponse.ts
 src/models/GetPriceResponse.ts
 src/models/GetProductResponse.ts
+src/models/GetStorageCredentialsResponse.ts
 src/models/GetTenantByIDRow.ts
 src/models/GetTenantByStripeCustomerIDRow.ts
 src/models/Identity.ts
