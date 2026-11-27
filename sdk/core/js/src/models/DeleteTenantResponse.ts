@@ -32,7 +32,7 @@ export interface DeleteTenantResponse {
 export function instanceOfDeleteTenantResponse(
 	value: object,
 ): value is DeleteTenantResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -42,13 +42,13 @@ export function DeleteTenantResponseFromJSON(json: any): DeleteTenantResponse {
 
 export function DeleteTenantResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteTenantResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -58,13 +58,13 @@ export function DeleteTenantResponseToJSON(json: any): DeleteTenantResponse {
 
 export function DeleteTenantResponseToJSONTyped(
 	value?: DeleteTenantResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

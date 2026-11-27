@@ -36,7 +36,7 @@ export function SchemaBrowser({
 				schemaNames.includes("public") ? "public" : schemaNames[0] || "",
 			);
 		}
-	}, [schemas, schemaNames, selectedSchema]);
+	}, [schemaNames, selectedSchema]);
 
 	const tables = schemas[selectedSchema] || [];
 

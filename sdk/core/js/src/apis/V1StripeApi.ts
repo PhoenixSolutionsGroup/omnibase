@@ -60,14 +60,14 @@ export class V1StripeApi extends runtime.BaseAPI {
 		requestParameters: CalculatePriceCostOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
-		if (requestParameters["priceId"] == null) {
+		if (requestParameters.priceId == null) {
 			throw new runtime.RequiredError(
 				"priceId",
 				'Required parameter "priceId" was null or undefined when calling calculatePriceCost().',
 			);
 		}
 
-		if (requestParameters["calculatePriceCostRequest"] == null) {
+		if (requestParameters.calculatePriceCostRequest == null) {
 			throw new runtime.RequiredError(
 				"calculatePriceCostRequest",
 				'Required parameter "calculatePriceCostRequest" was null or undefined when calling calculatePriceCost().',
@@ -83,7 +83,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/stripe/config/prices/{price_id}/calculate`;
 		urlPath = urlPath.replace(
 			`{${"price_id"}}`,
-			encodeURIComponent(String(requestParameters["priceId"])),
+			encodeURIComponent(String(requestParameters.priceId)),
 		);
 
 		const response = await this.request(
@@ -93,7 +93,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: CalculatePriceCostRequestToJSON(
-					requestParameters["calculatePriceCostRequest"],
+					requestParameters.calculatePriceCostRequest,
 				),
 			},
 			initOverrides,
@@ -125,7 +125,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		requestParameters: GetMeterByIDRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<GetMeterResponse>> {
-		if (requestParameters["meterId"] == null) {
+		if (requestParameters.meterId == null) {
 			throw new runtime.RequiredError(
 				"meterId",
 				'Required parameter "meterId" was null or undefined when calling getMeterByID().',
@@ -139,7 +139,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/stripe/config/meters/{meter_id}`;
 		urlPath = urlPath.replace(
 			`{${"meter_id"}}`,
-			encodeURIComponent(String(requestParameters["meterId"])),
+			encodeURIComponent(String(requestParameters.meterId)),
 		);
 
 		const response = await this.request(
@@ -178,7 +178,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		requestParameters: GetPriceByIDRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<GetPriceResponse>> {
-		if (requestParameters["priceId"] == null) {
+		if (requestParameters.priceId == null) {
 			throw new runtime.RequiredError(
 				"priceId",
 				'Required parameter "priceId" was null or undefined when calling getPriceByID().',
@@ -192,7 +192,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/stripe/config/prices/{price_id}`;
 		urlPath = urlPath.replace(
 			`{${"price_id"}}`,
-			encodeURIComponent(String(requestParameters["priceId"])),
+			encodeURIComponent(String(requestParameters.priceId)),
 		);
 
 		const response = await this.request(
@@ -231,7 +231,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		requestParameters: GetProductByIDRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<GetProductResponse>> {
-		if (requestParameters["productId"] == null) {
+		if (requestParameters.productId == null) {
 			throw new runtime.RequiredError(
 				"productId",
 				'Required parameter "productId" was null or undefined when calling getProductByID().',
@@ -245,7 +245,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/stripe/config/products/{product_id}`;
 		urlPath = urlPath.replace(
 			`{${"product_id"}}`,
-			encodeURIComponent(String(requestParameters["productId"])),
+			encodeURIComponent(String(requestParameters.productId)),
 		);
 
 		const response = await this.request(
@@ -324,7 +324,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -366,7 +366,7 @@ export class V1StripeApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}

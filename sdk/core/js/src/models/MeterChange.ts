@@ -48,10 +48,10 @@ export interface MeterChange {
  * Check if a given object implements the MeterChange interface.
  */
 export function instanceOfMeterChange(value: object): value is MeterChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("displayName" in value) || value["displayName"] === undefined)
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("displayName" in value) || value.displayName === undefined)
 		return false;
-	if (!("meterId" in value) || value["meterId"] === undefined) return false;
+	if (!("meterId" in value) || value.meterId === undefined) return false;
 	return true;
 }
 
@@ -61,16 +61,16 @@ export function MeterChangeFromJSON(json: any): MeterChange {
 
 export function MeterChangeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterChange {
 	if (json == null) {
 		return json;
 	}
 	return {
-		action: json["action"],
-		displayName: json["display_name"],
-		meterId: json["meter_id"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		action: json.action,
+		displayName: json.display_name,
+		meterId: json.meter_id,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -80,16 +80,16 @@ export function MeterChangeToJSON(json: any): MeterChange {
 
 export function MeterChangeToJSONTyped(
 	value?: MeterChange | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		action: value["action"],
-		display_name: value["displayName"],
-		meter_id: value["meterId"],
-		stripe_id: value["stripeId"],
+		action: value.action,
+		display_name: value.displayName,
+		meter_id: value.meterId,
+		stripe_id: value.stripeId,
 	};
 }

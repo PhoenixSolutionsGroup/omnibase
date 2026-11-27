@@ -206,7 +206,7 @@ export function LogViewer({
 		}, 5000); // Poll every 5 seconds
 
 		return () => clearInterval(interval);
-	}, [logs, projectId, serviceType]);
+	}, [logs, checkNewLogs]);
 
 	return (
 		<div className="flex h-full min-h-0 flex-col border rounded-lg overflow-hidden bg-background">

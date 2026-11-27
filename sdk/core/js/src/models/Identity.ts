@@ -131,10 +131,10 @@ export interface Identity {
  * Check if a given object implements the Identity interface.
  */
 export function instanceOfIdentity(value: object): value is Identity {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("schemaId" in value) || value["schemaId"] === undefined) return false;
-	if (!("schemaUrl" in value) || value["schemaUrl"] === undefined) return false;
-	if (!("traits" in value) || value["traits"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("schemaId" in value) || value.schemaId === undefined) return false;
+	if (!("schemaUrl" in value) || value.schemaUrl === undefined) return false;
+	if (!("traits" in value) || value.traits === undefined) return false;
 	return true;
 }
 
@@ -144,49 +144,45 @@ export function IdentityFromJSON(json: any): Identity {
 
 export function IdentityFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Identity {
 	if (json == null) {
 		return json;
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		createdAt:
-			json["created_at"] == null ? undefined : new Date(json["created_at"]),
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		createdAt: json.created_at == null ? undefined : new Date(json.created_at),
 		credentials:
-			json["credentials"] == null
+			json.credentials == null
 				? undefined
-				: mapValues(json["credentials"], IdentityCredentialsFromJSON),
-		id: json["id"],
+				: mapValues(json.credentials, IdentityCredentialsFromJSON),
+		id: json.id,
 		metadataAdmin:
-			json["metadata_admin"] == null ? undefined : json["metadata_admin"],
+			json.metadata_admin == null ? undefined : json.metadata_admin,
 		metadataPublic:
-			json["metadata_public"] == null ? undefined : json["metadata_public"],
+			json.metadata_public == null ? undefined : json.metadata_public,
 		organizationId:
-			json["organization_id"] == null ? undefined : json["organization_id"],
+			json.organization_id == null ? undefined : json.organization_id,
 		recoveryAddresses:
-			json["recovery_addresses"] == null
+			json.recovery_addresses == null
 				? undefined
-				: (json["recovery_addresses"] as Array<any>).map(
+				: (json.recovery_addresses as Array<any>).map(
 						RecoveryIdentityAddressFromJSON,
 					),
-		schemaId: json["schema_id"],
-		schemaUrl: json["schema_url"],
-		state: json["state"] == null ? undefined : json["state"],
+		schemaId: json.schema_id,
+		schemaUrl: json.schema_url,
+		state: json.state == null ? undefined : json.state,
 		stateChangedAt:
-			json["state_changed_at"] == null
+			json.state_changed_at == null
 				? undefined
-				: new Date(json["state_changed_at"]),
-		traits: json["traits"],
-		updatedAt:
-			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
+				: new Date(json.state_changed_at),
+		traits: json.traits,
+		updatedAt: json.updated_at == null ? undefined : new Date(json.updated_at),
 		verifiableAddresses:
-			json["verifiable_addresses"] == null
+			json.verifiable_addresses == null
 				? undefined
-				: (json["verifiable_addresses"] as Array<any>).map(
+				: (json.verifiable_addresses as Array<any>).map(
 						VerifiableIdentityAddressFromJSON,
 					),
 	};
@@ -198,48 +194,44 @@ export function IdentityToJSON(json: any): Identity {
 
 export function IdentityToJSONTyped(
 	value?: Identity | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
+		AdditionalProperties: value.additionalProperties,
 		created_at:
-			value["createdAt"] == null
-				? value["createdAt"]
-				: value["createdAt"].toISOString(),
+			value.createdAt == null ? value.createdAt : value.createdAt.toISOString(),
 		credentials:
-			value["credentials"] == null
+			value.credentials == null
 				? undefined
-				: mapValues(value["credentials"], IdentityCredentialsToJSON),
-		id: value["id"],
-		metadata_admin: value["metadataAdmin"],
-		metadata_public: value["metadataPublic"],
-		organization_id: value["organizationId"],
+				: mapValues(value.credentials, IdentityCredentialsToJSON),
+		id: value.id,
+		metadata_admin: value.metadataAdmin,
+		metadata_public: value.metadataPublic,
+		organization_id: value.organizationId,
 		recovery_addresses:
-			value["recoveryAddresses"] == null
+			value.recoveryAddresses == null
 				? undefined
-				: (value["recoveryAddresses"] as Array<any>).map(
+				: (value.recoveryAddresses as Array<any>).map(
 						RecoveryIdentityAddressToJSON,
 					),
-		schema_id: value["schemaId"],
-		schema_url: value["schemaUrl"],
-		state: value["state"],
+		schema_id: value.schemaId,
+		schema_url: value.schemaUrl,
+		state: value.state,
 		state_changed_at:
-			value["stateChangedAt"] == null
-				? value["stateChangedAt"]
-				: value["stateChangedAt"].toISOString(),
-		traits: value["traits"],
+			value.stateChangedAt == null
+				? value.stateChangedAt
+				: value.stateChangedAt.toISOString(),
+		traits: value.traits,
 		updated_at:
-			value["updatedAt"] == null
-				? value["updatedAt"]
-				: value["updatedAt"].toISOString(),
+			value.updatedAt == null ? value.updatedAt : value.updatedAt.toISOString(),
 		verifiable_addresses:
-			value["verifiableAddresses"] == null
+			value.verifiableAddresses == null
 				? undefined
-				: (value["verifiableAddresses"] as Array<any>).map(
+				: (value.verifiableAddresses as Array<any>).map(
 						VerifiableIdentityAddressToJSON,
 					),
 	};

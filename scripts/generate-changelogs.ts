@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-import { existsSync } from "fs";
-import { readFile, rm, writeFile } from "fs/promises";
-import { dirname, join } from "path";
+import { existsSync } from "node:fs";
+import { readFile, rm, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 
 const REPO_URL = "https://github.com/PhoenixSolutionsGroup/omnibase";
 
@@ -100,7 +100,7 @@ export function parseChangelog(markdown: string): Release[] {
 							date: linked[3],
 							body: "",
 						}
-					: { version: plain![1], date: plain![2], body: "" },
+					: { version: plain?.[1], date: plain?.[2], body: "" },
 				lines: [],
 			};
 			continue;

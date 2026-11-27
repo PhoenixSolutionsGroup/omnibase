@@ -41,8 +41,8 @@ export interface UserTenantListItem {
 export function instanceOfUserTenantListItem(
 	value: object,
 ): value is UserTenantListItem {
-	if (!("isActive" in value) || value["isActive"] === undefined) return false;
-	if (!("tenant" in value) || value["tenant"] === undefined) return false;
+	if (!("isActive" in value) || value.isActive === undefined) return false;
+	if (!("tenant" in value) || value.tenant === undefined) return false;
 	return true;
 }
 
@@ -52,14 +52,14 @@ export function UserTenantListItemFromJSON(json: any): UserTenantListItem {
 
 export function UserTenantListItemFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UserTenantListItem {
 	if (json == null) {
 		return json;
 	}
 	return {
-		isActive: json["is_active"],
-		tenant: AuthTenantFromJSON(json["tenant"]),
+		isActive: json.is_active,
+		tenant: AuthTenantFromJSON(json.tenant),
 	};
 }
 
@@ -69,14 +69,14 @@ export function UserTenantListItemToJSON(json: any): UserTenantListItem {
 
 export function UserTenantListItemToJSONTyped(
 	value?: UserTenantListItem | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		is_active: value["isActive"],
-		tenant: AuthTenantToJSON(value["tenant"]),
+		is_active: value.isActive,
+		tenant: AuthTenantToJSON(value.tenant),
 	};
 }

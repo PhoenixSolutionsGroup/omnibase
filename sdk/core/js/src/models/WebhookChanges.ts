@@ -62,28 +62,28 @@ export function WebhookChangesFromJSON(json: any): WebhookChanges {
 
 export function WebhookChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): WebhookChanges {
 	if (json == null) {
 		return json;
 	}
 	return {
 		created:
-			json["created"] == null
+			json.created == null
 				? undefined
-				: (json["created"] as Array<any>).map(WebhookChangeFromJSON),
+				: (json.created as Array<any>).map(WebhookChangeFromJSON),
 		deleted:
-			json["deleted"] == null
+			json.deleted == null
 				? undefined
-				: (json["deleted"] as Array<any>).map(WebhookChangeFromJSON),
+				: (json.deleted as Array<any>).map(WebhookChangeFromJSON),
 		unchanged:
-			json["unchanged"] == null
+			json.unchanged == null
 				? undefined
-				: (json["unchanged"] as Array<any>).map(WebhookChangeFromJSON),
+				: (json.unchanged as Array<any>).map(WebhookChangeFromJSON),
 		updated:
-			json["updated"] == null
+			json.updated == null
 				? undefined
-				: (json["updated"] as Array<any>).map(WebhookChangeFromJSON),
+				: (json.updated as Array<any>).map(WebhookChangeFromJSON),
 	};
 }
 
@@ -93,7 +93,7 @@ export function WebhookChangesToJSON(json: any): WebhookChanges {
 
 export function WebhookChangesToJSONTyped(
 	value?: WebhookChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -101,20 +101,20 @@ export function WebhookChangesToJSONTyped(
 
 	return {
 		created:
-			value["created"] == null
+			value.created == null
 				? undefined
-				: (value["created"] as Array<any>).map(WebhookChangeToJSON),
+				: (value.created as Array<any>).map(WebhookChangeToJSON),
 		deleted:
-			value["deleted"] == null
+			value.deleted == null
 				? undefined
-				: (value["deleted"] as Array<any>).map(WebhookChangeToJSON),
+				: (value.deleted as Array<any>).map(WebhookChangeToJSON),
 		unchanged:
-			value["unchanged"] == null
+			value.unchanged == null
 				? undefined
-				: (value["unchanged"] as Array<any>).map(WebhookChangeToJSON),
+				: (value.unchanged as Array<any>).map(WebhookChangeToJSON),
 		updated:
-			value["updated"] == null
+			value.updated == null
 				? undefined
-				: (value["updated"] as Array<any>).map(WebhookChangeToJSON),
+				: (value.updated as Array<any>).map(WebhookChangeToJSON),
 	};
 }

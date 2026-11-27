@@ -1,6 +1,6 @@
+import * as fs from "node:fs";
+import path from "node:path";
 import AdmZip from "adm-zip";
-import * as fs from "fs";
-import path from "path";
 import { logger } from "../../utils/logger";
 
 export const ensureMigrationDir = (path: string) => {

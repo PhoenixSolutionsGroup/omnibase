@@ -138,7 +138,7 @@ export async function fetchSchemaInfo(
 		for (const row of rlsResult.rows) {
 			rlsPolicies.set(
 				`${row.schemaname}.${row.tablename}`,
-				parseInt(row.policy_count),
+				parseInt(row.policy_count, 10),
 			);
 		}
 
@@ -165,7 +165,7 @@ export async function fetchSchemaInfo(
 				schemas[schemaName].push(table);
 			}
 
-			table!.columns.push({
+			table?.columns.push({
 				name: row.column_name,
 				type: row.udt_name || row.data_type,
 				isNullable: row.is_nullable === "YES",

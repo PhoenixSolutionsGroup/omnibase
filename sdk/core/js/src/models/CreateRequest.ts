@@ -42,9 +42,9 @@ export interface CreateRequest {
  * Check if a given object implements the CreateRequest interface.
  */
 export function instanceOfCreateRequest(value: object): value is CreateRequest {
-	if (!("email" in value) || value["email"] === undefined) return false;
-	if (!("inviteUrl" in value) || value["inviteUrl"] === undefined) return false;
-	if (!("role" in value) || value["role"] === undefined) return false;
+	if (!("email" in value) || value.email === undefined) return false;
+	if (!("inviteUrl" in value) || value.inviteUrl === undefined) return false;
+	if (!("role" in value) || value.role === undefined) return false;
 	return true;
 }
 
@@ -54,15 +54,15 @@ export function CreateRequestFromJSON(json: any): CreateRequest {
 
 export function CreateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		email: json["email"],
-		inviteUrl: json["invite_url"],
-		role: json["role"],
+		email: json.email,
+		inviteUrl: json.invite_url,
+		role: json.role,
 	};
 }
 
@@ -72,15 +72,15 @@ export function CreateRequestToJSON(json: any): CreateRequest {
 
 export function CreateRequestToJSONTyped(
 	value?: CreateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		email: value["email"],
-		invite_url: value["inviteUrl"],
-		role: value["role"],
+		email: value.email,
+		invite_url: value.inviteUrl,
+		role: value.role,
 	};
 }

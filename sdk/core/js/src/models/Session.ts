@@ -100,7 +100,7 @@ export interface Session {
  * Check if a given object implements the Session interface.
  */
 export function instanceOfSession(value: object): value is Session {
-	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
 	return true;
 }
 
@@ -110,43 +110,39 @@ export function SessionFromJSON(json: any): Session {
 
 export function SessionFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): Session {
 	if (json == null) {
 		return json;
 	}
 	return {
 		additionalProperties:
-			json["AdditionalProperties"] == null
-				? undefined
-				: json["AdditionalProperties"],
-		active: json["active"] == null ? undefined : json["active"],
+			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
+		active: json.active == null ? undefined : json.active,
 		authenticatedAt:
-			json["authenticated_at"] == null
+			json.authenticated_at == null
 				? undefined
-				: new Date(json["authenticated_at"]),
+				: new Date(json.authenticated_at),
 		authenticationMethods:
-			json["authentication_methods"] == null
+			json.authentication_methods == null
 				? undefined
-				: (json["authentication_methods"] as Array<any>).map(
+				: (json.authentication_methods as Array<any>).map(
 						SessionAuthenticationMethodFromJSON,
 					),
 		authenticatorAssuranceLevel:
-			json["authenticator_assurance_level"] == null
+			json.authenticator_assurance_level == null
 				? undefined
-				: json["authenticator_assurance_level"],
+				: json.authenticator_assurance_level,
 		devices:
-			json["devices"] == null
+			json.devices == null
 				? undefined
-				: (json["devices"] as Array<any>).map(SessionDeviceFromJSON),
-		expiresAt:
-			json["expires_at"] == null ? undefined : new Date(json["expires_at"]),
-		id: json["id"],
+				: (json.devices as Array<any>).map(SessionDeviceFromJSON),
+		expiresAt: json.expires_at == null ? undefined : new Date(json.expires_at),
+		id: json.id,
 		identity:
-			json["identity"] == null ? undefined : IdentityFromJSON(json["identity"]),
-		issuedAt:
-			json["issued_at"] == null ? undefined : new Date(json["issued_at"]),
-		tokenized: json["tokenized"] == null ? undefined : json["tokenized"],
+			json.identity == null ? undefined : IdentityFromJSON(json.identity),
+		issuedAt: json.issued_at == null ? undefined : new Date(json.issued_at),
+		tokenized: json.tokenized == null ? undefined : json.tokenized,
 	};
 }
 
@@ -156,40 +152,36 @@ export function SessionToJSON(json: any): Session {
 
 export function SessionToJSONTyped(
 	value?: Session | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		AdditionalProperties: value["additionalProperties"],
-		active: value["active"],
+		AdditionalProperties: value.additionalProperties,
+		active: value.active,
 		authenticated_at:
-			value["authenticatedAt"] == null
-				? value["authenticatedAt"]
-				: value["authenticatedAt"].toISOString(),
+			value.authenticatedAt == null
+				? value.authenticatedAt
+				: value.authenticatedAt.toISOString(),
 		authentication_methods:
-			value["authenticationMethods"] == null
+			value.authenticationMethods == null
 				? undefined
-				: (value["authenticationMethods"] as Array<any>).map(
+				: (value.authenticationMethods as Array<any>).map(
 						SessionAuthenticationMethodToJSON,
 					),
-		authenticator_assurance_level: value["authenticatorAssuranceLevel"],
+		authenticator_assurance_level: value.authenticatorAssuranceLevel,
 		devices:
-			value["devices"] == null
+			value.devices == null
 				? undefined
-				: (value["devices"] as Array<any>).map(SessionDeviceToJSON),
+				: (value.devices as Array<any>).map(SessionDeviceToJSON),
 		expires_at:
-			value["expiresAt"] == null
-				? value["expiresAt"]
-				: value["expiresAt"].toISOString(),
-		id: value["id"],
-		identity: IdentityToJSON(value["identity"]),
+			value.expiresAt == null ? value.expiresAt : value.expiresAt.toISOString(),
+		id: value.id,
+		identity: IdentityToJSON(value.identity),
 		issued_at:
-			value["issuedAt"] == null
-				? value["issuedAt"]
-				: value["issuedAt"].toISOString(),
-		tokenized: value["tokenized"],
+			value.issuedAt == null ? value.issuedAt : value.issuedAt.toISOString(),
+		tokenized: value.tokenized,
 	};
 }

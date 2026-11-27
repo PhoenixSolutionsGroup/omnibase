@@ -21,7 +21,7 @@ export async function switchTenant(formData: FormData) {
 
 		revalidatePath("/", "page");
 		return { success: true };
-	} catch (error) {
+	} catch (_error) {
 		return { success: false, error: "Failed to switch tenant" };
 	}
 }

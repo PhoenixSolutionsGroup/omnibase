@@ -110,7 +110,7 @@ export function ObservabilityClient({
 
 		iframe.addEventListener("load", handleIframeLoad);
 		return () => iframe.removeEventListener("load", handleIframeLoad);
-	}, [embedURL]);
+	}, []);
 
 	return (
 		<div className="flex flex-col h-full p-6 space-y-4">

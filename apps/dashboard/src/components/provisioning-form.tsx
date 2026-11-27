@@ -123,7 +123,7 @@ interface RegionComboboxProps {
 	autoSelectLowestLatency?: boolean;
 }
 
-function RegionCombobox({
+function _RegionCombobox({
 	regions,
 	value,
 	onSelect,
@@ -136,10 +136,10 @@ function RegionCombobox({
 	const regionIds = React.useMemo(() => regions.map((r) => r.id), [regions]);
 	const latencies = useRegionLatency(regionIds, "vultr");
 
-	const regionKey = regionIds.join(",");
+	const _regionKey = regionIds.join(",");
 	React.useEffect(() => {
 		setHasAutoSelected(false);
-	}, [regionKey]);
+	}, []);
 
 	const recommendedRegions = React.useMemo(
 		() => getTopRegionsByLatency(regions, latencies, 3),
@@ -194,7 +194,7 @@ function RegionCombobox({
 			if (!groups.has(continent)) {
 				groups.set(continent, []);
 			}
-			groups.get(continent)!.push(region);
+			groups.get(continent)?.push(region);
 		}
 
 		for (const [, regionList] of groups) {
@@ -438,7 +438,7 @@ export function ProvisioningForm({
 		async function fetchPlans() {
 			try {
 				const res = await fetch(
-					managed_hosting_url + "/api/v1/projects/plans",
+					`${managed_hosting_url}/api/v1/projects/plans`,
 					{ credentials: "include" },
 				);
 				if (!res.ok) throw new Error("Failed to fetch plans");
@@ -465,7 +465,7 @@ export function ProvisioningForm({
 				}
 			} catch (e) {
 				toast.error(
-					"Failed to load plans" + (e instanceof Error ? `: ${e.message}` : ""),
+					`Failed to load plans${e instanceof Error ? `: ${e.message}` : ""}`,
 				);
 			} finally {
 				setLoading(false);
@@ -479,7 +479,7 @@ export function ProvisioningForm({
 		[plans, formData.plan_id],
 	);
 
-	const selectedPrice = React.useMemo(
+	const _selectedPrice = React.useMemo(
 		() =>
 			selectedPlan?.prices.find((p) => p.interval === paymentInterval) ?? null,
 		[selectedPlan, paymentInterval],
@@ -532,7 +532,7 @@ export function ProvisioningForm({
 			if (isBranchMode) {
 				if (!projectId) throw new Error("Missing project id");
 				const res = await fetch(
-					managed_hosting_url + "/api/v1/project_branches",
+					`${managed_hosting_url}/api/v1/project_branches`,
 					{
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
@@ -553,7 +553,7 @@ export function ProvisioningForm({
 				toast.success("Branch creation initiated!");
 				router.push(`/projects/${projectId}/${formData.branch_name}/dashboard`);
 			} else {
-				const res = await fetch(managed_hosting_url + "/api/v1/projects", {
+				const res = await fetch(`${managed_hosting_url}/api/v1/projects`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({

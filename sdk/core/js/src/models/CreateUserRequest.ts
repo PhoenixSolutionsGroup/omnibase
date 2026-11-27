@@ -47,9 +47,9 @@ export interface CreateUserRequest {
 export function instanceOfCreateUserRequest(
 	value: object,
 ): value is CreateUserRequest {
-	if (!("email" in value) || value["email"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("password" in value) || value["password"] === undefined) return false;
+	if (!("email" in value) || value.email === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("password" in value) || value.password === undefined) return false;
 	return true;
 }
 
@@ -59,15 +59,15 @@ export function CreateUserRequestFromJSON(json: any): CreateUserRequest {
 
 export function CreateUserRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CreateUserRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		email: json["email"],
-		name: IdentityNameFromJSON(json["name"]),
-		password: json["password"],
+		email: json.email,
+		name: IdentityNameFromJSON(json.name),
+		password: json.password,
 	};
 }
 
@@ -77,15 +77,15 @@ export function CreateUserRequestToJSON(json: any): CreateUserRequest {
 
 export function CreateUserRequestToJSONTyped(
 	value?: CreateUserRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		email: value["email"],
-		name: IdentityNameToJSON(value["name"]),
-		password: value["password"],
+		email: value.email,
+		name: IdentityNameToJSON(value.name),
+		password: value.password,
 	};
 }

@@ -32,7 +32,7 @@ export interface MeterDefaultAggregation {
 export function instanceOfMeterDefaultAggregation(
 	value: object,
 ): value is MeterDefaultAggregation {
-	if (!("formula" in value) || value["formula"] === undefined) return false;
+	if (!("formula" in value) || value.formula === undefined) return false;
 	return true;
 }
 
@@ -44,13 +44,13 @@ export function MeterDefaultAggregationFromJSON(
 
 export function MeterDefaultAggregationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): MeterDefaultAggregation {
 	if (json == null) {
 		return json;
 	}
 	return {
-		formula: json["formula"],
+		formula: json.formula,
 	};
 }
 
@@ -62,13 +62,13 @@ export function MeterDefaultAggregationToJSON(
 
 export function MeterDefaultAggregationToJSONTyped(
 	value?: MeterDefaultAggregation | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		formula: value["formula"],
+		formula: value.formula,
 	};
 }

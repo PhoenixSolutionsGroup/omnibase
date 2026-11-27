@@ -32,7 +32,7 @@ export interface UpdateRoleRequest {
 export function instanceOfUpdateRoleRequest(
 	value: object,
 ): value is UpdateRoleRequest {
-	if (!("permissions" in value) || value["permissions"] === undefined)
+	if (!("permissions" in value) || value.permissions === undefined)
 		return false;
 	return true;
 }
@@ -43,13 +43,13 @@ export function UpdateRoleRequestFromJSON(json: any): UpdateRoleRequest {
 
 export function UpdateRoleRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateRoleRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		permissions: json["permissions"] == null ? null : json["permissions"],
+		permissions: json.permissions == null ? null : json.permissions,
 	};
 }
 
@@ -59,13 +59,13 @@ export function UpdateRoleRequestToJSON(json: any): UpdateRoleRequest {
 
 export function UpdateRoleRequestToJSONTyped(
 	value?: UpdateRoleRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		permissions: value["permissions"],
+		permissions: value.permissions,
 	};
 }

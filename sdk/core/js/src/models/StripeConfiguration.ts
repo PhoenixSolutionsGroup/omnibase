@@ -76,8 +76,8 @@ export interface StripeConfiguration {
 export function instanceOfStripeConfiguration(
 	value: object,
 ): value is StripeConfiguration {
-	if (!("products" in value) || value["products"] === undefined) return false;
-	if (!("version" in value) || value["version"] === undefined) return false;
+	if (!("products" in value) || value.products === undefined) return false;
+	if (!("version" in value) || value.version === undefined) return false;
 	return true;
 }
 
@@ -87,33 +87,33 @@ export function StripeConfigurationFromJSON(json: any): StripeConfiguration {
 
 export function StripeConfigurationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): StripeConfiguration {
 	if (json == null) {
 		return json;
 	}
 	return {
 		coupons:
-			json["coupons"] == null
+			json.coupons == null
 				? undefined
-				: (json["coupons"] as Array<any>).map(CouponFromJSON),
+				: (json.coupons as Array<any>).map(CouponFromJSON),
 		meters:
-			json["meters"] == null
+			json.meters == null
 				? undefined
-				: (json["meters"] as Array<any>).map(MeterFromJSON),
+				: (json.meters as Array<any>).map(MeterFromJSON),
 		products:
-			json["products"] == null
+			json.products == null
 				? null
-				: (json["products"] as Array<any>).map(ProductFromJSON),
+				: (json.products as Array<any>).map(ProductFromJSON),
 		promotionCodes:
-			json["promotion_codes"] == null
+			json.promotion_codes == null
 				? undefined
-				: (json["promotion_codes"] as Array<any>).map(PromotionCodeFromJSON),
-		version: json["version"],
+				: (json.promotion_codes as Array<any>).map(PromotionCodeFromJSON),
+		version: json.version,
 		webhooks:
-			json["webhooks"] == null
+			json.webhooks == null
 				? undefined
-				: (json["webhooks"] as Array<any>).map(WebhookEndpointConfigFromJSON),
+				: (json.webhooks as Array<any>).map(WebhookEndpointConfigFromJSON),
 	};
 }
 
@@ -123,7 +123,7 @@ export function StripeConfigurationToJSON(json: any): StripeConfiguration {
 
 export function StripeConfigurationToJSONTyped(
 	value?: StripeConfiguration | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -131,25 +131,25 @@ export function StripeConfigurationToJSONTyped(
 
 	return {
 		coupons:
-			value["coupons"] == null
+			value.coupons == null
 				? undefined
-				: (value["coupons"] as Array<any>).map(CouponToJSON),
+				: (value.coupons as Array<any>).map(CouponToJSON),
 		meters:
-			value["meters"] == null
+			value.meters == null
 				? undefined
-				: (value["meters"] as Array<any>).map(MeterToJSON),
+				: (value.meters as Array<any>).map(MeterToJSON),
 		products:
-			value["products"] == null
+			value.products == null
 				? null
-				: (value["products"] as Array<any>).map(ProductToJSON),
+				: (value.products as Array<any>).map(ProductToJSON),
 		promotion_codes:
-			value["promotionCodes"] == null
+			value.promotionCodes == null
 				? undefined
-				: (value["promotionCodes"] as Array<any>).map(PromotionCodeToJSON),
-		version: value["version"],
+				: (value.promotionCodes as Array<any>).map(PromotionCodeToJSON),
+		version: value.version,
 		webhooks:
-			value["webhooks"] == null
+			value.webhooks == null
 				? undefined
-				: (value["webhooks"] as Array<any>).map(WebhookEndpointConfigToJSON),
+				: (value.webhooks as Array<any>).map(WebhookEndpointConfigToJSON),
 	};
 }

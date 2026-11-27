@@ -268,7 +268,7 @@ export function formatLatency(result: LatencyResult | undefined): string {
 export function getLatencyColorClass(
 	result: LatencyResult | undefined,
 ): string {
-	if (!result || result.status !== "done" || result.latency === null) {
+	if (result?.status !== "done" || result.latency === null) {
 		return "text-muted-foreground";
 	}
 

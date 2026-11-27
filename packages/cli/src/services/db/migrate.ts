@@ -1,6 +1,6 @@
+import * as fs from "node:fs";
+import path from "node:path";
 import { V1DatabaseApi } from "@omnibase/core-js";
-import * as fs from "fs";
-import path from "path";
 import { createConfig } from "../../lib/omnibase";
 import {
 	type EnvironmentConfig,
@@ -30,7 +30,7 @@ export function resolveAppliedMigrations(
 	const applied: MigrationEntry[] = [];
 	for (const d of [...localDirs].sort()) {
 		const version = parseInt(d.split("_")[0], 10);
-		if (isNaN(version)) continue;
+		if (Number.isNaN(version)) continue;
 		if (version <= currentVersion) applied.push({ dir: d, version });
 	}
 	return applied;
@@ -263,7 +263,7 @@ export class DatabaseMigrationService {
 			});
 			if (!res) throw new Error();
 			logger.succeed(res.message || `Rolled back ${steps} migration(s)`);
-		} catch (error) {
+		} catch (_error) {
 			logger.fail("Failed to rollback migrations");
 		}
 	}

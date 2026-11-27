@@ -48,9 +48,9 @@ export interface CouponChange {
  * Check if a given object implements the CouponChange interface.
  */
 export function instanceOfCouponChange(value: object): value is CouponChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("couponId" in value) || value["couponId"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("couponId" in value) || value.couponId === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
 	return true;
 }
 
@@ -60,16 +60,16 @@ export function CouponChangeFromJSON(json: any): CouponChange {
 
 export function CouponChangeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CouponChange {
 	if (json == null) {
 		return json;
 	}
 	return {
-		action: json["action"],
-		couponId: json["coupon_id"],
-		name: json["name"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		action: json.action,
+		couponId: json.coupon_id,
+		name: json.name,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -79,16 +79,16 @@ export function CouponChangeToJSON(json: any): CouponChange {
 
 export function CouponChangeToJSONTyped(
 	value?: CouponChange | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		action: value["action"],
-		coupon_id: value["couponId"],
-		name: value["name"],
-		stripe_id: value["stripeId"],
+		action: value.action,
+		coupon_id: value.couponId,
+		name: value.name,
+		stripe_id: value.stripeId,
 	};
 }

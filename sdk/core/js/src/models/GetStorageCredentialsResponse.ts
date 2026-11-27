@@ -68,12 +68,11 @@ export interface GetStorageCredentialsResponse {
 export function instanceOfGetStorageCredentialsResponse(
 	value: object,
 ): value is GetStorageCredentialsResponse {
-	if (!("accessKey" in value) || value["accessKey"] === undefined) return false;
-	if (!("bucketName" in value) || value["bucketName"] === undefined)
-		return false;
-	if (!("endpoint" in value) || value["endpoint"] === undefined) return false;
-	if (!("region" in value) || value["region"] === undefined) return false;
-	if (!("secretKey" in value) || value["secretKey"] === undefined) return false;
+	if (!("accessKey" in value) || value.accessKey === undefined) return false;
+	if (!("bucketName" in value) || value.bucketName === undefined) return false;
+	if (!("endpoint" in value) || value.endpoint === undefined) return false;
+	if (!("region" in value) || value.region === undefined) return false;
+	if (!("secretKey" in value) || value.secretKey === undefined) return false;
 	return true;
 }
 
@@ -85,21 +84,19 @@ export function GetStorageCredentialsResponseFromJSON(
 
 export function GetStorageCredentialsResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetStorageCredentialsResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		accessKey: json["access_key"],
-		bucketName: json["bucket_name"],
-		endpoint: json["endpoint"],
-		expiration:
-			json["expiration"] == null ? undefined : new Date(json["expiration"]),
-		region: json["region"],
-		secretKey: json["secret_key"],
-		sessionToken:
-			json["session_token"] == null ? undefined : json["session_token"],
+		accessKey: json.access_key,
+		bucketName: json.bucket_name,
+		endpoint: json.endpoint,
+		expiration: json.expiration == null ? undefined : new Date(json.expiration),
+		region: json.region,
+		secretKey: json.secret_key,
+		sessionToken: json.session_token == null ? undefined : json.session_token,
 	};
 }
 
@@ -111,22 +108,22 @@ export function GetStorageCredentialsResponseToJSON(
 
 export function GetStorageCredentialsResponseToJSONTyped(
 	value?: GetStorageCredentialsResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		access_key: value["accessKey"],
-		bucket_name: value["bucketName"],
-		endpoint: value["endpoint"],
+		access_key: value.accessKey,
+		bucket_name: value.bucketName,
+		endpoint: value.endpoint,
 		expiration:
-			value["expiration"] == null
-				? value["expiration"]
-				: value["expiration"].toISOString(),
-		region: value["region"],
-		secret_key: value["secretKey"],
-		session_token: value["sessionToken"],
+			value.expiration == null
+				? value.expiration
+				: value.expiration.toISOString(),
+		region: value.region,
+		secret_key: value.secretKey,
+		session_token: value.sessionToken,
 	};
 }

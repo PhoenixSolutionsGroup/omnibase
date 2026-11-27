@@ -32,7 +32,7 @@ export interface DeleteObjectRequest {
 export function instanceOfDeleteObjectRequest(
 	value: object,
 ): value is DeleteObjectRequest {
-	if (!("path" in value) || value["path"] === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
 	return true;
 }
 
@@ -42,13 +42,13 @@ export function DeleteObjectRequestFromJSON(json: any): DeleteObjectRequest {
 
 export function DeleteObjectRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteObjectRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		path: json["path"],
+		path: json.path,
 	};
 }
 
@@ -58,13 +58,13 @@ export function DeleteObjectRequestToJSON(json: any): DeleteObjectRequest {
 
 export function DeleteObjectRequestToJSONTyped(
 	value?: DeleteObjectRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		path: value["path"],
+		path: value.path,
 	};
 }

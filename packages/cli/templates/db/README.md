@@ -78,7 +78,7 @@ When you run `omnibase db migrate new`, a file is created with this template:
 
 **1729507200_create_users.sql:**
 
-```sql
+````sql
 -- Migration: create users
 -- Created: 2024-10-21T10:00:00.000Z
 
@@ -89,3 +89,4 @@ When you run `omnibase db migrate new`, a file is created with this template:
 --     email TEXT NOT NULL UNIQUE,
 --     created_at TIMESTAMP DEFAULT NOW()
 -- );```
+````

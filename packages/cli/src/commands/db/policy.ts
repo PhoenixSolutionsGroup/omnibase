@@ -1,7 +1,7 @@
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import type { Command } from "commander";
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "fs";
-import path from "path";
 import { findOmnibaseRoot } from "../../utils/environment";
 import { logger } from "../../utils/logger";
 

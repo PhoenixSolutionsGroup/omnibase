@@ -30,7 +30,7 @@ export interface DeleteRequest {
  * Check if a given object implements the DeleteRequest interface.
  */
 export function instanceOfDeleteRequest(value: object): value is DeleteRequest {
-	if (!("userId" in value) || value["userId"] === undefined) return false;
+	if (!("userId" in value) || value.userId === undefined) return false;
 	return true;
 }
 
@@ -40,13 +40,13 @@ export function DeleteRequestFromJSON(json: any): DeleteRequest {
 
 export function DeleteRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeleteRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		userId: json["user_id"],
+		userId: json.user_id,
 	};
 }
 
@@ -56,13 +56,13 @@ export function DeleteRequestToJSON(json: any): DeleteRequest {
 
 export function DeleteRequestToJSONTyped(
 	value?: DeleteRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		user_id: value["userId"],
+		user_id: value.userId,
 	};
 }

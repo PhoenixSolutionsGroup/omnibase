@@ -75,20 +75,19 @@ export function ProductUIFromJSON(json: any): ProductUI {
 
 export function ProductUIFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ProductUI {
 	if (json == null) {
 		return json;
 	}
 	return {
-		badge: json["badge"] == null ? undefined : json["badge"],
-		ctaText: json["cta_text"] == null ? undefined : json["cta_text"],
-		displayName:
-			json["display_name"] == null ? undefined : json["display_name"],
-		features: json["features"] == null ? undefined : json["features"],
-		highlighted: json["highlighted"] == null ? undefined : json["highlighted"],
-		sortOrder: json["sort_order"] == null ? undefined : json["sort_order"],
-		tagline: json["tagline"] == null ? undefined : json["tagline"],
+		badge: json.badge == null ? undefined : json.badge,
+		ctaText: json.cta_text == null ? undefined : json.cta_text,
+		displayName: json.display_name == null ? undefined : json.display_name,
+		features: json.features == null ? undefined : json.features,
+		highlighted: json.highlighted == null ? undefined : json.highlighted,
+		sortOrder: json.sort_order == null ? undefined : json.sort_order,
+		tagline: json.tagline == null ? undefined : json.tagline,
 	};
 }
 
@@ -98,19 +97,19 @@ export function ProductUIToJSON(json: any): ProductUI {
 
 export function ProductUIToJSONTyped(
 	value?: ProductUI | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		badge: value["badge"],
-		cta_text: value["ctaText"],
-		display_name: value["displayName"],
-		features: value["features"],
-		highlighted: value["highlighted"],
-		sort_order: value["sortOrder"],
-		tagline: value["tagline"],
+		badge: value.badge,
+		cta_text: value.ctaText,
+		display_name: value.displayName,
+		features: value.features,
+		highlighted: value.highlighted,
+		sort_order: value.sortOrder,
+		tagline: value.tagline,
 	};
 }

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { type ChildProcess, spawn } from "child_process";
+import { type ChildProcess, spawn } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { Command } from "commander";
-import * as fs from "fs";
-import * as path from "path";
 import packageJson from "../package.json";
 import { addAuthCommands } from "./commands/auth";
 import { addCloudCommands } from "./commands/cloud";
@@ -178,7 +178,7 @@ async function syncPermissionNamespaces(root: string): Promise<void> {
 }
 
 async function runDockerCompose(
-	envOverride?: string,
+	_envOverride?: string,
 	composeMode?: string,
 	command?: string,
 	services: string[] = [],
@@ -207,7 +207,7 @@ async function runDockerCompose(
 }
 
 async function startDockerComposeAttached(
-	envOverride: string | undefined,
+	_envOverride: string | undefined,
 	composeMode: string | undefined,
 	command: string,
 ): Promise<ChildProcess> {

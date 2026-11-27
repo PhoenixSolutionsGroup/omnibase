@@ -49,8 +49,8 @@ export interface GetPriceResponse {
 export function instanceOfGetPriceResponse(
 	value: object,
 ): value is GetPriceResponse {
-	if (!("price" in value) || value["price"] === undefined) return false;
-	if (!("product" in value) || value["product"] === undefined) return false;
+	if (!("price" in value) || value.price === undefined) return false;
+	if (!("product" in value) || value.product === undefined) return false;
 	return true;
 }
 
@@ -60,14 +60,14 @@ export function GetPriceResponseFromJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetPriceResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		price: PriceWithStripeIDFromJSON(json["price"]),
-		product: ProductWithStripeIDsFromJSON(json["product"]),
+		price: PriceWithStripeIDFromJSON(json.price),
+		product: ProductWithStripeIDsFromJSON(json.product),
 	};
 }
 
@@ -77,14 +77,14 @@ export function GetPriceResponseToJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseToJSONTyped(
 	value?: GetPriceResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		price: PriceWithStripeIDToJSON(value["price"]),
-		product: ProductWithStripeIDsToJSON(value["product"]),
+		price: PriceWithStripeIDToJSON(value.price),
+		product: ProductWithStripeIDsToJSON(value.product),
 	};
 }

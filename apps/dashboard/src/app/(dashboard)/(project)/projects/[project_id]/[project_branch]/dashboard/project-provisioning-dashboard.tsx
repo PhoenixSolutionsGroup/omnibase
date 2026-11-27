@@ -23,7 +23,7 @@ function RotatingText() {
 	useEffect(() => {
 		const hideTimer = setTimeout(() => setVisible(false), VISIBLE_MS);
 		return () => clearTimeout(hideTimer);
-	}, [index]);
+	}, []);
 
 	useEffect(() => {
 		if (visible) return;

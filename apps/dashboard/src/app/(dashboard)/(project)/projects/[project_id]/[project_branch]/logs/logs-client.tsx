@@ -132,7 +132,15 @@ export function LogsClient({
 		};
 
 		fetchLogs();
-	}, [projectId, activeService, limit, timeRange]);
+	}, [
+		projectId,
+		activeService,
+		limit,
+		timeRange,
+		logsData,
+		lastFetch,
+		getStartTime,
+	]);
 
 	return (
 		<div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col py-8">

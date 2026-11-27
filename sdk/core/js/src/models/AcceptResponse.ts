@@ -38,8 +38,8 @@ export interface AcceptResponse {
 export function instanceOfAcceptResponse(
 	value: object,
 ): value is AcceptResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -49,14 +49,14 @@ export function AcceptResponseFromJSON(json: any): AcceptResponse {
 
 export function AcceptResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AcceptResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json["message"],
-		tenantId: json["tenant_id"],
+		message: json.message,
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -66,14 +66,14 @@ export function AcceptResponseToJSON(json: any): AcceptResponse {
 
 export function AcceptResponseToJSONTyped(
 	value?: AcceptResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value["message"],
-		tenant_id: value["tenantId"],
+		message: value.message,
+		tenant_id: value.tenantId,
 	};
 }

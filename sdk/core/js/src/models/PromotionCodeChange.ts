@@ -50,9 +50,9 @@ export interface PromotionCodeChange {
 export function instanceOfPromotionCodeChange(
 	value: object,
 ): value is PromotionCodeChange {
-	if (!("action" in value) || value["action"] === undefined) return false;
-	if (!("code" in value) || value["code"] === undefined) return false;
-	if (!("promoId" in value) || value["promoId"] === undefined) return false;
+	if (!("action" in value) || value.action === undefined) return false;
+	if (!("code" in value) || value.code === undefined) return false;
+	if (!("promoId" in value) || value.promoId === undefined) return false;
 	return true;
 }
 
@@ -62,16 +62,16 @@ export function PromotionCodeChangeFromJSON(json: any): PromotionCodeChange {
 
 export function PromotionCodeChangeFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): PromotionCodeChange {
 	if (json == null) {
 		return json;
 	}
 	return {
-		action: json["action"],
-		code: json["code"],
-		promoId: json["promo_id"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		action: json.action,
+		code: json.code,
+		promoId: json.promo_id,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -81,16 +81,16 @@ export function PromotionCodeChangeToJSON(json: any): PromotionCodeChange {
 
 export function PromotionCodeChangeToJSONTyped(
 	value?: PromotionCodeChange | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		action: value["action"],
-		code: value["code"],
-		promo_id: value["promoId"],
-		stripe_id: value["stripeId"],
+		action: value.action,
+		code: value.code,
+		promo_id: value.promoId,
+		stripe_id: value.stripeId,
 	};
 }

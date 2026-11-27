@@ -1,8 +1,8 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { select } from "@inquirer/prompts";
 import axios from "axios";
 import { config as dotenvConfig } from "dotenv";
-import * as fs from "fs";
-import * as path from "path";
 import { loadConfig, type OmnibaseConfig } from "./config";
 import { getActiveProfile } from "./credentials";
 
@@ -107,7 +107,7 @@ async function fetchBranches(projectId: string): Promise<BranchSummary[]> {
 
 export function loadLocalEnvironment(
 	projectRoot?: string,
-	config?: OmnibaseConfig,
+	_config?: OmnibaseConfig,
 ): EnvironmentConfig {
 	const root = projectRoot ?? findOmnibaseRoot();
 
@@ -132,7 +132,7 @@ export function loadLocalEnvironment(
 
 async function loadBranchEnvironment(
 	branch: BranchSummary,
-	projectId: string,
+	_projectId: string,
 ): Promise<EnvironmentConfig> {
 	const baseUrl = getManagedHostingUrl();
 	const apiKey = getProfileApiKey();

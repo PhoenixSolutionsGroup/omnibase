@@ -50,9 +50,9 @@ export interface UpsertSystemTemplateRequest {
 export function instanceOfUpsertSystemTemplateRequest(
 	value: object,
 ): value is UpsertSystemTemplateRequest {
-	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("subject" in value) || value["subject"] === undefined) return false;
+	if (!("htmlBody" in value) || value.htmlBody === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("subject" in value) || value.subject === undefined) return false;
 	return true;
 }
 
@@ -64,17 +64,17 @@ export function UpsertSystemTemplateRequestFromJSON(
 
 export function UpsertSystemTemplateRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertSystemTemplateRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		htmlBody: json["html_body"],
-		name: json["name"],
+		htmlBody: json.html_body,
+		name: json.name,
 		plaintextBody:
-			json["plaintext_body"] == null ? undefined : json["plaintext_body"],
-		subject: json["subject"],
+			json.plaintext_body == null ? undefined : json.plaintext_body,
+		subject: json.subject,
 	};
 }
 
@@ -86,16 +86,16 @@ export function UpsertSystemTemplateRequestToJSON(
 
 export function UpsertSystemTemplateRequestToJSONTyped(
 	value?: UpsertSystemTemplateRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		html_body: value["htmlBody"],
-		name: value["name"],
-		plaintext_body: value["plaintextBody"],
-		subject: value["subject"],
+		html_body: value.htmlBody,
+		name: value.name,
+		plaintext_body: value.plaintextBody,
+		subject: value.subject,
 	};
 }

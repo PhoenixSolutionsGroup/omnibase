@@ -32,7 +32,7 @@ export interface SwitchActiveRequest {
 export function instanceOfSwitchActiveRequest(
 	value: object,
 ): value is SwitchActiveRequest {
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -42,13 +42,13 @@ export function SwitchActiveRequestFromJSON(json: any): SwitchActiveRequest {
 
 export function SwitchActiveRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SwitchActiveRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		tenantId: json["tenant_id"],
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -58,13 +58,13 @@ export function SwitchActiveRequestToJSON(json: any): SwitchActiveRequest {
 
 export function SwitchActiveRequestToJSONTyped(
 	value?: SwitchActiveRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		tenant_id: value["tenantId"],
+		tenant_id: value.tenantId,
 	};
 }

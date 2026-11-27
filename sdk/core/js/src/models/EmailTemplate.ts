@@ -66,13 +66,13 @@ export interface EmailTemplate {
  * Check if a given object implements the EmailTemplate interface.
  */
 export function instanceOfEmailTemplate(value: object): value is EmailTemplate {
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("subject" in value) || value["subject"] === undefined) return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
-	if (!("type" in value) || value["type"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("htmlBody" in value) || value.htmlBody === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("subject" in value) || value.subject === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
+	if (!("type" in value) || value.type === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
 	return true;
 }
 
@@ -82,19 +82,19 @@ export function EmailTemplateFromJSON(json: any): EmailTemplate {
 
 export function EmailTemplateFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): EmailTemplate {
 	if (json == null) {
 		return json;
 	}
 	return {
-		createdAt: new Date(json["created_at"]),
-		htmlBody: json["html_body"],
-		id: json["id"],
-		subject: json["subject"],
-		tenantId: json["tenant_id"],
-		type: json["type"],
-		updatedAt: new Date(json["updated_at"]),
+		createdAt: new Date(json.created_at),
+		htmlBody: json.html_body,
+		id: json.id,
+		subject: json.subject,
+		tenantId: json.tenant_id,
+		type: json.type,
+		updatedAt: new Date(json.updated_at),
 	};
 }
 
@@ -104,19 +104,19 @@ export function EmailTemplateToJSON(json: any): EmailTemplate {
 
 export function EmailTemplateToJSONTyped(
 	value?: EmailTemplate | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		created_at: value["createdAt"].toISOString(),
-		html_body: value["htmlBody"],
-		id: value["id"],
-		subject: value["subject"],
-		tenant_id: value["tenantId"],
-		type: value["type"],
-		updated_at: value["updatedAt"].toISOString(),
+		created_at: value.createdAt.toISOString(),
+		html_body: value.htmlBody,
+		id: value.id,
+		subject: value.subject,
+		tenant_id: value.tenantId,
+		type: value.type,
+		updated_at: value.updatedAt.toISOString(),
 	};
 }

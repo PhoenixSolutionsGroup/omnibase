@@ -54,11 +54,10 @@ export interface CheckRequest {
  * Check if a given object implements the CheckRequest interface.
  */
 export function instanceOfCheckRequest(value: object): value is CheckRequest {
-	if (!("namespace" in value) || value["namespace"] === undefined) return false;
-	if (!("object" in value) || value["object"] === undefined) return false;
-	if (!("relation" in value) || value["relation"] === undefined) return false;
-	if (!("subjectSet" in value) || value["subjectSet"] === undefined)
-		return false;
+	if (!("namespace" in value) || value.namespace === undefined) return false;
+	if (!("object" in value) || value.object === undefined) return false;
+	if (!("relation" in value) || value.relation === undefined) return false;
+	if (!("subjectSet" in value) || value.subjectSet === undefined) return false;
 	return true;
 }
 
@@ -68,16 +67,16 @@ export function CheckRequestFromJSON(json: any): CheckRequest {
 
 export function CheckRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CheckRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		namespace: json["namespace"],
-		object: json["object"],
-		relation: json["relation"],
-		subjectSet: SubjectSetRequestFromJSON(json["subject_set"]),
+		namespace: json.namespace,
+		object: json.object,
+		relation: json.relation,
+		subjectSet: SubjectSetRequestFromJSON(json.subject_set),
 	};
 }
 
@@ -87,16 +86,16 @@ export function CheckRequestToJSON(json: any): CheckRequest {
 
 export function CheckRequestToJSONTyped(
 	value?: CheckRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		namespace: value["namespace"],
-		object: value["object"],
-		relation: value["relation"],
-		subject_set: SubjectSetRequestToJSON(value["subjectSet"]),
+		namespace: value.namespace,
+		object: value.object,
+		relation: value.relation,
+		subject_set: SubjectSetRequestToJSON(value.subjectSet),
 	};
 }

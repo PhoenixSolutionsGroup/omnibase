@@ -38,8 +38,8 @@ export interface AppliedMigration {
 export function instanceOfAppliedMigration(
 	value: object,
 ): value is AppliedMigration {
-	if (!("dirty" in value) || value["dirty"] === undefined) return false;
-	if (!("version" in value) || value["version"] === undefined) return false;
+	if (!("dirty" in value) || value.dirty === undefined) return false;
+	if (!("version" in value) || value.version === undefined) return false;
 	return true;
 }
 
@@ -49,14 +49,14 @@ export function AppliedMigrationFromJSON(json: any): AppliedMigration {
 
 export function AppliedMigrationFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): AppliedMigration {
 	if (json == null) {
 		return json;
 	}
 	return {
-		dirty: json["dirty"],
-		version: json["version"],
+		dirty: json.dirty,
+		version: json.version,
 	};
 }
 
@@ -66,14 +66,14 @@ export function AppliedMigrationToJSON(json: any): AppliedMigration {
 
 export function AppliedMigrationToJSONTyped(
 	value?: AppliedMigration | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		dirty: value["dirty"],
-		version: value["version"],
+		dirty: value.dirty,
+		version: value.version,
 	};
 }

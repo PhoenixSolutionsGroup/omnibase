@@ -172,7 +172,7 @@ export class BaseAPI {
 			// only add the querystring to the URL if there are query parameters.
 			// this is done to avoid urls ending with a "?" character which buggy webservers
 			// do not handle correctly sometimes.
-			url += "?" + this.configuration.queryParamsStringify(context.query);
+			url += `?${this.configuration.queryParamsStringify(context.query)}`;
 		}
 
 		const headers = Object.assign(
@@ -411,7 +411,7 @@ function querystringSingleKey(
 	keyPrefix: string = "",
 ): string {
 	const fullKey = keyPrefix + (keyPrefix.length ? `[${key}]` : key);
-	if (value instanceof Array) {
+	if (Array.isArray(value)) {
 		const multiValue = value
 			.map((singleValue) => encodeURIComponent(String(singleValue)))
 			.join(`&${encodeURIComponent(fullKey)}=`);
@@ -478,9 +478,9 @@ export interface ErrorContext {
 }
 
 export interface Middleware {
-	pre?(context: RequestContext): Promise<FetchParams | void>;
-	post?(context: ResponseContext): Promise<Response | void>;
-	onError?(context: ErrorContext): Promise<Response | void>;
+	pre?(context: RequestContext): Promise<FetchParams | undefined>;
+	post?(context: ResponseContext): Promise<Response | undefined>;
+	onError?(context: ErrorContext): Promise<Response | undefined>;
 }
 
 export interface ApiResponse<T> {

@@ -48,7 +48,7 @@ export function RLSViewer({
 		fetchPolicies().finally(() => {
 			inFlightRef.current = null;
 		});
-	}, [tableName, schemaName]);
+	}, [tableName, schemaName, fetchPolicies]);
 
 	const fetchPolicies = async () => {
 		setLoading(true);

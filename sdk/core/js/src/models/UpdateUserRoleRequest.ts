@@ -38,8 +38,8 @@ export interface UpdateUserRoleRequest {
 export function instanceOfUpdateUserRoleRequest(
 	value: object,
 ): value is UpdateUserRoleRequest {
-	if (!("role" in value) || value["role"] === undefined) return false;
-	if (!("userId" in value) || value["userId"] === undefined) return false;
+	if (!("role" in value) || value.role === undefined) return false;
+	if (!("userId" in value) || value.userId === undefined) return false;
 	return true;
 }
 
@@ -51,14 +51,14 @@ export function UpdateUserRoleRequestFromJSON(
 
 export function UpdateUserRoleRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpdateUserRoleRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		role: json["role"],
-		userId: json["user_id"],
+		role: json.role,
+		userId: json.user_id,
 	};
 }
 
@@ -68,14 +68,14 @@ export function UpdateUserRoleRequestToJSON(json: any): UpdateUserRoleRequest {
 
 export function UpdateUserRoleRequestToJSONTyped(
 	value?: UpdateUserRoleRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		role: value["role"],
-		user_id: value["userId"],
+		role: value.role,
+		user_id: value.userId,
 	};
 }

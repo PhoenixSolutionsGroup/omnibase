@@ -51,17 +51,17 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 	): Promise<runtime.ApiResponse<string>> {
 		const queryParameters: any = {};
 
-		if (requestParameters["language"] != null) {
-			queryParameters["language"] = requestParameters["language"];
+		if (requestParameters.language != null) {
+			queryParameters.language = requestParameters.language;
 		}
 
-		if (requestParameters["schemas"] != null) {
-			queryParameters["schemas"] = requestParameters["schemas"];
+		if (requestParameters.schemas != null) {
+			queryParameters.schemas = requestParameters.schemas;
 		}
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -109,7 +109,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -148,14 +148,14 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 		requestParameters: RollbackDatabaseMigrationsRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<MigrationsDownResponse>> {
-		if (requestParameters["migrations"] == null) {
+		if (requestParameters.migrations == null) {
 			throw new runtime.RequiredError(
 				"migrations",
 				'Required parameter "migrations" was null or undefined when calling rollbackDatabaseMigrations().',
 			);
 		}
 
-		if (requestParameters["steps"] == null) {
+		if (requestParameters.steps == null) {
 			throw new runtime.RequiredError(
 				"steps",
 				'Required parameter "steps" was null or undefined when calling rollbackDatabaseMigrations().',
@@ -166,7 +166,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -187,12 +187,12 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 			formParams = new URLSearchParams();
 		}
 
-		if (requestParameters["migrations"] != null) {
-			formParams.append("migrations", requestParameters["migrations"] as any);
+		if (requestParameters.migrations != null) {
+			formParams.append("migrations", requestParameters.migrations as any);
 		}
 
-		if (requestParameters["steps"] != null) {
-			formParams.append("steps", requestParameters["steps"] as any);
+		if (requestParameters.steps != null) {
+			formParams.append("steps", requestParameters.steps as any);
 		}
 
 		const urlPath = `/api/v1/database/migrations/down`;
@@ -234,7 +234,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 		requestParameters: UploadDatabaseMigrationsRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<ApplyMigrationsResponse>> {
-		if (requestParameters["migrations"] == null) {
+		if (requestParameters.migrations == null) {
 			throw new runtime.RequiredError(
 				"migrations",
 				'Required parameter "migrations" was null or undefined when calling uploadDatabaseMigrations().',
@@ -245,7 +245,7 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -266,8 +266,8 @@ export class V1DatabaseApi extends runtime.BaseAPI {
 			formParams = new URLSearchParams();
 		}
 
-		if (requestParameters["migrations"] != null) {
-			formParams.append("migrations", requestParameters["migrations"] as any);
+		if (requestParameters.migrations != null) {
+			formParams.append("migrations", requestParameters.migrations as any);
 		}
 
 		const urlPath = `/api/v1/database/migrations`;

@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import type { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import type { Database } from "@/types/omnibase";
 
-const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!.replace(/\/+$/, "");
+const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL?.replace(/\/+$/, "");
 const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL!;
 
 const OMNIBASE_POSTGREST_URL = `${OMNIBASE_API_URL}/api/v1/rest`;

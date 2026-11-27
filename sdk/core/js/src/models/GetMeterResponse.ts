@@ -38,7 +38,7 @@ export interface GetMeterResponse {
 export function instanceOfGetMeterResponse(
 	value: object,
 ): value is GetMeterResponse {
-	if (!("meter" in value) || value["meter"] === undefined) return false;
+	if (!("meter" in value) || value.meter === undefined) return false;
 	return true;
 }
 
@@ -48,13 +48,13 @@ export function GetMeterResponseFromJSON(json: any): GetMeterResponse {
 
 export function GetMeterResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetMeterResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		meter: MeterWithStripeIDFromJSON(json["meter"]),
+		meter: MeterWithStripeIDFromJSON(json.meter),
 	};
 }
 
@@ -64,13 +64,13 @@ export function GetMeterResponseToJSON(json: any): GetMeterResponse {
 
 export function GetMeterResponseToJSONTyped(
 	value?: GetMeterResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		meter: MeterWithStripeIDToJSON(value["meter"]),
+		meter: MeterWithStripeIDToJSON(value.meter),
 	};
 }

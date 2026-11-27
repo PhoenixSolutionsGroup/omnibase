@@ -53,7 +53,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 		requestParameters: CheckPermissionRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CheckResponse>> {
-		if (requestParameters["checkRequest"] == null) {
+		if (requestParameters.checkRequest == null) {
 			throw new runtime.RequiredError(
 				"checkRequest",
 				'Required parameter "checkRequest" was null or undefined when calling checkPermission().',
@@ -66,17 +66,17 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -89,7 +89,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CheckRequestToJSON(requestParameters["checkRequest"]),
+				body: CheckRequestToJSON(requestParameters.checkRequest),
 			},
 			initOverrides,
 		);
@@ -120,7 +120,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 		requestParameters: CreateRelationshipOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateRelationshipResponse>> {
-		if (requestParameters["createRelationshipRequest"] == null) {
+		if (requestParameters.createRelationshipRequest == null) {
 			throw new runtime.RequiredError(
 				"createRelationshipRequest",
 				'Required parameter "createRelationshipRequest" was null or undefined when calling createRelationship().',
@@ -133,7 +133,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -147,7 +147,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: CreateRelationshipRequestToJSON(
-					requestParameters["createRelationshipRequest"],
+					requestParameters.createRelationshipRequest,
 				),
 			},
 			initOverrides,
@@ -179,7 +179,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 		requestParameters: DeleteRelationshipOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<DeleteRelationshipResponse>> {
-		if (requestParameters["deleteRelationshipRequest"] == null) {
+		if (requestParameters.deleteRelationshipRequest == null) {
 			throw new runtime.RequiredError(
 				"deleteRelationshipRequest",
 				'Required parameter "deleteRelationshipRequest" was null or undefined when calling deleteRelationship().',
@@ -192,7 +192,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -206,7 +206,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: DeleteRelationshipRequestToJSON(
-					requestParameters["deleteRelationshipRequest"],
+					requestParameters.deleteRelationshipRequest,
 				),
 			},
 			initOverrides,

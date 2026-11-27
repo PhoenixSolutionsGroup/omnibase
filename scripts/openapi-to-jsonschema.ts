@@ -5,7 +5,7 @@
  * Usage: bun scripts/openapi-to-jsonschema.ts
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const OPENAPI_FILE = "apps/api/docs/openapi.json";
 const OUTPUT_FILE = "apps/api/internal/static/stripe-config-schema.json";

@@ -38,8 +38,8 @@ export interface ApplyMigrationsResponse {
 export function instanceOfApplyMigrationsResponse(
 	value: object,
 ): value is ApplyMigrationsResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("status" in value) || value["status"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("status" in value) || value.status === undefined) return false;
 	return true;
 }
 
@@ -51,14 +51,14 @@ export function ApplyMigrationsResponseFromJSON(
 
 export function ApplyMigrationsResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ApplyMigrationsResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json["message"],
-		status: json["status"],
+		message: json.message,
+		status: json.status,
 	};
 }
 
@@ -70,14 +70,14 @@ export function ApplyMigrationsResponseToJSON(
 
 export function ApplyMigrationsResponseToJSONTyped(
 	value?: ApplyMigrationsResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value["message"],
-		status: value["status"],
+		message: value.message,
+		status: value.status,
 	};
 }

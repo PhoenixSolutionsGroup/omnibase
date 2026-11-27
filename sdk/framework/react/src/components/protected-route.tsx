@@ -58,7 +58,7 @@ export default function ProtectedRoute({
 	const { session, loading } = useSession();
 
 	if (loading) return null;
-	if (!session || !session.active) return onInvalidSession?.() ?? null;
+	if (!session?.active) return onInvalidSession?.() ?? null;
 
 	return <>{children}</>;
 }

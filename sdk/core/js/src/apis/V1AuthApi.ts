@@ -51,7 +51,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 		requestParameters: CreateUserOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<Identity>> {
-		if (requestParameters["createUserRequest"] == null) {
+		if (requestParameters.createUserRequest == null) {
 			throw new runtime.RequiredError(
 				"createUserRequest",
 				'Required parameter "createUserRequest" was null or undefined when calling createUser().',
@@ -64,7 +64,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -77,7 +77,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateUserRequestToJSON(requestParameters["createUserRequest"]),
+				body: CreateUserRequestToJSON(requestParameters.createUserRequest),
 			},
 			initOverrides,
 		);
@@ -108,17 +108,17 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -160,7 +160,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -202,7 +202,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -244,17 +244,17 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -297,11 +297,11 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (requestParameters["cookie"] != null) {
-			headerParameters["Cookie"] = String(requestParameters["cookie"]);
+		if (requestParameters.cookie != null) {
+			headerParameters.Cookie = String(requestParameters.cookie);
 		}
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -344,7 +344,7 @@ export class V1AuthApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration && this.configuration.apiKey) {
+		if (this.configuration?.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}

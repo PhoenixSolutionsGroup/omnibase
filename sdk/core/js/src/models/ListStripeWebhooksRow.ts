@@ -80,15 +80,15 @@ export interface ListStripeWebhooksRow {
 export function instanceOfListStripeWebhooksRow(
 	value: object,
 ): value is ListStripeWebhooksRow {
-	if (!("configId" in value) || value["configId"] === undefined) return false;
-	if (!("connect" in value) || value["connect"] === undefined) return false;
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("events" in value) || value["events"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("secret" in value) || value["secret"] === undefined) return false;
-	if (!("stripeId" in value) || value["stripeId"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
-	if (!("url" in value) || value["url"] === undefined) return false;
+	if (!("configId" in value) || value.configId === undefined) return false;
+	if (!("connect" in value) || value.connect === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("events" in value) || value.events === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("secret" in value) || value.secret === undefined) return false;
+	if (!("stripeId" in value) || value.stripeId === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
+	if (!("url" in value) || value.url === undefined) return false;
 	return true;
 }
 
@@ -100,21 +100,21 @@ export function ListStripeWebhooksRowFromJSON(
 
 export function ListStripeWebhooksRowFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ListStripeWebhooksRow {
 	if (json == null) {
 		return json;
 	}
 	return {
-		configId: json["config_id"],
-		connect: json["connect"],
-		createdAt: new Date(json["created_at"]),
-		events: json["events"] == null ? null : json["events"],
-		id: json["id"],
-		secret: json["secret"],
-		stripeId: json["stripe_id"],
-		updatedAt: new Date(json["updated_at"]),
-		url: json["url"],
+		configId: json.config_id,
+		connect: json.connect,
+		createdAt: new Date(json.created_at),
+		events: json.events == null ? null : json.events,
+		id: json.id,
+		secret: json.secret,
+		stripeId: json.stripe_id,
+		updatedAt: new Date(json.updated_at),
+		url: json.url,
 	};
 }
 
@@ -124,21 +124,21 @@ export function ListStripeWebhooksRowToJSON(json: any): ListStripeWebhooksRow {
 
 export function ListStripeWebhooksRowToJSONTyped(
 	value?: ListStripeWebhooksRow | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		config_id: value["configId"],
-		connect: value["connect"],
-		created_at: value["createdAt"].toISOString(),
-		events: value["events"],
-		id: value["id"],
-		secret: value["secret"],
-		stripe_id: value["stripeId"],
-		updated_at: value["updatedAt"].toISOString(),
-		url: value["url"],
+		config_id: value.configId,
+		connect: value.connect,
+		created_at: value.createdAt.toISOString(),
+		events: value.events,
+		id: value.id,
+		secret: value.secret,
+		stripe_id: value.stripeId,
+		updated_at: value.updatedAt.toISOString(),
+		url: value.url,
 	};
 }

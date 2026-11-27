@@ -41,8 +41,8 @@ export interface UpsertTemplateResponse {
 export function instanceOfUpsertTemplateResponse(
 	value: object,
 ): value is UpsertTemplateResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("template" in value) || value["template"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("template" in value) || value.template === undefined) return false;
 	return true;
 }
 
@@ -54,14 +54,14 @@ export function UpsertTemplateResponseFromJSON(
 
 export function UpsertTemplateResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): UpsertTemplateResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json["message"],
-		template: EmailTemplateFromJSON(json["template"]),
+		message: json.message,
+		template: EmailTemplateFromJSON(json.template),
 	};
 }
 
@@ -73,14 +73,14 @@ export function UpsertTemplateResponseToJSON(
 
 export function UpsertTemplateResponseToJSONTyped(
 	value?: UpsertTemplateResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value["message"],
-		template: EmailTemplateToJSON(value["template"]),
+		message: value.message,
+		template: EmailTemplateToJSON(value.template),
 	};
 }

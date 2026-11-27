@@ -62,9 +62,9 @@ export interface ConfigStatusEntry {
 export function instanceOfConfigStatusEntry(
 	value: object,
 ): value is ConfigStatusEntry {
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("kind" in value) || value["kind"] === undefined) return false;
-	if (!("state" in value) || value["state"] === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("kind" in value) || value.kind === undefined) return false;
+	if (!("state" in value) || value.state === undefined) return false;
 	return true;
 }
 
@@ -74,18 +74,18 @@ export function ConfigStatusEntryFromJSON(json: any): ConfigStatusEntry {
 
 export function ConfigStatusEntryFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigStatusEntry {
 	if (json == null) {
 		return json;
 	}
 	return {
-		id: json["id"],
-		kind: json["kind"],
-		name: json["name"] == null ? undefined : json["name"],
-		reason: json["reason"] == null ? undefined : json["reason"],
-		state: json["state"],
-		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		id: json.id,
+		kind: json.kind,
+		name: json.name == null ? undefined : json.name,
+		reason: json.reason == null ? undefined : json.reason,
+		state: json.state,
+		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
 	};
 }
 
@@ -95,18 +95,18 @@ export function ConfigStatusEntryToJSON(json: any): ConfigStatusEntry {
 
 export function ConfigStatusEntryToJSONTyped(
 	value?: ConfigStatusEntry | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		id: value["id"],
-		kind: value["kind"],
-		name: value["name"],
-		reason: value["reason"],
-		state: value["state"],
-		stripe_id: value["stripeId"],
+		id: value.id,
+		kind: value.kind,
+		name: value.name,
+		reason: value.reason,
+		state: value.state,
+		stripe_id: value.stripeId,
 	};
 }

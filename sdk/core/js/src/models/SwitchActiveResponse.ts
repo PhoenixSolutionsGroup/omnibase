@@ -32,7 +32,7 @@ export interface SwitchActiveResponse {
 export function instanceOfSwitchActiveResponse(
 	value: object,
 ): value is SwitchActiveResponse {
-	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
 	return true;
 }
 
@@ -42,13 +42,13 @@ export function SwitchActiveResponseFromJSON(json: any): SwitchActiveResponse {
 
 export function SwitchActiveResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SwitchActiveResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json["message"],
+		message: json.message,
 	};
 }
 
@@ -58,13 +58,13 @@ export function SwitchActiveResponseToJSON(json: any): SwitchActiveResponse {
 
 export function SwitchActiveResponseToJSONTyped(
 	value?: SwitchActiveResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value["message"],
+		message: value.message,
 	};
 }

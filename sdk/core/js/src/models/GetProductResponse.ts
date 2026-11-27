@@ -38,7 +38,7 @@ export interface GetProductResponse {
 export function instanceOfGetProductResponse(
 	value: object,
 ): value is GetProductResponse {
-	if (!("product" in value) || value["product"] === undefined) return false;
+	if (!("product" in value) || value.product === undefined) return false;
 	return true;
 }
 
@@ -48,13 +48,13 @@ export function GetProductResponseFromJSON(json: any): GetProductResponse {
 
 export function GetProductResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): GetProductResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		product: ProductWithStripeIDsFromJSON(json["product"]),
+		product: ProductWithStripeIDsFromJSON(json.product),
 	};
 }
 
@@ -64,13 +64,13 @@ export function GetProductResponseToJSON(json: any): GetProductResponse {
 
 export function GetProductResponseToJSONTyped(
 	value?: GetProductResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		product: ProductWithStripeIDsToJSON(value["product"]),
+		product: ProductWithStripeIDsToJSON(value.product),
 	};
 }

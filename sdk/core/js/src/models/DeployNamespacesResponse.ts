@@ -62,11 +62,11 @@ export interface DeployNamespacesResponse {
 export function instanceOfDeployNamespacesResponse(
 	value: object,
 ): value is DeployNamespacesResponse {
-	if (!("managedMode" in value) || value["managedMode"] === undefined)
+	if (!("managedMode" in value) || value.managedMode === undefined)
 		return false;
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("path" in value) || value["path"] === undefined) return false;
-	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("path" in value) || value.path === undefined) return false;
+	if (!("tenantId" in value) || value.tenantId === undefined) return false;
 	return true;
 }
 
@@ -78,20 +78,19 @@ export function DeployNamespacesResponseFromJSON(
 
 export function DeployNamespacesResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): DeployNamespacesResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		managedMode: json["managed_mode"],
-		message: json["message"],
-		path: json["path"],
+		managedMode: json.managed_mode,
+		message: json.message,
+		path: json.path,
 		rolesBackfilled:
-			json["roles_backfilled"] == null ? undefined : json["roles_backfilled"],
-		rolesSynced:
-			json["roles_synced"] == null ? undefined : json["roles_synced"],
-		tenantId: json["tenant_id"],
+			json.roles_backfilled == null ? undefined : json.roles_backfilled,
+		rolesSynced: json.roles_synced == null ? undefined : json.roles_synced,
+		tenantId: json.tenant_id,
 	};
 }
 
@@ -103,18 +102,18 @@ export function DeployNamespacesResponseToJSON(
 
 export function DeployNamespacesResponseToJSONTyped(
 	value?: DeployNamespacesResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		managed_mode: value["managedMode"],
-		message: value["message"],
-		path: value["path"],
-		roles_backfilled: value["rolesBackfilled"],
-		roles_synced: value["rolesSynced"],
-		tenant_id: value["tenantId"],
+		managed_mode: value.managedMode,
+		message: value.message,
+		path: value.path,
+		roles_backfilled: value.rolesBackfilled,
+		roles_synced: value.rolesSynced,
+		tenant_id: value.tenantId,
 	};
 }

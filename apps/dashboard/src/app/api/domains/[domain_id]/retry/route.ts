@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL;
 
 async function forward(
-	request: NextRequest,
+	_request: NextRequest,
 	params: Promise<{ domain_id: string }>,
 ) {
 	try {

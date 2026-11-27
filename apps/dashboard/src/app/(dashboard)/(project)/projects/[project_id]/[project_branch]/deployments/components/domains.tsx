@@ -62,7 +62,7 @@ function getDomainState(status: string): ProjectState {
 	if (status === "active" || status === "pending") {
 		return DOMAIN_STATES[status];
 	}
-	return DOMAIN_STATES["pending"];
+	return DOMAIN_STATES.pending;
 }
 
 export default function Domains({ projectId, workerName }: DomainProps) {
@@ -152,7 +152,7 @@ export default function Domains({ projectId, workerName }: DomainProps) {
 			setSelectedDomainId("");
 			setSubdomain("");
 			loadAttached();
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to attach domain");
 		} finally {
 			setAttaching(false);
@@ -171,7 +171,7 @@ export default function Domains({ projectId, workerName }: DomainProps) {
 			} else {
 				toast.error("Failed to detach domain");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to detach domain");
 		}
 	};

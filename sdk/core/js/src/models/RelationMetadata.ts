@@ -62,13 +62,13 @@ export interface RelationMetadata {
 export function instanceOfRelationMetadata(
 	value: object,
 ): value is RelationMetadata {
-	if (!("displayName" in value) || value["displayName"] === undefined)
+	if (!("displayName" in value) || value.displayName === undefined)
 		return false;
-	if (!("group" in value) || value["group"] === undefined) return false;
-	if (!("name" in value) || value["name"] === undefined) return false;
-	if (!("roles" in value) || value["roles"] === undefined) return false;
-	if (!("subGroup" in value) || value["subGroup"] === undefined) return false;
-	if (!("subjects" in value) || value["subjects"] === undefined) return false;
+	if (!("group" in value) || value.group === undefined) return false;
+	if (!("name" in value) || value.name === undefined) return false;
+	if (!("roles" in value) || value.roles === undefined) return false;
+	if (!("subGroup" in value) || value.subGroup === undefined) return false;
+	if (!("subjects" in value) || value.subjects === undefined) return false;
 	return true;
 }
 
@@ -78,18 +78,18 @@ export function RelationMetadataFromJSON(json: any): RelationMetadata {
 
 export function RelationMetadataFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): RelationMetadata {
 	if (json == null) {
 		return json;
 	}
 	return {
-		displayName: json["display_name"],
-		group: json["group"],
-		name: json["name"],
-		roles: json["roles"] == null ? null : json["roles"],
-		subGroup: json["sub_group"],
-		subjects: json["subjects"] == null ? null : json["subjects"],
+		displayName: json.display_name,
+		group: json.group,
+		name: json.name,
+		roles: json.roles == null ? null : json.roles,
+		subGroup: json.sub_group,
+		subjects: json.subjects == null ? null : json.subjects,
 	};
 }
 
@@ -99,18 +99,18 @@ export function RelationMetadataToJSON(json: any): RelationMetadata {
 
 export function RelationMetadataToJSONTyped(
 	value?: RelationMetadata | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		display_name: value["displayName"],
-		group: value["group"],
-		name: value["name"],
-		roles: value["roles"],
-		sub_group: value["subGroup"],
-		subjects: value["subjects"],
+		display_name: value.displayName,
+		group: value.group,
+		name: value.name,
+		roles: value.roles,
+		sub_group: value.subGroup,
+		subjects: value.subjects,
 	};
 }

@@ -62,11 +62,11 @@ export interface StripeConfigResponse {
 export function instanceOfStripeConfigResponse(
 	value: object,
 ): value is StripeConfigResponse {
-	if (!("config" in value) || value["config"] === undefined) return false;
-	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
-	if (!("id" in value) || value["id"] === undefined) return false;
-	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
-	if (!("version" in value) || value["version"] === undefined) return false;
+	if (!("config" in value) || value.config === undefined) return false;
+	if (!("createdAt" in value) || value.createdAt === undefined) return false;
+	if (!("id" in value) || value.id === undefined) return false;
+	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
+	if (!("version" in value) || value.version === undefined) return false;
 	return true;
 }
 
@@ -76,17 +76,17 @@ export function StripeConfigResponseFromJSON(json: any): StripeConfigResponse {
 
 export function StripeConfigResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): StripeConfigResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		config: StripeConfigurationWithIDsFromJSON(json["config"]),
-		createdAt: json["created_at"],
-		id: json["id"],
-		updatedAt: json["updated_at"],
-		version: json["version"],
+		config: StripeConfigurationWithIDsFromJSON(json.config),
+		createdAt: json.created_at,
+		id: json.id,
+		updatedAt: json.updated_at,
+		version: json.version,
 	};
 }
 
@@ -96,17 +96,17 @@ export function StripeConfigResponseToJSON(json: any): StripeConfigResponse {
 
 export function StripeConfigResponseToJSONTyped(
 	value?: StripeConfigResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		config: StripeConfigurationWithIDsToJSON(value["config"]),
-		created_at: value["createdAt"],
-		id: value["id"],
-		updated_at: value["updatedAt"],
-		version: value["version"],
+		config: StripeConfigurationWithIDsToJSON(value.config),
+		created_at: value.createdAt,
+		id: value.id,
+		updated_at: value.updatedAt,
+		version: value.version,
 	};
 }

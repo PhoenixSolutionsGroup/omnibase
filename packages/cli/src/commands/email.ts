@@ -1,7 +1,7 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { ResponseError, V1ConfigurationApi } from "@omnibase/core-js";
 import type { Command } from "commander";
-import * as fs from "fs";
-import * as path from "path";
 import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
 import { logger } from "../utils/logger";

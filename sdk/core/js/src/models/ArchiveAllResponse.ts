@@ -62,14 +62,14 @@ export interface ArchiveAllResponse {
 export function instanceOfArchiveAllResponse(
 	value: object,
 ): value is ArchiveAllResponse {
-	if (!("archiveErrors" in value) || value["archiveErrors"] === undefined)
+	if (!("archiveErrors" in value) || value.archiveErrors === undefined)
 		return false;
-	if (!("archivedItems" in value) || value["archivedItems"] === undefined)
+	if (!("archivedItems" in value) || value.archivedItems === undefined)
 		return false;
-	if (!("message" in value) || value["message"] === undefined) return false;
-	if (!("totalArchived" in value) || value["totalArchived"] === undefined)
+	if (!("message" in value) || value.message === undefined) return false;
+	if (!("totalArchived" in value) || value.totalArchived === undefined)
 		return false;
-	if (!("totalErrors" in value) || value["totalErrors"] === undefined)
+	if (!("totalErrors" in value) || value.totalErrors === undefined)
 		return false;
 	return true;
 }
@@ -80,20 +80,18 @@ export function ArchiveAllResponseFromJSON(json: any): ArchiveAllResponse {
 
 export function ArchiveAllResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ArchiveAllResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		archiveErrors:
-			json["archive_errors"] == null ? null : json["archive_errors"],
-		archivedItems:
-			json["archived_items"] == null ? null : json["archived_items"],
-		message: json["message"],
-		totalArchived: json["total_archived"],
-		totalErrors: json["total_errors"],
-		warning: json["warning"] == null ? undefined : json["warning"],
+		archiveErrors: json.archive_errors == null ? null : json.archive_errors,
+		archivedItems: json.archived_items == null ? null : json.archived_items,
+		message: json.message,
+		totalArchived: json.total_archived,
+		totalErrors: json.total_errors,
+		warning: json.warning == null ? undefined : json.warning,
 	};
 }
 
@@ -103,18 +101,18 @@ export function ArchiveAllResponseToJSON(json: any): ArchiveAllResponse {
 
 export function ArchiveAllResponseToJSONTyped(
 	value?: ArchiveAllResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		archive_errors: value["archiveErrors"],
-		archived_items: value["archivedItems"],
-		message: value["message"],
-		total_archived: value["totalArchived"],
-		total_errors: value["totalErrors"],
-		warning: value["warning"],
+		archive_errors: value.archiveErrors,
+		archived_items: value.archivedItems,
+		message: value.message,
+		total_archived: value.totalArchived,
+		total_errors: value.totalErrors,
+		warning: value.warning,
 	};
 }

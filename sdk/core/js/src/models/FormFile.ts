@@ -48,11 +48,11 @@ export interface FormFile {
  * Check if a given object implements the FormFile interface.
  */
 export function instanceOfFormFile(value: object): value is FormFile {
-	if (!("contentType" in value) || value["contentType"] === undefined)
+	if (!("contentType" in value) || value.contentType === undefined)
 		return false;
-	if (!("filename" in value) || value["filename"] === undefined) return false;
-	if (!("isSet" in value) || value["isSet"] === undefined) return false;
-	if (!("size" in value) || value["size"] === undefined) return false;
+	if (!("filename" in value) || value.filename === undefined) return false;
+	if (!("isSet" in value) || value.isSet === undefined) return false;
+	if (!("size" in value) || value.size === undefined) return false;
 	return true;
 }
 
@@ -62,16 +62,16 @@ export function FormFileFromJSON(json: any): FormFile {
 
 export function FormFileFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): FormFile {
 	if (json == null) {
 		return json;
 	}
 	return {
-		contentType: json["ContentType"],
-		filename: json["Filename"],
-		isSet: json["IsSet"],
-		size: json["Size"],
+		contentType: json.ContentType,
+		filename: json.Filename,
+		isSet: json.IsSet,
+		size: json.Size,
 	};
 }
 
@@ -81,16 +81,16 @@ export function FormFileToJSON(json: any): FormFile {
 
 export function FormFileToJSONTyped(
 	value?: FormFile | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		ContentType: value["contentType"],
-		Filename: value["filename"],
-		IsSet: value["isSet"],
-		Size: value["size"],
+		ContentType: value.contentType,
+		Filename: value.filename,
+		IsSet: value.isSet,
+		Size: value.size,
 	};
 }

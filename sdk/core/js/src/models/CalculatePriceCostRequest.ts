@@ -32,7 +32,7 @@ export interface CalculatePriceCostRequest {
 export function instanceOfCalculatePriceCostRequest(
 	value: object,
 ): value is CalculatePriceCostRequest {
-	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	if (!("quantity" in value) || value.quantity === undefined) return false;
 	return true;
 }
 
@@ -44,13 +44,13 @@ export function CalculatePriceCostRequestFromJSON(
 
 export function CalculatePriceCostRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): CalculatePriceCostRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		quantity: json["quantity"],
+		quantity: json.quantity,
 	};
 }
 
@@ -62,13 +62,13 @@ export function CalculatePriceCostRequestToJSON(
 
 export function CalculatePriceCostRequestToJSONTyped(
 	value?: CalculatePriceCostRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		quantity: value["quantity"],
+		quantity: value.quantity,
 	};
 }

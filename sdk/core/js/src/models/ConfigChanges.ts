@@ -85,32 +85,24 @@ export function ConfigChangesFromJSON(json: any): ConfigChanges {
 
 export function ConfigChangesFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ConfigChanges {
 	if (json == null) {
 		return json;
 	}
 	return {
 		coupons:
-			json["coupons"] == null
-				? undefined
-				: CouponChangesFromJSON(json["coupons"]),
-		meters:
-			json["meters"] == null ? undefined : MeterChangesFromJSON(json["meters"]),
-		prices:
-			json["prices"] == null ? undefined : PriceChangesFromJSON(json["prices"]),
+			json.coupons == null ? undefined : CouponChangesFromJSON(json.coupons),
+		meters: json.meters == null ? undefined : MeterChangesFromJSON(json.meters),
+		prices: json.prices == null ? undefined : PriceChangesFromJSON(json.prices),
 		products:
-			json["products"] == null
-				? undefined
-				: ProductChangesFromJSON(json["products"]),
+			json.products == null ? undefined : ProductChangesFromJSON(json.products),
 		promotionCodes:
-			json["promotion_codes"] == null
+			json.promotion_codes == null
 				? undefined
-				: PromotionCodeChangesFromJSON(json["promotion_codes"]),
+				: PromotionCodeChangesFromJSON(json.promotion_codes),
 		webhooks:
-			json["webhooks"] == null
-				? undefined
-				: WebhookChangesFromJSON(json["webhooks"]),
+			json.webhooks == null ? undefined : WebhookChangesFromJSON(json.webhooks),
 	};
 }
 
@@ -120,18 +112,18 @@ export function ConfigChangesToJSON(json: any): ConfigChanges {
 
 export function ConfigChangesToJSONTyped(
 	value?: ConfigChanges | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		coupons: CouponChangesToJSON(value["coupons"]),
-		meters: MeterChangesToJSON(value["meters"]),
-		prices: PriceChangesToJSON(value["prices"]),
-		products: ProductChangesToJSON(value["products"]),
-		promotion_codes: PromotionCodeChangesToJSON(value["promotionCodes"]),
-		webhooks: WebhookChangesToJSON(value["webhooks"]),
+		coupons: CouponChangesToJSON(value.coupons),
+		meters: MeterChangesToJSON(value.meters),
+		prices: PriceChangesToJSON(value.prices),
+		products: ProductChangesToJSON(value.products),
+		promotion_codes: PromotionCodeChangesToJSON(value.promotionCodes),
+		webhooks: WebhookChangesToJSON(value.webhooks),
 	};
 }

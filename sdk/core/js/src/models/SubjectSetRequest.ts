@@ -44,8 +44,8 @@ export interface SubjectSetRequest {
 export function instanceOfSubjectSetRequest(
 	value: object,
 ): value is SubjectSetRequest {
-	if (!("namespace" in value) || value["namespace"] === undefined) return false;
-	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("namespace" in value) || value.namespace === undefined) return false;
+	if (!("object" in value) || value.object === undefined) return false;
 	return true;
 }
 
@@ -55,15 +55,15 @@ export function SubjectSetRequestFromJSON(json: any): SubjectSetRequest {
 
 export function SubjectSetRequestFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): SubjectSetRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		namespace: json["namespace"],
-		object: json["object"],
-		relation: json["relation"] == null ? undefined : json["relation"],
+		namespace: json.namespace,
+		object: json.object,
+		relation: json.relation == null ? undefined : json.relation,
 	};
 }
 
@@ -73,15 +73,15 @@ export function SubjectSetRequestToJSON(json: any): SubjectSetRequest {
 
 export function SubjectSetRequestToJSONTyped(
 	value?: SubjectSetRequest | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		namespace: value["namespace"],
-		object: value["object"],
-		relation: value["relation"],
+		namespace: value.namespace,
+		object: value.object,
+		relation: value.relation,
 	};
 }

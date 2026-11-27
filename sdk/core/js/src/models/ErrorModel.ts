@@ -72,21 +72,21 @@ export function ErrorModelFromJSON(json: any): ErrorModel {
 
 export function ErrorModelFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ErrorModel {
 	if (json == null) {
 		return json;
 	}
 	return {
-		detail: json["detail"] == null ? undefined : json["detail"],
+		detail: json.detail == null ? undefined : json.detail,
 		errors:
-			json["errors"] == null
+			json.errors == null
 				? undefined
-				: (json["errors"] as Array<any>).map(ErrorDetailFromJSON),
-		instance: json["instance"] == null ? undefined : json["instance"],
-		status: json["status"] == null ? undefined : json["status"],
-		title: json["title"] == null ? undefined : json["title"],
-		type: json["type"] == null ? undefined : json["type"],
+				: (json.errors as Array<any>).map(ErrorDetailFromJSON),
+		instance: json.instance == null ? undefined : json.instance,
+		status: json.status == null ? undefined : json.status,
+		title: json.title == null ? undefined : json.title,
+		type: json.type == null ? undefined : json.type,
 	};
 }
 
@@ -96,21 +96,21 @@ export function ErrorModelToJSON(json: any): ErrorModel {
 
 export function ErrorModelToJSONTyped(
 	value?: ErrorModel | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		detail: value["detail"],
+		detail: value.detail,
 		errors:
-			value["errors"] == null
+			value.errors == null
 				? undefined
-				: (value["errors"] as Array<any>).map(ErrorDetailToJSON),
-		instance: value["instance"],
-		status: value["status"],
-		title: value["title"],
-		type: value["type"],
+				: (value.errors as Array<any>).map(ErrorDetailToJSON),
+		instance: value.instance,
+		status: value.status,
+		title: value.title,
+		type: value.type,
 	};
 }

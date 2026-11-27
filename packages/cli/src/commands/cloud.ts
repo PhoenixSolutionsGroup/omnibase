@@ -1,12 +1,12 @@
+import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
+import * as path from "node:path";
 import { checkbox, input, select } from "@inquirer/prompts";
 import axios from "axios";
-import { execSync } from "child_process";
 import type { Command } from "commander";
 import FormData from "form-data";
-import * as fs from "fs";
-import { readdir, readFile } from "fs/promises";
 import JSZip from "jszip";
-import * as path from "path";
 import * as TOML from "smol-toml";
 import {
 	createManagedHostingClient,
@@ -296,7 +296,7 @@ async function deployWorkers(
 	}
 
 	const deployments = getDeployments(root);
-	const config = loadConfig(root);
+	const _config = loadConfig(root);
 	const secrets = loadSecretsMap(root, env.name);
 	let targets: DeploymentConfig[];
 
@@ -342,7 +342,7 @@ async function deployWorkers(
 				stdio: "inherit",
 				env: { ...process.env, ...secrets },
 			});
-		} catch (error) {
+		} catch (_error) {
 			logger.fail(`Build failed for '${dep.name}'. Check the output above.`);
 			failures.push(dep.name);
 			continue;
@@ -761,7 +761,7 @@ export function buildBranchEnv(input: BranchEnvInput): Record<string, string> {
  * matches by name, slug, or id; otherwise a single branch is auto-selected or
  * the user is prompted.
  */
-async function resolveBranch(
+async function _resolveBranch(
 	managedHostingUrl: string,
 	projectId: string,
 	branchFlag?: string,
@@ -838,8 +838,8 @@ export function stripUnresolvedOidcProviders(
 		return true;
 	});
 
-	if ((auth!.oidc as unknown[]).length === 0) {
-		delete auth!.oidc;
+	if ((auth?.oidc as unknown[]).length === 0) {
+		delete auth?.oidc;
 	}
 	return dropped;
 }
@@ -1048,16 +1048,16 @@ async function resolveBranchTarget(
 	if (region) {
 		if (
 			(plan.regions ?? []).length > 0 &&
-			!plan.regions!.some((r) => r.id === region)
+			!plan.regions?.some((r) => r.id === region)
 		) {
 			throw new Error(
-				`Region '${region}' is not available for plan '${plan.id}'. Available: ${plan.regions!.map((r) => r.id).join(", ")}`,
+				`Region '${region}' is not available for plan '${plan.id}'. Available: ${plan.regions?.map((r) => r.id).join(", ")}`,
 			);
 		}
 	} else if ((plan.regions ?? []).length > 0) {
 		region = await select({
 			message: "Region:",
-			choices: plan.regions!.map((r) => ({
+			choices: plan.regions?.map((r) => ({
 				name: `${r.name} (${r.id})`,
 				value: r.id,
 			})),
@@ -1289,10 +1289,9 @@ async function branchEnv(
 		cookieDomain: options.cookieDomain ?? process.env.OMNIBASE_COOKIE_DOMAIN,
 		dashboardUrl: options.dashboardUrl,
 	});
-	const content =
-		Object.entries(env)
-			.map(([key, value]) => `${key}=${value}`)
-			.join("\n") + "\n";
+	const content = `${Object.entries(env)
+		.map(([key, value]) => `${key}=${value}`)
+		.join("\n")}\n`;
 
 	if (options.output) {
 		const target = path.resolve(options.output);
@@ -1795,7 +1794,7 @@ export function addCloudCommands(program: Command): void {
 				"omnibase cloud domains add '*.example.com' --env dev\n" +
 				"```",
 		)
-		.action(async (domain, cmdOptions) => {
+		.action(async (domain, _cmdOptions) => {
 			try {
 				const globalOptions = program.opts();
 				await domainAdd(globalOptions.env, domain);
@@ -1833,7 +1832,7 @@ export function addCloudCommands(program: Command): void {
 				"omnibase cloud domains rm dom_123 --env dev\n" +
 				"```",
 		)
-		.action(async (domainId, cmdOptions) => {
+		.action(async (domainId, _cmdOptions) => {
 			try {
 				const globalOptions = program.opts();
 				await domainRemove(globalOptions.env, domainId);
@@ -1914,7 +1913,7 @@ export function addCloudCommands(program: Command): void {
 				"omnibase cloud domains detach dom_123 --env dev\n" +
 				"```",
 		)
-		.action(async (domainId, cmdOptions) => {
+		.action(async (domainId, _cmdOptions) => {
 			try {
 				const globalOptions = program.opts();
 				await domainDetach(globalOptions.env, domainId);
@@ -2125,7 +2124,7 @@ export function addCloudCommands(program: Command): void {
 				"omnibase cloud env push --env staging\n" +
 				"```",
 		)
-		.action(async (cmdOptions) => {
+		.action(async (_cmdOptions) => {
 			try {
 				const globalOptions = program.opts();
 				await pushEnvConfig(globalOptions.env);

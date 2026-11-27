@@ -86,7 +86,7 @@ const DropdownMenuCheckboxItem = ({
 }: any) => {
 	return (
 		<DropdownMenuItem
-			onClick={(e) => {
+			onClick={(_e) => {
 				onCheckedChange(!checked);
 			}}
 			{...props}
@@ -334,7 +334,7 @@ export function TableViewer({
 
 	const [createOpen, setCreateOpen] = useState(false);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [showRLS, setShowRLS] = useState(true);
+	const [_showRLS, _setShowRLS] = useState(true);
 
 	const inFlightRef = useRef<string | null>(null);
 

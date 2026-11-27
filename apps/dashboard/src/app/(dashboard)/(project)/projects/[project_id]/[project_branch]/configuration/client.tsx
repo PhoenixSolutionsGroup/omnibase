@@ -102,7 +102,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 			} else {
 				toast.success("OmniBase environment variables copied to clipboard");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy environment variables");
 		} finally {
 			setCopyingEnv(false);
@@ -193,7 +193,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 			} else {
 				toast.success("All environment variables copied to clipboard");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy environment variables");
 		} finally {
 			setCopyingEnv(false);
@@ -255,7 +255,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					result = await fetchProjectSecretKey(project.id);
 					if (result?.success && result.serviceKey) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.serviceKey!),
+							new Map(prev).set(key, result?.serviceKey!),
 						);
 					}
 					break;
@@ -263,7 +263,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					result = await fetchPostgrestServiceKey(project.id);
 					if (result?.success && result.serviceKey) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.serviceKey!),
+							new Map(prev).set(key, result?.serviceKey!),
 						);
 					}
 					break;
@@ -271,7 +271,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					result = await fetchDatabasePassword(project.id);
 					if (result?.success && result.password) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.password!),
+							new Map(prev).set(key, result?.password!),
 						);
 					}
 					break;
@@ -279,7 +279,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					result = await fetchDatabaseConnectionString(project.id);
 					if (result?.success && result.connectionString) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.connectionString!),
+							new Map(prev).set(key, result?.connectionString!),
 						);
 					}
 					break;
@@ -287,23 +287,23 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					result = await fetchStorageCredentials(project.id);
 					if (result?.success && result.secretKey) {
 						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result!.secretKey!),
+							new Map(prev).set(key, result?.secretKey!),
 						);
 					}
 					break;
 			}
 
-			if (result && result.success) {
+			if (result?.success) {
 				setRevealedSecrets((prev) => {
 					const newSet = new Set(prev);
 					newSet.add(key);
 					return newSet;
 				});
-			} else if (result && result.error) {
+			} else if (result?.error) {
 				setErrors((prev) => new Map(prev).set(key, result.error!));
 				toast.error(result.error);
 			}
-		} catch (error) {
+		} catch (_error) {
 			const errorMessage = "Failed to decrypt secret";
 			setErrors((prev) => new Map(prev).set(key, errorMessage));
 			toast.error(errorMessage);

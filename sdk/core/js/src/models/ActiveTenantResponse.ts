@@ -44,14 +44,13 @@ export function ActiveTenantResponseFromJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseFromJSONTyped(
 	json: any,
-	ignoreDiscriminator: boolean,
+	_ignoreDiscriminator: boolean,
 ): ActiveTenantResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		tenant:
-			json["tenant"] == null ? undefined : AuthTenantFromJSON(json["tenant"]),
+		tenant: json.tenant == null ? undefined : AuthTenantFromJSON(json.tenant),
 	};
 }
 
@@ -61,13 +60,13 @@ export function ActiveTenantResponseToJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseToJSONTyped(
 	value?: ActiveTenantResponse | null,
-	ignoreDiscriminator: boolean = false,
+	_ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		tenant: AuthTenantToJSON(value["tenant"]),
+		tenant: AuthTenantToJSON(value.tenant),
 	};
 }
