@@ -11,6 +11,72 @@ description: "Latest: v0.21.0. Release notes for every API version, newest first
 
 All API releases are listed below, newest first. Each version links to its docs, or to its GitHub release when the docs for that version are no longer published. See the [changelog for every package](/changelog).
 
+## v0.22.2
+
+[GitHub release](https://github.com/PhoenixSolutionsGroup/omnibase/releases/tag/api-v0.22.2) · 2026-11-19 · [Compare changes](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.1...api-v0.22.2)
+
+**Bug Fixes**
+
+* **docs:** correct services directory in docs [7f83b9a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7f83b9a2dc971060d937936c3b51b6a781c39e01)
+
+## v0.22.1
+
+[GitHub release](https://github.com/PhoenixSolutionsGroup/omnibase/releases/tag/api-v0.22.1) · 2026-11-19 · [Compare changes](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.0...api-v0.22.1)
+
+**Bug Fixes**
+
+* **api:** correct required go version in readme [62c66e6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/62c66e64b303888b32545b6b27d8032fda4268e5)
+
+## v0.22.0
+
+[GitHub release](https://github.com/PhoenixSolutionsGroup/omnibase/releases/tag/api-v0.22.0) · 2026-11-19 · [Compare changes](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.21.0...api-v0.22.0)
+
+**Bug Fixes**
+
+* **api:** add idempotency key to meter usage events [04a095f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/04a095fe1624992f8956735d180b9fd031516e52)
+* **api:** cancel subscriptions when deleting a tenant [d1bc853](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d1bc8531cb5f8e7e9f8388e0436eda00a44a690f)
+* **api:** correct platform fee amounts and invoice fee errors [3522f2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3522f2d2d8816871088fa187d79522da2d3b1332)
+* **api:** count all payment method types in billing status [d3f679f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d3f679f81f2bd65c43f8b0ae6555f1392708fc05)
+* **api:** pass Connect account and remove only the matching subscription item [c5a817d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c5a817da72c529937778551b2e880567003cde1c)
+* **api:** require idempotency key and block duplicate subscriptions [7bd793c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7bd793c7219d9d8c51c775ad0eeed1c0a3e04bab)
+* **api:** restrict checkout to accessible price configs [ea61665](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ea61665ced33596be5b3e9043b73a176db58ebbf)
+* **api:** set checkout customer creation only in payment mode [4d16d0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4d16d0e8e4a98cd61d94a33710243e19c379f428)
+* **api:** use meter payload keys for usage events [9d594fd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d594fde78f3f8df9cb9755e0b133979fe14d55d)
+* **billing:** verify Stripe price lookup matches config ID [4cdc723](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4cdc723b1c967ca701653fcf580f12a88f661b30)
+* **docs:** harden versioning and document API error responses [43957a0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/43957a00915cb71566b42aa6e3a0992fb84b53ff)
+* **payments:** resolve stripe customer id from middleware [742b807](https://github.com/PhoenixSolutionsGroup/omnibase/commit/742b8072252c75e343be75aa1809330ba75df3b9)
+* reconcile managed stripe webhooks atomically and prune stale endpoints [a7bfd34](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a7bfd34758131cbf86df74fadf796ff2204d2c99)
+* restrict invite roles and URLs to prevent owner escalation [e74d7e5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e74d7e5db0ccb7af4fd725747fc01522cf064864)
+* send branch id when registering managed webhooks [cebd9b2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cebd9b2dbba86f92650573bb4906927385cb9cd4)
+* **stripe-config:** clear default price before archiving [3669187](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3669187058df070337791487e5010ca9f634a182)
+* **stripe-config:** compare status against complete Stripe state [ffbbe8f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ffbbe8f3ab054eba35d0cb0ff56a895696dc44bb)
+* **stripe-config:** expand coupon applies_to and list inactive promos [7aec907](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7aec90730538c2b6df5bd4c8410a8abc85474b7d)
+* **stripe-config:** only reactivate archived prices that match desired config [31e7934](https://github.com/PhoenixSolutionsGroup/omnibase/commit/31e79344c8e62f51cfe81a5cb0e3e4a9f3104b3b)
+* **stripe-config:** only reactivate archived prices that match desired config ([#127](https://github.com/PhoenixSolutionsGroup/omnibase/issues/127)) [8fd3383](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8fd338338b9e5e5af5cbef2e6bf5feff85147a08)
+* **stripe-config:** prefer active promotion code when config IDs collide [3d25fd0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3d25fd0d1b977c724b3eb6a83bb604fe5eae562d)
+* **stripe-config:** preserve decimal amounts when pulling [1220c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1220c3e06c3d4eea59fb3ace14dcee65732bfab4)
+* **stripe-config:** reconcile against active Stripe state [bb0240a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb0240a195add2fdc71334f60648c7c160c484fe)
+* **stripe-config:** recreate metered prices when their meter is recreated [bb8bff0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb8bff0447983c637e70c6c9f88b778b92a32a98)
+* **stripe:** require backend key for convert endpoint and scope to connected account [2ffe550](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ffe55067007c7387a98051c9af0ae929957fb88)
+* **stripe:** require backend key for convert endpoint and scope to connected account ([#128](https://github.com/PhoenixSolutionsGroup/omnibase/issues/128)) [fab00e9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fab00e9aab3e602e7ffed645ef42cca55c8e0568)
+
+**Features**
+
+* **api:** add tenant, system, and email history schema [b3bab23](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b3bab239bab383d697a39c07fcccb7e86d1a7c09)
+* **api:** validate required config at startup [cfcd89f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cfcd89f55ca8a8a4aae978980138608e3655b90f)
+* **cli:** pin service versions in omnibase init and drop docker-compose sync [985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
+* **email:** record delivery history and rate limit sends per tenant [e894528](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e894528e1404d8d6451861943787865f4130b221)
+* **email:** scope templates to tenants and split system/send endpoints [ca5c762](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ca5c7622b721af6a2932bdcfc2c6a97900488429)
+* **permissions:** add email send and template management permissions [2f2cd52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2f2cd528291ed4e61f0cd71a10230e40ec65e962)
+* **permissions:** API owns required namespaces and validates projects [1e94d44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1e94d44e4c1837ffb2e1043594e65df1f05fd192)
+* proxy PostgREST through the API and remove client-held PostgREST tokens [49d317f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/49d317f00f94a78ac71e719c08ee8f76622e8553)
+* **stripe-config:** add drift status endpoint [8469a31](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8469a31ef4aa6c6d4779942d357c5e35cef2755e)
+* **stripe-config:** pull config identities from Stripe tags [419d89e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/419d89e79dc8cdbcdfd8d17b0dd21b9daee836fa)
+* **stripe-config:** reconcile managed resources against live Stripe [8cfcc16](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8cfcc16d4d86968c8c69393af40a65789d97ba73)
+* **stripe-config:** scope archive-all to managed resources [1367403](https://github.com/PhoenixSolutionsGroup/omnibase/commit/136740362813e551bfdc90902db2671951f84541)
+* **stripe-config:** tag managed Stripe objects with config identity [f41d24c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f41d24c778e4446dc34add9ed3ed4e76200aab69)
+* support metadata on stripe products and prices [f4cf420](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f4cf420869cdb78411fe384d9c9bc473a22880d1)
+
 ## v0.21.0
 
 [Docs](/api/0.21.0) · 2026-10-29 · [Compare changes](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.5...api-v0.21.0)
