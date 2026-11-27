@@ -34,7 +34,9 @@ function setPackageParam(id: string | null) {
 	if (id) url.searchParams.set("package", id);
 	else url.searchParams.delete("package");
 	window.history.replaceState(null, "", url);
-	listeners.forEach((listener) => listener());
+	for (const listener of listeners) {
+		listener();
+	}
 }
 
 export function ChangelogFilter({
@@ -54,10 +56,9 @@ export function ChangelogFilter({
 
 	return (
 		<ActivePackage.Provider value={active}>
-			<div
-				role="group"
+			<fieldset
 				aria-label="Filter by package"
-				className="not-prose mb-8 flex flex-wrap gap-2"
+				className="not-prose mb-8 flex min-w-0 flex-wrap gap-2"
 			>
 				{options.map((option) => (
 					<button
@@ -70,7 +71,7 @@ export function ChangelogFilter({
 						{option.title}
 					</button>
 				))}
-			</div>
+			</fieldset>
 			{children}
 		</ActivePackage.Provider>
 	);

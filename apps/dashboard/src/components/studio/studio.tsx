@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Database } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
@@ -64,13 +64,13 @@ export default function Studio({ project }: StudioProps) {
 					<div className="w-64 border-r bg-muted/10 p-3 space-y-4">
 						<Skeleton className="h-4 w-20" />
 						<div className="space-y-2">
-							{[...Array(6)].map((_, i) => (
+							{[1, 2, 3, 4, 5, 6].map((i) => (
 								<Skeleton key={i} className="h-8 w-full" />
 							))}
 						</div>
 						<Skeleton className="h-4 w-16 mt-4" />
 						<div className="space-y-2">
-							{[...Array(3)].map((_, i) => (
+							{[1, 2, 3].map((i) => (
 								<Skeleton key={i} className="h-8 w-full" />
 							))}
 						</div>
@@ -100,7 +100,7 @@ export default function Studio({ project }: StudioProps) {
 								<Skeleton className="h-4 w-24" />
 							</div>
 							{/* Table rows skeleton */}
-							{[...Array(8)].map((_, i) => (
+							{[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
 								<div key={i} className="flex p-2 gap-4 border-b last:border-0">
 									<Skeleton className="h-4 w-8" />
 									<Skeleton className="h-4 w-24" />
@@ -169,7 +169,7 @@ export default function Studio({ project }: StudioProps) {
 					) : (
 						<div className="flex h-full items-center justify-center text-muted-foreground bg-muted/5">
 							<div className="text-center">
-								<DatabaseIcon className="h-12 w-12 mx-auto mb-2 opacity-20" />
+								<Database className="h-12 w-12 mx-auto mb-2 opacity-20" />
 								<p>Select a table to view data</p>
 							</div>
 						</div>
@@ -177,26 +177,5 @@ export default function Studio({ project }: StudioProps) {
 				</div>
 			</div>
 		</div>
-	);
-}
-
-function DatabaseIcon(props: any) {
-	return (
-		<svg
-			{...props}
-			xmlns="http://www.w3.org/2000/svg"
-			width="24"
-			height="24"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		>
-			<ellipse cx="12" cy="5" rx="9" ry="3" />
-			<path d="M3 5V19A9 3 0 0 0 21 19V5" />
-			<path d="M3 12A9 3 0 0 0 21 12" />
-		</svg>
 	);
 }

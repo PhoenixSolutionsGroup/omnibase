@@ -179,7 +179,7 @@ export function DeploymentClient({
 						</Alert>
 
 						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-							{[...Array(4)].map((_, i) => (
+							{[1, 2, 3, 4].map((i) => (
 								<Card key={i} className="flex flex-col p-4 rounded-lg">
 									<Skeleton className="h-4 w-20" />
 									<Skeleton className="h-8 w-24" />

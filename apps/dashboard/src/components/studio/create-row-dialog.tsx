@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { insertTableRow } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
@@ -69,6 +70,7 @@ export function CreateRowDialog({
 		<>
 			{open && (
 				<div
+					aria-hidden="true"
 					className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
 					onClick={() => onOpenChange(false)}
 				/>
@@ -89,21 +91,7 @@ export function CreateRowDialog({
 							onClick={() => onOpenChange(false)}
 						>
 							<span className="sr-only">Close</span>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								className="h-4 w-4"
-							>
-								<path d="M18 6 6 18" />
-								<path d="m6 6 12 12" />
-							</svg>
+							<X className="h-4 w-4" />
 						</Button>
 					</div>
 					<div

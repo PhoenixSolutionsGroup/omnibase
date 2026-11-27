@@ -155,9 +155,9 @@ export default function Logs({
 								</TableCell>
 							</TableRow>
 						) : (
-							logs.map((log, i) => (
+							logs.map((log) => (
 								<TableRow
-									key={`${log.timestamp}-${i}`}
+									key={`${log.timestamp}-${log.severity}`}
 									className={
 										log.severity.toUpperCase() === "CRITICAL"
 											? "bg-destructive/20 text-destructive"

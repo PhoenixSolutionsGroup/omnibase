@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	fetchRLSPolicies,
 	type RLSPolicy,
@@ -39,18 +39,7 @@ export function RLSViewer({
 	const [expanded, setExpanded] = useState(true);
 	const inFlightRef = useRef<string | null>(null);
 
-	useEffect(() => {
-		const key = `${schemaName}.${tableName}`;
-		if (inFlightRef.current === key) {
-			return;
-		}
-		inFlightRef.current = key;
-		fetchPolicies().finally(() => {
-			inFlightRef.current = null;
-		});
-	}, [tableName, schemaName, fetchPolicies]);
-
-	const fetchPolicies = async () => {
+	const fetchPolicies = useCallback(async () => {
 		setLoading(true);
 		setError(null);
 		try {
@@ -70,7 +59,18 @@ export function RLSViewer({
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [project.project_id, project.branch_name, tableName, schemaName]);
+
+	useEffect(() => {
+		const key = `${schemaName}.${tableName}`;
+		if (inFlightRef.current === key) {
+			return;
+		}
+		inFlightRef.current = key;
+		fetchPolicies().finally(() => {
+			inFlightRef.current = null;
+		});
+	}, [tableName, schemaName, fetchPolicies]);
 
 	if (!hasRlsPolicies && policies.length === 0 && !loading) {
 		return null;
@@ -95,7 +95,7 @@ export function RLSViewer({
 			<div
 				className={cn(
 					"overflow-hidden transition-all",
-					expanded ? "max-h-[400px]" : "max-h-0",
+					expanded ? "max-h-100" : "max-h-0",
 				)}
 			>
 				<div className="p-4 pt-0">
@@ -110,7 +110,7 @@ export function RLSViewer({
 							No policies found.
 						</div>
 					) : (
-						<div className="border rounded-md overflow-auto max-h-[300px]">
+						<div className="border rounded-md overflow-auto max-h-75">
 							<Table>
 								<TableHeader>
 									<TableRow>
@@ -122,9 +122,9 @@ export function RLSViewer({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{policies.map((p, i) => (
+									{policies.map((p) => (
 										<TableRow
-											key={i}
+											key={p.policyname}
 											data-testid={`rls-policy-${p.policyname}`}
 										>
 											<TableCell className="font-medium">

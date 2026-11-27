@@ -253,7 +253,7 @@ export default function TopQueries({ projectBranchId }: QueriesProps) {
 								];
 
 								return (
-									<React.Fragment key={`${query.query_id}-${index}`}>
+									<React.Fragment key={query.query_id}>
 										<TableRow
 											onClick={() => toggleRow(index)}
 											className="cursor-pointer"

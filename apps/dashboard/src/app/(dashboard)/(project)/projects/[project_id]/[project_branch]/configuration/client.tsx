@@ -254,41 +254,36 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 				case "service_key":
 					result = await fetchProjectSecretKey(project.id);
 					if (result?.success && result.serviceKey) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.serviceKey!),
-						);
+						const value = result.serviceKey;
+						setDecryptedValues((prev) => new Map(prev).set(key, value));
 					}
 					break;
 				case "postgrest_service_key":
 					result = await fetchPostgrestServiceKey(project.id);
 					if (result?.success && result.serviceKey) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.serviceKey!),
-						);
+						const value = result.serviceKey;
+						setDecryptedValues((prev) => new Map(prev).set(key, value));
 					}
 					break;
 				case "database_password":
 					result = await fetchDatabasePassword(project.id);
 					if (result?.success && result.password) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.password!),
-						);
+						const value = result.password;
+						setDecryptedValues((prev) => new Map(prev).set(key, value));
 					}
 					break;
 				case "connection_string":
 					result = await fetchDatabaseConnectionString(project.id);
 					if (result?.success && result.connectionString) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.connectionString!),
-						);
+						const value = result.connectionString;
+						setDecryptedValues((prev) => new Map(prev).set(key, value));
 					}
 					break;
 				case "storage_secret_key":
 					result = await fetchStorageCredentials(project.id);
 					if (result?.success && result.secretKey) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.secretKey!),
-						);
+						const value = result.secretKey;
+						setDecryptedValues((prev) => new Map(prev).set(key, value));
 					}
 					break;
 			}
@@ -300,8 +295,9 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 					return newSet;
 				});
 			} else if (result?.error) {
-				setErrors((prev) => new Map(prev).set(key, result.error!));
-				toast.error(result.error);
+				const message = result.error;
+				setErrors((prev) => new Map(prev).set(key, message));
+				toast.error(message);
 			}
 		} catch (_error) {
 			const errorMessage = "Failed to decrypt secret";

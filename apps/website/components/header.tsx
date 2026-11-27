@@ -166,9 +166,10 @@ export function Header() {
 
 							{/* Mobile Compare Dropdown */}
 							<div>
-								<button
+								<Button
 									onClick={() => setCompareOpen(!compareOpen)}
-									className="flex items-center justify-between w-full text-md font-medium text-muted-foreground transition-colors hover:text-foreground"
+									variant="ghost"
+									className="text-md font-medium text-muted-foreground transition-colors hover:text-foreground px-0!"
 								>
 									Compare
 									<ChevronDown
@@ -176,7 +177,7 @@ export function Header() {
 											compareOpen ? "rotate-180" : ""
 										}`}
 									/>
-								</button>
+								</Button>
 								{compareOpen && (
 									<div className="mt-2 ml-2 flex flex-col gap-2">
 										{compareItems.map((item) => (

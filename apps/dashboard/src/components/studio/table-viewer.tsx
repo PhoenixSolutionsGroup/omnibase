@@ -576,7 +576,7 @@ export function TableViewer({
 								data-testid="sticky-header"
 							>
 								<TableRow>
-									<TableHead className="w-[40px]">
+									<TableHead className="w-10">
 										<Checkbox
 											checked={
 												selectedRows.size === data.length && data.length > 0

@@ -48,6 +48,8 @@ function InputGroupAddon({
 	...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
 	return (
+		// biome-ignore lint/a11y/useKeyWithClickEvents: mouse-only convenience to focus the input; keyboard users tab to the input directly
+		// biome-ignore lint/a11y/useSemanticElements: fieldset adds default sizing/legend behavior; div with role="group" is intentional
 		<div
 			role="group"
 			data-slot="input-group-addon"

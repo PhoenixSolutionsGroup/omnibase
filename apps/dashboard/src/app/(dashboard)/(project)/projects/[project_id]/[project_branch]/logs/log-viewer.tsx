@@ -236,7 +236,7 @@ export function LogViewer({
 							</TableRow>
 						) : (
 							logs.map((log, index) => (
-								<React.Fragment key={index}>
+								<React.Fragment key={`${log.timestamp}-${log.severity}`}>
 									<TableRow>
 										<TableCell className="px-4 py-2">
 											<Button
