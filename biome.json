@@ -57,9 +57,7 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"sdk/core/**"
-			],
+			"includes": ["sdk/core/**"],
 			"linter": {
 				"enabled": false
 			},
