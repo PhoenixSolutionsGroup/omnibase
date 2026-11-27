@@ -26,8 +26,6 @@ type Price struct {
 	BillingScheme *string `json:"billing_scheme,omitempty"`
 	Currency string `json:"currency"`
 	Default *bool `json:"default,omitempty"`
-	EnterpriseId *string `json:"enterprise_id,omitempty"`
-	EnterpriseTemplate *string `json:"enterprise_template,omitempty"`
 	Id string `json:"id"`
 	Interval *string `json:"interval,omitempty"`
 	IntervalCount *int64 `json:"interval_count,omitempty"`
@@ -181,70 +179,6 @@ func (o *Price) HasDefault() bool {
 // SetDefault gets a reference to the given bool and assigns it to the Default field.
 func (o *Price) SetDefault(v bool) {
 	o.Default = &v
-}
-
-// GetEnterpriseId returns the EnterpriseId field value if set, zero value otherwise.
-func (o *Price) GetEnterpriseId() string {
-	if o == nil || IsNil(o.EnterpriseId) {
-		var ret string
-		return ret
-	}
-	return *o.EnterpriseId
-}
-
-// GetEnterpriseIdOk returns a tuple with the EnterpriseId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Price) GetEnterpriseIdOk() (*string, bool) {
-	if o == nil || IsNil(o.EnterpriseId) {
-		return nil, false
-	}
-	return o.EnterpriseId, true
-}
-
-// HasEnterpriseId returns a boolean if a field has been set.
-func (o *Price) HasEnterpriseId() bool {
-	if o != nil && !IsNil(o.EnterpriseId) {
-		return true
-	}
-
-	return false
-}
-
-// SetEnterpriseId gets a reference to the given string and assigns it to the EnterpriseId field.
-func (o *Price) SetEnterpriseId(v string) {
-	o.EnterpriseId = &v
-}
-
-// GetEnterpriseTemplate returns the EnterpriseTemplate field value if set, zero value otherwise.
-func (o *Price) GetEnterpriseTemplate() string {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		var ret string
-		return ret
-	}
-	return *o.EnterpriseTemplate
-}
-
-// GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Price) GetEnterpriseTemplateOk() (*string, bool) {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		return nil, false
-	}
-	return o.EnterpriseTemplate, true
-}
-
-// HasEnterpriseTemplate returns a boolean if a field has been set.
-func (o *Price) HasEnterpriseTemplate() bool {
-	if o != nil && !IsNil(o.EnterpriseTemplate) {
-		return true
-	}
-
-	return false
-}
-
-// SetEnterpriseTemplate gets a reference to the given string and assigns it to the EnterpriseTemplate field.
-func (o *Price) SetEnterpriseTemplate(v string) {
-	o.EnterpriseTemplate = &v
 }
 
 // GetId returns the Id field value
@@ -643,12 +577,6 @@ func (o Price) ToMap() (map[string]interface{}, error) {
 	toSerialize["currency"] = o.Currency
 	if !IsNil(o.Default) {
 		toSerialize["default"] = o.Default
-	}
-	if !IsNil(o.EnterpriseId) {
-		toSerialize["enterprise_id"] = o.EnterpriseId
-	}
-	if !IsNil(o.EnterpriseTemplate) {
-		toSerialize["enterprise_template"] = o.EnterpriseTemplate
 	}
 	toSerialize["id"] = o.Id
 	if !IsNil(o.Interval) {

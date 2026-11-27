@@ -43,8 +43,6 @@ function TenantPayloadFromJSONTyped(json, ignoreDiscriminator) {
     }
     return {
         'createdAt': (new Date(json['created_at'])),
-        'enterpriseId': json['enterprise_id'] == null ? undefined : json['enterprise_id'],
-        'enterpriseTemplate': json['enterprise_template'] == null ? undefined : json['enterprise_template'],
         'id': json['id'],
         'name': json['name'],
         'stripeCustomerId': json['stripe_customer_id'] == null ? undefined : json['stripe_customer_id'],
@@ -61,8 +59,6 @@ function TenantPayloadToJSONTyped(value, ignoreDiscriminator = false) {
     }
     return {
         'created_at': value['createdAt'].toISOString(),
-        'enterprise_id': value['enterpriseId'],
-        'enterprise_template': value['enterpriseTemplate'],
         'id': value['id'],
         'name': value['name'],
         'stripe_customer_id': value['stripeCustomerId'],

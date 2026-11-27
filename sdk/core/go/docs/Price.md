@@ -8,8 +8,6 @@ Name | Type | Description | Notes
 **BillingScheme** | Pointer to **string** |  | [optional] 
 **Currency** | **string** |  | 
 **Default** | Pointer to **bool** |  | [optional] 
-**EnterpriseId** | Pointer to **string** |  | [optional] 
-**EnterpriseTemplate** | Pointer to **string** |  | [optional] 
 **Id** | **string** |  | 
 **Interval** | Pointer to **string** |  | [optional] 
 **IntervalCount** | Pointer to **int64** |  | [optional] 
@@ -136,56 +134,6 @@ SetDefault sets Default field to given value.
 `func (o *Price) HasDefault() bool`
 
 HasDefault returns a boolean if a field has been set.
-
-### GetEnterpriseId
-
-`func (o *Price) GetEnterpriseId() string`
-
-GetEnterpriseId returns the EnterpriseId field if non-nil, zero value otherwise.
-
-### GetEnterpriseIdOk
-
-`func (o *Price) GetEnterpriseIdOk() (*string, bool)`
-
-GetEnterpriseIdOk returns a tuple with the EnterpriseId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseId
-
-`func (o *Price) SetEnterpriseId(v string)`
-
-SetEnterpriseId sets EnterpriseId field to given value.
-
-### HasEnterpriseId
-
-`func (o *Price) HasEnterpriseId() bool`
-
-HasEnterpriseId returns a boolean if a field has been set.
-
-### GetEnterpriseTemplate
-
-`func (o *Price) GetEnterpriseTemplate() string`
-
-GetEnterpriseTemplate returns the EnterpriseTemplate field if non-nil, zero value otherwise.
-
-### GetEnterpriseTemplateOk
-
-`func (o *Price) GetEnterpriseTemplateOk() (*string, bool)`
-
-GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseTemplate
-
-`func (o *Price) SetEnterpriseTemplate(v string)`
-
-SetEnterpriseTemplate sets EnterpriseTemplate field to given value.
-
-### HasEnterpriseTemplate
-
-`func (o *Price) HasEnterpriseTemplate() bool`
-
-HasEnterpriseTemplate returns a boolean if a field has been set.
 
 ### GetId
 

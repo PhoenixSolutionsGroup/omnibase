@@ -5,13 +5,13 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **IsActive** | **bool** |  | 
-**Tenant** | [**GetTenantByIDRow**](GetTenantByIDRow.md) |  | 
+**Tenant** | [**AuthTenant**](AuthTenant.md) |  | 
 
 ## Methods
 
 ### NewUserTenantListItem
 
-`func NewUserTenantListItem(isActive bool, tenant GetTenantByIDRow, ) *UserTenantListItem`
+`func NewUserTenantListItem(isActive bool, tenant AuthTenant, ) *UserTenantListItem`
 
 NewUserTenantListItem instantiates a new UserTenantListItem object
 This constructor will assign default values to properties that have it defined,
@@ -48,20 +48,20 @@ SetIsActive sets IsActive field to given value.
 
 ### GetTenant
 
-`func (o *UserTenantListItem) GetTenant() GetTenantByIDRow`
+`func (o *UserTenantListItem) GetTenant() AuthTenant`
 
 GetTenant returns the Tenant field if non-nil, zero value otherwise.
 
 ### GetTenantOk
 
-`func (o *UserTenantListItem) GetTenantOk() (*GetTenantByIDRow, bool)`
+`func (o *UserTenantListItem) GetTenantOk() (*AuthTenant, bool)`
 
 GetTenantOk returns a tuple with the Tenant field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTenant
 
-`func (o *UserTenantListItem) SetTenant(v GetTenantByIDRow)`
+`func (o *UserTenantListItem) SetTenant(v AuthTenant)`
 
 SetTenant sets Tenant field to given value.
 

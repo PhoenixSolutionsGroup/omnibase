@@ -10,8 +10,6 @@ Name | Type
 `billingScheme` | string
 `currency` | string
 `_default` | boolean
-`enterpriseId` | string
-`enterpriseTemplate` | string
 `id` | string
 `interval` | string
 `intervalCount` | number
@@ -36,8 +34,6 @@ const example = {
   "billingScheme": null,
   "currency": null,
   "_default": null,
-  "enterpriseId": null,
-  "enterpriseTemplate": null,
   "id": null,
   "interval": null,
   "intervalCount": null,

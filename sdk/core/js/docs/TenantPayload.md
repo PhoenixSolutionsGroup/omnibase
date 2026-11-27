@@ -7,8 +7,6 @@
 Name | Type
 ------------ | -------------
 `createdAt` | Date
-`enterpriseId` | string
-`enterpriseTemplate` | string
 `id` | string
 `name` | string
 `stripeCustomerId` | string
@@ -23,8 +21,6 @@ import type { TenantPayload } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "createdAt": null,
-  "enterpriseId": null,
-  "enterpriseTemplate": null,
   "id": null,
   "name": null,
   "stripeCustomerId": null,

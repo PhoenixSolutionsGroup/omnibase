@@ -63,18 +63,6 @@ export interface PriceWithStripeID {
      * @type {string}
      * @memberof PriceWithStripeID
      */
-    enterpriseId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceWithStripeID
-     */
-    enterpriseTemplate?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceWithStripeID
-     */
     id: string;
     /**
      * 
@@ -167,8 +155,6 @@ export function PriceWithStripeIDFromJSONTyped(json: any, ignoreDiscriminator: b
         'billingScheme': json['billing_scheme'] == null ? undefined : json['billing_scheme'],
         'currency': json['currency'],
         '_default': json['default'] == null ? undefined : json['default'],
-        'enterpriseId': json['enterprise_id'] == null ? undefined : json['enterprise_id'],
-        'enterpriseTemplate': json['enterprise_template'] == null ? undefined : json['enterprise_template'],
         'id': json['id'],
         'interval': json['interval'] == null ? undefined : json['interval'],
         'intervalCount': json['interval_count'] == null ? undefined : json['interval_count'],
@@ -199,8 +185,6 @@ export function PriceWithStripeIDToJSONTyped(value?: PriceWithStripeID | null, i
         'billing_scheme': value['billingScheme'],
         'currency': value['currency'],
         'default': value['_default'],
-        'enterprise_id': value['enterpriseId'],
-        'enterprise_template': value['enterpriseTemplate'],
         'id': value['id'],
         'interval': value['interval'],
         'interval_count': value['intervalCount'],

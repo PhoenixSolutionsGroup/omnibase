@@ -46,18 +46,6 @@ export interface PriceWithStripeID {
      * @type {string}
      * @memberof PriceWithStripeID
      */
-    enterpriseId?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof PriceWithStripeID
-     */
-    enterpriseTemplate?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof PriceWithStripeID
-     */
     id: string;
     /**
      *

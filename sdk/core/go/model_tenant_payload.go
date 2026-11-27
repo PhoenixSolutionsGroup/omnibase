@@ -24,8 +24,6 @@ var _ MappedNullable = &TenantPayload{}
 // TenantPayload struct for TenantPayload
 type TenantPayload struct {
 	CreatedAt time.Time `json:"created_at"`
-	EnterpriseId *string `json:"enterprise_id,omitempty"`
-	EnterpriseTemplate *string `json:"enterprise_template,omitempty"`
 	Id string `json:"id"`
 	Name string `json:"name"`
 	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
@@ -79,70 +77,6 @@ func (o *TenantPayload) GetCreatedAtOk() (*time.Time, bool) {
 // SetCreatedAt sets field value
 func (o *TenantPayload) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
-}
-
-// GetEnterpriseId returns the EnterpriseId field value if set, zero value otherwise.
-func (o *TenantPayload) GetEnterpriseId() string {
-	if o == nil || IsNil(o.EnterpriseId) {
-		var ret string
-		return ret
-	}
-	return *o.EnterpriseId
-}
-
-// GetEnterpriseIdOk returns a tuple with the EnterpriseId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TenantPayload) GetEnterpriseIdOk() (*string, bool) {
-	if o == nil || IsNil(o.EnterpriseId) {
-		return nil, false
-	}
-	return o.EnterpriseId, true
-}
-
-// HasEnterpriseId returns a boolean if a field has been set.
-func (o *TenantPayload) HasEnterpriseId() bool {
-	if o != nil && !IsNil(o.EnterpriseId) {
-		return true
-	}
-
-	return false
-}
-
-// SetEnterpriseId gets a reference to the given string and assigns it to the EnterpriseId field.
-func (o *TenantPayload) SetEnterpriseId(v string) {
-	o.EnterpriseId = &v
-}
-
-// GetEnterpriseTemplate returns the EnterpriseTemplate field value if set, zero value otherwise.
-func (o *TenantPayload) GetEnterpriseTemplate() string {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		var ret string
-		return ret
-	}
-	return *o.EnterpriseTemplate
-}
-
-// GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TenantPayload) GetEnterpriseTemplateOk() (*string, bool) {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		return nil, false
-	}
-	return o.EnterpriseTemplate, true
-}
-
-// HasEnterpriseTemplate returns a boolean if a field has been set.
-func (o *TenantPayload) HasEnterpriseTemplate() bool {
-	if o != nil && !IsNil(o.EnterpriseTemplate) {
-		return true
-	}
-
-	return false
-}
-
-// SetEnterpriseTemplate gets a reference to the given string and assigns it to the EnterpriseTemplate field.
-func (o *TenantPayload) SetEnterpriseTemplate(v string) {
-	o.EnterpriseTemplate = &v
 }
 
 // GetId returns the Id field value
@@ -284,12 +218,6 @@ func (o TenantPayload) MarshalJSON() ([]byte, error) {
 func (o TenantPayload) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["created_at"] = o.CreatedAt
-	if !IsNil(o.EnterpriseId) {
-		toSerialize["enterprise_id"] = o.EnterpriseId
-	}
-	if !IsNil(o.EnterpriseTemplate) {
-		toSerialize["enterprise_template"] = o.EnterpriseTemplate
-	}
 	toSerialize["id"] = o.Id
 	toSerialize["name"] = o.Name
 	if !IsNil(o.StripeCustomerId) {

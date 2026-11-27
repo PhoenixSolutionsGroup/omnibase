@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 /**
  *
  * @export
@@ -18,10 +18,10 @@ import type { GetTenantByIDRow } from './GetTenantByIDRow';
 export interface ActiveTenantResponse {
     /**
      *
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof ActiveTenantResponse
      */
-    tenant?: GetTenantByIDRow;
+    tenant?: AuthTenant;
 }
 /**
  * Check if a given object implements the ActiveTenantResponse interface.

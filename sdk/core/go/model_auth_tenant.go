@@ -18,14 +18,12 @@ import (
 	"fmt"
 )
 
-// checks if the GetTenantByIDRow type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &GetTenantByIDRow{}
+// checks if the AuthTenant type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AuthTenant{}
 
-// GetTenantByIDRow struct for GetTenantByIDRow
-type GetTenantByIDRow struct {
+// AuthTenant struct for AuthTenant
+type AuthTenant struct {
 	CreatedAt time.Time `json:"created_at"`
-	EnterpriseId NullableString `json:"enterprise_id"`
-	EnterpriseTemplate NullableString `json:"enterprise_template"`
 	Id string `json:"id"`
 	Name string `json:"name"`
 	StripeCustomerId NullableString `json:"stripe_customer_id"`
@@ -33,17 +31,15 @@ type GetTenantByIDRow struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type _GetTenantByIDRow GetTenantByIDRow
+type _AuthTenant AuthTenant
 
-// NewGetTenantByIDRow instantiates a new GetTenantByIDRow object
+// NewAuthTenant instantiates a new AuthTenant object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetTenantByIDRow(createdAt time.Time, enterpriseId NullableString, enterpriseTemplate NullableString, id string, name string, stripeCustomerId NullableString, type_ string, updatedAt time.Time) *GetTenantByIDRow {
-	this := GetTenantByIDRow{}
+func NewAuthTenant(createdAt time.Time, id string, name string, stripeCustomerId NullableString, type_ string, updatedAt time.Time) *AuthTenant {
+	this := AuthTenant{}
 	this.CreatedAt = createdAt
-	this.EnterpriseId = enterpriseId
-	this.EnterpriseTemplate = enterpriseTemplate
 	this.Id = id
 	this.Name = name
 	this.StripeCustomerId = stripeCustomerId
@@ -52,16 +48,16 @@ func NewGetTenantByIDRow(createdAt time.Time, enterpriseId NullableString, enter
 	return &this
 }
 
-// NewGetTenantByIDRowWithDefaults instantiates a new GetTenantByIDRow object
+// NewAuthTenantWithDefaults instantiates a new AuthTenant object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewGetTenantByIDRowWithDefaults() *GetTenantByIDRow {
-	this := GetTenantByIDRow{}
+func NewAuthTenantWithDefaults() *AuthTenant {
+	this := AuthTenant{}
 	return &this
 }
 
 // GetCreatedAt returns the CreatedAt field value
-func (o *GetTenantByIDRow) GetCreatedAt() time.Time {
+func (o *AuthTenant) GetCreatedAt() time.Time {
 	if o == nil {
 		var ret time.Time
 		return ret
@@ -72,7 +68,7 @@ func (o *GetTenantByIDRow) GetCreatedAt() time.Time {
 
 // GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantByIDRow) GetCreatedAtOk() (*time.Time, bool) {
+func (o *AuthTenant) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -80,64 +76,12 @@ func (o *GetTenantByIDRow) GetCreatedAtOk() (*time.Time, bool) {
 }
 
 // SetCreatedAt sets field value
-func (o *GetTenantByIDRow) SetCreatedAt(v time.Time) {
+func (o *AuthTenant) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
 }
 
-// GetEnterpriseId returns the EnterpriseId field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *GetTenantByIDRow) GetEnterpriseId() string {
-	if o == nil || o.EnterpriseId.Get() == nil {
-		var ret string
-		return ret
-	}
-
-	return *o.EnterpriseId.Get()
-}
-
-// GetEnterpriseIdOk returns a tuple with the EnterpriseId field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *GetTenantByIDRow) GetEnterpriseIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.EnterpriseId.Get(), o.EnterpriseId.IsSet()
-}
-
-// SetEnterpriseId sets field value
-func (o *GetTenantByIDRow) SetEnterpriseId(v string) {
-	o.EnterpriseId.Set(&v)
-}
-
-// GetEnterpriseTemplate returns the EnterpriseTemplate field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *GetTenantByIDRow) GetEnterpriseTemplate() string {
-	if o == nil || o.EnterpriseTemplate.Get() == nil {
-		var ret string
-		return ret
-	}
-
-	return *o.EnterpriseTemplate.Get()
-}
-
-// GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *GetTenantByIDRow) GetEnterpriseTemplateOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.EnterpriseTemplate.Get(), o.EnterpriseTemplate.IsSet()
-}
-
-// SetEnterpriseTemplate sets field value
-func (o *GetTenantByIDRow) SetEnterpriseTemplate(v string) {
-	o.EnterpriseTemplate.Set(&v)
-}
-
 // GetId returns the Id field value
-func (o *GetTenantByIDRow) GetId() string {
+func (o *AuthTenant) GetId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -148,7 +92,7 @@ func (o *GetTenantByIDRow) GetId() string {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantByIDRow) GetIdOk() (*string, bool) {
+func (o *AuthTenant) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -156,12 +100,12 @@ func (o *GetTenantByIDRow) GetIdOk() (*string, bool) {
 }
 
 // SetId sets field value
-func (o *GetTenantByIDRow) SetId(v string) {
+func (o *AuthTenant) SetId(v string) {
 	o.Id = v
 }
 
 // GetName returns the Name field value
-func (o *GetTenantByIDRow) GetName() string {
+func (o *AuthTenant) GetName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -172,7 +116,7 @@ func (o *GetTenantByIDRow) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantByIDRow) GetNameOk() (*string, bool) {
+func (o *AuthTenant) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -180,13 +124,13 @@ func (o *GetTenantByIDRow) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *GetTenantByIDRow) SetName(v string) {
+func (o *AuthTenant) SetName(v string) {
 	o.Name = v
 }
 
 // GetStripeCustomerId returns the StripeCustomerId field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *GetTenantByIDRow) GetStripeCustomerId() string {
+func (o *AuthTenant) GetStripeCustomerId() string {
 	if o == nil || o.StripeCustomerId.Get() == nil {
 		var ret string
 		return ret
@@ -198,7 +142,7 @@ func (o *GetTenantByIDRow) GetStripeCustomerId() string {
 // GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *GetTenantByIDRow) GetStripeCustomerIdOk() (*string, bool) {
+func (o *AuthTenant) GetStripeCustomerIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -206,12 +150,12 @@ func (o *GetTenantByIDRow) GetStripeCustomerIdOk() (*string, bool) {
 }
 
 // SetStripeCustomerId sets field value
-func (o *GetTenantByIDRow) SetStripeCustomerId(v string) {
+func (o *AuthTenant) SetStripeCustomerId(v string) {
 	o.StripeCustomerId.Set(&v)
 }
 
 // GetType returns the Type field value
-func (o *GetTenantByIDRow) GetType() string {
+func (o *AuthTenant) GetType() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -222,7 +166,7 @@ func (o *GetTenantByIDRow) GetType() string {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantByIDRow) GetTypeOk() (*string, bool) {
+func (o *AuthTenant) GetTypeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -230,12 +174,12 @@ func (o *GetTenantByIDRow) GetTypeOk() (*string, bool) {
 }
 
 // SetType sets field value
-func (o *GetTenantByIDRow) SetType(v string) {
+func (o *AuthTenant) SetType(v string) {
 	o.Type = v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
-func (o *GetTenantByIDRow) GetUpdatedAt() time.Time {
+func (o *AuthTenant) GetUpdatedAt() time.Time {
 	if o == nil {
 		var ret time.Time
 		return ret
@@ -246,7 +190,7 @@ func (o *GetTenantByIDRow) GetUpdatedAt() time.Time {
 
 // GetUpdatedAtOk returns a tuple with the UpdatedAt field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantByIDRow) GetUpdatedAtOk() (*time.Time, bool) {
+func (o *AuthTenant) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -254,11 +198,11 @@ func (o *GetTenantByIDRow) GetUpdatedAtOk() (*time.Time, bool) {
 }
 
 // SetUpdatedAt sets field value
-func (o *GetTenantByIDRow) SetUpdatedAt(v time.Time) {
+func (o *AuthTenant) SetUpdatedAt(v time.Time) {
 	o.UpdatedAt = v
 }
 
-func (o GetTenantByIDRow) MarshalJSON() ([]byte, error) {
+func (o AuthTenant) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -266,11 +210,9 @@ func (o GetTenantByIDRow) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o GetTenantByIDRow) ToMap() (map[string]interface{}, error) {
+func (o AuthTenant) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["created_at"] = o.CreatedAt
-	toSerialize["enterprise_id"] = o.EnterpriseId.Get()
-	toSerialize["enterprise_template"] = o.EnterpriseTemplate.Get()
 	toSerialize["id"] = o.Id
 	toSerialize["name"] = o.Name
 	toSerialize["stripe_customer_id"] = o.StripeCustomerId.Get()
@@ -279,14 +221,12 @@ func (o GetTenantByIDRow) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *GetTenantByIDRow) UnmarshalJSON(data []byte) (err error) {
+func (o *AuthTenant) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"created_at",
-		"enterprise_id",
-		"enterprise_template",
 		"id",
 		"name",
 		"stripe_customer_id",
@@ -308,53 +248,53 @@ func (o *GetTenantByIDRow) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varGetTenantByIDRow := _GetTenantByIDRow{}
+	varAuthTenant := _AuthTenant{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varGetTenantByIDRow)
+	err = decoder.Decode(&varAuthTenant)
 
 	if err != nil {
 		return err
 	}
 
-	*o = GetTenantByIDRow(varGetTenantByIDRow)
+	*o = AuthTenant(varAuthTenant)
 
 	return err
 }
 
-type NullableGetTenantByIDRow struct {
-	value *GetTenantByIDRow
+type NullableAuthTenant struct {
+	value *AuthTenant
 	isSet bool
 }
 
-func (v NullableGetTenantByIDRow) Get() *GetTenantByIDRow {
+func (v NullableAuthTenant) Get() *AuthTenant {
 	return v.value
 }
 
-func (v *NullableGetTenantByIDRow) Set(val *GetTenantByIDRow) {
+func (v *NullableAuthTenant) Set(val *AuthTenant) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableGetTenantByIDRow) IsSet() bool {
+func (v NullableAuthTenant) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableGetTenantByIDRow) Unset() {
+func (v *NullableAuthTenant) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableGetTenantByIDRow(val *GetTenantByIDRow) *NullableGetTenantByIDRow {
-	return &NullableGetTenantByIDRow{value: val, isSet: true}
+func NewNullableAuthTenant(val *AuthTenant) *NullableAuthTenant {
+	return &NullableAuthTenant{value: val, isSet: true}
 }
 
-func (v NullableGetTenantByIDRow) MarshalJSON() ([]byte, error) {
+func (v NullableAuthTenant) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableGetTenantByIDRow) UnmarshalJSON(src []byte) error {
+func (v *NullableAuthTenant) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

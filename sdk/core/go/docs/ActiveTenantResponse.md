@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Tenant** | Pointer to [**GetTenantByIDRow**](GetTenantByIDRow.md) |  | [optional] 
+**Tenant** | Pointer to [**AuthTenant**](AuthTenant.md) |  | [optional] 
 
 ## Methods
 
@@ -27,20 +27,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetTenant
 
-`func (o *ActiveTenantResponse) GetTenant() GetTenantByIDRow`
+`func (o *ActiveTenantResponse) GetTenant() AuthTenant`
 
 GetTenant returns the Tenant field if non-nil, zero value otherwise.
 
 ### GetTenantOk
 
-`func (o *ActiveTenantResponse) GetTenantOk() (*GetTenantByIDRow, bool)`
+`func (o *ActiveTenantResponse) GetTenantOk() (*AuthTenant, bool)`
 
 GetTenantOk returns a tuple with the Tenant field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTenant
 
-`func (o *ActiveTenantResponse) SetTenant(v GetTenantByIDRow)`
+`func (o *ActiveTenantResponse) SetTenant(v AuthTenant)`
 
 SetTenant sets Tenant field to given value.
 

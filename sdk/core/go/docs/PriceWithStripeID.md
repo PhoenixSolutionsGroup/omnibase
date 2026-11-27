@@ -8,8 +8,6 @@ Name | Type | Description | Notes
 **BillingScheme** | Pointer to **string** |  | [optional] 
 **Currency** | **string** |  | 
 **Default** | Pointer to **bool** |  | [optional] 
-**EnterpriseId** | Pointer to **string** |  | [optional] 
-**EnterpriseTemplate** | Pointer to **string** |  | [optional] 
 **Id** | **string** |  | 
 **Interval** | Pointer to **string** |  | [optional] 
 **IntervalCount** | Pointer to **int64** |  | [optional] 
@@ -136,56 +134,6 @@ SetDefault sets Default field to given value.
 `func (o *PriceWithStripeID) HasDefault() bool`
 
 HasDefault returns a boolean if a field has been set.
-
-### GetEnterpriseId
-
-`func (o *PriceWithStripeID) GetEnterpriseId() string`
-
-GetEnterpriseId returns the EnterpriseId field if non-nil, zero value otherwise.
-
-### GetEnterpriseIdOk
-
-`func (o *PriceWithStripeID) GetEnterpriseIdOk() (*string, bool)`
-
-GetEnterpriseIdOk returns a tuple with the EnterpriseId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseId
-
-`func (o *PriceWithStripeID) SetEnterpriseId(v string)`
-
-SetEnterpriseId sets EnterpriseId field to given value.
-
-### HasEnterpriseId
-
-`func (o *PriceWithStripeID) HasEnterpriseId() bool`
-
-HasEnterpriseId returns a boolean if a field has been set.
-
-### GetEnterpriseTemplate
-
-`func (o *PriceWithStripeID) GetEnterpriseTemplate() string`
-
-GetEnterpriseTemplate returns the EnterpriseTemplate field if non-nil, zero value otherwise.
-
-### GetEnterpriseTemplateOk
-
-`func (o *PriceWithStripeID) GetEnterpriseTemplateOk() (*string, bool)`
-
-GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseTemplate
-
-`func (o *PriceWithStripeID) SetEnterpriseTemplate(v string)`
-
-SetEnterpriseTemplate sets EnterpriseTemplate field to given value.
-
-### HasEnterpriseTemplate
-
-`func (o *PriceWithStripeID) HasEnterpriseTemplate() bool`
-
-HasEnterpriseTemplate returns a boolean if a field has been set.
 
 ### GetId
 

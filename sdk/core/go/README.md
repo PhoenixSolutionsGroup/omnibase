@@ -109,15 +109,6 @@ Class | Method | HTTP request | Description
 *V1DatabaseAPI* | [**GetDatabaseMigrationStatus**](docs/V1DatabaseAPI.md#getdatabasemigrationstatus) | **Get** /api/v1/database/migrations/status | Get the status of applied migrations
 *V1DatabaseAPI* | [**RollbackDatabaseMigrations**](docs/V1DatabaseAPI.md#rollbackdatabasemigrations) | **Post** /api/v1/database/migrations/down | Roll back database migrations
 *V1DatabaseAPI* | [**UploadDatabaseMigrations**](docs/V1DatabaseAPI.md#uploaddatabasemigrations) | **Post** /api/v1/database/migrations | Apply database migrations
-*V1PaymentsAPI* | [**AddInvoiceLineItem**](docs/V1PaymentsAPI.md#addinvoicelineitem) | **Post** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
-*V1PaymentsAPI* | [**AddInvoiceLineItemWithPriceId**](docs/V1PaymentsAPI.md#addinvoicelineitemwithpriceid) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
-*V1PaymentsAPI* | [**CreateCheckout**](docs/V1PaymentsAPI.md#createcheckout) | **Post** /api/v1/payments/checkout | Create a Stripe checkout session
-*V1PaymentsAPI* | [**CreateCustomerPortal**](docs/V1PaymentsAPI.md#createcustomerportal) | **Post** /api/v1/payments/portal | Create a Stripe customer portal session
-*V1PaymentsAPI* | [**CreateInvoice**](docs/V1PaymentsAPI.md#createinvoice) | **Post** /api/v1/payments/invoices | Create a Stripe invoice
-*V1PaymentsAPI* | [**FinalizeInvoice**](docs/V1PaymentsAPI.md#finalizeinvoice) | **Post** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
-*V1PaymentsAPI* | [**GetInvoice**](docs/V1PaymentsAPI.md#getinvoice) | **Get** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
-*V1PaymentsAPI* | [**RecordUsage**](docs/V1PaymentsAPI.md#recordusage) | **Post** /api/v1/payments/usage | Record a Stripe meter usage event
-*V1PaymentsAPI* | [**UpdateInvoice**](docs/V1PaymentsAPI.md#updateinvoice) | **Patch** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
 *V1PermissionsAPI* | [**CheckPermission**](docs/V1PermissionsAPI.md#checkpermission) | **Post** /api/v1/permissions/check | Check permission
 *V1PermissionsAPI* | [**CreateRelationship**](docs/V1PermissionsAPI.md#createrelationship) | **Post** /api/v1/permissions/relationships | Create relationship
 *V1PermissionsAPI* | [**DeleteRelationship**](docs/V1PermissionsAPI.md#deleterelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship
@@ -126,12 +117,7 @@ Class | Method | HTTP request | Description
 *V1StorageAPI* | [**GetStorageCredentials**](docs/V1StorageAPI.md#getstoragecredentials) | **Get** /api/v1/storage/credentials | Get temporary S3 credentials
 *V1StorageAPI* | [**MakeFilePublic**](docs/V1StorageAPI.md#makefilepublic) | **Post** /api/v1/storage/make-public | Make a file publicly accessible
 *V1StorageAPI* | [**UploadFile**](docs/V1StorageAPI.md#uploadfile) | **Post** /api/v1/storage/upload | Upload file to storage
-*V1StripeAPI* | [**ApplyEnterpriseCustom**](docs/V1StripeAPI.md#applyenterprisecustom) | **Post** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
-*V1StripeAPI* | [**ApplyEnterpriseTemplate**](docs/V1StripeAPI.md#applyenterprisetemplate) | **Post** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing
 *V1StripeAPI* | [**CalculatePriceCost**](docs/V1StripeAPI.md#calculatepricecost) | **Post** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
-*V1StripeAPI* | [**ConvertStripeIDToConfigID**](docs/V1StripeAPI.md#convertstripeidtoconfigid) | **Get** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
-*V1StripeAPI* | [**GetEnterprisePricesByID**](docs/V1StripeAPI.md#getenterprisepricesbyid) | **Get** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID
-*V1StripeAPI* | [**GetEnterprisePricesByTemplate**](docs/V1StripeAPI.md#getenterprisepricesbytemplate) | **Get** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template
 *V1StripeAPI* | [**GetMeterByID**](docs/V1StripeAPI.md#getmeterbyid) | **Get** /api/v1/stripe/config/meters/{meter_id} | Get meter by ID
 *V1StripeAPI* | [**GetPriceByID**](docs/V1StripeAPI.md#getpricebyid) | **Get** /api/v1/stripe/config/prices/{price_id} | Get price by ID
 *V1StripeAPI* | [**GetProductByID**](docs/V1StripeAPI.md#getproductbyid) | **Get** /api/v1/stripe/config/products/{product_id} | Get product by ID
@@ -150,11 +136,6 @@ Class | Method | HTTP request | Description
 *V1TenantsRolesAPI* | [**ListRoleDefinitions**](docs/V1TenantsRolesAPI.md#listroledefinitions) | **Get** /api/v1/tenants/roles/definitions | List role definitions
 *V1TenantsRolesAPI* | [**ListRoles**](docs/V1TenantsRolesAPI.md#listroles) | **Get** /api/v1/tenants/roles | List roles for the tenant
 *V1TenantsRolesAPI* | [**UpdateRole**](docs/V1TenantsRolesAPI.md#updaterole) | **Put** /api/v1/tenants/roles/{role_id} | Update a role
-*V1TenantsSubscriptionsAPI* | [**AddSubscription**](docs/V1TenantsSubscriptionsAPI.md#addsubscription) | **Post** /api/v1/tenants/subscriptions | Add a subscription to the tenant
-*V1TenantsSubscriptionsAPI* | [**GetTenantBillingStatus**](docs/V1TenantsSubscriptionsAPI.md#gettenantbillingstatus) | **Get** /api/v1/tenants/billing-status | Get tenant billing status
-*V1TenantsSubscriptionsAPI* | [**GetTenantSubscription**](docs/V1TenantsSubscriptionsAPI.md#gettenantsubscription) | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription
-*V1TenantsSubscriptionsAPI* | [**ListTenantSubscriptions**](docs/V1TenantsSubscriptionsAPI.md#listtenantsubscriptions) | **Get** /api/v1/tenants/subscriptions | List subscriptions for the tenant
-*V1TenantsSubscriptionsAPI* | [**RemoveSubscription**](docs/V1TenantsSubscriptionsAPI.md#removesubscription) | **Delete** /api/v1/tenants/subscriptions | Remove a subscription from the tenant
 *V1TenantsUsersAPI* | [**ListTenantUsers**](docs/V1TenantsUsersAPI.md#listtenantusers) | **Get** /api/v1/tenants/users | List users in the tenant
 *V1TenantsUsersAPI* | [**RemoveTenantUser**](docs/V1TenantsUsersAPI.md#removetenantuser) | **Delete** /api/v1/tenants/users | Remove a user from the tenant
 *V1TenantsUsersAPI* | [**UpdateTenantUserRole**](docs/V1TenantsUsersAPI.md#updatetenantuserrole) | **Put** /api/v1/tenants/users | Update a tenant user&#39;s role
@@ -165,18 +146,12 @@ Class | Method | HTTP request | Description
  - [AcceptRequest](docs/AcceptRequest.md)
  - [AcceptResponse](docs/AcceptResponse.md)
  - [ActiveTenantResponse](docs/ActiveTenantResponse.md)
- - [AddLineItemByPriceRequest](docs/AddLineItemByPriceRequest.md)
- - [AddLineItemRequest](docs/AddLineItemRequest.md)
- - [AddRequest](docs/AddRequest.md)
- - [AddResponse](docs/AddResponse.md)
  - [AppliedMigration](docs/AppliedMigration.md)
- - [ApplyEnterpriseCustomRequest](docs/ApplyEnterpriseCustomRequest.md)
- - [ApplyEnterpriseTemplateRequest](docs/ApplyEnterpriseTemplateRequest.md)
  - [ApplyMigrationsResponse](docs/ApplyMigrationsResponse.md)
  - [ArchiveAllInputBody](docs/ArchiveAllInputBody.md)
  - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
+ - [AuthTenant](docs/AuthTenant.md)
  - [AuthTenantInvite](docs/AuthTenantInvite.md)
- - [BillingStatusResponse](docs/BillingStatusResponse.md)
  - [CalculatePriceCostRequest](docs/CalculatePriceCostRequest.md)
  - [CalculatePriceCostResponse](docs/CalculatePriceCostResponse.md)
  - [CheckRequest](docs/CheckRequest.md)
@@ -189,16 +164,10 @@ Class | Method | HTTP request | Description
  - [ConfigStatus](docs/ConfigStatus.md)
  - [ConfigStatusEntry](docs/ConfigStatusEntry.md)
  - [ConfigStatusSummary](docs/ConfigStatusSummary.md)
- - [ConvertStripeIDResponse](docs/ConvertStripeIDResponse.md)
  - [Coupon](docs/Coupon.md)
  - [CouponChange](docs/CouponChange.md)
  - [CouponChanges](docs/CouponChanges.md)
  - [CouponWithStripeID](docs/CouponWithStripeID.md)
- - [CreateCheckoutRequest](docs/CreateCheckoutRequest.md)
- - [CreateCheckoutResponse](docs/CreateCheckoutResponse.md)
- - [CreateInvoiceRequest](docs/CreateInvoiceRequest.md)
- - [CreatePortalRequest](docs/CreatePortalRequest.md)
- - [CreatePortalResponse](docs/CreatePortalResponse.md)
  - [CreateRelationshipRequest](docs/CreateRelationshipRequest.md)
  - [CreateRelationshipResponse](docs/CreateRelationshipResponse.md)
  - [CreateRequest](docs/CreateRequest.md)
@@ -221,25 +190,17 @@ Class | Method | HTTP request | Description
  - [DownloadResponse](docs/DownloadResponse.md)
  - [EmailSystemTemplate](docs/EmailSystemTemplate.md)
  - [EmailTemplate](docs/EmailTemplate.md)
- - [EnterpriseApplyResponse](docs/EnterpriseApplyResponse.md)
- - [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
  - [ErrorDetail](docs/ErrorDetail.md)
  - [ErrorModel](docs/ErrorModel.md)
  - [File](docs/File.md)
- - [FinalizeRequest](docs/FinalizeRequest.md)
  - [FormFile](docs/FormFile.md)
  - [GetMeterResponse](docs/GetMeterResponse.md)
  - [GetPriceResponse](docs/GetPriceResponse.md)
  - [GetProductResponse](docs/GetProductResponse.md)
  - [GetStorageCredentialsResponse](docs/GetStorageCredentialsResponse.md)
- - [GetTenantByIDRow](docs/GetTenantByIDRow.md)
- - [GetTenantByStripeCustomerIDRow](docs/GetTenantByStripeCustomerIDRow.md)
  - [Identity](docs/Identity.md)
  - [IdentityCredentials](docs/IdentityCredentials.md)
  - [IdentityName](docs/IdentityName.md)
- - [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
- - [InvoiceResponse](docs/InvoiceResponse.md)
- - [LineItem](docs/LineItem.md)
  - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
  - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
  - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)
@@ -275,12 +236,9 @@ Class | Method | HTTP request | Description
  - [PromotionCodeChange](docs/PromotionCodeChange.md)
  - [PromotionCodeChanges](docs/PromotionCodeChanges.md)
  - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
- - [RecordUsageRequest](docs/RecordUsageRequest.md)
  - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
  - [RelationMetadata](docs/RelationMetadata.md)
  - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
- - [RemoveRequest](docs/RemoveRequest.md)
- - [RemoveResponse](docs/RemoveResponse.md)
  - [Requirements](docs/Requirements.md)
  - [SendHTMLRequest](docs/SendHTMLRequest.md)
  - [SendResponse](docs/SendResponse.md)
@@ -293,12 +251,10 @@ Class | Method | HTTP request | Description
  - [StripeConfiguration](docs/StripeConfiguration.md)
  - [StripeConfigurationWithIDs](docs/StripeConfigurationWithIDs.md)
  - [SubjectSetRequest](docs/SubjectSetRequest.md)
- - [SubscriptionResponse](docs/SubscriptionResponse.md)
  - [SwitchActiveRequest](docs/SwitchActiveRequest.md)
  - [SwitchActiveResponse](docs/SwitchActiveResponse.md)
  - [TenantPayload](docs/TenantPayload.md)
  - [Tier](docs/Tier.md)
- - [UpdateInvoiceRequest](docs/UpdateInvoiceRequest.md)
  - [UpdateRolePermissionsRow](docs/UpdateRolePermissionsRow.md)
  - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
  - [UpdateUserRoleRequest](docs/UpdateUserRoleRequest.md)

@@ -46,18 +46,6 @@ export interface Price {
      * @type {string}
      * @memberof Price
      */
-    enterpriseId?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof Price
-     */
-    enterpriseTemplate?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof Price
-     */
     id: string;
     /**
      *

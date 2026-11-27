@@ -22,30 +22,6 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test V1StripeAPIService ApplyEnterpriseCustom", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.ApplyEnterpriseCustom(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService ApplyEnterpriseTemplate", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.ApplyEnterpriseTemplate(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
 	t.Run("Test V1StripeAPIService CalculatePriceCost", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -53,48 +29,6 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 		var priceId string
 
 		resp, httpRes, err := apiClient.V1StripeAPI.CalculatePriceCost(context.Background(), priceId).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService ConvertStripeIDToConfigID", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		var stripeId string
-
-		resp, httpRes, err := apiClient.V1StripeAPI.ConvertStripeIDToConfigID(context.Background(), stripeId).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService GetEnterprisePricesByID", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		var enterpriseId string
-
-		resp, httpRes, err := apiClient.V1StripeAPI.GetEnterprisePricesByID(context.Background(), enterpriseId).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService GetEnterprisePricesByTemplate", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		var template string
-
-		resp, httpRes, err := apiClient.V1StripeAPI.GetEnterprisePricesByTemplate(context.Background(), template).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

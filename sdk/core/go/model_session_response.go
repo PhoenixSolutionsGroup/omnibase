@@ -24,7 +24,7 @@ var _ MappedNullable = &SessionResponse{}
 type SessionResponse struct {
 	Identity Identity `json:"identity"`
 	Session Session `json:"session"`
-	Tenant *GetTenantByIDRow `json:"tenant,omitempty"`
+	Tenant *AuthTenant `json:"tenant,omitempty"`
 }
 
 type _SessionResponse SessionResponse
@@ -97,9 +97,9 @@ func (o *SessionResponse) SetSession(v Session) {
 }
 
 // GetTenant returns the Tenant field value if set, zero value otherwise.
-func (o *SessionResponse) GetTenant() GetTenantByIDRow {
+func (o *SessionResponse) GetTenant() AuthTenant {
 	if o == nil || IsNil(o.Tenant) {
-		var ret GetTenantByIDRow
+		var ret AuthTenant
 		return ret
 	}
 	return *o.Tenant
@@ -107,7 +107,7 @@ func (o *SessionResponse) GetTenant() GetTenantByIDRow {
 
 // GetTenantOk returns a tuple with the Tenant field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SessionResponse) GetTenantOk() (*GetTenantByIDRow, bool) {
+func (o *SessionResponse) GetTenantOk() (*AuthTenant, bool) {
 	if o == nil || IsNil(o.Tenant) {
 		return nil, false
 	}
@@ -123,8 +123,8 @@ func (o *SessionResponse) HasTenant() bool {
 	return false
 }
 
-// SetTenant gets a reference to the given GetTenantByIDRow and assigns it to the Tenant field.
-func (o *SessionResponse) SetTenant(v GetTenantByIDRow) {
+// SetTenant gets a reference to the given AuthTenant and assigns it to the Tenant field.
+func (o *SessionResponse) SetTenant(v AuthTenant) {
 	o.Tenant = &v
 }
 

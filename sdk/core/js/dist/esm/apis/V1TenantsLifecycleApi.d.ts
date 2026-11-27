@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { CreateTenantRequest, CreateTenantResponse, DeleteTenantResponse, GetTenantByIDRow, GetTenantByStripeCustomerIDRow, SwitchActiveRequest, SwitchActiveResponse } from '../models/index';
+import type { AuthTenant, CreateTenantRequest, CreateTenantResponse, DeleteTenantResponse, SwitchActiveRequest, SwitchActiveResponse } from '../models/index';
 export interface CreateTenantOperationRequest {
     createTenantRequest: CreateTenantRequest;
 }
@@ -46,19 +46,19 @@ export declare class V1TenantsLifecycleApi extends runtime.BaseAPI {
     /**
      * Get tenant by ID
      */
-    getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByIDRow>>;
+    getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>>;
     /**
      * Get tenant by ID
      */
-    getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByIDRow>;
+    getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant>;
     /**
      * Get tenant by Stripe customer ID
      */
-    getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByStripeCustomerIDRow>>;
+    getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>>;
     /**
      * Get tenant by Stripe customer ID
      */
-    getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByStripeCustomerIDRow>;
+    getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant>;
     /**
      * Switch the active tenant
      */

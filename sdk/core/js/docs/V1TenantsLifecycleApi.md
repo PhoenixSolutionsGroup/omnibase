@@ -168,7 +168,7 @@ This endpoint does not need any parameter.
 
 ## getTenantByID
 
-> GetTenantByIDRow getTenantByID(tenantId)
+> AuthTenant getTenantByID(tenantId)
 
 Get tenant by ID
 
@@ -215,7 +215,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetTenantByIDRow**](GetTenantByIDRow.md)
+[**AuthTenant**](AuthTenant.md)
 
 ### Authorization
 
@@ -242,7 +242,7 @@ example().catch(console.error);
 
 ## getTenantByStripeCustomerID
 
-> GetTenantByStripeCustomerIDRow getTenantByStripeCustomerID(stripeCustomerId)
+> AuthTenant getTenantByStripeCustomerID(stripeCustomerId)
 
 Get tenant by Stripe customer ID
 
@@ -289,7 +289,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetTenantByStripeCustomerIDRow**](GetTenantByStripeCustomerIDRow.md)
+[**AuthTenant**](AuthTenant.md)
 
 ### Authorization
 

@@ -18,7 +18,7 @@ exports.ActiveTenantResponseFromJSON = ActiveTenantResponseFromJSON;
 exports.ActiveTenantResponseFromJSONTyped = ActiveTenantResponseFromJSONTyped;
 exports.ActiveTenantResponseToJSON = ActiveTenantResponseToJSON;
 exports.ActiveTenantResponseToJSONTyped = ActiveTenantResponseToJSONTyped;
-const GetTenantByIDRow_1 = require("./GetTenantByIDRow");
+const AuthTenant_1 = require("./AuthTenant");
 /**
  * Check if a given object implements the ActiveTenantResponse interface.
  */
@@ -33,7 +33,7 @@ function ActiveTenantResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'tenant': json['tenant'] == null ? undefined : (0, GetTenantByIDRow_1.GetTenantByIDRowFromJSON)(json['tenant']),
+        'tenant': json['tenant'] == null ? undefined : (0, AuthTenant_1.AuthTenantFromJSON)(json['tenant']),
     };
 }
 function ActiveTenantResponseToJSON(json) {
@@ -44,6 +44,6 @@ function ActiveTenantResponseToJSONTyped(value, ignoreDiscriminator = false) {
         return value;
     }
     return {
-        'tenant': (0, GetTenantByIDRow_1.GetTenantByIDRowToJSON)(value['tenant']),
+        'tenant': (0, AuthTenant_1.AuthTenantToJSON)(value['tenant']),
     };
 }

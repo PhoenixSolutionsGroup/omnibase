@@ -16,66 +16,52 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface GetTenantByStripeCustomerIDRow
+ * @interface AuthTenant
  */
-export interface GetTenantByStripeCustomerIDRow {
+export interface AuthTenant {
     /**
      * 
      * @type {Date}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     createdAt: Date;
     /**
      * 
      * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
-     */
-    enterpriseId: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
-     */
-    enterpriseTemplate: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     id: string;
     /**
      * 
      * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     stripeCustomerId: string | null;
     /**
      * 
      * @type {string}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     type: string;
     /**
      * 
      * @type {Date}
-     * @memberof GetTenantByStripeCustomerIDRow
+     * @memberof AuthTenant
      */
     updatedAt: Date;
 }
 
 /**
- * Check if a given object implements the GetTenantByStripeCustomerIDRow interface.
+ * Check if a given object implements the AuthTenant interface.
  */
-export function instanceOfGetTenantByStripeCustomerIDRow(value: object): value is GetTenantByStripeCustomerIDRow {
+export function instanceOfAuthTenant(value: object): value is AuthTenant {
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
-    if (!('enterpriseId' in value) || value['enterpriseId'] === undefined) return false;
-    if (!('enterpriseTemplate' in value) || value['enterpriseTemplate'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('stripeCustomerId' in value) || value['stripeCustomerId'] === undefined) return false;
@@ -84,19 +70,17 @@ export function instanceOfGetTenantByStripeCustomerIDRow(value: object): value i
     return true;
 }
 
-export function GetTenantByStripeCustomerIDRowFromJSON(json: any): GetTenantByStripeCustomerIDRow {
-    return GetTenantByStripeCustomerIDRowFromJSONTyped(json, false);
+export function AuthTenantFromJSON(json: any): AuthTenant {
+    return AuthTenantFromJSONTyped(json, false);
 }
 
-export function GetTenantByStripeCustomerIDRowFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetTenantByStripeCustomerIDRow {
+export function AuthTenantFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthTenant {
     if (json == null) {
         return json;
     }
     return {
         
         'createdAt': (new Date(json['created_at'])),
-        'enterpriseId': json['enterprise_id'],
-        'enterpriseTemplate': json['enterprise_template'],
         'id': json['id'],
         'name': json['name'],
         'stripeCustomerId': json['stripe_customer_id'],
@@ -105,11 +89,11 @@ export function GetTenantByStripeCustomerIDRowFromJSONTyped(json: any, ignoreDis
     };
 }
 
-export function GetTenantByStripeCustomerIDRowToJSON(json: any): GetTenantByStripeCustomerIDRow {
-    return GetTenantByStripeCustomerIDRowToJSONTyped(json, false);
+export function AuthTenantToJSON(json: any): AuthTenant {
+    return AuthTenantToJSONTyped(json, false);
 }
 
-export function GetTenantByStripeCustomerIDRowToJSONTyped(value?: GetTenantByStripeCustomerIDRow | null, ignoreDiscriminator: boolean = false): any {
+export function AuthTenantToJSONTyped(value?: AuthTenant | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -117,8 +101,6 @@ export function GetTenantByStripeCustomerIDRowToJSONTyped(value?: GetTenantByStr
     return {
         
         'created_at': value['createdAt'].toISOString(),
-        'enterprise_id': value['enterpriseId'],
-        'enterprise_template': value['enterpriseTemplate'],
         'id': value['id'],
         'name': value['name'],
         'stripe_customer_id': value['stripeCustomerId'],

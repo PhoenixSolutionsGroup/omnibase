@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 import type { Identity } from './Identity';
 import type { Session } from './Session';
 /**
@@ -32,10 +32,10 @@ export interface SessionResponse {
     session: Session;
     /**
      *
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof SessionResponse
      */
-    tenant?: GetTenantByIDRow;
+    tenant?: AuthTenant;
 }
 /**
  * Check if a given object implements the SessionResponse interface.

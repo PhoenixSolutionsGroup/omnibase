@@ -22,7 +22,7 @@ var _ MappedNullable = &UserTenantListItem{}
 // UserTenantListItem struct for UserTenantListItem
 type UserTenantListItem struct {
 	IsActive bool `json:"is_active"`
-	Tenant GetTenantByIDRow `json:"tenant"`
+	Tenant AuthTenant `json:"tenant"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -32,7 +32,7 @@ type _UserTenantListItem UserTenantListItem
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserTenantListItem(isActive bool, tenant GetTenantByIDRow) *UserTenantListItem {
+func NewUserTenantListItem(isActive bool, tenant AuthTenant) *UserTenantListItem {
 	this := UserTenantListItem{}
 	this.IsActive = isActive
 	this.Tenant = tenant
@@ -72,9 +72,9 @@ func (o *UserTenantListItem) SetIsActive(v bool) {
 }
 
 // GetTenant returns the Tenant field value
-func (o *UserTenantListItem) GetTenant() GetTenantByIDRow {
+func (o *UserTenantListItem) GetTenant() AuthTenant {
 	if o == nil {
-		var ret GetTenantByIDRow
+		var ret AuthTenant
 		return ret
 	}
 
@@ -83,7 +83,7 @@ func (o *UserTenantListItem) GetTenant() GetTenantByIDRow {
 
 // GetTenantOk returns a tuple with the Tenant field value
 // and a boolean to check if the value has been set.
-func (o *UserTenantListItem) GetTenantOk() (*GetTenantByIDRow, bool) {
+func (o *UserTenantListItem) GetTenantOk() (*AuthTenant, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -91,7 +91,7 @@ func (o *UserTenantListItem) GetTenantOk() (*GetTenantByIDRow, bool) {
 }
 
 // SetTenant sets field value
-func (o *UserTenantListItem) SetTenant(v GetTenantByIDRow) {
+func (o *UserTenantListItem) SetTenant(v AuthTenant) {
 	o.Tenant = v
 }
 

@@ -158,7 +158,7 @@ class V1TenantsLifecycleApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetTenantByIDRowFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AuthTenantFromJSON)(jsonValue));
         });
     }
     /**
@@ -191,7 +191,7 @@ class V1TenantsLifecycleApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetTenantByStripeCustomerIDRowFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AuthTenantFromJSON)(jsonValue));
         });
     }
     /**
