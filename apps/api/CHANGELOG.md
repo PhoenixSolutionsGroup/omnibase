@@ -1,3 +1,22 @@
+# [0.23.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.2...api-v0.23.0) (2026-11-27)
+
+
+### Bug Fixes
+
+* **api:** rewrite proxied auth redirects and forward session token cookie ([b0ab2b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b0ab2b41fbf7b9dfdf8eed48c931970cfc585327))
+* **stripe:** recreate price on parent product changes ([#207](https://github.com/PhoenixSolutionsGroup/omnibase/issues/207)) ([bc65581](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bc655817c3b6326baac306e81a6759bba53d608d))
+* **stripe:** Return 422 when config_id not found instead of 404 ([c880b99](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c880b99ebab26ffc5176b0d89b825e2ee31eaed3))
+* Update middleware to resolve `omnibase_session_token` cookie ([dbafb9e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/dbafb9e468547ef5ab3f28f57418f1098ea55308))
+
+
+### Features
+
+* **storage:** fetch short-lived tokens for storage from managed-hosting for non self-hosted apps ([b587328](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b5873287723eb132066f243ce4e721acb550a19a))
+* **stripe:** accept custom metadata and client_reference_id on create checkout ([#206](https://github.com/PhoenixSolutionsGroup/omnibase/issues/206)) ([3e571a6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3e571a6b44208da26165b9af4b0a6bf027e5564c))
+* **stripe:** depricate stripe endpoints for new stripe proxy  ([#210](https://github.com/PhoenixSolutionsGroup/omnibase/issues/210)) ([2d6d400](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2d6d400564bdc6e00ea3a8d4d4cfa0de79621bc9))
+* **stripe:** for managed apps proxy stripe requests through managed hosting api ([9d969b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d969b4304a954a33095b05019376d0d3ca60ce5))
+* **stripe:** Use LineItems for Stripe Checkout instead of single PriceID ([7b6052d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b6052d02fb24690b2bb3c00fad0e40ccd8b52a7))
+
 ## [0.22.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.1...api-v0.22.2) (2026-11-19)
 
 

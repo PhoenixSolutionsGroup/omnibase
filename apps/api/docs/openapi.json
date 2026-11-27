@@ -3828,7 +3828,7 @@
     },
     "termsOfService": "https://omnibase.dev/terms",
     "title": "Omnibase REST API",
-    "version": "0.0.0-dev"
+    "version": "0.22.2"
   },
   "openapi": "3.1.0",
   "paths": {
