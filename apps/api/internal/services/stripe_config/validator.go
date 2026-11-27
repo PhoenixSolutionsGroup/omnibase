@@ -307,6 +307,9 @@ func (v *Validator) validateWebhooks(webhooks []WebhookEndpointConfig) error {
 	seenIDs := make(map[string]bool)
 	seenURLs := make(map[string]bool)
 	for i, w := range webhooks {
+		if w.ID == "" {
+			return fmt.Errorf("webhook %d: id is required", i)
+		}
 		if w.URL == "" {
 			return fmt.Errorf("webhook %d: url is required", i)
 		}

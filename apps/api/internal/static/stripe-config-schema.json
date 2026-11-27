@@ -555,6 +555,7 @@
         }
       },
       "required": [
+        "id",
         "url",
         "events"
       ],

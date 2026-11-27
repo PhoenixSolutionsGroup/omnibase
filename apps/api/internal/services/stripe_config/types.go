@@ -38,7 +38,7 @@ type StripeConfiguration struct {
 }
 
 type WebhookEndpointConfig struct {
-	ID      string   `json:"id,omitempty"`
+	ID      string   `json:"id" validate:"required"`
 	URL     string   `json:"url" validate:"required"`
 	Events  []string `json:"events" validate:"required,min=1"`
 	Connect bool     `json:"connect,omitempty"`

@@ -159,6 +159,9 @@ func (s *Service) reconcile(ctx context.Context, config *StripeConfiguration, st
 		if err := s.reconcileWebhooks(ctx, config, actualWebhooks, changes); err != nil {
 			return nil, err
 		}
+		if err := s.pruneSelfHostedWebhookRows(ctx, changes); err != nil {
+			return nil, err
+		}
 	} else {
 		if err := s.reconcileManagedWebhooks(ctx, config, changes); err != nil {
 			return nil, err
@@ -832,11 +835,36 @@ func managedPriceConfigID(price *stripe.Price) string {
 }
 
 func managedWebhookKey(webhook StripeWebhookInfo) string {
+	if id := managedConfigID(webhook.Metadata); id != "" {
+		return id
+	}
 	return webhook.URL
 }
 
 func desiredWebhookKey(webhook WebhookEndpointConfig) string {
-	return webhook.URL
+	return webhook.ID
+}
+
+func (s *Service) pruneSelfHostedWebhookRows(ctx context.Context, changes *ConfigChanges) error {
+	if s.repo == nil {
+		return nil
+	}
+	keep := make([]string, 0)
+	for _, list := range [][]WebhookChange{
+		changes.Webhooks.Created,
+		changes.Webhooks.Updated,
+		changes.Webhooks.Unchanged,
+	} {
+		for _, change := range list {
+			if change.StripeID != "" {
+				keep = append(keep, change.StripeID)
+			}
+		}
+	}
+	if _, err := s.repo.DeleteStaleStripeWebhooks(ctx, keep); err != nil {
+		return fmt.Errorf("prune stale webhook rows: %w", err)
+	}
+	return nil
 }
 
 func defaultPriceID(product *stripe.Product) string {

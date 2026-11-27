@@ -24,7 +24,7 @@ var _ MappedNullable = &WebhookEndpointConfig{}
 type WebhookEndpointConfig struct {
 	Connect *bool `json:"connect,omitempty"`
 	Events []string `json:"events"`
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 	Url string `json:"url"`
 }
 
@@ -34,9 +34,10 @@ type _WebhookEndpointConfig WebhookEndpointConfig
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookEndpointConfig(events []string, url string) *WebhookEndpointConfig {
+func NewWebhookEndpointConfig(events []string, id string, url string) *WebhookEndpointConfig {
 	this := WebhookEndpointConfig{}
 	this.Events = events
+	this.Id = id
 	this.Url = url
 	return &this
 }
@@ -107,36 +108,28 @@ func (o *WebhookEndpointConfig) SetEvents(v []string) {
 	o.Events = v
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *WebhookEndpointConfig) GetId() string {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *WebhookEndpointConfig) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *WebhookEndpointConfig) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *WebhookEndpointConfig) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
 // GetUrl returns the Url field value
@@ -179,9 +172,7 @@ func (o WebhookEndpointConfig) ToMap() (map[string]interface{}, error) {
 	if o.Events != nil {
 		toSerialize["events"] = o.Events
 	}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
+	toSerialize["id"] = o.Id
 	toSerialize["url"] = o.Url
 	return toSerialize, nil
 }
@@ -192,6 +183,7 @@ func (o *WebhookEndpointConfig) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"events",
+		"id",
 		"url",
 	}
 
