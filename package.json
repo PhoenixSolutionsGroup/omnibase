@@ -16,7 +16,10 @@
     "prepush": "bash .husky/pre-push",
     "prepare": "husky",
     "release:preview": "./scripts/preview-releases.sh",
-    "generate:jsonschema": "bun ./scripts/openapi-to-jsonschema.ts"
+    "generate:jsonschema": "bun ./scripts/openapi-to-jsonschema.ts",
+    "lint": "biome check",
+    "lint:format": "biome check --write",
+    "lint:format:unsafe": "biome check --write --unsafe"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.9",
