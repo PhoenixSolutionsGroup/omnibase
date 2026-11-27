@@ -33,13 +33,13 @@ export function OidcGroup({
 			{groupIndex > 0 && <Divider withText />}
 
 			<div className="space-y-3">
-				{submitButtons.map((node, btnIndex) => {
+				{submitButtons.map((node) => {
 					const attrs = node.attributes as UiNodeInputAttributes;
 					const Icon = getProviderIcon(attrs.value);
 
 					return (
 						<form
-							key={`${groupName}-${btnIndex}`}
+							key={`${groupName}-${attrs.name}-${String(attrs.value ?? "")}`}
 							action={flowAction}
 							method={flowMethod}
 							className="w-full"

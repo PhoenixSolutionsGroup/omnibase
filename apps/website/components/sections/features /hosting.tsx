@@ -34,6 +34,7 @@ export function Hosting() {
 			{/* Dots running around the outer edge */}
 			{Array.from({ length: DOTS }, (_, i) => (
 				<circle
+					// biome-ignore lint/suspicious/noArrayIndexKey: dot index is the animation phase
 					key={i}
 					r={2.5}
 					className="fill-muted-foreground motion-reduce:hidden group-hover:fill-primary duration-500"

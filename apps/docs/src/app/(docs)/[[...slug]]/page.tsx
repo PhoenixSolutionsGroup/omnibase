@@ -32,6 +32,7 @@ export default async function Page(props: PageProps<"/[[...slug]]">) {
 						components={getMDXComponents({
 							// this allows you to link to other pages with relative file paths
 							a: createRelativeLink(source, page),
+							// biome-ignore lint/correctness/noComponentHookFactories: MDX component must close over the current page
 							OpenAPIPage: async (componentProps) => (
 								<OpenAPIPage
 									{...(await openapi.preloadOpenAPIPage(page))}

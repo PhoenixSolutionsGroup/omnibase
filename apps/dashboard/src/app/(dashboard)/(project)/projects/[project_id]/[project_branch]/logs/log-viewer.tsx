@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight } from "lucide-react";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { Button } from "@/components/ui/button";
 import {
@@ -160,7 +160,7 @@ export function LogViewer({
 		}
 	};
 
-	const checkNewLogs = async () => {
+	const checkNewLogs = useCallback(async () => {
 		if (logs.length === 0) return;
 
 		try {
@@ -195,7 +195,7 @@ export function LogViewer({
 		} catch (error) {
 			console.error("Error checking new logs:", error);
 		}
-	};
+	}, [logs, projectId, serviceType]);
 
 	// Real-time polling for new logs
 	useEffect(() => {

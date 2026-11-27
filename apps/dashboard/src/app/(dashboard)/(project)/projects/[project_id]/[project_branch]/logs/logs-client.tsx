@@ -33,6 +33,24 @@ const SERVICE_LABELS: Record<string, string> = {
 
 const SERVICE_ORDER = ["all", "api", "auth", "perm", "postgrest"];
 
+function getStartTime(range: string): string {
+	const now = new Date();
+	switch (range) {
+		case "1h":
+			return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+		case "6h":
+			return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
+		case "24h":
+			return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+		case "7d":
+			return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+		case "30d":
+			return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+		default:
+			return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+	}
+}
+
 interface LogsClientProps {
 	projectId: string;
 	projectName: string;
@@ -64,25 +82,6 @@ export function LogsClient({
 		key: serviceKey,
 		label: SERVICE_LABELS[serviceKey] || serviceKey,
 	}));
-
-	// Convert time range to start_time
-	const getStartTime = (range: string): string => {
-		const now = new Date();
-		switch (range) {
-			case "1h":
-				return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-			case "6h":
-				return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
-			case "24h":
-				return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
-			case "7d":
-				return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-			case "30d":
-				return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-			default:
-				return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-		}
-	};
 
 	// Fetch logs on mount and when dependencies change
 	useEffect(() => {
@@ -132,15 +131,7 @@ export function LogsClient({
 		};
 
 		fetchLogs();
-	}, [
-		projectId,
-		activeService,
-		limit,
-		timeRange,
-		logsData,
-		lastFetch,
-		getStartTime,
-	]);
+	}, [projectId, activeService, limit, timeRange, logsData, lastFetch]);
 
 	return (
 		<div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col py-8">

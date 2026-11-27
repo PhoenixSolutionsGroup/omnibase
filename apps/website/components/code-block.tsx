@@ -22,6 +22,7 @@ export async function CodeBlock({ code, language }: CodeBlockProps) {
 		<div className="h-full overflow-hidden rounded-lg border bg-white dark:bg-[#1f1f1f]">
 			<div
 				className="h-full overflow-auto p-4 text-sm [&_pre]:bg-transparent! [&_code]:bg-transparent! [&_span]:text-(--shiki-light) dark:[&_span]:text-(--shiki-dark)"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki output is generated from the code prop
 				dangerouslySetInnerHTML={{ __html: html }}
 			/>
 		</div>

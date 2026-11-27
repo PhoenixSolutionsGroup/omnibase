@@ -607,23 +607,24 @@ export function TableViewer({
 											onDrop={(e) => handleDrop(e, col.name)}
 											onDragEnd={handleDragEnd}
 											data-testid={`column-header-${col.name}`}
+											aria-sort={
+												sort?.column === col.name
+													? sort.order === "asc"
+														? "ascending"
+														: "descending"
+													: "none"
+											}
 										>
 											<div className="flex items-center">
 												<GripVertical
-													className="h-4 w-4 text-muted-foreground/50 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity mr-1 flex-shrink-0"
+													className="h-4 w-4 text-muted-foreground/50 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity mr-1 shrink-0"
 													data-testid={`drag-handle-${col.name}`}
 												/>
-												<div
-													className="flex items-center gap-1 cursor-pointer hover:text-primary flex-1 min-w-0"
+												<button
+													type="button"
+													className="flex items-center gap-1 cursor-pointer hover:text-primary flex-1 min-w-0 bg-transparent p-0 text-left font-inherit"
 													onClick={() => handleSort(col.name)}
 													data-testid={`sort-button-${col.name}`}
-													aria-sort={
-														sort?.column === col.name
-															? sort.order === "asc"
-																? "ascending"
-																: "descending"
-															: undefined
-													}
 												>
 													<span className="font-medium truncate">
 														{col.name}
@@ -644,15 +645,19 @@ export function TableViewer({
 													)}
 													{sort?.column === col.name ? (
 														sort.order === "asc" ? (
-															<ArrowUp className="h-3 w-3 flex-shrink-0" />
+															<ArrowUp className="h-3 w-3 shrink-0" />
 														) : (
-															<ArrowDown className="h-3 w-3 flex-shrink-0" />
+															<ArrowDown className="h-3 w-3 shrink-0" />
 														)
 													) : (
-														<ArrowUpDown className="h-3 w-3 opacity-50 flex-shrink-0" />
+														<ArrowUpDown className="h-3 w-3 opacity-50 shrink-0" />
 													)}
-												</div>
+												</button>
+												{/* biome-ignore lint/a11y/useSemanticElements: drag handle, not a thematic break */}
 												<div
+													role="separator"
+													aria-orientation="vertical"
+													aria-label={`Resize ${col.name}`}
 													className={cn(
 														"absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border hover:bg-primary transition-colors",
 														resizing?.column === col.name

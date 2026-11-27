@@ -102,9 +102,9 @@ export function HeartDotGrid({ className }: { className?: string }) {
 			aria-label="Heart made of dots"
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			{cells.map((c, i) => (
+			{cells.map((c) => (
 				<rect
-					key={i}
+					key={`${c.x}-${c.y}`}
 					x={c.x}
 					y={c.y}
 					width={CELL}

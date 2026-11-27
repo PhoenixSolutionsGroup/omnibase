@@ -50,7 +50,9 @@ export const zipMigrationsDir = (migrationsDir: string) => {
 	}
 
 	logger.log(`Found ${dirs.length} migration(s) (${fileCount} file(s)):`);
-	dirs.forEach((d) => logger.log(`   ${d}`));
+	for (const dir of dirs) {
+		logger.log(`   ${dir}`);
+	}
 
 	return zip;
 };

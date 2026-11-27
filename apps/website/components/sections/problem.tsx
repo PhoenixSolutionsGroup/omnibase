@@ -38,9 +38,9 @@ export function ProblemSection() {
 				</div>
 
 				<div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{painPoints.map((point, index) => (
+					{painPoints.map((point) => (
 						<div
-							key={index}
+							key={point.text}
 							className="flex items-start gap-4 rounded-lg border bg-background p-6"
 						>
 							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">

@@ -27,6 +27,7 @@ function ButtonGroup({
 	...props
 }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: fieldset would impose browser chrome this button group does not want
 		<div
 			role="group"
 			data-slot="button-group"

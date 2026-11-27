@@ -128,9 +128,9 @@ function PricingCard({
 										Features
 									</h4>
 									<ul className="space-y-2">
-										{ui.features.map((feature: string, index: number) => (
-											<li key={index} className="flex items-start gap-2">
-												<Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+										{ui.features.map((feature: string) => (
+											<li key={feature} className="flex items-start gap-2">
+												<Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
 												<span className="text-sm">{feature}</span>
 											</li>
 										))}
@@ -144,14 +144,12 @@ function PricingCard({
 											This Plan
 										</h4>
 										<ul className="space-y-2">
-											{displayedPrice.ui.features.map(
-												(feature: string, index: number) => (
-													<li key={index} className="flex items-start gap-2">
-														<Check className="w-4 h-4 text-blue-500 mt-0.5 flex-0" />
-														<span className="text-sm">{feature}</span>
-													</li>
-												),
-											)}
+											{displayedPrice.ui.features.map((feature: string) => (
+												<li key={feature} className="flex items-start gap-2">
+													<Check className="w-4 h-4 text-blue-500 mt-0.5 flex-0" />
+													<span className="text-sm">{feature}</span>
+												</li>
+											))}
 										</ul>
 									</div>
 								)}
@@ -162,9 +160,9 @@ function PricingCard({
 											Usage Limits
 										</h4>
 										<ul className="space-y-1">
-											{displayedPrice.ui.limits.map((limit, index: number) => (
+											{displayedPrice.ui.limits.map((limit) => (
 												<li
-													key={index}
+													key={`${limit.text}:${limit.value ?? ""}:${limit.unit ?? ""}`}
 													className="text-sm text-muted-foreground"
 												>
 													{limit.text || ""}
@@ -292,7 +290,9 @@ export function PricingTable({
 					{ length: Math.max(1, sortedProducts.length - 2) },
 					(_, i) => (
 						<button
+							// biome-ignore lint/suspicious/noArrayIndexKey: index is the carousel position
 							key={i}
+							type="button"
 							onClick={() => setCarouselIndex(i)}
 							className={cn(
 								"w-2 h-2 rounded-full transition-colors",
@@ -398,7 +398,9 @@ export function PricingTable({
 						<div className="flex justify-center mt-6 space-x-2">
 							{Array.from({ length: sortedProducts.length }, (_, i) => (
 								<button
+									// biome-ignore lint/suspicious/noArrayIndexKey: index is the carousel position
 									key={i}
+									type="button"
 									onClick={() => setCarouselIndex(i)}
 									className={cn(
 										"w-2 h-2 rounded-full transition-colors",

@@ -11,7 +11,7 @@ import {
 	XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Card,
 	CardContent,
@@ -69,83 +69,93 @@ export function ProjectDashboardClient({
 	// Define services to check (with service type mapping)
 	// Note: Auth and Permissions are now proxied through the API, so we only need to check
 	// the API health endpoint which internally verifies auth/permissions connectivity
-	const services = [
-		{
-			name: "API",
-			url: project.api_url,
-			health_url: `${project.api_url}/health`,
-			serviceType: "api",
-		},
-		{
-			name: "PostgREST",
-			url: project.postgrest_url,
-			health_url: `${project.postgrest_url}/ready`,
-			serviceType: "postgrest",
-		},
-	].filter(
-		(
-			service,
-		): service is {
-			name: string;
-			url: string;
-			health_url: string;
-			serviceType: string;
-		} => service.url !== null,
+	const services = useMemo(
+		() =>
+			[
+				{
+					name: "API",
+					url: project.api_url,
+					health_url: `${project.api_url}/health`,
+					serviceType: "api",
+				},
+				{
+					name: "PostgREST",
+					url: project.postgrest_url,
+					health_url: `${project.postgrest_url}/ready`,
+					serviceType: "postgrest",
+				},
+			].filter(
+				(
+					service,
+				): service is {
+					name: string;
+					url: string;
+					health_url: string;
+					serviceType: string;
+				} => service.url !== null,
+			),
+		[project.api_url, project.postgrest_url],
 	);
 
 	// Health check function using edge worker to avoid CORS issues
-	const checkServiceHealth = async (
-		services: {
-			name: string;
-			url: string;
-			health_url: string;
-			serviceType: string;
-		}[],
-	): Promise<ServiceStatus[]> => {
-		try {
-			// Call the edge function health check endpoint
-			const response = await fetch(`${OMNIBASE_WORKER_URL}/api/health-check`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					urls: services.map((s) => s.health_url),
-				}),
-			});
+	const checkServiceHealth = useCallback(
+		async (
+			services: {
+				name: string;
+				url: string;
+				health_url: string;
+				serviceType: string;
+			}[],
+		): Promise<ServiceStatus[]> => {
+			try {
+				// Call the edge function health check endpoint
+				const response = await fetch(
+					`${OMNIBASE_WORKER_URL}/api/health-check`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							urls: services.map((s) => s.health_url),
+						}),
+					},
+				);
 
-			if (!response.ok) {
-				throw new Error(`Health check failed: ${response.statusText}`);
-			}
+				if (!response.ok) {
+					throw new Error(`Health check failed: ${response.statusText}`);
+				}
 
-			const data = await response.json();
+				const data = await response.json();
 
-			// Map results back to service statuses
-			return services.map((service, index) => {
-				const result = data.results[index];
-				return {
+				// Map results back to service statuses
+				return services.map((service, index) => {
+					const result = data.results[index];
+					return {
+						name: service.name,
+						url: service.url,
+						status: result.status,
+						responseTime: result.responseTime,
+						error: result.error,
+						serviceType: service.serviceType,
+					};
+				});
+			} catch (error) {
+				// If edge function fails, return error status for all services
+				return services.map((service) => ({
 					name: service.name,
 					url: service.url,
-					status: result.status,
-					responseTime: result.responseTime,
-					error: result.error,
+					status: "error" as const,
+					error: error instanceof Error ? error.message : "Unknown error",
 					serviceType: service.serviceType,
-				};
-			});
-		} catch (error) {
-			// If edge function fails, return error status for all services
-			return services.map((service) => ({
-				name: service.name,
-				url: service.url,
-				status: "error" as const,
-				error: error instanceof Error ? error.message : "Unknown error",
-				serviceType: service.serviceType,
-			}));
-		}
-	};
+				}));
+			}
+		},
+		[],
+	);
 
 	// Fetch logs from all services
-	const fetchLogs = async () => {
+	const fetchLogs = useCallback(async () => {
 		setLogsLoading(true);
 		try {
 			// Service types to fetch logs from
@@ -219,9 +229,9 @@ export function ProjectDashboardClient({
 		} finally {
 			setLogsLoading(false);
 		}
-	};
+	}, [project.id]);
 
-	const runHealthChecks = async () => {
+	const runHealthChecks = useCallback(async () => {
 		setServiceStatuses(
 			services.map((s) => ({
 				name: s.name,
@@ -233,7 +243,7 @@ export function ProjectDashboardClient({
 
 		const statuses = await checkServiceHealth(services);
 		setServiceStatuses(statuses);
-	};
+	}, [checkServiceHealth, services]);
 	useEffect(() => {
 		runHealthChecks();
 	}, [runHealthChecks]);

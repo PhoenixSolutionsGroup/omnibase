@@ -104,17 +104,15 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 				case "db_service_key":
 					result = await fetchProjectSecretKey(project.id);
 					if (result?.success && result.serviceKey) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.serviceKey!),
-						);
+						const serviceKey = result.serviceKey;
+						setDecryptedValues((prev) => new Map(prev).set(key, serviceKey));
 					}
 					break;
 				case "api_service_key":
 					result = await fetchAPIServiceKey(project.id);
 					if (result?.success && result.apiServiceKey) {
-						setDecryptedValues((prev) =>
-							new Map(prev).set(key, result?.apiServiceKey!),
-						);
+						const apiServiceKey = result.apiServiceKey;
+						setDecryptedValues((prev) => new Map(prev).set(key, apiServiceKey));
 					}
 					break;
 			}

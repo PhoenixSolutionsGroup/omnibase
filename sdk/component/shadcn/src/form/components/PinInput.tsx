@@ -16,10 +16,6 @@ export function PinInput({
 	length = 6,
 	initialValue = "",
 }: PinInputProps) {
-	if (!isUiNodeInputAttributes(node.attributes)) {
-		return null;
-	}
-
 	// Initialize pins with the initial value if provided
 	const [pins, setPins] = React.useState<string[]>(() => {
 		if (initialValue) {
@@ -33,6 +29,10 @@ export function PinInput({
 		return Array(length).fill("");
 	});
 	const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+
+	if (!isUiNodeInputAttributes(node.attributes)) {
+		return null;
+	}
 
 	const handleChange = (index: number, value: string) => {
 		// Only allow single digit numbers
@@ -91,6 +91,7 @@ export function PinInput({
 			<div className="flex gap-2 justify-center">
 				{Array.from({ length }).map((_, index) => (
 					<input
+						// biome-ignore lint/suspicious/noArrayIndexKey: each input is a fixed digit position
 						key={index}
 						ref={(el) => (inputRefs.current[index] = el)}
 						type="text"

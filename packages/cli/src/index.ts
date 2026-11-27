@@ -33,6 +33,7 @@ import {
 	compareNamespaceFiles,
 	fetchNamespaceFilesFromGithub,
 	fetchPermissionRequirements,
+	type PermissionRequirements,
 	writeNamespaceFiles,
 } from "./utils/permission-namespaces";
 import {
@@ -127,7 +128,7 @@ async function seedPermissionNamespaces(
 async function syncPermissionNamespaces(root: string): Promise<void> {
 	const env = loadLocalEnvironment(root);
 
-	let requirements;
+	let requirements: PermissionRequirements | null;
 	try {
 		requirements = await fetchPermissionRequirements(env.omnibaseApiUrl);
 	} catch (error) {

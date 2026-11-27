@@ -95,12 +95,16 @@ async function runSync(
 
 	if (successful.length > 0) {
 		logger.succeed(`${successful.length} service(s) synced successfully`);
-		successful.forEach((r) => logger.log(`   - ${r.service}`));
+		for (const result of successful) {
+			logger.log(`   - ${result.service}`);
+		}
 	}
 
 	if (failed.length > 0) {
 		logger.fail(`${failed.length} service(s) failed`);
-		failed.forEach((r) => logger.log(`   - ${r.service}: ${r.error}`));
+		for (const result of failed) {
+			logger.log(`   - ${result.service}: ${result.error}`);
+		}
 		process.exit(1);
 	}
 }

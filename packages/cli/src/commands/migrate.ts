@@ -166,7 +166,9 @@ async function applyMigrations(
 	}
 
 	logger.log(`Found ${sqlFiles.length} migration file(s):`);
-	sqlFiles.forEach((file) => logger.log(`   - ${file}`));
+	for (const file of sqlFiles) {
+		logger.log(`   - ${file}`);
+	}
 
 	// Create zip file
 	const zip = new AdmZip();
