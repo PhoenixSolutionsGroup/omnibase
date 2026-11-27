@@ -181,7 +181,7 @@ func RemoveTenantUser(t *testing.T, client *sdk.APIClient, callerUserID, tenantI
 	return resp, err
 }
 
-func GetTenantByID(t *testing.T, client *sdk.APIClient, tenantID string) (*sdk.GetTenantByIDRow, *http.Response, error) {
+func GetTenantByID(t *testing.T, client *sdk.APIClient, tenantID string) (*sdk.AuthTenant, *http.Response, error) {
 	t.Helper()
 	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantByID(helpers.Ctx(), tenantID).Execute()
 	if err != nil || out == nil {
@@ -190,7 +190,7 @@ func GetTenantByID(t *testing.T, client *sdk.APIClient, tenantID string) (*sdk.G
 	return out, resp, nil
 }
 
-func GetTenantByStripeCustomerID(t *testing.T, client *sdk.APIClient, stripeCustomerID string) (*sdk.GetTenantByStripeCustomerIDRow, *http.Response, error) {
+func GetTenantByStripeCustomerID(t *testing.T, client *sdk.APIClient, stripeCustomerID string) (*sdk.AuthTenant, *http.Response, error) {
 	t.Helper()
 	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantByStripeCustomerID(helpers.Ctx(), stripeCustomerID).Execute()
 	if err != nil || out == nil {
