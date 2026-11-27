@@ -228,6 +228,7 @@ export function RoleCreator({
 								.map((suggestion) => (
 									<button
 										key={suggestion}
+										type="button"
 										className="w-full px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground text-sm"
 										onMouseDown={() => {
 											handleRoleNameChange(suggestion);

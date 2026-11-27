@@ -583,8 +583,8 @@ export function PermissionsSelector({
 							Permissions to be granted:
 						</p>
 						<ul className="space-y-1 text-xs font-mono">
-							{buildPermissions().map((perm, idx) => (
-								<li key={idx} className="text-muted-foreground">
+							{buildPermissions().map((perm) => (
+								<li key={perm} className="text-muted-foreground">
 									{perm}
 								</li>
 							))}

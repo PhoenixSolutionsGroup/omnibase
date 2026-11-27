@@ -821,10 +821,10 @@ export function stripUnresolvedOidcProviders(
 ): string[] {
 	const auth = payload.auth as Record<string, unknown> | undefined;
 	const providers = auth?.oidc as Array<Record<string, unknown>> | undefined;
-	if (!Array.isArray(providers)) return [];
+	if (!auth || !Array.isArray(providers)) return [];
 
 	const dropped: string[] = [];
-	auth!.oidc = providers.filter((provider) => {
+	const remaining = providers.filter((provider) => {
 		const unresolved = ["client_id", "client_secret"].some((key) => {
 			const value = provider[key];
 			return (
@@ -838,8 +838,10 @@ export function stripUnresolvedOidcProviders(
 		return true;
 	});
 
-	if ((auth?.oidc as unknown[]).length === 0) {
-		delete auth?.oidc;
+	if (remaining.length === 0) {
+		delete auth.oidc;
+	} else {
+		auth.oidc = remaining;
 	}
 	return dropped;
 }

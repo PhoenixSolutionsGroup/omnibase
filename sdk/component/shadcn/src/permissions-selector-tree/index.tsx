@@ -2,7 +2,7 @@
 
 import type { NamespaceDefinitionResponse as NamespaceDefinition } from "@omnibase/core-js";
 import { ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
@@ -137,8 +137,10 @@ function PermissionCheckbox({
 	disabled,
 	indent = 0,
 }: PermissionCheckboxProps) {
+	const id = useId();
 	return (
 		<label
+			htmlFor={id}
 			className={cn(
 				"flex items-center gap-2.5 py-1.5 px-2 rounded hover:bg-muted/50 cursor-pointer transition-colors",
 				disabled && "opacity-50 cursor-not-allowed",
@@ -146,6 +148,7 @@ function PermissionCheckbox({
 			style={{ paddingLeft: `${(indent + 1) * 16 + 8}px` }}
 		>
 			<Checkbox
+				id={id}
 				checked={checked}
 				onCheckedChange={onCheckedChange}
 				disabled={disabled}
@@ -211,17 +214,19 @@ function GroupHeader({
 				disabled={disabled}
 				className={isSubGroup ? "" : "h-4.5 w-4.5"}
 			/>
-			<span
+			<button
+				type="button"
 				className={cn(
-					"cursor-pointer select-none",
+					"cursor-pointer select-none border-0 bg-transparent p-0 text-left",
 					isSubGroup
 						? "text-xs font-medium text-muted-foreground uppercase tracking-wider"
 						: "text-sm font-semibold text-foreground",
 				)}
 				onClick={() => onOpenChange(!isOpen)}
+				disabled={disabled}
 			>
 				{name}
-			</span>
+			</button>
 		</div>
 	);
 }
@@ -238,6 +243,8 @@ export function PermissionsSelectorTree({
 	const [selectedNamespace, setSelectedNamespace] = useState<string>("");
 	const [selectedObjectId, setSelectedObjectId] = useState<string>("");
 	const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+	const namespaceSelectId = useId();
+	const resourceSelectId = useId();
 
 	// Get permissions for selected namespace
 	const permissions = useMemo((): PermissionOption[] => {
@@ -396,7 +403,10 @@ export function PermissionsSelectorTree({
 			{/* Namespace and Object Selection */}
 			<div className="flex gap-2">
 				<div className="flex-1">
-					<label className="text-xs font-medium text-muted-foreground mb-1 block">
+					<label
+						htmlFor={namespaceSelectId}
+						className="text-xs font-medium text-muted-foreground mb-1 block"
+					>
 						Namespace
 					</label>
 					<Select
@@ -408,7 +418,7 @@ export function PermissionsSelectorTree({
 						}}
 						disabled={disabled}
 					>
-						<SelectTrigger>
+						<SelectTrigger id={namespaceSelectId}>
 							<SelectValue placeholder="Select namespace..." />
 						</SelectTrigger>
 						<SelectContent>
@@ -423,7 +433,10 @@ export function PermissionsSelectorTree({
 
 				{requiresObjectId && (
 					<div className="flex-1">
-						<label className="text-xs font-medium text-muted-foreground mb-1 block">
+						<label
+							htmlFor={resourceSelectId}
+							className="text-xs font-medium text-muted-foreground mb-1 block"
+						>
 							Resource
 						</label>
 						<Select
@@ -431,7 +444,7 @@ export function PermissionsSelectorTree({
 							onValueChange={setSelectedObjectId}
 							disabled={disabled || availableObjects.length === 0}
 						>
-							<SelectTrigger>
+							<SelectTrigger id={resourceSelectId}>
 								<SelectValue
 									placeholder={
 										availableObjects.length === 0
@@ -592,8 +605,8 @@ export function PermissionsSelectorTree({
 						Selected permissions ({value.length}):
 					</p>
 					<ul className="space-y-1 text-xs font-mono">
-						{value.map((perm, idx) => (
-							<li key={idx} className="text-muted-foreground">
+						{value.map((perm) => (
+							<li key={perm} className="text-muted-foreground">
 								{perm}
 							</li>
 						))}
