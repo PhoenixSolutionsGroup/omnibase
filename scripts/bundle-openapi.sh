@@ -31,3 +31,8 @@ echo "✓ OpenAPI spec written to apps/api/docs/openapi.json (API_VERSION=$API_V
 
 cd "$ROOT_DIR"
 bun scripts/openapi-to-jsonschema.ts
+
+# Generators emit 2-space JSON. Match the repo formatter before the files are committed.
+bunx biome format --write \
+  apps/api/docs/openapi.json \
+  apps/api/internal/static/stripe-config-schema.json

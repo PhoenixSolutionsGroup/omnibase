@@ -11,10 +11,10 @@ const TYPE_ORDER: Record<string, number> = {
 };
 
 /**
- * 
+ *
  * Helper function for ui key creation to not use index as key
- * @param node 
- * @returns 
+ * @param node
+ * @returns
  */
 export function uiNodeKey(node: UiNode): string {
 	const attrs = node.attributes as {
