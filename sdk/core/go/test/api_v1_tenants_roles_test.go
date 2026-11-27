@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsRolesAPIService CreateRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsRolesAPI.CreateRole(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsRolesAPIService DeleteRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var roleId string
 
@@ -50,7 +50,7 @@ func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsRolesAPIService ListRoleDefinitions", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsRolesAPI.ListRoleDefinitions(context.Background()).Execute()
 
@@ -62,7 +62,7 @@ func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsRolesAPIService ListRoles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsRolesAPI.ListRoles(context.Background()).Execute()
 
@@ -74,7 +74,7 @@ func Test_omnibase_V1TenantsRolesAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsRolesAPIService UpdateRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var roleId string
 

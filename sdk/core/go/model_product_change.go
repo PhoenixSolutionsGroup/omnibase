@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,11 +22,11 @@ var _ MappedNullable = &ProductChange{}
 
 // ProductChange struct for ProductChange
 type ProductChange struct {
-	Action string `json:"action"`
-	Details []string `json:"details,omitempty"`
-	ProductId string `json:"product_id"`
-	ProductName string `json:"product_name"`
-	StripeId *string `json:"stripe_id,omitempty"`
+	Action      string   `json:"action"`
+	Details     []string `json:"details,omitempty"`
+	ProductId   string   `json:"product_id"`
+	ProductName string   `json:"product_name"`
+	StripeId    *string  `json:"stripe_id,omitempty"`
 }
 
 type _ProductChange ProductChange
@@ -189,7 +189,7 @@ func (o *ProductChange) SetStripeId(v string) {
 }
 
 func (o ProductChange) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -225,10 +225,10 @@ func (o *ProductChange) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -284,5 +284,3 @@ func (v *NullableProductChange) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

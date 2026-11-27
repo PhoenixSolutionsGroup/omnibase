@@ -12,23 +12,32 @@
  * Do not edit the class manually.
  */
 
+import * as runtime from "../runtime";
 import type {
 	CreateRoleRequest,
 	CreateRoleRow,
+	ErrorModel,
 	ListRolesByTenantRow,
 	NamespaceDefinitionResponse,
 	UpdateRolePermissionsRow,
 	UpdateRoleRequest,
 } from "../models/index";
 import {
+	CreateRoleRequestFromJSON,
 	CreateRoleRequestToJSON,
 	CreateRoleRowFromJSON,
+	CreateRoleRowToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
 	ListRolesByTenantRowFromJSON,
+	ListRolesByTenantRowToJSON,
 	NamespaceDefinitionResponseFromJSON,
+	NamespaceDefinitionResponseToJSON,
 	UpdateRolePermissionsRowFromJSON,
+	UpdateRolePermissionsRowToJSON,
+	UpdateRoleRequestFromJSON,
 	UpdateRoleRequestToJSON,
 } from "../models/index";
-import * as runtime from "../runtime";
 
 export interface CreateRoleOperationRequest {
 	createRoleRequest: CreateRoleRequest;
@@ -58,7 +67,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 		requestParameters: CreateRoleOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateRoleRow>> {
-		if (requestParameters.createRoleRequest == null) {
+		if (requestParameters["createRoleRequest"] == null) {
 			throw new runtime.RequiredError(
 				"createRoleRequest",
 				'Required parameter "createRoleRequest" was null or undefined when calling createRole().',
@@ -71,22 +80,22 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/roles`;
+		let urlPath = `/api/v1/tenants/roles`;
 
 		const response = await this.request(
 			{
@@ -94,7 +103,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateRoleRequestToJSON(requestParameters.createRoleRequest),
+				body: CreateRoleRequestToJSON(requestParameters["createRoleRequest"]),
 			},
 			initOverrides,
 		);
@@ -122,7 +131,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 		requestParameters: DeleteRoleRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<any>> {
-		if (requestParameters.roleId == null) {
+		if (requestParameters["roleId"] == null) {
 			throw new runtime.RequiredError(
 				"roleId",
 				'Required parameter "roleId" was null or undefined when calling deleteRole().',
@@ -133,17 +142,17 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -151,7 +160,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/tenants/roles/{role_id}`;
 		urlPath = urlPath.replace(
 			`{${"role_id"}}`,
-			encodeURIComponent(String(requestParameters.roleId)),
+			encodeURIComponent(String(requestParameters["roleId"])),
 		);
 
 		const response = await this.request(
@@ -191,28 +200,28 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 	): Promise<runtime.ApiResponse<Array<NamespaceDefinitionResponse>>> {
 		const queryParameters: any = {};
 
-		if (requestParameters.subject != null) {
-			queryParameters.subject = requestParameters.subject;
+		if (requestParameters["subject"] != null) {
+			queryParameters["subject"] = requestParameters["subject"];
 		}
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/roles/definitions`;
+		let urlPath = `/api/v1/tenants/roles/definitions`;
 
 		const response = await this.request(
 			{
@@ -253,22 +262,22 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/roles`;
+		let urlPath = `/api/v1/tenants/roles`;
 
 		const response = await this.request(
 			{
@@ -302,14 +311,14 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 		requestParameters: UpdateRoleOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UpdateRolePermissionsRow>> {
-		if (requestParameters.roleId == null) {
+		if (requestParameters["roleId"] == null) {
 			throw new runtime.RequiredError(
 				"roleId",
 				'Required parameter "roleId" was null or undefined when calling updateRole().',
 			);
 		}
 
-		if (requestParameters.updateRoleRequest == null) {
+		if (requestParameters["updateRoleRequest"] == null) {
 			throw new runtime.RequiredError(
 				"updateRoleRequest",
 				'Required parameter "updateRoleRequest" was null or undefined when calling updateRole().',
@@ -322,17 +331,17 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
@@ -340,7 +349,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/tenants/roles/{role_id}`;
 		urlPath = urlPath.replace(
 			`{${"role_id"}}`,
-			encodeURIComponent(String(requestParameters.roleId)),
+			encodeURIComponent(String(requestParameters["roleId"])),
 		);
 
 		const response = await this.request(
@@ -349,7 +358,7 @@ export class V1TenantsRolesApi extends runtime.BaseAPI {
 				method: "PUT",
 				headers: headerParameters,
 				query: queryParameters,
-				body: UpdateRoleRequestToJSON(requestParameters.updateRoleRequest),
+				body: UpdateRoleRequestToJSON(requestParameters["updateRoleRequest"]),
 			},
 			initOverrides,
 		);

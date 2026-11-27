@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1StripeAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService CalculatePriceCost", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var priceId string
 
@@ -38,7 +38,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService GetMeterByID", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var meterId string
 
@@ -52,7 +52,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService GetPriceByID", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var priceId string
 
@@ -66,7 +66,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService GetProductByID", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var productId string
 
@@ -80,7 +80,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService GetStripeConfig", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfig(context.Background()).Execute()
 
@@ -92,7 +92,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService GetStripeConfigAdmin", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
 
@@ -104,7 +104,7 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	t.Run("Test V1StripeAPIService ListWebhooks", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StripeAPI.ListWebhooks(context.Background()).Execute()
 

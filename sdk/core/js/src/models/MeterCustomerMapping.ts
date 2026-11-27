@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -38,9 +39,9 @@ export interface MeterCustomerMapping {
 export function instanceOfMeterCustomerMapping(
 	value: object,
 ): value is MeterCustomerMapping {
-	if (!("eventPayloadKey" in value) || value.eventPayloadKey === undefined)
+	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
 		return false;
-	if (!("type" in value) || value.type === undefined) return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
 	return true;
 }
 
@@ -50,14 +51,14 @@ export function MeterCustomerMappingFromJSON(json: any): MeterCustomerMapping {
 
 export function MeterCustomerMappingFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): MeterCustomerMapping {
 	if (json == null) {
 		return json;
 	}
 	return {
-		eventPayloadKey: json.event_payload_key,
-		type: json.type,
+		eventPayloadKey: json["event_payload_key"],
+		type: json["type"],
 	};
 }
 
@@ -67,14 +68,14 @@ export function MeterCustomerMappingToJSON(json: any): MeterCustomerMapping {
 
 export function MeterCustomerMappingToJSONTyped(
 	value?: MeterCustomerMapping | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		event_payload_key: value.eventPayloadKey,
-		type: value.type,
+		event_payload_key: value["eventPayloadKey"],
+		type: value["type"],
 	};
 }

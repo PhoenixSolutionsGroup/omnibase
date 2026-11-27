@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { StripeConfigurationWithIDs } from "./StripeConfigurationWithIDs";
 import {
 	StripeConfigurationWithIDsFromJSON,
+	StripeConfigurationWithIDsFromJSONTyped,
 	StripeConfigurationWithIDsToJSON,
+	StripeConfigurationWithIDsToJSONTyped,
 } from "./StripeConfigurationWithIDs";
 
 /**
@@ -68,11 +71,11 @@ export interface ConfigHistoryItem {
 export function instanceOfConfigHistoryItem(
 	value: object,
 ): value is ConfigHistoryItem {
-	if (!("config" in value) || value.config === undefined) return false;
-	if (!("createdAt" in value) || value.createdAt === undefined) return false;
-	if (!("id" in value) || value.id === undefined) return false;
-	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
-	if (!("version" in value) || value.version === undefined) return false;
+	if (!("config" in value) || value["config"] === undefined) return false;
+	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("version" in value) || value["version"] === undefined) return false;
 	return true;
 }
 
@@ -82,18 +85,18 @@ export function ConfigHistoryItemFromJSON(json: any): ConfigHistoryItem {
 
 export function ConfigHistoryItemFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ConfigHistoryItem {
 	if (json == null) {
 		return json;
 	}
 	return {
-		config: StripeConfigurationWithIDsFromJSON(json.config),
-		createdAt: json.created_at,
-		id: json.id,
-		parseError: json.parse_error == null ? undefined : json.parse_error,
-		updatedAt: json.updated_at,
-		version: json.version,
+		config: StripeConfigurationWithIDsFromJSON(json["config"]),
+		createdAt: json["created_at"],
+		id: json["id"],
+		parseError: json["parse_error"] == null ? undefined : json["parse_error"],
+		updatedAt: json["updated_at"],
+		version: json["version"],
 	};
 }
 
@@ -103,18 +106,18 @@ export function ConfigHistoryItemToJSON(json: any): ConfigHistoryItem {
 
 export function ConfigHistoryItemToJSONTyped(
 	value?: ConfigHistoryItem | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		config: StripeConfigurationWithIDsToJSON(value.config),
-		created_at: value.createdAt,
-		id: value.id,
-		parse_error: value.parseError,
-		updated_at: value.updatedAt,
-		version: value.version,
+		config: StripeConfigurationWithIDsToJSON(value["config"]),
+		created_at: value["createdAt"],
+		id: value["id"],
+		parse_error: value["parseError"],
+		updated_at: value["updatedAt"],
+		version: value["version"],
 	};
 }

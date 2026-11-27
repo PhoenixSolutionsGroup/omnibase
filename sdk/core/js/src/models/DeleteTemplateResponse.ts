@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface DeleteTemplateResponse {
 export function instanceOfDeleteTemplateResponse(
 	value: object,
 ): value is DeleteTemplateResponse {
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -44,13 +45,13 @@ export function DeleteTemplateResponseFromJSON(
 
 export function DeleteTemplateResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): DeleteTemplateResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
+		message: json["message"],
 	};
 }
 
@@ -62,13 +63,13 @@ export function DeleteTemplateResponseToJSON(
 
 export function DeleteTemplateResponseToJSONTyped(
 	value?: DeleteTemplateResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
+		message: value["message"],
 	};
 }

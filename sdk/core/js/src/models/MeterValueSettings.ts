@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface MeterValueSettings {
 export function instanceOfMeterValueSettings(
 	value: object,
 ): value is MeterValueSettings {
-	if (!("eventPayloadKey" in value) || value.eventPayloadKey === undefined)
+	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
 		return false;
 	return true;
 }
@@ -43,13 +44,13 @@ export function MeterValueSettingsFromJSON(json: any): MeterValueSettings {
 
 export function MeterValueSettingsFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): MeterValueSettings {
 	if (json == null) {
 		return json;
 	}
 	return {
-		eventPayloadKey: json.event_payload_key,
+		eventPayloadKey: json["event_payload_key"],
 	};
 }
 
@@ -59,13 +60,13 @@ export function MeterValueSettingsToJSON(json: any): MeterValueSettings {
 
 export function MeterValueSettingsToJSONTyped(
 	value?: MeterValueSettings | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		event_payload_key: value.eventPayloadKey,
+		event_payload_key: value["eventPayloadKey"],
 	};
 }

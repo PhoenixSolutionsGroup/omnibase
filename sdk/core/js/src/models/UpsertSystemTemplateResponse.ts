@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { EmailSystemTemplate } from "./EmailSystemTemplate";
 import {
 	EmailSystemTemplateFromJSON,
+	EmailSystemTemplateFromJSONTyped,
 	EmailSystemTemplateToJSON,
+	EmailSystemTemplateToJSONTyped,
 } from "./EmailSystemTemplate";
 
 /**
@@ -44,8 +47,8 @@ export interface UpsertSystemTemplateResponse {
 export function instanceOfUpsertSystemTemplateResponse(
 	value: object,
 ): value is UpsertSystemTemplateResponse {
-	if (!("message" in value) || value.message === undefined) return false;
-	if (!("template" in value) || value.template === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("template" in value) || value["template"] === undefined) return false;
 	return true;
 }
 
@@ -57,14 +60,14 @@ export function UpsertSystemTemplateResponseFromJSON(
 
 export function UpsertSystemTemplateResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UpsertSystemTemplateResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
-		template: EmailSystemTemplateFromJSON(json.template),
+		message: json["message"],
+		template: EmailSystemTemplateFromJSON(json["template"]),
 	};
 }
 
@@ -76,14 +79,14 @@ export function UpsertSystemTemplateResponseToJSON(
 
 export function UpsertSystemTemplateResponseToJSONTyped(
 	value?: UpsertSystemTemplateResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
-		template: EmailSystemTemplateToJSON(value.template),
+		message: value["message"],
+		template: EmailSystemTemplateToJSON(value["template"]),
 	};
 }

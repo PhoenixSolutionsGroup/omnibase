@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -80,10 +81,10 @@ export interface VerifiableIdentityAddress {
 export function instanceOfVerifiableIdentityAddress(
 	value: object,
 ): value is VerifiableIdentityAddress {
-	if (!("status" in value) || value.status === undefined) return false;
-	if (!("value" in value) || value.value === undefined) return false;
-	if (!("verified" in value) || value.verified === undefined) return false;
-	if (!("via" in value) || value.via === undefined) return false;
+	if (!("status" in value) || value["status"] === undefined) return false;
+	if (!("value" in value) || value["value"] === undefined) return false;
+	if (!("verified" in value) || value["verified"] === undefined) return false;
+	if (!("via" in value) || value["via"] === undefined) return false;
 	return true;
 }
 
@@ -95,23 +96,27 @@ export function VerifiableIdentityAddressFromJSON(
 
 export function VerifiableIdentityAddressFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): VerifiableIdentityAddress {
 	if (json == null) {
 		return json;
 	}
 	return {
 		additionalProperties:
-			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
-		createdAt: json.created_at == null ? undefined : new Date(json.created_at),
-		id: json.id == null ? undefined : json.id,
-		status: json.status,
-		updatedAt: json.updated_at == null ? undefined : new Date(json.updated_at),
-		value: json.value,
-		verified: json.verified,
+			json["AdditionalProperties"] == null
+				? undefined
+				: json["AdditionalProperties"],
+		createdAt:
+			json["created_at"] == null ? undefined : new Date(json["created_at"]),
+		id: json["id"] == null ? undefined : json["id"],
+		status: json["status"],
+		updatedAt:
+			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
+		value: json["value"],
+		verified: json["verified"],
 		verifiedAt:
-			json.verified_at == null ? undefined : new Date(json.verified_at),
-		via: json.via,
+			json["verified_at"] == null ? undefined : new Date(json["verified_at"]),
+		via: json["via"],
 	};
 }
 
@@ -123,26 +128,30 @@ export function VerifiableIdentityAddressToJSON(
 
 export function VerifiableIdentityAddressToJSONTyped(
 	value?: VerifiableIdentityAddress | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		AdditionalProperties: value.additionalProperties,
+		AdditionalProperties: value["additionalProperties"],
 		created_at:
-			value.createdAt == null ? value.createdAt : value.createdAt.toISOString(),
-		id: value.id,
-		status: value.status,
+			value["createdAt"] == null
+				? value["createdAt"]
+				: value["createdAt"].toISOString(),
+		id: value["id"],
+		status: value["status"],
 		updated_at:
-			value.updatedAt == null ? value.updatedAt : value.updatedAt.toISOString(),
-		value: value.value,
-		verified: value.verified,
+			value["updatedAt"] == null
+				? value["updatedAt"]
+				: value["updatedAt"].toISOString(),
+		value: value["value"],
+		verified: value["verified"],
 		verified_at:
-			value.verifiedAt == null
-				? value.verifiedAt
-				: value.verifiedAt.toISOString(),
-		via: value.via,
+			value["verifiedAt"] == null
+				? value["verifiedAt"]
+				: value["verifiedAt"].toISOString(),
+		via: value["via"],
 	};
 }

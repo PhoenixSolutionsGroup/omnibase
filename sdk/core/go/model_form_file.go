@@ -21,10 +21,10 @@ var _ MappedNullable = &FormFile{}
 
 // FormFile struct for FormFile
 type FormFile struct {
-	ContentType string `json:"ContentType"`
-	Filename string `json:"Filename"`
-	IsSet bool `json:"IsSet"`
-	Size int64 `json:"Size"`
+	ContentType          string `json:"ContentType"`
+	Filename             string `json:"Filename"`
+	IsSet                bool   `json:"IsSet"`
+	Size                 int64  `json:"Size"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -148,7 +148,7 @@ func (o *FormFile) SetSize(v int64) {
 }
 
 func (o FormFile) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -185,10 +185,10 @@ func (o *FormFile) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -252,5 +252,3 @@ func (v *NullableFormFile) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

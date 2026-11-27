@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,12 +22,12 @@ var _ MappedNullable = &StripeConfiguration{}
 
 // StripeConfiguration struct for StripeConfiguration
 type StripeConfiguration struct {
-	Coupons []Coupon `json:"coupons,omitempty"`
-	Meters []Meter `json:"meters,omitempty"`
-	Products []Product `json:"products"`
-	PromotionCodes []PromotionCode `json:"promotion_codes,omitempty"`
-	Version string `json:"version"`
-	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty"`
+	Coupons        []Coupon                `json:"coupons,omitempty"`
+	Meters         []Meter                 `json:"meters,omitempty"`
+	Products       []Product               `json:"products"`
+	PromotionCodes []PromotionCode         `json:"promotion_codes,omitempty"`
+	Version        string                  `json:"version"`
+	Webhooks       []WebhookEndpointConfig `json:"webhooks,omitempty"`
 }
 
 type _StripeConfiguration StripeConfiguration
@@ -234,7 +234,7 @@ func (o *StripeConfiguration) SetWebhooks(v []WebhookEndpointConfig) {
 }
 
 func (o StripeConfiguration) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -276,10 +276,10 @@ func (o *StripeConfiguration) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -335,5 +335,3 @@ func (v *NullableStripeConfiguration) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

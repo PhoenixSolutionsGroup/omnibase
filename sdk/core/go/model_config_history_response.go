@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &ConfigHistoryResponse{}
 
 // ConfigHistoryResponse struct for ConfigHistoryResponse
 type ConfigHistoryResponse struct {
-	Configs []ConfigHistoryItem `json:"configs"`
+	Configs    []ConfigHistoryItem     `json:"configs"`
 	Pagination ConfigHistoryPagination `json:"pagination"`
 }
 
@@ -98,7 +98,7 @@ func (o *ConfigHistoryResponse) SetPagination(v ConfigHistoryPagination) {
 }
 
 func (o ConfigHistoryResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -128,10 +128,10 @@ func (o *ConfigHistoryResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -187,5 +187,3 @@ func (v *NullableConfigHistoryResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

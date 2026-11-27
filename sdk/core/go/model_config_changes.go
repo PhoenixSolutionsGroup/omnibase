@@ -20,12 +20,12 @@ var _ MappedNullable = &ConfigChanges{}
 
 // ConfigChanges struct for ConfigChanges
 type ConfigChanges struct {
-	Coupons *CouponChanges `json:"coupons,omitempty"`
-	Meters *MeterChanges `json:"meters,omitempty"`
-	Prices *PriceChanges `json:"prices,omitempty"`
-	Products *ProductChanges `json:"products,omitempty"`
+	Coupons        *CouponChanges        `json:"coupons,omitempty"`
+	Meters         *MeterChanges         `json:"meters,omitempty"`
+	Prices         *PriceChanges         `json:"prices,omitempty"`
+	Products       *ProductChanges       `json:"products,omitempty"`
 	PromotionCodes *PromotionCodeChanges `json:"promotion_codes,omitempty"`
-	Webhooks *WebhookChanges `json:"webhooks,omitempty"`
+	Webhooks       *WebhookChanges       `json:"webhooks,omitempty"`
 }
 
 // NewConfigChanges instantiates a new ConfigChanges object
@@ -238,7 +238,7 @@ func (o *ConfigChanges) SetWebhooks(v WebhookChanges) {
 }
 
 func (o ConfigChanges) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -303,5 +303,3 @@ func (v *NullableConfigChanges) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -41,13 +42,13 @@ export function ArchiveAllInputBodyFromJSON(json: any): ArchiveAllInputBody {
 
 export function ArchiveAllInputBodyFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ArchiveAllInputBody {
 	if (json == null) {
 		return json;
 	}
 	return {
-		force: json.force == null ? undefined : json.force,
+		force: json["force"] == null ? undefined : json["force"],
 	};
 }
 
@@ -57,13 +58,13 @@ export function ArchiveAllInputBodyToJSON(json: any): ArchiveAllInputBody {
 
 export function ArchiveAllInputBodyToJSONTyped(
 	value?: ArchiveAllInputBody | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		force: value.force,
+		force: value["force"],
 	};
 }

@@ -12,8 +12,14 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { CouponChange } from "./CouponChange";
-import { CouponChangeFromJSON, CouponChangeToJSON } from "./CouponChange";
+import {
+	CouponChangeFromJSON,
+	CouponChangeFromJSONTyped,
+	CouponChangeToJSON,
+	CouponChangeToJSONTyped,
+} from "./CouponChange";
 
 /**
  *
@@ -54,24 +60,24 @@ export function CouponChangesFromJSON(json: any): CouponChanges {
 
 export function CouponChangesFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CouponChanges {
 	if (json == null) {
 		return json;
 	}
 	return {
 		archived:
-			json.archived == null
+			json["archived"] == null
 				? undefined
-				: (json.archived as Array<any>).map(CouponChangeFromJSON),
+				: (json["archived"] as Array<any>).map(CouponChangeFromJSON),
 		created:
-			json.created == null
+			json["created"] == null
 				? undefined
-				: (json.created as Array<any>).map(CouponChangeFromJSON),
+				: (json["created"] as Array<any>).map(CouponChangeFromJSON),
 		updated:
-			json.updated == null
+			json["updated"] == null
 				? undefined
-				: (json.updated as Array<any>).map(CouponChangeFromJSON),
+				: (json["updated"] as Array<any>).map(CouponChangeFromJSON),
 	};
 }
 
@@ -81,7 +87,7 @@ export function CouponChangesToJSON(json: any): CouponChanges {
 
 export function CouponChangesToJSONTyped(
 	value?: CouponChanges | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -89,16 +95,16 @@ export function CouponChangesToJSONTyped(
 
 	return {
 		archived:
-			value.archived == null
+			value["archived"] == null
 				? undefined
-				: (value.archived as Array<any>).map(CouponChangeToJSON),
+				: (value["archived"] as Array<any>).map(CouponChangeToJSON),
 		created:
-			value.created == null
+			value["created"] == null
 				? undefined
-				: (value.created as Array<any>).map(CouponChangeToJSON),
+				: (value["created"] as Array<any>).map(CouponChangeToJSON),
 		updated:
-			value.updated == null
+			value["updated"] == null
 				? undefined
-				: (value.updated as Array<any>).map(CouponChangeToJSON),
+				: (value["updated"] as Array<any>).map(CouponChangeToJSON),
 	};
 }

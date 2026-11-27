@@ -12,8 +12,14 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { PriceChange } from "./PriceChange";
-import { PriceChangeFromJSON, PriceChangeToJSON } from "./PriceChange";
+import {
+	PriceChangeFromJSON,
+	PriceChangeFromJSONTyped,
+	PriceChangeToJSON,
+	PriceChangeToJSONTyped,
+} from "./PriceChange";
 
 /**
  *
@@ -54,24 +60,24 @@ export function PriceChangesFromJSON(json: any): PriceChanges {
 
 export function PriceChangesFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): PriceChanges {
 	if (json == null) {
 		return json;
 	}
 	return {
 		archived:
-			json.archived == null
+			json["archived"] == null
 				? undefined
-				: (json.archived as Array<any>).map(PriceChangeFromJSON),
+				: (json["archived"] as Array<any>).map(PriceChangeFromJSON),
 		created:
-			json.created == null
+			json["created"] == null
 				? undefined
-				: (json.created as Array<any>).map(PriceChangeFromJSON),
+				: (json["created"] as Array<any>).map(PriceChangeFromJSON),
 		updated:
-			json.updated == null
+			json["updated"] == null
 				? undefined
-				: (json.updated as Array<any>).map(PriceChangeFromJSON),
+				: (json["updated"] as Array<any>).map(PriceChangeFromJSON),
 	};
 }
 
@@ -81,7 +87,7 @@ export function PriceChangesToJSON(json: any): PriceChanges {
 
 export function PriceChangesToJSONTyped(
 	value?: PriceChanges | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -89,16 +95,16 @@ export function PriceChangesToJSONTyped(
 
 	return {
 		archived:
-			value.archived == null
+			value["archived"] == null
 				? undefined
-				: (value.archived as Array<any>).map(PriceChangeToJSON),
+				: (value["archived"] as Array<any>).map(PriceChangeToJSON),
 		created:
-			value.created == null
+			value["created"] == null
 				? undefined
-				: (value.created as Array<any>).map(PriceChangeToJSON),
+				: (value["created"] as Array<any>).map(PriceChangeToJSON),
 		updated:
-			value.updated == null
+			value["updated"] == null
 				? undefined
-				: (value.updated as Array<any>).map(PriceChangeToJSON),
+				: (value["updated"] as Array<any>).map(PriceChangeToJSON),
 	};
 }

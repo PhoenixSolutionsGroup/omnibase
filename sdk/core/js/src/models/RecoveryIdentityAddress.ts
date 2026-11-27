@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -62,9 +63,9 @@ export interface RecoveryIdentityAddress {
 export function instanceOfRecoveryIdentityAddress(
 	value: object,
 ): value is RecoveryIdentityAddress {
-	if (!("id" in value) || value.id === undefined) return false;
-	if (!("value" in value) || value.value === undefined) return false;
-	if (!("via" in value) || value.via === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("value" in value) || value["value"] === undefined) return false;
+	if (!("via" in value) || value["via"] === undefined) return false;
 	return true;
 }
 
@@ -76,19 +77,23 @@ export function RecoveryIdentityAddressFromJSON(
 
 export function RecoveryIdentityAddressFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): RecoveryIdentityAddress {
 	if (json == null) {
 		return json;
 	}
 	return {
 		additionalProperties:
-			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
-		createdAt: json.created_at == null ? undefined : new Date(json.created_at),
-		id: json.id,
-		updatedAt: json.updated_at == null ? undefined : new Date(json.updated_at),
-		value: json.value,
-		via: json.via,
+			json["AdditionalProperties"] == null
+				? undefined
+				: json["AdditionalProperties"],
+		createdAt:
+			json["created_at"] == null ? undefined : new Date(json["created_at"]),
+		id: json["id"],
+		updatedAt:
+			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
+		value: json["value"],
+		via: json["via"],
 	};
 }
 
@@ -100,20 +105,24 @@ export function RecoveryIdentityAddressToJSON(
 
 export function RecoveryIdentityAddressToJSONTyped(
 	value?: RecoveryIdentityAddress | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		AdditionalProperties: value.additionalProperties,
+		AdditionalProperties: value["additionalProperties"],
 		created_at:
-			value.createdAt == null ? value.createdAt : value.createdAt.toISOString(),
-		id: value.id,
+			value["createdAt"] == null
+				? value["createdAt"]
+				: value["createdAt"].toISOString(),
+		id: value["id"],
 		updated_at:
-			value.updatedAt == null ? value.updatedAt : value.updatedAt.toISOString(),
-		value: value.value,
-		via: value.via,
+			value["updatedAt"] == null
+				? value["updatedAt"]
+				: value["updatedAt"].toISOString(),
+		value: value["value"],
+		via: value["via"],
 	};
 }

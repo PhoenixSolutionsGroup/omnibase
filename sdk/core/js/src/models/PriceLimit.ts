@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -42,7 +43,7 @@ export interface PriceLimit {
  * Check if a given object implements the PriceLimit interface.
  */
 export function instanceOfPriceLimit(value: object): value is PriceLimit {
-	if (!("text" in value) || value.text === undefined) return false;
+	if (!("text" in value) || value["text"] === undefined) return false;
 	return true;
 }
 
@@ -52,15 +53,15 @@ export function PriceLimitFromJSON(json: any): PriceLimit {
 
 export function PriceLimitFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): PriceLimit {
 	if (json == null) {
 		return json;
 	}
 	return {
-		text: json.text,
-		unit: json.unit == null ? undefined : json.unit,
-		value: json.value == null ? undefined : json.value,
+		text: json["text"],
+		unit: json["unit"] == null ? undefined : json["unit"],
+		value: json["value"] == null ? undefined : json["value"],
 	};
 }
 
@@ -70,15 +71,15 @@ export function PriceLimitToJSON(json: any): PriceLimit {
 
 export function PriceLimitToJSONTyped(
 	value?: PriceLimit | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		text: value.text,
-		unit: value.unit,
-		value: value.value,
+		text: value["text"],
+		unit: value["unit"],
+		value: value["value"],
 	};
 }

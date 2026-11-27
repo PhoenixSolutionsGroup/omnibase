@@ -19,13 +19,12 @@ import (
 	"net/url"
 )
 
-
 // V1StorageAPIService V1StorageAPI service
 type V1StorageAPIService service
 
 type ApiDeleteObjectRequest struct {
-	ctx context.Context
-	ApiService *V1StorageAPIService
+	ctx                 context.Context
+	ApiService          *V1StorageAPIService
 	deleteObjectRequest *DeleteObjectRequest
 }
 
@@ -43,24 +42,25 @@ DeleteObject Delete file from storage
 
 Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiDeleteObjectRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiDeleteObjectRequest
 */
 func (a *V1StorageAPIService) DeleteObject(ctx context.Context) ApiDeleteObjectRequest {
 	return ApiDeleteObjectRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return DeleteObjectResponse
+//
+//	@return DeleteObjectResponse
 func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*DeleteObjectResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeleteObjectResponse
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeleteObjectResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DeleteObject")
@@ -167,8 +167,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -178,8 +178,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -189,8 +189,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -200,8 +200,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -211,8 +211,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -230,8 +230,8 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 }
 
 type ApiDownloadFileRequest struct {
-	ctx context.Context
-	ApiService *V1StorageAPIService
+	ctx             context.Context
+	ApiService      *V1StorageAPIService
 	downloadRequest *DownloadRequest
 }
 
@@ -249,24 +249,25 @@ DownloadFile Download file from storage
 
 Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiDownloadFileRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiDownloadFileRequest
 */
 func (a *V1StorageAPIService) DownloadFile(ctx context.Context) ApiDownloadFileRequest {
 	return ApiDownloadFileRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return DownloadResponse
+//
+//	@return DownloadResponse
 func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*DownloadResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DownloadResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DownloadResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DownloadFile")
@@ -373,8 +374,8 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -384,8 +385,8 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -395,8 +396,8 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -406,8 +407,8 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -417,8 +418,8 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -436,7 +437,7 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 }
 
 type ApiGetStorageCredentialsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StorageAPIService
 }
 
@@ -449,24 +450,25 @@ GetStorageCredentials Get temporary S3 credentials
 
 Returns short-lived, bucket-scoped S3 credentials for server-side use. Requires the project service key. Do not expose the service key in browser code.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStorageCredentialsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStorageCredentialsRequest
 */
 func (a *V1StorageAPIService) GetStorageCredentials(ctx context.Context) ApiGetStorageCredentialsRequest {
 	return ApiGetStorageCredentialsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return GetStorageCredentialsResponse
+//
+//	@return GetStorageCredentialsResponse
 func (a *V1StorageAPIService) GetStorageCredentialsExecute(r ApiGetStorageCredentialsRequest) (*GetStorageCredentialsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetStorageCredentialsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GetStorageCredentialsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.GetStorageCredentials")
@@ -540,8 +542,8 @@ func (a *V1StorageAPIService) GetStorageCredentialsExecute(r ApiGetStorageCreden
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -551,8 +553,8 @@ func (a *V1StorageAPIService) GetStorageCredentialsExecute(r ApiGetStorageCreden
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 503 {
@@ -562,8 +564,8 @@ func (a *V1StorageAPIService) GetStorageCredentialsExecute(r ApiGetStorageCreden
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -581,8 +583,8 @@ func (a *V1StorageAPIService) GetStorageCredentialsExecute(r ApiGetStorageCreden
 }
 
 type ApiMakeFilePublicRequest struct {
-	ctx context.Context
-	ApiService *V1StorageAPIService
+	ctx               context.Context
+	ApiService        *V1StorageAPIService
 	makePublicRequest *MakePublicRequest
 }
 
@@ -600,24 +602,25 @@ MakeFilePublic Make a file publicly accessible
 
 Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiMakeFilePublicRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiMakeFilePublicRequest
 */
 func (a *V1StorageAPIService) MakeFilePublic(ctx context.Context) ApiMakeFilePublicRequest {
 	return ApiMakeFilePublicRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return MakePublicResponse
+//
+//	@return MakePublicResponse
 func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) (*MakePublicResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MakePublicResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MakePublicResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.MakeFilePublic")
@@ -724,8 +727,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -735,8 +738,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -746,8 +749,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -757,8 +760,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -768,8 +771,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -787,8 +790,8 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 }
 
 type ApiUploadFileRequest struct {
-	ctx context.Context
-	ApiService *V1StorageAPIService
+	ctx           context.Context
+	ApiService    *V1StorageAPIService
 	uploadRequest *UploadRequest
 }
 
@@ -806,24 +809,25 @@ UploadFile Upload file to storage
 
 Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUploadFileRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiUploadFileRequest
 */
 func (a *V1StorageAPIService) UploadFile(ctx context.Context) ApiUploadFileRequest {
 	return ApiUploadFileRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return UploadResponse
+//
+//	@return UploadResponse
 func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*UploadResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UploadResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *UploadResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.UploadFile")
@@ -930,8 +934,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -941,8 +945,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -952,8 +956,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -963,8 +967,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -974,8 +978,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -985,8 +989,8 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

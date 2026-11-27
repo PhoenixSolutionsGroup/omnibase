@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -50,9 +51,9 @@ export interface SendHTMLRequest {
 export function instanceOfSendHTMLRequest(
 	value: object,
 ): value is SendHTMLRequest {
-	if (!("body" in value) || value.body === undefined) return false;
-	if (!("subject" in value) || value.subject === undefined) return false;
-	if (!("to" in value) || value.to === undefined) return false;
+	if (!("body" in value) || value["body"] === undefined) return false;
+	if (!("subject" in value) || value["subject"] === undefined) return false;
+	if (!("to" in value) || value["to"] === undefined) return false;
 	return true;
 }
 
@@ -62,16 +63,16 @@ export function SendHTMLRequestFromJSON(json: any): SendHTMLRequest {
 
 export function SendHTMLRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): SendHTMLRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		body: json.body,
-		plain: json.plain == null ? undefined : json.plain,
-		subject: json.subject,
-		to: json.to,
+		body: json["body"],
+		plain: json["plain"] == null ? undefined : json["plain"],
+		subject: json["subject"],
+		to: json["to"],
 	};
 }
 
@@ -81,16 +82,16 @@ export function SendHTMLRequestToJSON(json: any): SendHTMLRequest {
 
 export function SendHTMLRequestToJSONTyped(
 	value?: SendHTMLRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		body: value.body,
-		plain: value.plain,
-		subject: value.subject,
-		to: value.to,
+		body: value["body"],
+		plain: value["plain"],
+		subject: value["subject"],
+		to: value["to"],
 	};
 }

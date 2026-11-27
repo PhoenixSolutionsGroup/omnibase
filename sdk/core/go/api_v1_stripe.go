@@ -20,14 +20,13 @@ import (
 	"strings"
 )
 
-
 // V1StripeAPIService V1StripeAPI service
 type V1StripeAPIService service
 
 type ApiCalculatePriceCostRequest struct {
-	ctx context.Context
-	ApiService *V1StripeAPIService
-	priceId string
+	ctx                       context.Context
+	ApiService                *V1StripeAPIService
+	priceId                   string
 	calculatePriceCostRequest *CalculatePriceCostRequest
 }
 
@@ -43,26 +42,27 @@ func (r ApiCalculatePriceCostRequest) Execute() (*CalculatePriceCostResponse, *h
 /*
 CalculatePriceCost Calculate cost for a price
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param priceId
- @return ApiCalculatePriceCostRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param priceId
+	@return ApiCalculatePriceCostRequest
 */
 func (a *V1StripeAPIService) CalculatePriceCost(ctx context.Context, priceId string) ApiCalculatePriceCostRequest {
 	return ApiCalculatePriceCostRequest{
 		ApiService: a,
-		ctx: ctx,
-		priceId: priceId,
+		ctx:        ctx,
+		priceId:    priceId,
 	}
 }
 
 // Execute executes the request
-//  @return CalculatePriceCostResponse
+//
+//	@return CalculatePriceCostResponse
 func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRequest) (*CalculatePriceCostResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CalculatePriceCostResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CalculatePriceCostResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.CalculatePriceCost")
@@ -128,8 +128,8 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -139,8 +139,8 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -150,8 +150,8 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -161,8 +161,8 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -180,9 +180,9 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 }
 
 type ApiGetMeterByIDRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
-	meterId string
+	meterId    string
 }
 
 func (r ApiGetMeterByIDRequest) Execute() (*GetMeterResponse, *http.Response, error) {
@@ -192,26 +192,27 @@ func (r ApiGetMeterByIDRequest) Execute() (*GetMeterResponse, *http.Response, er
 /*
 GetMeterByID Get meter by ID
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param meterId
- @return ApiGetMeterByIDRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param meterId
+	@return ApiGetMeterByIDRequest
 */
 func (a *V1StripeAPIService) GetMeterByID(ctx context.Context, meterId string) ApiGetMeterByIDRequest {
 	return ApiGetMeterByIDRequest{
 		ApiService: a,
-		ctx: ctx,
-		meterId: meterId,
+		ctx:        ctx,
+		meterId:    meterId,
 	}
 }
 
 // Execute executes the request
-//  @return GetMeterResponse
+//
+//	@return GetMeterResponse
 func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*GetMeterResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetMeterResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GetMeterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetMeterByID")
@@ -272,8 +273,8 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -283,8 +284,8 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -294,8 +295,8 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -305,8 +306,8 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -324,9 +325,9 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Get
 }
 
 type ApiGetPriceByIDRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
-	priceId string
+	priceId    string
 }
 
 func (r ApiGetPriceByIDRequest) Execute() (*GetPriceResponse, *http.Response, error) {
@@ -336,26 +337,27 @@ func (r ApiGetPriceByIDRequest) Execute() (*GetPriceResponse, *http.Response, er
 /*
 GetPriceByID Get price by ID
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param priceId
- @return ApiGetPriceByIDRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param priceId
+	@return ApiGetPriceByIDRequest
 */
 func (a *V1StripeAPIService) GetPriceByID(ctx context.Context, priceId string) ApiGetPriceByIDRequest {
 	return ApiGetPriceByIDRequest{
 		ApiService: a,
-		ctx: ctx,
-		priceId: priceId,
+		ctx:        ctx,
+		priceId:    priceId,
 	}
 }
 
 // Execute executes the request
-//  @return GetPriceResponse
+//
+//	@return GetPriceResponse
 func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*GetPriceResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetPriceResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GetPriceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetPriceByID")
@@ -416,8 +418,8 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -427,8 +429,8 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -438,8 +440,8 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -449,8 +451,8 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Get
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -468,9 +470,9 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Get
 }
 
 type ApiGetProductByIDRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
-	productId string
+	productId  string
 }
 
 func (r ApiGetProductByIDRequest) Execute() (*GetProductResponse, *http.Response, error) {
@@ -480,26 +482,27 @@ func (r ApiGetProductByIDRequest) Execute() (*GetProductResponse, *http.Response
 /*
 GetProductByID Get product by ID
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param productId
- @return ApiGetProductByIDRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param productId
+	@return ApiGetProductByIDRequest
 */
 func (a *V1StripeAPIService) GetProductByID(ctx context.Context, productId string) ApiGetProductByIDRequest {
 	return ApiGetProductByIDRequest{
 		ApiService: a,
-		ctx: ctx,
-		productId: productId,
+		ctx:        ctx,
+		productId:  productId,
 	}
 }
 
 // Execute executes the request
-//  @return GetProductResponse
+//
+//	@return GetProductResponse
 func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (*GetProductResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetProductResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GetProductResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetProductByID")
@@ -560,8 +563,8 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -571,8 +574,8 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -582,8 +585,8 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -593,8 +596,8 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -612,7 +615,7 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 }
 
 type ApiGetStripeConfigRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
 }
 
@@ -623,24 +626,25 @@ func (r ApiGetStripeConfigRequest) Execute() (*StripeConfigResponse, *http.Respo
 /*
 GetStripeConfig Get public Stripe config
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStripeConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStripeConfigRequest
 */
 func (a *V1StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeConfigRequest {
 	return ApiGetStripeConfigRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfigResponse
+//
+//	@return StripeConfigResponse
 func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*StripeConfigResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StripeConfigResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StripeConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfig")
@@ -700,8 +704,8 @@ func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest)
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -719,7 +723,7 @@ func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest)
 }
 
 type ApiGetStripeConfigAdminRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
 }
 
@@ -730,24 +734,25 @@ func (r ApiGetStripeConfigAdminRequest) Execute() (*StripeConfigResponse, *http.
 /*
 GetStripeConfigAdmin Get full Stripe config (admin)
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStripeConfigAdminRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStripeConfigAdminRequest
 */
 func (a *V1StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStripeConfigAdminRequest {
 	return ApiGetStripeConfigAdminRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfigResponse
+//
+//	@return StripeConfigResponse
 func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*StripeConfigResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StripeConfigResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StripeConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfigAdmin")
@@ -821,8 +826,8 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -832,8 +837,8 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -843,8 +848,8 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -862,7 +867,7 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 }
 
 type ApiListWebhooksRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1StripeAPIService
 }
 
@@ -873,24 +878,25 @@ func (r ApiListWebhooksRequest) Execute() (*ListWebhooksResponse, *http.Response
 /*
 ListWebhooks List all webhooks
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListWebhooksRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListWebhooksRequest
 */
 func (a *V1StripeAPIService) ListWebhooks(ctx context.Context) ApiListWebhooksRequest {
 	return ApiListWebhooksRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListWebhooksResponse
+//
+//	@return ListWebhooksResponse
 func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*ListWebhooksResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListWebhooksResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListWebhooksResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ListWebhooks")
@@ -964,8 +970,8 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -975,8 +981,8 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -986,8 +992,8 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

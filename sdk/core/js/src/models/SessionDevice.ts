@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -54,7 +55,7 @@ export interface SessionDevice {
  * Check if a given object implements the SessionDevice interface.
  */
 export function instanceOfSessionDevice(value: object): value is SessionDevice {
-	if (!("id" in value) || value.id === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
 	return true;
 }
 
@@ -64,18 +65,20 @@ export function SessionDeviceFromJSON(json: any): SessionDevice {
 
 export function SessionDeviceFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): SessionDevice {
 	if (json == null) {
 		return json;
 	}
 	return {
 		additionalProperties:
-			json.AdditionalProperties == null ? undefined : json.AdditionalProperties,
-		id: json.id,
-		ipAddress: json.ip_address == null ? undefined : json.ip_address,
-		location: json.location == null ? undefined : json.location,
-		userAgent: json.user_agent == null ? undefined : json.user_agent,
+			json["AdditionalProperties"] == null
+				? undefined
+				: json["AdditionalProperties"],
+		id: json["id"],
+		ipAddress: json["ip_address"] == null ? undefined : json["ip_address"],
+		location: json["location"] == null ? undefined : json["location"],
+		userAgent: json["user_agent"] == null ? undefined : json["user_agent"],
 	};
 }
 
@@ -85,17 +88,17 @@ export function SessionDeviceToJSON(json: any): SessionDevice {
 
 export function SessionDeviceToJSONTyped(
 	value?: SessionDevice | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		AdditionalProperties: value.additionalProperties,
-		id: value.id,
-		ip_address: value.ipAddress,
-		location: value.location,
-		user_agent: value.userAgent,
+		AdditionalProperties: value["additionalProperties"],
+		id: value["id"],
+		ip_address: value["ipAddress"],
+		location: value["location"],
+		user_agent: value["userAgent"],
 	};
 }

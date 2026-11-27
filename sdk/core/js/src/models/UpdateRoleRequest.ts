@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface UpdateRoleRequest {
 export function instanceOfUpdateRoleRequest(
 	value: object,
 ): value is UpdateRoleRequest {
-	if (!("permissions" in value) || value.permissions === undefined)
+	if (!("permissions" in value) || value["permissions"] === undefined)
 		return false;
 	return true;
 }
@@ -43,13 +44,13 @@ export function UpdateRoleRequestFromJSON(json: any): UpdateRoleRequest {
 
 export function UpdateRoleRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UpdateRoleRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		permissions: json.permissions == null ? null : json.permissions,
+		permissions: json["permissions"] == null ? null : json["permissions"],
 	};
 }
 
@@ -59,13 +60,13 @@ export function UpdateRoleRequestToJSON(json: any): UpdateRoleRequest {
 
 export function UpdateRoleRequestToJSONTyped(
 	value?: UpdateRoleRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		permissions: value.permissions,
+		permissions: value["permissions"],
 	};
 }

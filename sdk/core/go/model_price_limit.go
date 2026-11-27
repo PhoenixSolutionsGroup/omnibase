@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,8 +22,8 @@ var _ MappedNullable = &PriceLimit{}
 
 // PriceLimit struct for PriceLimit
 type PriceLimit struct {
-	Text string `json:"text"`
-	Unit *string `json:"unit,omitempty"`
+	Text  string   `json:"text"`
+	Unit  *string  `json:"unit,omitempty"`
 	Value *float64 `json:"value,omitempty"`
 }
 
@@ -136,7 +136,7 @@ func (o *PriceLimit) SetValue(v float64) {
 }
 
 func (o PriceLimit) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -168,10 +168,10 @@ func (o *PriceLimit) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -227,5 +227,3 @@ func (v *NullablePriceLimit) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -54,11 +55,11 @@ export interface UserResponse {
  * Check if a given object implements the UserResponse interface.
  */
 export function instanceOfUserResponse(value: object): value is UserResponse {
-	if (!("email" in value) || value.email === undefined) return false;
-	if (!("firstName" in value) || value.firstName === undefined) return false;
-	if (!("lastName" in value) || value.lastName === undefined) return false;
-	if (!("role" in value) || value.role === undefined) return false;
-	if (!("userId" in value) || value.userId === undefined) return false;
+	if (!("email" in value) || value["email"] === undefined) return false;
+	if (!("firstName" in value) || value["firstName"] === undefined) return false;
+	if (!("lastName" in value) || value["lastName"] === undefined) return false;
+	if (!("role" in value) || value["role"] === undefined) return false;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
 	return true;
 }
 
@@ -68,17 +69,17 @@ export function UserResponseFromJSON(json: any): UserResponse {
 
 export function UserResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UserResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		email: json.email,
-		firstName: json.first_name,
-		lastName: json.last_name,
-		role: json.role,
-		userId: json.user_id,
+		email: json["email"],
+		firstName: json["first_name"],
+		lastName: json["last_name"],
+		role: json["role"],
+		userId: json["user_id"],
 	};
 }
 
@@ -88,17 +89,17 @@ export function UserResponseToJSON(json: any): UserResponse {
 
 export function UserResponseToJSONTyped(
 	value?: UserResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		email: value.email,
-		first_name: value.firstName,
-		last_name: value.lastName,
-		role: value.role,
-		user_id: value.userId,
+		email: value["email"],
+		first_name: value["firstName"],
+		last_name: value["lastName"],
+		role: value["role"],
+		user_id: value["userId"],
 	};
 }

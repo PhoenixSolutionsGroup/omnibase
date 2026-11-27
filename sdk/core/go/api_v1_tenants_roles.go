@@ -20,13 +20,12 @@ import (
 	"strings"
 )
 
-
 // V1TenantsRolesAPIService V1TenantsRolesAPI service
 type V1TenantsRolesAPIService service
 
 type ApiCreateRoleRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsRolesAPIService
+	ctx               context.Context
+	ApiService        *V1TenantsRolesAPIService
 	createRoleRequest *CreateRoleRequest
 }
 
@@ -42,24 +41,25 @@ func (r ApiCreateRoleRequest) Execute() (*CreateRoleRow, *http.Response, error) 
 /*
 CreateRole Create a role
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateRoleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateRoleRequest
 */
 func (a *V1TenantsRolesAPIService) CreateRole(ctx context.Context) ApiCreateRoleRequest {
 	return ApiCreateRoleRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateRoleRow
+//
+//	@return CreateRoleRow
 func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRoleRow, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateRoleRow
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateRoleRow
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsRolesAPIService.CreateRole")
@@ -166,8 +166,8 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -177,8 +177,8 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -188,8 +188,8 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -199,8 +199,8 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -210,8 +210,8 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -229,9 +229,9 @@ func (a *V1TenantsRolesAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*C
 }
 
 type ApiDeleteRoleRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsRolesAPIService
-	roleId string
+	roleId     string
 }
 
 func (r ApiDeleteRoleRequest) Execute() (interface{}, *http.Response, error) {
@@ -241,26 +241,27 @@ func (r ApiDeleteRoleRequest) Execute() (interface{}, *http.Response, error) {
 /*
 DeleteRole Delete a role
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param roleId
- @return ApiDeleteRoleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param roleId
+	@return ApiDeleteRoleRequest
 */
 func (a *V1TenantsRolesAPIService) DeleteRole(ctx context.Context, roleId string) ApiDeleteRoleRequest {
 	return ApiDeleteRoleRequest{
 		ApiService: a,
-		ctx: ctx,
-		roleId: roleId,
+		ctx:        ctx,
+		roleId:     roleId,
 	}
 }
 
 // Execute executes the request
-//  @return interface{}
+//
+//	@return interface{}
 func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsRolesAPIService.DeleteRole")
@@ -363,8 +364,8 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -374,8 +375,8 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -385,8 +386,8 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -396,8 +397,8 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -407,8 +408,8 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -426,9 +427,9 @@ func (a *V1TenantsRolesAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (in
 }
 
 type ApiListRoleDefinitionsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsRolesAPIService
-	subject *string
+	subject    *string
 }
 
 func (r ApiListRoleDefinitionsRequest) Subject(subject string) ApiListRoleDefinitionsRequest {
@@ -443,24 +444,25 @@ func (r ApiListRoleDefinitionsRequest) Execute() ([]NamespaceDefinitionResponse,
 /*
 ListRoleDefinitions List role definitions
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListRoleDefinitionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListRoleDefinitionsRequest
 */
 func (a *V1TenantsRolesAPIService) ListRoleDefinitions(ctx context.Context) ApiListRoleDefinitionsRequest {
 	return ApiListRoleDefinitionsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []NamespaceDefinitionResponse
+//
+//	@return []NamespaceDefinitionResponse
 func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefinitionsRequest) ([]NamespaceDefinitionResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []NamespaceDefinitionResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []NamespaceDefinitionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsRolesAPIService.ListRoleDefinitions")
@@ -565,8 +567,8 @@ func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -576,8 +578,8 @@ func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -587,8 +589,8 @@ func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -598,8 +600,8 @@ func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -617,7 +619,7 @@ func (a *V1TenantsRolesAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefin
 }
 
 type ApiListRolesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsRolesAPIService
 }
 
@@ -628,24 +630,25 @@ func (r ApiListRolesRequest) Execute() ([]ListRolesByTenantRow, *http.Response, 
 /*
 ListRoles List roles for the tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListRolesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListRolesRequest
 */
 func (a *V1TenantsRolesAPIService) ListRoles(ctx context.Context) ApiListRolesRequest {
 	return ApiListRolesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []ListRolesByTenantRow
+//
+//	@return []ListRolesByTenantRow
 func (a *V1TenantsRolesAPIService) ListRolesExecute(r ApiListRolesRequest) ([]ListRolesByTenantRow, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []ListRolesByTenantRow
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []ListRolesByTenantRow
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsRolesAPIService.ListRoles")
@@ -747,8 +750,8 @@ func (a *V1TenantsRolesAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Li
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -758,8 +761,8 @@ func (a *V1TenantsRolesAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Li
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -769,8 +772,8 @@ func (a *V1TenantsRolesAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Li
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -788,9 +791,9 @@ func (a *V1TenantsRolesAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Li
 }
 
 type ApiUpdateRoleRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsRolesAPIService
-	roleId string
+	ctx               context.Context
+	ApiService        *V1TenantsRolesAPIService
+	roleId            string
 	updateRoleRequest *UpdateRoleRequest
 }
 
@@ -806,26 +809,27 @@ func (r ApiUpdateRoleRequest) Execute() (*UpdateRolePermissionsRow, *http.Respon
 /*
 UpdateRole Update a role
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param roleId
- @return ApiUpdateRoleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param roleId
+	@return ApiUpdateRoleRequest
 */
 func (a *V1TenantsRolesAPIService) UpdateRole(ctx context.Context, roleId string) ApiUpdateRoleRequest {
 	return ApiUpdateRoleRequest{
 		ApiService: a,
-		ctx: ctx,
-		roleId: roleId,
+		ctx:        ctx,
+		roleId:     roleId,
 	}
 }
 
 // Execute executes the request
-//  @return UpdateRolePermissionsRow
+//
+//	@return UpdateRolePermissionsRow
 func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*UpdateRolePermissionsRow, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UpdateRolePermissionsRow
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *UpdateRolePermissionsRow
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsRolesAPIService.UpdateRole")
@@ -933,8 +937,8 @@ func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*U
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -944,8 +948,8 @@ func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*U
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -955,8 +959,8 @@ func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*U
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -966,8 +970,8 @@ func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*U
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -977,8 +981,8 @@ func (a *V1TenantsRolesAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*U
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

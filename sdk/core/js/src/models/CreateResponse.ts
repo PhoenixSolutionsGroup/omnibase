@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { AuthTenantInvite } from "./AuthTenantInvite";
 import {
 	AuthTenantInviteFromJSON,
+	AuthTenantInviteFromJSONTyped,
 	AuthTenantInviteToJSON,
+	AuthTenantInviteToJSONTyped,
 } from "./AuthTenantInvite";
 
 /**
@@ -44,8 +47,8 @@ export interface CreateResponse {
 export function instanceOfCreateResponse(
 	value: object,
 ): value is CreateResponse {
-	if (!("invite" in value) || value.invite === undefined) return false;
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("invite" in value) || value["invite"] === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -55,14 +58,14 @@ export function CreateResponseFromJSON(json: any): CreateResponse {
 
 export function CreateResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CreateResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		invite: AuthTenantInviteFromJSON(json.invite),
-		message: json.message,
+		invite: AuthTenantInviteFromJSON(json["invite"]),
+		message: json["message"],
 	};
 }
 
@@ -72,14 +75,14 @@ export function CreateResponseToJSON(json: any): CreateResponse {
 
 export function CreateResponseToJSONTyped(
 	value?: CreateResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		invite: AuthTenantInviteToJSON(value.invite),
-		message: value.message,
+		invite: AuthTenantInviteToJSON(value["invite"]),
+		message: value["message"],
 	};
 }

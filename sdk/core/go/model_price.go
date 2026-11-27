@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,22 +22,22 @@ var _ MappedNullable = &Price{}
 
 // Price struct for Price
 type Price struct {
-	Amount *float64 `json:"amount,omitempty"`
-	BillingScheme *string `json:"billing_scheme,omitempty"`
-	Currency string `json:"currency"`
-	Default *bool `json:"default,omitempty"`
-	Id string `json:"id"`
-	Interval *string `json:"interval,omitempty"`
-	IntervalCount *int64 `json:"interval_count,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-	Meter *string `json:"meter,omitempty"`
-	Public *bool `json:"public,omitempty"`
-	StripeId *string `json:"stripe_id,omitempty"`
-	TaxIncludedInPrice *bool `json:"tax_included_in_price,omitempty"`
-	Tiers []Tier `json:"tiers,omitempty"`
-	TiersMode *string `json:"tiers_mode,omitempty"`
-	Ui *PriceUI `json:"ui,omitempty"`
-	UsageType *string `json:"usage_type,omitempty"`
+	Amount             *float64          `json:"amount,omitempty"`
+	BillingScheme      *string           `json:"billing_scheme,omitempty"`
+	Currency           string            `json:"currency"`
+	Default            *bool             `json:"default,omitempty"`
+	Id                 string            `json:"id"`
+	Interval           *string           `json:"interval,omitempty"`
+	IntervalCount      *int64            `json:"interval_count,omitempty"`
+	Metadata           map[string]string `json:"metadata,omitempty"`
+	Meter              *string           `json:"meter,omitempty"`
+	Public             *bool             `json:"public,omitempty"`
+	StripeId           *string           `json:"stripe_id,omitempty"`
+	TaxIncludedInPrice *bool             `json:"tax_included_in_price,omitempty"`
+	Tiers              []Tier            `json:"tiers,omitempty"`
+	TiersMode          *string           `json:"tiers_mode,omitempty"`
+	Ui                 *PriceUI          `json:"ui,omitempty"`
+	UsageType          *string           `json:"usage_type,omitempty"`
 }
 
 type _Price Price
@@ -559,7 +559,7 @@ func (o *Price) SetUsageType(v string) {
 }
 
 func (o Price) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -629,10 +629,10 @@ func (o *Price) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -688,5 +688,3 @@ func (v *NullablePrice) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

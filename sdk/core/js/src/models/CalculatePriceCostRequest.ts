@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface CalculatePriceCostRequest {
 export function instanceOfCalculatePriceCostRequest(
 	value: object,
 ): value is CalculatePriceCostRequest {
-	if (!("quantity" in value) || value.quantity === undefined) return false;
+	if (!("quantity" in value) || value["quantity"] === undefined) return false;
 	return true;
 }
 
@@ -44,13 +45,13 @@ export function CalculatePriceCostRequestFromJSON(
 
 export function CalculatePriceCostRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CalculatePriceCostRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		quantity: json.quantity,
+		quantity: json["quantity"],
 	};
 }
 
@@ -62,13 +63,13 @@ export function CalculatePriceCostRequestToJSON(
 
 export function CalculatePriceCostRequestToJSONTyped(
 	value?: CalculatePriceCostRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		quantity: value.quantity,
+		quantity: value["quantity"],
 	};
 }

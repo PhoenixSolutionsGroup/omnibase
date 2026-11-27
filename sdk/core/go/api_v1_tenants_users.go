@@ -19,12 +19,11 @@ import (
 	"net/url"
 )
 
-
 // V1TenantsUsersAPIService V1TenantsUsersAPI service
 type V1TenantsUsersAPIService service
 
 type ApiListTenantUsersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsUsersAPIService
 }
 
@@ -35,24 +34,25 @@ func (r ApiListTenantUsersRequest) Execute() ([]UserResponse, *http.Response, er
 /*
 ListTenantUsers List users in the tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListTenantUsersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListTenantUsersRequest
 */
 func (a *V1TenantsUsersAPIService) ListTenantUsers(ctx context.Context) ApiListTenantUsersRequest {
 	return ApiListTenantUsersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []UserResponse
+//
+//	@return []UserResponse
 func (a *V1TenantsUsersAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) ([]UserResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []UserResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []UserResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsUsersAPIService.ListTenantUsers")
@@ -154,8 +154,8 @@ func (a *V1TenantsUsersAPIService) ListTenantUsersExecute(r ApiListTenantUsersRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -165,8 +165,8 @@ func (a *V1TenantsUsersAPIService) ListTenantUsersExecute(r ApiListTenantUsersRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -176,8 +176,8 @@ func (a *V1TenantsUsersAPIService) ListTenantUsersExecute(r ApiListTenantUsersRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -195,8 +195,8 @@ func (a *V1TenantsUsersAPIService) ListTenantUsersExecute(r ApiListTenantUsersRe
 }
 
 type ApiRemoveTenantUserRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsUsersAPIService
+	ctx           context.Context
+	ApiService    *V1TenantsUsersAPIService
 	deleteRequest *DeleteRequest
 }
 
@@ -212,24 +212,25 @@ func (r ApiRemoveTenantUserRequest) Execute() (interface{}, *http.Response, erro
 /*
 RemoveTenantUser Remove a user from the tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiRemoveTenantUserRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiRemoveTenantUserRequest
 */
 func (a *V1TenantsUsersAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTenantUserRequest {
 	return ApiRemoveTenantUserRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return interface{}
+//
+//	@return interface{}
 func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsUsersAPIService.RemoveTenantUser")
@@ -336,8 +337,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -347,8 +348,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -358,8 +359,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -369,8 +370,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -380,8 +381,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -399,8 +400,8 @@ func (a *V1TenantsUsersAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUser
 }
 
 type ApiUpdateTenantUserRoleRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsUsersAPIService
+	ctx                   context.Context
+	ApiService            *V1TenantsUsersAPIService
 	updateUserRoleRequest *UpdateUserRoleRequest
 }
 
@@ -416,24 +417,25 @@ func (r ApiUpdateTenantUserRoleRequest) Execute() (*UpdateUserRoleResponse, *htt
 /*
 UpdateTenantUserRole Update a tenant user's role
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUpdateTenantUserRoleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiUpdateTenantUserRoleRequest
 */
 func (a *V1TenantsUsersAPIService) UpdateTenantUserRole(ctx context.Context) ApiUpdateTenantUserRoleRequest {
 	return ApiUpdateTenantUserRoleRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return UpdateUserRoleResponse
+//
+//	@return UpdateUserRoleResponse
 func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRoleRequest) (*UpdateUserRoleResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UpdateUserRoleResponse
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *UpdateUserRoleResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsUsersAPIService.UpdateTenantUserRole")
@@ -540,8 +542,8 @@ func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenant
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -551,8 +553,8 @@ func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenant
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -562,8 +564,8 @@ func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenant
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -573,8 +575,8 @@ func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenant
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -584,8 +586,8 @@ func (a *V1TenantsUsersAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenant
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

@@ -12,15 +12,20 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { ConfigStatusEntry } from "./ConfigStatusEntry";
 import {
 	ConfigStatusEntryFromJSON,
+	ConfigStatusEntryFromJSONTyped,
 	ConfigStatusEntryToJSON,
+	ConfigStatusEntryToJSONTyped,
 } from "./ConfigStatusEntry";
 import type { ConfigStatusSummary } from "./ConfigStatusSummary";
 import {
 	ConfigStatusSummaryFromJSON,
+	ConfigStatusSummaryFromJSONTyped,
 	ConfigStatusSummaryToJSON,
+	ConfigStatusSummaryToJSONTyped,
 } from "./ConfigStatusSummary";
 
 /**
@@ -59,10 +64,10 @@ export interface ConfigStatus {
  * Check if a given object implements the ConfigStatus interface.
  */
 export function instanceOfConfigStatus(value: object): value is ConfigStatus {
-	if (!("drift" in value) || value.drift === undefined) return false;
-	if (!("pending" in value) || value.pending === undefined) return false;
-	if (!("summary" in value) || value.summary === undefined) return false;
-	if (!("untracked" in value) || value.untracked === undefined) return false;
+	if (!("drift" in value) || value["drift"] === undefined) return false;
+	if (!("pending" in value) || value["pending"] === undefined) return false;
+	if (!("summary" in value) || value["summary"] === undefined) return false;
+	if (!("untracked" in value) || value["untracked"] === undefined) return false;
 	return true;
 }
 
@@ -72,25 +77,25 @@ export function ConfigStatusFromJSON(json: any): ConfigStatus {
 
 export function ConfigStatusFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ConfigStatus {
 	if (json == null) {
 		return json;
 	}
 	return {
 		drift:
-			json.drift == null
+			json["drift"] == null
 				? null
-				: (json.drift as Array<any>).map(ConfigStatusEntryFromJSON),
+				: (json["drift"] as Array<any>).map(ConfigStatusEntryFromJSON),
 		pending:
-			json.pending == null
+			json["pending"] == null
 				? null
-				: (json.pending as Array<any>).map(ConfigStatusEntryFromJSON),
-		summary: ConfigStatusSummaryFromJSON(json.summary),
+				: (json["pending"] as Array<any>).map(ConfigStatusEntryFromJSON),
+		summary: ConfigStatusSummaryFromJSON(json["summary"]),
 		untracked:
-			json.untracked == null
+			json["untracked"] == null
 				? null
-				: (json.untracked as Array<any>).map(ConfigStatusEntryFromJSON),
+				: (json["untracked"] as Array<any>).map(ConfigStatusEntryFromJSON),
 	};
 }
 
@@ -100,7 +105,7 @@ export function ConfigStatusToJSON(json: any): ConfigStatus {
 
 export function ConfigStatusToJSONTyped(
 	value?: ConfigStatus | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -108,17 +113,17 @@ export function ConfigStatusToJSONTyped(
 
 	return {
 		drift:
-			value.drift == null
+			value["drift"] == null
 				? null
-				: (value.drift as Array<any>).map(ConfigStatusEntryToJSON),
+				: (value["drift"] as Array<any>).map(ConfigStatusEntryToJSON),
 		pending:
-			value.pending == null
+			value["pending"] == null
 				? null
-				: (value.pending as Array<any>).map(ConfigStatusEntryToJSON),
-		summary: ConfigStatusSummaryToJSON(value.summary),
+				: (value["pending"] as Array<any>).map(ConfigStatusEntryToJSON),
+		summary: ConfigStatusSummaryToJSON(value["summary"]),
 		untracked:
-			value.untracked == null
+			value["untracked"] == null
 				? null
-				: (value.untracked as Array<any>).map(ConfigStatusEntryToJSON),
+				: (value["untracked"] as Array<any>).map(ConfigStatusEntryToJSON),
 	};
 }

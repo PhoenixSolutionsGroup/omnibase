@@ -12,21 +12,49 @@
  * Do not edit the class manually.
  */
 
-import type { CouponChanges } from "./CouponChanges";
-import { CouponChangesFromJSON, CouponChangesToJSON } from "./CouponChanges";
+import { mapValues } from "../runtime";
 import type { MeterChanges } from "./MeterChanges";
-import { MeterChangesFromJSON, MeterChangesToJSON } from "./MeterChanges";
-import type { PriceChanges } from "./PriceChanges";
-import { PriceChangesFromJSON, PriceChangesToJSON } from "./PriceChanges";
-import type { ProductChanges } from "./ProductChanges";
-import { ProductChangesFromJSON, ProductChangesToJSON } from "./ProductChanges";
+import {
+	MeterChangesFromJSON,
+	MeterChangesFromJSONTyped,
+	MeterChangesToJSON,
+	MeterChangesToJSONTyped,
+} from "./MeterChanges";
+import type { CouponChanges } from "./CouponChanges";
+import {
+	CouponChangesFromJSON,
+	CouponChangesFromJSONTyped,
+	CouponChangesToJSON,
+	CouponChangesToJSONTyped,
+} from "./CouponChanges";
 import type { PromotionCodeChanges } from "./PromotionCodeChanges";
 import {
 	PromotionCodeChangesFromJSON,
+	PromotionCodeChangesFromJSONTyped,
 	PromotionCodeChangesToJSON,
+	PromotionCodeChangesToJSONTyped,
 } from "./PromotionCodeChanges";
+import type { PriceChanges } from "./PriceChanges";
+import {
+	PriceChangesFromJSON,
+	PriceChangesFromJSONTyped,
+	PriceChangesToJSON,
+	PriceChangesToJSONTyped,
+} from "./PriceChanges";
+import type { ProductChanges } from "./ProductChanges";
+import {
+	ProductChangesFromJSON,
+	ProductChangesFromJSONTyped,
+	ProductChangesToJSON,
+	ProductChangesToJSONTyped,
+} from "./ProductChanges";
 import type { WebhookChanges } from "./WebhookChanges";
-import { WebhookChangesFromJSON, WebhookChangesToJSON } from "./WebhookChanges";
+import {
+	WebhookChangesFromJSON,
+	WebhookChangesFromJSONTyped,
+	WebhookChangesToJSON,
+	WebhookChangesToJSONTyped,
+} from "./WebhookChanges";
 
 /**
  *
@@ -85,24 +113,32 @@ export function ConfigChangesFromJSON(json: any): ConfigChanges {
 
 export function ConfigChangesFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ConfigChanges {
 	if (json == null) {
 		return json;
 	}
 	return {
 		coupons:
-			json.coupons == null ? undefined : CouponChangesFromJSON(json.coupons),
-		meters: json.meters == null ? undefined : MeterChangesFromJSON(json.meters),
-		prices: json.prices == null ? undefined : PriceChangesFromJSON(json.prices),
-		products:
-			json.products == null ? undefined : ProductChangesFromJSON(json.products),
-		promotionCodes:
-			json.promotion_codes == null
+			json["coupons"] == null
 				? undefined
-				: PromotionCodeChangesFromJSON(json.promotion_codes),
+				: CouponChangesFromJSON(json["coupons"]),
+		meters:
+			json["meters"] == null ? undefined : MeterChangesFromJSON(json["meters"]),
+		prices:
+			json["prices"] == null ? undefined : PriceChangesFromJSON(json["prices"]),
+		products:
+			json["products"] == null
+				? undefined
+				: ProductChangesFromJSON(json["products"]),
+		promotionCodes:
+			json["promotion_codes"] == null
+				? undefined
+				: PromotionCodeChangesFromJSON(json["promotion_codes"]),
 		webhooks:
-			json.webhooks == null ? undefined : WebhookChangesFromJSON(json.webhooks),
+			json["webhooks"] == null
+				? undefined
+				: WebhookChangesFromJSON(json["webhooks"]),
 	};
 }
 
@@ -112,18 +148,18 @@ export function ConfigChangesToJSON(json: any): ConfigChanges {
 
 export function ConfigChangesToJSONTyped(
 	value?: ConfigChanges | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		coupons: CouponChangesToJSON(value.coupons),
-		meters: MeterChangesToJSON(value.meters),
-		prices: PriceChangesToJSON(value.prices),
-		products: ProductChangesToJSON(value.products),
-		promotion_codes: PromotionCodeChangesToJSON(value.promotionCodes),
-		webhooks: WebhookChangesToJSON(value.webhooks),
+		coupons: CouponChangesToJSON(value["coupons"]),
+		meters: MeterChangesToJSON(value["meters"]),
+		prices: PriceChangesToJSON(value["prices"]),
+		products: ProductChangesToJSON(value["products"]),
+		promotion_codes: PromotionCodeChangesToJSON(value["promotionCodes"]),
+		webhooks: WebhookChangesToJSON(value["webhooks"]),
 	};
 }

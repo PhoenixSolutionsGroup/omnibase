@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -36,8 +37,8 @@ export interface IdentityName {
  * Check if a given object implements the IdentityName interface.
  */
 export function instanceOfIdentityName(value: object): value is IdentityName {
-	if (!("first" in value) || value.first === undefined) return false;
-	if (!("last" in value) || value.last === undefined) return false;
+	if (!("first" in value) || value["first"] === undefined) return false;
+	if (!("last" in value) || value["last"] === undefined) return false;
 	return true;
 }
 
@@ -47,14 +48,14 @@ export function IdentityNameFromJSON(json: any): IdentityName {
 
 export function IdentityNameFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): IdentityName {
 	if (json == null) {
 		return json;
 	}
 	return {
-		first: json.first,
-		last: json.last,
+		first: json["first"],
+		last: json["last"],
 	};
 }
 
@@ -64,14 +65,14 @@ export function IdentityNameToJSON(json: any): IdentityName {
 
 export function IdentityNameToJSONTyped(
 	value?: IdentityName | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		first: value.first,
-		last: value.last,
+		first: value["first"],
+		last: value["last"],
 	};
 }

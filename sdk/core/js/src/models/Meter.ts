@@ -12,21 +12,28 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { MeterCustomerMapping } from "./MeterCustomerMapping";
 import {
 	MeterCustomerMappingFromJSON,
+	MeterCustomerMappingFromJSONTyped,
 	MeterCustomerMappingToJSON,
+	MeterCustomerMappingToJSONTyped,
 } from "./MeterCustomerMapping";
-import type { MeterDefaultAggregation } from "./MeterDefaultAggregation";
-import {
-	MeterDefaultAggregationFromJSON,
-	MeterDefaultAggregationToJSON,
-} from "./MeterDefaultAggregation";
 import type { MeterValueSettings } from "./MeterValueSettings";
 import {
 	MeterValueSettingsFromJSON,
+	MeterValueSettingsFromJSONTyped,
 	MeterValueSettingsToJSON,
+	MeterValueSettingsToJSONTyped,
 } from "./MeterValueSettings";
+import type { MeterDefaultAggregation } from "./MeterDefaultAggregation";
+import {
+	MeterDefaultAggregationFromJSON,
+	MeterDefaultAggregationFromJSONTyped,
+	MeterDefaultAggregationToJSON,
+	MeterDefaultAggregationToJSONTyped,
+} from "./MeterDefaultAggregation";
 
 /**
  *
@@ -84,13 +91,13 @@ export interface Meter {
 export function instanceOfMeter(value: object): value is Meter {
 	if (
 		!("defaultAggregation" in value) ||
-		value.defaultAggregation === undefined
+		value["defaultAggregation"] === undefined
 	)
 		return false;
-	if (!("displayName" in value) || value.displayName === undefined)
+	if (!("displayName" in value) || value["displayName"] === undefined)
 		return false;
-	if (!("eventName" in value) || value.eventName === undefined) return false;
-	if (!("id" in value) || value.id === undefined) return false;
+	if (!("eventName" in value) || value["eventName"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
 	return true;
 }
 
@@ -100,27 +107,27 @@ export function MeterFromJSON(json: any): Meter {
 
 export function MeterFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): Meter {
 	if (json == null) {
 		return json;
 	}
 	return {
 		customerMapping:
-			json.customer_mapping == null
+			json["customer_mapping"] == null
 				? undefined
-				: MeterCustomerMappingFromJSON(json.customer_mapping),
+				: MeterCustomerMappingFromJSON(json["customer_mapping"]),
 		defaultAggregation: MeterDefaultAggregationFromJSON(
-			json.default_aggregation,
+			json["default_aggregation"],
 		),
-		displayName: json.display_name,
-		eventName: json.event_name,
-		id: json.id,
-		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
+		displayName: json["display_name"],
+		eventName: json["event_name"],
+		id: json["id"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
 		valueSettings:
-			json.value_settings == null
+			json["value_settings"] == null
 				? undefined
-				: MeterValueSettingsFromJSON(json.value_settings),
+				: MeterValueSettingsFromJSON(json["value_settings"]),
 	};
 }
 
@@ -130,21 +137,21 @@ export function MeterToJSON(json: any): Meter {
 
 export function MeterToJSONTyped(
 	value?: Meter | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		customer_mapping: MeterCustomerMappingToJSON(value.customerMapping),
+		customer_mapping: MeterCustomerMappingToJSON(value["customerMapping"]),
 		default_aggregation: MeterDefaultAggregationToJSON(
-			value.defaultAggregation,
+			value["defaultAggregation"],
 		),
-		display_name: value.displayName,
-		event_name: value.eventName,
-		id: value.id,
-		stripe_id: value.stripeId,
-		value_settings: MeterValueSettingsToJSON(value.valueSettings),
+		display_name: value["displayName"],
+		event_name: value["eventName"],
+		id: value["id"],
+		stripe_id: value["stripeId"],
+		value_settings: MeterValueSettingsToJSON(value["valueSettings"]),
 	};
 }

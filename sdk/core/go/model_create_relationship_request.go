@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &CreateRelationshipRequest{}
 
 // CreateRelationshipRequest struct for CreateRelationshipRequest
 type CreateRelationshipRequest struct {
-	Namespace string `json:"namespace"`
-	Object string `json:"object"`
-	Relation string `json:"relation"`
+	Namespace  string            `json:"namespace"`
+	Object     string            `json:"object"`
+	Relation   string            `json:"relation"`
 	SubjectSet SubjectSetRequest `json:"subject_set"`
 }
 
@@ -148,7 +148,7 @@ func (o *CreateRelationshipRequest) SetSubjectSet(v SubjectSetRequest) {
 }
 
 func (o CreateRelationshipRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -180,10 +180,10 @@ func (o *CreateRelationshipRequest) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -239,5 +239,3 @@ func (v *NullableCreateRelationshipRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -30,7 +31,7 @@ export interface AcceptRequest {
  * Check if a given object implements the AcceptRequest interface.
  */
 export function instanceOfAcceptRequest(value: object): value is AcceptRequest {
-	if (!("token" in value) || value.token === undefined) return false;
+	if (!("token" in value) || value["token"] === undefined) return false;
 	return true;
 }
 
@@ -40,13 +41,13 @@ export function AcceptRequestFromJSON(json: any): AcceptRequest {
 
 export function AcceptRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): AcceptRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		token: json.token,
+		token: json["token"],
 	};
 }
 
@@ -56,13 +57,13 @@ export function AcceptRequestToJSON(json: any): AcceptRequest {
 
 export function AcceptRequestToJSONTyped(
 	value?: AcceptRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		token: value.token,
+		token: value["token"],
 	};
 }

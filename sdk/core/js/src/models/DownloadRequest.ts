@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface DownloadRequest {
 export function instanceOfDownloadRequest(
 	value: object,
 ): value is DownloadRequest {
-	if (!("path" in value) || value.path === undefined) return false;
+	if (!("path" in value) || value["path"] === undefined) return false;
 	return true;
 }
 
@@ -42,13 +43,13 @@ export function DownloadRequestFromJSON(json: any): DownloadRequest {
 
 export function DownloadRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): DownloadRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		path: json.path,
+		path: json["path"],
 	};
 }
 
@@ -58,13 +59,13 @@ export function DownloadRequestToJSON(json: any): DownloadRequest {
 
 export function DownloadRequestToJSONTyped(
 	value?: DownloadRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		path: value.path,
+		path: value["path"],
 	};
 }

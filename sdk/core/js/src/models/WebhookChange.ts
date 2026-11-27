@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -48,8 +49,8 @@ export interface WebhookChange {
  * Check if a given object implements the WebhookChange interface.
  */
 export function instanceOfWebhookChange(value: object): value is WebhookChange {
-	if (!("action" in value) || value.action === undefined) return false;
-	if (!("url" in value) || value.url === undefined) return false;
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("url" in value) || value["url"] === undefined) return false;
 	return true;
 }
 
@@ -59,16 +60,16 @@ export function WebhookChangeFromJSON(json: any): WebhookChange {
 
 export function WebhookChangeFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): WebhookChange {
 	if (json == null) {
 		return json;
 	}
 	return {
-		action: json.action,
-		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
-		url: json.url,
-		webhookId: json.webhook_id == null ? undefined : json.webhook_id,
+		action: json["action"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		url: json["url"],
+		webhookId: json["webhook_id"] == null ? undefined : json["webhook_id"],
 	};
 }
 
@@ -78,16 +79,16 @@ export function WebhookChangeToJSON(json: any): WebhookChange {
 
 export function WebhookChangeToJSONTyped(
 	value?: WebhookChange | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		action: value.action,
-		stripe_id: value.stripeId,
-		url: value.url,
-		webhook_id: value.webhookId,
+		action: value["action"],
+		stripe_id: value["stripeId"],
+		url: value["url"],
+		webhook_id: value["webhookId"],
 	};
 }

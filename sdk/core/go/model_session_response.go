@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &SessionResponse{}
 
 // SessionResponse struct for SessionResponse
 type SessionResponse struct {
-	Identity Identity `json:"identity"`
-	Session Session `json:"session"`
-	Tenant *AuthTenant `json:"tenant,omitempty"`
+	Identity Identity    `json:"identity"`
+	Session  Session     `json:"session"`
+	Tenant   *AuthTenant `json:"tenant,omitempty"`
 }
 
 type _SessionResponse SessionResponse
@@ -129,7 +129,7 @@ func (o *SessionResponse) SetTenant(v AuthTenant) {
 }
 
 func (o SessionResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -160,10 +160,10 @@ func (o *SessionResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -219,5 +219,3 @@ func (v *NullableSessionResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

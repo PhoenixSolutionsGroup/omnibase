@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface MigrationsDownResponse {
 export function instanceOfMigrationsDownResponse(
 	value: object,
 ): value is MigrationsDownResponse {
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -44,13 +45,13 @@ export function MigrationsDownResponseFromJSON(
 
 export function MigrationsDownResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): MigrationsDownResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
+		message: json["message"],
 	};
 }
 
@@ -62,13 +63,13 @@ export function MigrationsDownResponseToJSON(
 
 export function MigrationsDownResponseToJSONTyped(
 	value?: MigrationsDownResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
+		message: value["message"],
 	};
 }

@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,11 +22,11 @@ var _ MappedNullable = &ConfigStatusEntry{}
 
 // ConfigStatusEntry struct for ConfigStatusEntry
 type ConfigStatusEntry struct {
-	Id string `json:"id"`
-	Kind string `json:"kind"`
-	Name *string `json:"name,omitempty"`
-	Reason *string `json:"reason,omitempty"`
-	State string `json:"state"`
+	Id       string  `json:"id"`
+	Kind     string  `json:"kind"`
+	Name     *string `json:"name,omitempty"`
+	Reason   *string `json:"reason,omitempty"`
+	State    string  `json:"state"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -221,7 +221,7 @@ func (o *ConfigStatusEntry) SetStripeId(v string) {
 }
 
 func (o ConfigStatusEntry) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -260,10 +260,10 @@ func (o *ConfigStatusEntry) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -319,5 +319,3 @@ func (v *NullableConfigStatusEntry) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

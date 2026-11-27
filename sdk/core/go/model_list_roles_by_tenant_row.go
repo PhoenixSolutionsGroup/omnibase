@@ -12,10 +12,10 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the ListRolesByTenantRow type satisfies the MappedNullable interface at compile time
@@ -23,14 +23,14 @@ var _ MappedNullable = &ListRolesByTenantRow{}
 
 // ListRolesByTenantRow struct for ListRolesByTenantRow
 type ListRolesByTenantRow struct {
-	CreatedAt time.Time `json:"created_at"`
-	Id string `json:"id"`
-	Permissions []string `json:"permissions"`
-	RoleName string `json:"role_name"`
-	TemplateId string `json:"template_id"`
-	TenantId string `json:"tenant_id"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UserIds []string `json:"user_ids"`
+	CreatedAt   time.Time `json:"created_at"`
+	Id          string    `json:"id"`
+	Permissions []string  `json:"permissions"`
+	RoleName    string    `json:"role_name"`
+	TemplateId  string    `json:"template_id"`
+	TenantId    string    `json:"tenant_id"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	UserIds     []string  `json:"user_ids"`
 }
 
 type _ListRolesByTenantRow ListRolesByTenantRow
@@ -257,7 +257,7 @@ func (o *ListRolesByTenantRow) SetUserIds(v []string) {
 }
 
 func (o ListRolesByTenantRow) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -301,10 +301,10 @@ func (o *ListRolesByTenantRow) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -360,5 +360,3 @@ func (v *NullableListRolesByTenantRow) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &ConfigResponse{}
 
 // ConfigResponse struct for ConfigResponse
 type ConfigResponse struct {
-	Changes *ConfigChanges `json:"changes,omitempty"`
-	Config *StripeConfiguration `json:"config,omitempty"`
-	Errors []string `json:"errors,omitempty"`
-	Message string `json:"message"`
+	Changes *ConfigChanges       `json:"changes,omitempty"`
+	Config  *StripeConfiguration `json:"config,omitempty"`
+	Errors  []string             `json:"errors,omitempty"`
+	Message string               `json:"message"`
 }
 
 type _ConfigResponse ConfigResponse
@@ -170,7 +170,7 @@ func (o *ConfigResponse) SetMessage(v string) {
 }
 
 func (o ConfigResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -205,10 +205,10 @@ func (o *ConfigResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -264,5 +264,3 @@ func (v *NullableConfigResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,18 +22,18 @@ var _ MappedNullable = &CouponWithStripeID{}
 
 // CouponWithStripeID struct for CouponWithStripeID
 type CouponWithStripeID struct {
-	AmountOff *int64 `json:"amount_off,omitempty"`
-	AppliesTo []string `json:"applies_to,omitempty"`
-	Currency *string `json:"currency,omitempty"`
-	Duration string `json:"duration"`
-	DurationInMonths *int64 `json:"duration_in_months,omitempty"`
-	Id string `json:"id"`
-	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-	Name *string `json:"name,omitempty"`
-	PercentOff *float64 `json:"percent_off,omitempty"`
-	RedeemBy *int64 `json:"redeem_by,omitempty"`
-	StripeId *string `json:"stripe_id,omitempty"`
+	AmountOff        *int64            `json:"amount_off,omitempty"`
+	AppliesTo        []string          `json:"applies_to,omitempty"`
+	Currency         *string           `json:"currency,omitempty"`
+	Duration         string            `json:"duration"`
+	DurationInMonths *int64            `json:"duration_in_months,omitempty"`
+	Id               string            `json:"id"`
+	MaxRedemptions   *int64            `json:"max_redemptions,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty"`
+	Name             *string           `json:"name,omitempty"`
+	PercentOff       *float64          `json:"percent_off,omitempty"`
+	RedeemBy         *int64            `json:"redeem_by,omitempty"`
+	StripeId         *string           `json:"stripe_id,omitempty"`
 }
 
 type _CouponWithStripeID CouponWithStripeID
@@ -427,7 +427,7 @@ func (o *CouponWithStripeID) SetStripeId(v string) {
 }
 
 func (o CouponWithStripeID) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -485,10 +485,10 @@ func (o *CouponWithStripeID) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -544,5 +544,3 @@ func (v *NullableCouponWithStripeID) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,13 +20,13 @@ var _ MappedNullable = &ProductUI{}
 
 // ProductUI struct for ProductUI
 type ProductUI struct {
-	Badge *string `json:"badge,omitempty"`
-	CtaText *string `json:"cta_text,omitempty"`
-	DisplayName *string `json:"display_name,omitempty"`
-	Features []string `json:"features,omitempty"`
-	Highlighted *bool `json:"highlighted,omitempty"`
-	SortOrder *int64 `json:"sort_order,omitempty"`
-	Tagline *string `json:"tagline,omitempty"`
+	Badge       *string  `json:"badge,omitempty"`
+	CtaText     *string  `json:"cta_text,omitempty"`
+	DisplayName *string  `json:"display_name,omitempty"`
+	Features    []string `json:"features,omitempty"`
+	Highlighted *bool    `json:"highlighted,omitempty"`
+	SortOrder   *int64   `json:"sort_order,omitempty"`
+	Tagline     *string  `json:"tagline,omitempty"`
 }
 
 // NewProductUI instantiates a new ProductUI object
@@ -272,7 +272,7 @@ func (o *ProductUI) SetTagline(v string) {
 }
 
 func (o ProductUI) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -340,5 +340,3 @@ func (v *NullableProductUI) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

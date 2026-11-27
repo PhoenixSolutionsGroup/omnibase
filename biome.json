@@ -10,7 +10,14 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!!sdk/core"
+			"!sdk/core/**/*.go",
+			"!sdk/core/**/*.mod",
+			"!sdk/core/**/*.sum",
+			"!sdk/core/**/*.sh",
+			"!sdk/core/**/.openapi-generator",
+			"!sdk/core/**/.openapi-generator-ignore",
+			"!sdk/core/**/.npmignore",
+			"!sdk/core/**/.gitignore"
 		]
 	},
 	"formatter": {
@@ -47,5 +54,18 @@
 		"parser": {
 			"tailwindDirectives": true
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": [
+				"sdk/core/**"
+			],
+			"linter": {
+				"enabled": false
+			},
+			"assist": {
+				"enabled": false
+			}
+		}
+	]
 }

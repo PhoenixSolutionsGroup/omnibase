@@ -12,8 +12,14 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { AuthTenant } from "./AuthTenant";
-import { AuthTenantFromJSON, AuthTenantToJSON } from "./AuthTenant";
+import {
+	AuthTenantFromJSON,
+	AuthTenantFromJSONTyped,
+	AuthTenantToJSON,
+	AuthTenantToJSONTyped,
+} from "./AuthTenant";
 
 /**
  *
@@ -44,13 +50,14 @@ export function ActiveTenantResponseFromJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ActiveTenantResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		tenant: json.tenant == null ? undefined : AuthTenantFromJSON(json.tenant),
+		tenant:
+			json["tenant"] == null ? undefined : AuthTenantFromJSON(json["tenant"]),
 	};
 }
 
@@ -60,13 +67,13 @@ export function ActiveTenantResponseToJSON(json: any): ActiveTenantResponse {
 
 export function ActiveTenantResponseToJSONTyped(
 	value?: ActiveTenantResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		tenant: AuthTenantToJSON(value.tenant),
+		tenant: AuthTenantToJSON(value["tenant"]),
 	};
 }

@@ -12,8 +12,14 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { EmailTemplate } from "./EmailTemplate";
-import { EmailTemplateFromJSON, EmailTemplateToJSON } from "./EmailTemplate";
+import {
+	EmailTemplateFromJSON,
+	EmailTemplateFromJSONTyped,
+	EmailTemplateToJSON,
+	EmailTemplateToJSONTyped,
+} from "./EmailTemplate";
 
 /**
  *
@@ -41,8 +47,8 @@ export interface UpsertTemplateResponse {
 export function instanceOfUpsertTemplateResponse(
 	value: object,
 ): value is UpsertTemplateResponse {
-	if (!("message" in value) || value.message === undefined) return false;
-	if (!("template" in value) || value.template === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("template" in value) || value["template"] === undefined) return false;
 	return true;
 }
 
@@ -54,14 +60,14 @@ export function UpsertTemplateResponseFromJSON(
 
 export function UpsertTemplateResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UpsertTemplateResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
-		template: EmailTemplateFromJSON(json.template),
+		message: json["message"],
+		template: EmailTemplateFromJSON(json["template"]),
 	};
 }
 
@@ -73,14 +79,14 @@ export function UpsertTemplateResponseToJSON(
 
 export function UpsertTemplateResponseToJSONTyped(
 	value?: UpsertTemplateResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
-		template: EmailTemplateToJSON(value.template),
+		message: value["message"],
+		template: EmailTemplateToJSON(value["template"]),
 	};
 }

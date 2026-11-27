@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -38,8 +39,8 @@ export interface UpdateUserRoleRequest {
 export function instanceOfUpdateUserRoleRequest(
 	value: object,
 ): value is UpdateUserRoleRequest {
-	if (!("role" in value) || value.role === undefined) return false;
-	if (!("userId" in value) || value.userId === undefined) return false;
+	if (!("role" in value) || value["role"] === undefined) return false;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
 	return true;
 }
 
@@ -51,14 +52,14 @@ export function UpdateUserRoleRequestFromJSON(
 
 export function UpdateUserRoleRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UpdateUserRoleRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		role: json.role,
-		userId: json.user_id,
+		role: json["role"],
+		userId: json["user_id"],
 	};
 }
 
@@ -68,14 +69,14 @@ export function UpdateUserRoleRequestToJSON(json: any): UpdateUserRoleRequest {
 
 export function UpdateUserRoleRequestToJSONTyped(
 	value?: UpdateUserRoleRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		role: value.role,
-		user_id: value.userId,
+		role: value["role"],
+		user_id: value["userId"],
 	};
 }

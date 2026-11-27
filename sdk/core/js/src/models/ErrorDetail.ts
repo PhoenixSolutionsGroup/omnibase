@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -51,15 +52,15 @@ export function ErrorDetailFromJSON(json: any): ErrorDetail {
 
 export function ErrorDetailFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ErrorDetail {
 	if (json == null) {
 		return json;
 	}
 	return {
-		location: json.location == null ? undefined : json.location,
-		message: json.message == null ? undefined : json.message,
-		value: json.value == null ? undefined : json.value,
+		location: json["location"] == null ? undefined : json["location"],
+		message: json["message"] == null ? undefined : json["message"],
+		value: json["value"] == null ? undefined : json["value"],
 	};
 }
 
@@ -69,15 +70,15 @@ export function ErrorDetailToJSON(json: any): ErrorDetail {
 
 export function ErrorDetailToJSONTyped(
 	value?: ErrorDetail | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		location: value.location,
-		message: value.message,
-		value: value.value,
+		location: value["location"],
+		message: value["message"],
+		value: value["value"],
 	};
 }

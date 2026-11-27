@@ -12,8 +12,14 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { TenantPayload } from "./TenantPayload";
-import { TenantPayloadFromJSON, TenantPayloadToJSON } from "./TenantPayload";
+import {
+	TenantPayloadFromJSON,
+	TenantPayloadFromJSONTyped,
+	TenantPayloadToJSON,
+	TenantPayloadToJSONTyped,
+} from "./TenantPayload";
 
 /**
  *
@@ -41,8 +47,8 @@ export interface CreateTenantResponse {
 export function instanceOfCreateTenantResponse(
 	value: object,
 ): value is CreateTenantResponse {
-	if (!("message" in value) || value.message === undefined) return false;
-	if (!("tenant" in value) || value.tenant === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("tenant" in value) || value["tenant"] === undefined) return false;
 	return true;
 }
 
@@ -52,14 +58,14 @@ export function CreateTenantResponseFromJSON(json: any): CreateTenantResponse {
 
 export function CreateTenantResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CreateTenantResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
-		tenant: TenantPayloadFromJSON(json.tenant),
+		message: json["message"],
+		tenant: TenantPayloadFromJSON(json["tenant"]),
 	};
 }
 
@@ -69,14 +75,14 @@ export function CreateTenantResponseToJSON(json: any): CreateTenantResponse {
 
 export function CreateTenantResponseToJSONTyped(
 	value?: CreateTenantResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
-		tenant: TenantPayloadToJSON(value.tenant),
+		message: value["message"],
+		tenant: TenantPayloadToJSON(value["tenant"]),
 	};
 }

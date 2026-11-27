@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -36,8 +37,8 @@ export interface ModelFile {
  * Check if a given object implements the ModelFile interface.
  */
 export function instanceOfModelFile(value: object): value is ModelFile {
-	if (!("contents" in value) || value.contents === undefined) return false;
-	if (!("name" in value) || value.name === undefined) return false;
+	if (!("contents" in value) || value["contents"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
 	return true;
 }
 
@@ -47,14 +48,14 @@ export function ModelFileFromJSON(json: any): ModelFile {
 
 export function ModelFileFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ModelFile {
 	if (json == null) {
 		return json;
 	}
 	return {
-		contents: json.contents,
-		name: json.name,
+		contents: json["contents"],
+		name: json["name"],
 	};
 }
 
@@ -64,14 +65,14 @@ export function ModelFileToJSON(json: any): ModelFile {
 
 export function ModelFileToJSONTyped(
 	value?: ModelFile | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		contents: value.contents,
-		name: value.name,
+		contents: value["contents"],
+		name: value["name"],
 	};
 }

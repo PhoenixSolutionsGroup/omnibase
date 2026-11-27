@@ -12,16 +12,21 @@
  * Do not edit the class manually.
  */
 
-import type { PriceWithStripeID } from "./PriceWithStripeID";
-import {
-	PriceWithStripeIDFromJSON,
-	PriceWithStripeIDToJSON,
-} from "./PriceWithStripeID";
+import { mapValues } from "../runtime";
 import type { ProductWithStripeIDs } from "./ProductWithStripeIDs";
 import {
 	ProductWithStripeIDsFromJSON,
+	ProductWithStripeIDsFromJSONTyped,
 	ProductWithStripeIDsToJSON,
+	ProductWithStripeIDsToJSONTyped,
 } from "./ProductWithStripeIDs";
+import type { PriceWithStripeID } from "./PriceWithStripeID";
+import {
+	PriceWithStripeIDFromJSON,
+	PriceWithStripeIDFromJSONTyped,
+	PriceWithStripeIDToJSON,
+	PriceWithStripeIDToJSONTyped,
+} from "./PriceWithStripeID";
 
 /**
  *
@@ -49,8 +54,8 @@ export interface GetPriceResponse {
 export function instanceOfGetPriceResponse(
 	value: object,
 ): value is GetPriceResponse {
-	if (!("price" in value) || value.price === undefined) return false;
-	if (!("product" in value) || value.product === undefined) return false;
+	if (!("price" in value) || value["price"] === undefined) return false;
+	if (!("product" in value) || value["product"] === undefined) return false;
 	return true;
 }
 
@@ -60,14 +65,14 @@ export function GetPriceResponseFromJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): GetPriceResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		price: PriceWithStripeIDFromJSON(json.price),
-		product: ProductWithStripeIDsFromJSON(json.product),
+		price: PriceWithStripeIDFromJSON(json["price"]),
+		product: ProductWithStripeIDsFromJSON(json["product"]),
 	};
 }
 
@@ -77,14 +82,14 @@ export function GetPriceResponseToJSON(json: any): GetPriceResponse {
 
 export function GetPriceResponseToJSONTyped(
 	value?: GetPriceResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		price: PriceWithStripeIDToJSON(value.price),
-		product: ProductWithStripeIDsToJSON(value.product),
+		price: PriceWithStripeIDToJSON(value["price"]),
+		product: ProductWithStripeIDsToJSON(value["product"]),
 	};
 }

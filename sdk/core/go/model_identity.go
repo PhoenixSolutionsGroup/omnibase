@@ -13,8 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the Identity type satisfies the MappedNullable interface at compile time
@@ -22,22 +22,22 @@ var _ MappedNullable = &Identity{}
 
 // Identity struct for Identity
 type Identity struct {
-	AdditionalPropertiesField map[string]interface{} `json:"AdditionalProperties,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	Credentials map[string]IdentityCredentials `json:"credentials,omitempty"`
-	Id string `json:"id"`
-	MetadataAdmin interface{} `json:"metadata_admin,omitempty"`
-	MetadataPublic interface{} `json:"metadata_public,omitempty"`
-	OrganizationId map[string]interface{} `json:"organization_id,omitempty"`
-	RecoveryAddresses []RecoveryIdentityAddress `json:"recovery_addresses,omitempty"`
-	SchemaId string `json:"schema_id"`
-	SchemaUrl string `json:"schema_url"`
-	State *string `json:"state,omitempty"`
-	StateChangedAt *time.Time `json:"state_changed_at,omitempty"`
-	Traits interface{} `json:"traits"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty"`
-	VerifiableAddresses []VerifiableIdentityAddress `json:"verifiable_addresses,omitempty"`
-	AdditionalProperties map[string]interface{}
+	AdditionalPropertiesField map[string]interface{}         `json:"AdditionalProperties,omitempty"`
+	CreatedAt                 *time.Time                     `json:"created_at,omitempty"`
+	Credentials               map[string]IdentityCredentials `json:"credentials,omitempty"`
+	Id                        string                         `json:"id"`
+	MetadataAdmin             interface{}                    `json:"metadata_admin,omitempty"`
+	MetadataPublic            interface{}                    `json:"metadata_public,omitempty"`
+	OrganizationId            map[string]interface{}         `json:"organization_id,omitempty"`
+	RecoveryAddresses         []RecoveryIdentityAddress      `json:"recovery_addresses,omitempty"`
+	SchemaId                  string                         `json:"schema_id"`
+	SchemaUrl                 string                         `json:"schema_url"`
+	State                     *string                        `json:"state,omitempty"`
+	StateChangedAt            *time.Time                     `json:"state_changed_at,omitempty"`
+	Traits                    interface{}                    `json:"traits"`
+	UpdatedAt                 *time.Time                     `json:"updated_at,omitempty"`
+	VerifiableAddresses       []VerifiableIdentityAddress    `json:"verifiable_addresses,omitempty"`
+	AdditionalProperties      map[string]interface{}
 }
 
 type _Identity Identity
@@ -518,7 +518,7 @@ func (o *Identity) SetVerifiableAddresses(v []VerifiableIdentityAddress) {
 }
 
 func (o Identity) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -590,10 +590,10 @@ func (o *Identity) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -668,5 +668,3 @@ func (v *NullableIdentity) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

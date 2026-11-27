@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -30,7 +31,7 @@ export interface SendResponse {
  * Check if a given object implements the SendResponse interface.
  */
 export function instanceOfSendResponse(value: object): value is SendResponse {
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -40,13 +41,13 @@ export function SendResponseFromJSON(json: any): SendResponse {
 
 export function SendResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): SendResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
+		message: json["message"],
 	};
 }
 
@@ -56,13 +57,13 @@ export function SendResponseToJSON(json: any): SendResponse {
 
 export function SendResponseToJSONTyped(
 	value?: SendResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
+		message: value["message"],
 	};
 }

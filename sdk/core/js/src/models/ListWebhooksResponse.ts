@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { ListStripeWebhooksRow } from "./ListStripeWebhooksRow";
 import {
 	ListStripeWebhooksRowFromJSON,
+	ListStripeWebhooksRowFromJSONTyped,
 	ListStripeWebhooksRowToJSON,
+	ListStripeWebhooksRowToJSONTyped,
 } from "./ListStripeWebhooksRow";
 
 /**
@@ -44,8 +47,8 @@ export interface ListWebhooksResponse {
 export function instanceOfListWebhooksResponse(
 	value: object,
 ): value is ListWebhooksResponse {
-	if (!("count" in value) || value.count === undefined) return false;
-	if (!("webhooks" in value) || value.webhooks === undefined) return false;
+	if (!("count" in value) || value["count"] === undefined) return false;
+	if (!("webhooks" in value) || value["webhooks"] === undefined) return false;
 	return true;
 }
 
@@ -55,17 +58,17 @@ export function ListWebhooksResponseFromJSON(json: any): ListWebhooksResponse {
 
 export function ListWebhooksResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ListWebhooksResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		count: json.count,
+		count: json["count"],
 		webhooks:
-			json.webhooks == null
+			json["webhooks"] == null
 				? null
-				: (json.webhooks as Array<any>).map(ListStripeWebhooksRowFromJSON),
+				: (json["webhooks"] as Array<any>).map(ListStripeWebhooksRowFromJSON),
 	};
 }
 
@@ -75,17 +78,17 @@ export function ListWebhooksResponseToJSON(json: any): ListWebhooksResponse {
 
 export function ListWebhooksResponseToJSONTyped(
 	value?: ListWebhooksResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		count: value.count,
+		count: value["count"],
 		webhooks:
-			value.webhooks == null
+			value["webhooks"] == null
 				? null
-				: (value.webhooks as Array<any>).map(ListStripeWebhooksRowToJSON),
+				: (value["webhooks"] as Array<any>).map(ListStripeWebhooksRowToJSON),
 	};
 }

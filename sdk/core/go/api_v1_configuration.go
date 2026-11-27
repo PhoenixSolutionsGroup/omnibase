@@ -17,17 +17,16 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"os"
+	"strings"
 )
-
 
 // V1ConfigurationAPIService V1ConfigurationAPI service
 type V1ConfigurationAPIService service
 
 type ApiArchiveAllStripeConfigRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx                 context.Context
+	ApiService          *V1ConfigurationAPIService
 	archiveAllInputBody *ArchiveAllInputBody
 }
 
@@ -43,24 +42,25 @@ func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllResponse, *http.
 /*
 ArchiveAllStripeConfig Archive all Stripe config
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiArchiveAllStripeConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiArchiveAllStripeConfigRequest
 */
 func (a *V1ConfigurationAPIService) ArchiveAllStripeConfig(ctx context.Context) ApiArchiveAllStripeConfigRequest {
 	return ApiArchiveAllStripeConfigRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ArchiveAllResponse
+//
+//	@return ArchiveAllResponse
 func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ArchiveAllResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ArchiveAllResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ArchiveAllStripeConfig")
@@ -139,8 +139,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -150,8 +150,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -161,8 +161,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -172,8 +172,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -191,8 +191,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 }
 
 type ApiCreateOrUpdateEmailTemplateRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx                   context.Context
+	ApiService            *V1ConfigurationAPIService
 	upsertTemplateRequest *UpsertTemplateRequest
 }
 
@@ -208,24 +208,25 @@ func (r ApiCreateOrUpdateEmailTemplateRequest) Execute() (*UpsertTemplateRespons
 /*
 CreateOrUpdateEmailTemplate Create or update email template
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateOrUpdateEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateOrUpdateEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplate(ctx context.Context) ApiCreateOrUpdateEmailTemplateRequest {
 	return ApiCreateOrUpdateEmailTemplateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return UpsertTemplateResponse
+//
+//	@return UpsertTemplateResponse
 func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCreateOrUpdateEmailTemplateRequest) (*UpsertTemplateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UpsertTemplateResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *UpsertTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.CreateOrUpdateEmailTemplate")
@@ -332,8 +333,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -343,8 +344,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -354,8 +355,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -365,8 +366,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -384,8 +385,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 }
 
 type ApiCreateOrUpdateSystemEmailTemplateRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx                         context.Context
+	ApiService                  *V1ConfigurationAPIService
 	upsertSystemTemplateRequest *UpsertSystemTemplateRequest
 }
 
@@ -401,24 +402,25 @@ func (r ApiCreateOrUpdateSystemEmailTemplateRequest) Execute() (*UpsertSystemTem
 /*
 CreateOrUpdateSystemEmailTemplate Create or update a system email template
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateOrUpdateSystemEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateOrUpdateSystemEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplate(ctx context.Context) ApiCreateOrUpdateSystemEmailTemplateRequest {
 	return ApiCreateOrUpdateSystemEmailTemplateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return UpsertSystemTemplateResponse
+//
+//	@return UpsertSystemTemplateResponse
 func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r ApiCreateOrUpdateSystemEmailTemplateRequest) (*UpsertSystemTemplateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *UpsertSystemTemplateResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *UpsertSystemTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.CreateOrUpdateSystemEmailTemplate")
@@ -497,8 +499,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -508,8 +510,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -519,8 +521,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -530,8 +532,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -549,9 +551,9 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateSystemEmailTemplateExecute(r A
 }
 
 type ApiDeleteEmailTemplateRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	type_ string
+	type_      string
 }
 
 func (r ApiDeleteEmailTemplateRequest) Execute() (*DeleteTemplateResponse, *http.Response, error) {
@@ -561,26 +563,27 @@ func (r ApiDeleteEmailTemplateRequest) Execute() (*DeleteTemplateResponse, *http
 /*
 DeleteEmailTemplate Delete email template
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param type_
- @return ApiDeleteEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param type_
+	@return ApiDeleteEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) DeleteEmailTemplate(ctx context.Context, type_ string) ApiDeleteEmailTemplateRequest {
 	return ApiDeleteEmailTemplateRequest{
 		ApiService: a,
-		ctx: ctx,
-		type_: type_,
+		ctx:        ctx,
+		type_:      type_,
 	}
 }
 
 // Execute executes the request
-//  @return DeleteTemplateResponse
+//
+//	@return DeleteTemplateResponse
 func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailTemplateRequest) (*DeleteTemplateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeleteTemplateResponse
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeleteTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeleteEmailTemplate")
@@ -683,8 +686,8 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -694,8 +697,8 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -705,8 +708,8 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -716,8 +719,8 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -727,8 +730,8 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -746,9 +749,9 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 }
 
 type ApiDeleteSystemEmailTemplateRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	name string
+	name       string
 }
 
 func (r ApiDeleteSystemEmailTemplateRequest) Execute() (*DeleteSystemTemplateResponse, *http.Response, error) {
@@ -758,26 +761,27 @@ func (r ApiDeleteSystemEmailTemplateRequest) Execute() (*DeleteSystemTemplateRes
 /*
 DeleteSystemEmailTemplate Delete a system email template
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name
- @return ApiDeleteSystemEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name
+	@return ApiDeleteSystemEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplate(ctx context.Context, name string) ApiDeleteSystemEmailTemplateRequest {
 	return ApiDeleteSystemEmailTemplateRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
+		ctx:        ctx,
+		name:       name,
 	}
 }
 
 // Execute executes the request
-//  @return DeleteSystemTemplateResponse
+//
+//	@return DeleteSystemTemplateResponse
 func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDeleteSystemEmailTemplateRequest) (*DeleteSystemTemplateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeleteSystemTemplateResponse
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeleteSystemTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeleteSystemEmailTemplate")
@@ -852,8 +856,8 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -863,8 +867,8 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -874,8 +878,8 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -885,8 +889,8 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -896,8 +900,8 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -915,7 +919,7 @@ func (a *V1ConfigurationAPIService) DeleteSystemEmailTemplateExecute(r ApiDelete
 }
 
 type ApiDeployPermissionNamespacesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 	namespaces *os.File
 }
@@ -932,24 +936,25 @@ func (r ApiDeployPermissionNamespacesRequest) Execute() (*DeployNamespacesRespon
 /*
 DeployPermissionNamespaces Deploy Keto namespace configurations
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiDeployPermissionNamespacesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiDeployPermissionNamespacesRequest
 */
 func (a *V1ConfigurationAPIService) DeployPermissionNamespaces(ctx context.Context) ApiDeployPermissionNamespacesRequest {
 	return ApiDeployPermissionNamespacesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return DeployNamespacesResponse
+//
+//	@return DeployNamespacesResponse
 func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*DeployNamespacesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeployNamespacesResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeployNamespacesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeployPermissionNamespaces")
@@ -984,8 +989,8 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	var namespacesLocalVarFormFileName string
-	var namespacesLocalVarFileName     string
-	var namespacesLocalVarFileBytes    []byte
+	var namespacesLocalVarFileName string
+	var namespacesLocalVarFileBytes []byte
 
 	namespacesLocalVarFormFileName = "namespaces"
 	namespacesLocalVarFile := r.namespaces
@@ -1041,8 +1046,8 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1052,8 +1057,8 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1063,8 +1068,8 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1074,8 +1079,8 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1093,7 +1098,7 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 }
 
 type ApiGetEmailTemplatesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 }
 
@@ -1104,24 +1109,25 @@ func (r ApiGetEmailTemplatesRequest) Execute() (*ListTemplatesResponse, *http.Re
 /*
 GetEmailTemplates Get all email templates
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetEmailTemplatesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetEmailTemplatesRequest
 */
 func (a *V1ConfigurationAPIService) GetEmailTemplates(ctx context.Context) ApiGetEmailTemplatesRequest {
 	return ApiGetEmailTemplatesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListTemplatesResponse
+//
+//	@return ListTemplatesResponse
 func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTemplatesRequest) (*ListTemplatesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListTemplatesResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListTemplatesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetEmailTemplates")
@@ -1223,8 +1229,8 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1234,8 +1240,8 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1245,8 +1251,8 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1264,7 +1270,7 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 }
 
 type ApiGetPermissionRequirementsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 }
 
@@ -1275,24 +1281,25 @@ func (r ApiGetPermissionRequirementsRequest) Execute() (*Requirements, *http.Res
 /*
 GetPermissionRequirements Get required permission namespaces
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetPermissionRequirementsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetPermissionRequirementsRequest
 */
 func (a *V1ConfigurationAPIService) GetPermissionRequirements(ctx context.Context) ApiGetPermissionRequirementsRequest {
 	return ApiGetPermissionRequirementsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Requirements
+//
+//	@return Requirements
 func (a *V1ConfigurationAPIService) GetPermissionRequirementsExecute(r ApiGetPermissionRequirementsRequest) (*Requirements, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Requirements
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Requirements
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetPermissionRequirements")
@@ -1352,8 +1359,8 @@ func (a *V1ConfigurationAPIService) GetPermissionRequirementsExecute(r ApiGetPer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1371,10 +1378,10 @@ func (a *V1ConfigurationAPIService) GetPermissionRequirementsExecute(r ApiGetPer
 }
 
 type ApiGetStripeConfigHistoryRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	limit *int64
-	offset *int64
+	limit      *int64
+	offset     *int64
 }
 
 func (r ApiGetStripeConfigHistoryRequest) Limit(limit int64) ApiGetStripeConfigHistoryRequest {
@@ -1394,24 +1401,25 @@ func (r ApiGetStripeConfigHistoryRequest) Execute() (*ConfigHistoryResponse, *ht
 /*
 GetStripeConfigHistory Get config history
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStripeConfigHistoryRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStripeConfigHistoryRequest
 */
 func (a *V1ConfigurationAPIService) GetStripeConfigHistory(ctx context.Context) ApiGetStripeConfigHistoryRequest {
 	return ApiGetStripeConfigHistoryRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ConfigHistoryResponse
+//
+//	@return ConfigHistoryResponse
 func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*ConfigHistoryResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ConfigHistoryResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ConfigHistoryResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetStripeConfigHistory")
@@ -1428,16 +1436,16 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 	if r.limit != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
 	} else {
-        var defaultValue int64 = 10
-        parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "form", "")
-        r.limit = &defaultValue
+		var defaultValue int64 = 10
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "form", "")
+		r.limit = &defaultValue
 	}
 	if r.offset != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "form", "")
 	} else {
-        var defaultValue int64 = 0
-        parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "form", "")
-        r.offset = &defaultValue
+		var defaultValue int64 = 0
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "form", "")
+		r.offset = &defaultValue
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1499,8 +1507,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1510,8 +1518,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1521,8 +1529,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1532,8 +1540,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1551,7 +1559,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 }
 
 type ApiGetStripeConfigSchemaRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 }
 
@@ -1562,24 +1570,25 @@ func (r ApiGetStripeConfigSchemaRequest) Execute() (string, *http.Response, erro
 /*
 GetStripeConfigSchema Get Stripe config schema
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStripeConfigSchemaRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStripeConfigSchemaRequest
 */
 func (a *V1ConfigurationAPIService) GetStripeConfigSchema(ctx context.Context) ApiGetStripeConfigSchemaRequest {
 	return ApiGetStripeConfigSchemaRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return string
+//
+//	@return string
 func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (string, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetStripeConfigSchema")
@@ -1639,8 +1648,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1658,9 +1667,9 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeC
 }
 
 type ApiGetStripeConfigStatusRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	body *map[string]interface{}
+	body       *map[string]interface{}
 }
 
 func (r ApiGetStripeConfigStatusRequest) Body(body map[string]interface{}) ApiGetStripeConfigStatusRequest {
@@ -1675,24 +1684,25 @@ func (r ApiGetStripeConfigStatusRequest) Execute() (*ConfigStatus, *http.Respons
 /*
 GetStripeConfigStatus Get Stripe config status
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetStripeConfigStatusRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetStripeConfigStatusRequest
 */
 func (a *V1ConfigurationAPIService) GetStripeConfigStatus(ctx context.Context) ApiGetStripeConfigStatusRequest {
 	return ApiGetStripeConfigStatusRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ConfigStatus
+//
+//	@return ConfigStatus
 func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeConfigStatusRequest) (*ConfigStatus, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ConfigStatus
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ConfigStatus
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetStripeConfigStatus")
@@ -1771,8 +1781,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1782,8 +1792,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1793,8 +1803,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1804,8 +1814,8 @@ func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1823,7 +1833,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigStatusExecute(r ApiGetStripeC
 }
 
 type ApiGetSystemEmailTemplatesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 }
 
@@ -1834,24 +1844,25 @@ func (r ApiGetSystemEmailTemplatesRequest) Execute() (*ListSystemTemplatesRespon
 /*
 GetSystemEmailTemplates Get all system email templates
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetSystemEmailTemplatesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetSystemEmailTemplatesRequest
 */
 func (a *V1ConfigurationAPIService) GetSystemEmailTemplates(ctx context.Context) ApiGetSystemEmailTemplatesRequest {
 	return ApiGetSystemEmailTemplatesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListSystemTemplatesResponse
+//
+//	@return ListSystemTemplatesResponse
 func (a *V1ConfigurationAPIService) GetSystemEmailTemplatesExecute(r ApiGetSystemEmailTemplatesRequest) (*ListSystemTemplatesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListSystemTemplatesResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListSystemTemplatesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetSystemEmailTemplates")
@@ -1925,8 +1936,8 @@ func (a *V1ConfigurationAPIService) GetSystemEmailTemplatesExecute(r ApiGetSyste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1936,8 +1947,8 @@ func (a *V1ConfigurationAPIService) GetSystemEmailTemplatesExecute(r ApiGetSyste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1947,8 +1958,8 @@ func (a *V1ConfigurationAPIService) GetSystemEmailTemplatesExecute(r ApiGetSyste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1966,7 +1977,7 @@ func (a *V1ConfigurationAPIService) GetSystemEmailTemplatesExecute(r ApiGetSyste
 }
 
 type ApiPullStripeConfigRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
 }
 
@@ -1977,24 +1988,25 @@ func (r ApiPullStripeConfigRequest) Execute() (*StripeConfiguration, *http.Respo
 /*
 PullStripeConfig Pull config from Stripe
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiPullStripeConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiPullStripeConfigRequest
 */
 func (a *V1ConfigurationAPIService) PullStripeConfig(ctx context.Context) ApiPullStripeConfigRequest {
 	return ApiPullStripeConfigRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfiguration
+//
+//	@return StripeConfiguration
 func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*StripeConfiguration, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StripeConfiguration
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StripeConfiguration
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.PullStripeConfig")
@@ -2068,8 +2080,8 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2079,8 +2091,8 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2090,8 +2102,8 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2109,8 +2121,8 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 }
 
 type ApiSendEmailRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx                 context.Context
+	ApiService          *V1ConfigurationAPIService
 	sendTemplateRequest *SendTemplateRequest
 }
 
@@ -2126,24 +2138,25 @@ func (r ApiSendEmailRequest) Execute() (*SendResponse, *http.Response, error) {
 /*
 SendEmail Send an email using an app template
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiSendEmailRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiSendEmailRequest
 */
 func (a *V1ConfigurationAPIService) SendEmail(ctx context.Context) ApiSendEmailRequest {
 	return ApiSendEmailRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return SendResponse
+//
+//	@return SendResponse
 func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*SendResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *SendResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *SendResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.SendEmail")
@@ -2250,8 +2263,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2261,8 +2274,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2272,8 +2285,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2283,8 +2296,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2294,8 +2307,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2305,8 +2318,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2324,8 +2337,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 }
 
 type ApiSendEmailHTMLRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx             context.Context
+	ApiService      *V1ConfigurationAPIService
 	sendHTMLRequest *SendHTMLRequest
 }
 
@@ -2341,24 +2354,25 @@ func (r ApiSendEmailHTMLRequest) Execute() (*SendResponse, *http.Response, error
 /*
 SendEmailHTML Send a raw HTML email
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiSendEmailHTMLRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiSendEmailHTMLRequest
 */
 func (a *V1ConfigurationAPIService) SendEmailHTML(ctx context.Context) ApiSendEmailHTMLRequest {
 	return ApiSendEmailHTMLRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return SendResponse
+//
+//	@return SendResponse
 func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLRequest) (*SendResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *SendResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *SendResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.SendEmailHTML")
@@ -2465,8 +2479,8 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2476,8 +2490,8 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2487,8 +2501,8 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2498,8 +2512,8 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2509,8 +2523,8 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2528,10 +2542,10 @@ func (a *V1ConfigurationAPIService) SendEmailHTMLExecute(r ApiSendEmailHTMLReque
 }
 
 type ApiServeEmailTemplateRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
+	ctx          context.Context
+	ApiService   *V1ConfigurationAPIService
 	templateName string
-	type_ string
+	type_        string
 }
 
 func (r ApiServeEmailTemplateRequest) Execute() (string, *http.Response, error) {
@@ -2541,28 +2555,29 @@ func (r ApiServeEmailTemplateRequest) Execute() (string, *http.Response, error) 
 /*
 ServeEmailTemplate Serve an email template file
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param templateName
- @param type_
- @return ApiServeEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param templateName
+	@param type_
+	@return ApiServeEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) ServeEmailTemplate(ctx context.Context, templateName string, type_ string) ApiServeEmailTemplateRequest {
 	return ApiServeEmailTemplateRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		templateName: templateName,
-		type_: type_,
+		type_:        type_,
 	}
 }
 
 // Execute executes the request
-//  @return string
+//
+//	@return string
 func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTemplateRequest) (string, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ServeEmailTemplate")
@@ -2666,8 +2681,8 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2677,8 +2692,8 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2688,8 +2703,8 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2699,8 +2714,8 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2710,8 +2725,8 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2729,10 +2744,10 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 }
 
 type ApiServeSystemEmailTemplateRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	name string
-	type_ string
+	name       string
+	type_      string
 }
 
 func (r ApiServeSystemEmailTemplateRequest) Execute() (string, *http.Response, error) {
@@ -2742,28 +2757,29 @@ func (r ApiServeSystemEmailTemplateRequest) Execute() (string, *http.Response, e
 /*
 ServeSystemEmailTemplate Serve a system email template file
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name
- @param type_
- @return ApiServeSystemEmailTemplateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name
+	@param type_
+	@return ApiServeSystemEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) ServeSystemEmailTemplate(ctx context.Context, name string, type_ string) ApiServeSystemEmailTemplateRequest {
 	return ApiServeSystemEmailTemplateRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
-		type_: type_,
+		ctx:        ctx,
+		name:       name,
+		type_:      type_,
 	}
 }
 
 // Execute executes the request
-//  @return string
+//
+//	@return string
 func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSystemEmailTemplateRequest) (string, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ServeSystemEmailTemplate")
@@ -2839,8 +2855,8 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2850,8 +2866,8 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2861,8 +2877,8 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2872,8 +2888,8 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2883,8 +2899,8 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2902,9 +2918,9 @@ func (a *V1ConfigurationAPIService) ServeSystemEmailTemplateExecute(r ApiServeSy
 }
 
 type ApiUpdateStripeConfigRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	body *map[string]interface{}
+	body       *map[string]interface{}
 }
 
 func (r ApiUpdateStripeConfigRequest) Body(body map[string]interface{}) ApiUpdateStripeConfigRequest {
@@ -2919,24 +2935,25 @@ func (r ApiUpdateStripeConfigRequest) Execute() (*ConfigResponse, *http.Response
 /*
 UpdateStripeConfig Update Stripe config
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUpdateStripeConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiUpdateStripeConfigRequest
 */
 func (a *V1ConfigurationAPIService) UpdateStripeConfig(ctx context.Context) ApiUpdateStripeConfigRequest {
 	return ApiUpdateStripeConfigRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ConfigResponse
+//
+//	@return ConfigResponse
 func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*ConfigResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ConfigResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.UpdateStripeConfig")
@@ -3015,8 +3032,8 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -3026,8 +3043,8 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -3037,8 +3054,8 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -3048,8 +3065,8 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -3067,9 +3084,9 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 }
 
 type ApiValidateStripeConfigRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1ConfigurationAPIService
-	body *map[string]interface{}
+	body       *map[string]interface{}
 }
 
 func (r ApiValidateStripeConfigRequest) Body(body map[string]interface{}) ApiValidateStripeConfigRequest {
@@ -3084,24 +3101,25 @@ func (r ApiValidateStripeConfigRequest) Execute() (string, *http.Response, error
 /*
 ValidateStripeConfig Validate Stripe config
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiValidateStripeConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiValidateStripeConfigRequest
 */
 func (a *V1ConfigurationAPIService) ValidateStripeConfig(ctx context.Context) ApiValidateStripeConfigRequest {
 	return ApiValidateStripeConfigRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return string
+//
+//	@return string
 func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (string, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ValidateStripeConfig")
@@ -3180,8 +3198,8 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -3191,8 +3209,8 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -3202,8 +3220,8 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -3213,8 +3231,8 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

@@ -101,8 +101,10 @@ export const DefaultConfig = new Configuration();
  * This is the base class for all generated API classes.
  */
 export class BaseAPI {
-	private static readonly jsonRegex =
-		/^(:?application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(:?;.*)?$/i;
+	private static readonly jsonRegex = new RegExp(
+		"^(:?application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(:?;.*)?$",
+		"i",
+	);
 	private middleware: Middleware[];
 
 	constructor(protected configuration = DefaultConfig) {
@@ -172,7 +174,7 @@ export class BaseAPI {
 			// only add the querystring to the URL if there are query parameters.
 			// this is done to avoid urls ending with a "?" character which buggy webservers
 			// do not handle correctly sometimes.
-			url += `?${this.configuration.queryParamsStringify(context.query)}`;
+			url += "?" + this.configuration.queryParamsStringify(context.query);
 		}
 
 		const headers = Object.assign(
@@ -236,7 +238,7 @@ export class BaseAPI {
 					})) || fetchParams;
 			}
 		}
-		let response: Response | undefined;
+		let response: Response | undefined = undefined;
 		try {
 			response = await (this.configuration.fetchApi || fetch)(
 				fetchParams.url,
@@ -411,7 +413,7 @@ function querystringSingleKey(
 	keyPrefix: string = "",
 ): string {
 	const fullKey = keyPrefix + (keyPrefix.length ? `[${key}]` : key);
-	if (Array.isArray(value)) {
+	if (value instanceof Array) {
 		const multiValue = value
 			.map((singleValue) => encodeURIComponent(String(singleValue)))
 			.join(`&${encodeURIComponent(fullKey)}=`);
@@ -478,9 +480,9 @@ export interface ErrorContext {
 }
 
 export interface Middleware {
-	pre?(context: RequestContext): Promise<FetchParams | undefined>;
-	post?(context: ResponseContext): Promise<Response | undefined>;
-	onError?(context: ErrorContext): Promise<Response | undefined>;
+	pre?(context: RequestContext): Promise<FetchParams | void>;
+	post?(context: ResponseContext): Promise<Response | void>;
+	onError?(context: ErrorContext): Promise<Response | void>;
 }
 
 export interface ApiResponse<T> {
@@ -488,7 +490,9 @@ export interface ApiResponse<T> {
 	value(): Promise<T>;
 }
 
-export type ResponseTransformer<T> = (json: any) => T;
+export interface ResponseTransformer<T> {
+	(json: any): T;
+}
 
 export class JSONApiResponse<T> {
 	constructor(

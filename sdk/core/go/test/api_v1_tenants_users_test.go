@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1TenantsUsersAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1TenantsUsersAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsUsersAPIService ListTenantUsers", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsUsersAPI.ListTenantUsers(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1TenantsUsersAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsUsersAPIService RemoveTenantUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsUsersAPI.RemoveTenantUser(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1TenantsUsersAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsUsersAPIService UpdateTenantUserRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsUsersAPI.UpdateTenantUserRole(context.Background()).Execute()
 

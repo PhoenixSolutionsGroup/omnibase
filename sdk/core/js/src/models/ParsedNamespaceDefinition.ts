@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { RelationMetadata } from "./RelationMetadata";
 import {
 	RelationMetadataFromJSON,
+	RelationMetadataFromJSONTyped,
 	RelationMetadataToJSON,
+	RelationMetadataToJSONTyped,
 } from "./RelationMetadata";
 
 /**
@@ -68,11 +71,11 @@ export interface ParsedNamespaceDefinition {
 export function instanceOfParsedNamespaceDefinition(
 	value: object,
 ): value is ParsedNamespaceDefinition {
-	if (!("file" in value) || value.file === undefined) return false;
-	if (!("namespace" in value) || value.namespace === undefined) return false;
-	if (!("permits" in value) || value.permits === undefined) return false;
-	if (!("relations" in value) || value.relations === undefined) return false;
-	if (!("subjectRelations" in value) || value.subjectRelations === undefined)
+	if (!("file" in value) || value["file"] === undefined) return false;
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("permits" in value) || value["permits"] === undefined) return false;
+	if (!("relations" in value) || value["relations"] === undefined) return false;
+	if (!("subjectRelations" in value) || value["subjectRelations"] === undefined)
 		return false;
 	return true;
 }
@@ -85,21 +88,23 @@ export function ParsedNamespaceDefinitionFromJSON(
 
 export function ParsedNamespaceDefinitionFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ParsedNamespaceDefinition {
 	if (json == null) {
 		return json;
 	}
 	return {
-		file: json.file,
-		namespace: json.namespace,
-		permits: json.permits == null ? null : json.permits,
-		relations: json.relations == null ? null : json.relations,
+		file: json["file"],
+		namespace: json["namespace"],
+		permits: json["permits"] == null ? null : json["permits"],
+		relations: json["relations"] == null ? null : json["relations"],
 		relationsMetadata:
-			json.relations_metadata == null
+			json["relations_metadata"] == null
 				? undefined
-				: (json.relations_metadata as Array<any>).map(RelationMetadataFromJSON),
-		subjectRelations: json.subject_relations,
+				: (json["relations_metadata"] as Array<any>).map(
+						RelationMetadataFromJSON,
+					),
+		subjectRelations: json["subject_relations"],
 	};
 }
 
@@ -111,21 +116,23 @@ export function ParsedNamespaceDefinitionToJSON(
 
 export function ParsedNamespaceDefinitionToJSONTyped(
 	value?: ParsedNamespaceDefinition | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		file: value.file,
-		namespace: value.namespace,
-		permits: value.permits,
-		relations: value.relations,
+		file: value["file"],
+		namespace: value["namespace"],
+		permits: value["permits"],
+		relations: value["relations"],
 		relations_metadata:
-			value.relationsMetadata == null
+			value["relationsMetadata"] == null
 				? undefined
-				: (value.relationsMetadata as Array<any>).map(RelationMetadataToJSON),
-		subject_relations: value.subjectRelations,
+				: (value["relationsMetadata"] as Array<any>).map(
+						RelationMetadataToJSON,
+					),
+		subject_relations: value["subjectRelations"],
 	};
 }

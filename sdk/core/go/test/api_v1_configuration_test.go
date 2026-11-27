@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService ArchiveAllStripeConfig", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService CreateOrUpdateEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.CreateOrUpdateEmailTemplate(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService CreateOrUpdateSystemEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.CreateOrUpdateSystemEmailTemplate(context.Background()).Execute()
 
@@ -60,7 +60,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService DeleteEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var type_ string
 
@@ -74,7 +74,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService DeleteSystemEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var name string
 
@@ -88,7 +88,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService DeployPermissionNamespaces", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.DeployPermissionNamespaces(context.Background()).Execute()
 
@@ -100,7 +100,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetEmailTemplates", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetEmailTemplates(context.Background()).Execute()
 
@@ -112,7 +112,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetPermissionRequirements", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetPermissionRequirements(context.Background()).Execute()
 
@@ -124,7 +124,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetStripeConfigHistory", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetStripeConfigHistory(context.Background()).Execute()
 
@@ -136,7 +136,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetStripeConfigSchema", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetStripeConfigSchema(context.Background()).Execute()
 
@@ -148,7 +148,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetStripeConfigStatus", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetStripeConfigStatus(context.Background()).Execute()
 
@@ -160,7 +160,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService GetSystemEmailTemplates", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetSystemEmailTemplates(context.Background()).Execute()
 
@@ -172,7 +172,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService PullStripeConfig", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.PullStripeConfig(context.Background()).Execute()
 
@@ -184,7 +184,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService SendEmail", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.SendEmail(context.Background()).Execute()
 
@@ -196,7 +196,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService SendEmailHTML", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.SendEmailHTML(context.Background()).Execute()
 
@@ -208,7 +208,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService ServeEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var templateName string
 		var type_ string
@@ -223,7 +223,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService ServeSystemEmailTemplate", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var name string
 		var type_ string
@@ -238,7 +238,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService UpdateStripeConfig", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).Execute()
 
@@ -250,7 +250,7 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	t.Run("Test V1ConfigurationAPIService ValidateStripeConfig", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.ValidateStripeConfig(context.Background()).Execute()
 

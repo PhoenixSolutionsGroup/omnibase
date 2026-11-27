@@ -12,10 +12,21 @@
  * Do not edit the class manually.
  */
 
-import type { Price } from "./Price";
-import { PriceFromJSON, PriceToJSON } from "./Price";
+import { mapValues } from "../runtime";
 import type { ProductUI } from "./ProductUI";
-import { ProductUIFromJSON, ProductUIToJSON } from "./ProductUI";
+import {
+	ProductUIFromJSON,
+	ProductUIFromJSONTyped,
+	ProductUIToJSON,
+	ProductUIToJSONTyped,
+} from "./ProductUI";
+import type { Price } from "./Price";
+import {
+	PriceFromJSON,
+	PriceFromJSONTyped,
+	PriceToJSON,
+	PriceToJSONTyped,
+} from "./Price";
 
 /**
  *
@@ -77,9 +88,9 @@ export interface Product {
  * Check if a given object implements the Product interface.
  */
 export function instanceOfProduct(value: object): value is Product {
-	if (!("id" in value) || value.id === undefined) return false;
-	if (!("name" in value) || value.name === undefined) return false;
-	if (!("prices" in value) || value.prices === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("prices" in value) || value["prices"] === undefined) return false;
 	return true;
 }
 
@@ -89,23 +100,23 @@ export function ProductFromJSON(json: any): Product {
 
 export function ProductFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): Product {
 	if (json == null) {
 		return json;
 	}
 	return {
-		description: json.description == null ? undefined : json.description,
-		id: json.id,
-		metadata: json.metadata == null ? undefined : json.metadata,
-		name: json.name,
+		description: json["description"] == null ? undefined : json["description"],
+		id: json["id"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		name: json["name"],
 		prices:
-			json.prices == null
+			json["prices"] == null
 				? null
-				: (json.prices as Array<any>).map(PriceFromJSON),
-		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
-		type: json.type == null ? undefined : json.type,
-		ui: json.ui == null ? undefined : ProductUIFromJSON(json.ui),
+				: (json["prices"] as Array<any>).map(PriceFromJSON),
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		type: json["type"] == null ? undefined : json["type"],
+		ui: json["ui"] == null ? undefined : ProductUIFromJSON(json["ui"]),
 	};
 }
 
@@ -115,23 +126,23 @@ export function ProductToJSON(json: any): Product {
 
 export function ProductToJSONTyped(
 	value?: Product | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		description: value.description,
-		id: value.id,
-		metadata: value.metadata,
-		name: value.name,
+		description: value["description"],
+		id: value["id"],
+		metadata: value["metadata"],
+		name: value["name"],
 		prices:
-			value.prices == null
+			value["prices"] == null
 				? null
-				: (value.prices as Array<any>).map(PriceToJSON),
-		stripe_id: value.stripeId,
-		type: value.type,
-		ui: ProductUIToJSON(value.ui),
+				: (value["prices"] as Array<any>).map(PriceToJSON),
+		stripe_id: value["stripeId"],
+		type: value["type"],
+		ui: ProductUIToJSON(value["ui"]),
 	};
 }

@@ -19,13 +19,12 @@ import (
 	"net/url"
 )
 
-
 // V1AuthAPIService V1AuthAPI service
 type V1AuthAPIService service
 
 type ApiCreateUserRequest struct {
-	ctx context.Context
-	ApiService *V1AuthAPIService
+	ctx               context.Context
+	ApiService        *V1AuthAPIService
 	createUserRequest *CreateUserRequest
 }
 
@@ -41,24 +40,25 @@ func (r ApiCreateUserRequest) Execute() (*Identity, *http.Response, error) {
 /*
 CreateUser Create a new user identity
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateUserRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateUserRequest
 */
 func (a *V1AuthAPIService) CreateUser(ctx context.Context) ApiCreateUserRequest {
 	return ApiCreateUserRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Identity
+//
+//	@return Identity
 func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Identity
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Identity
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.CreateUser")
@@ -137,8 +137,8 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -148,8 +148,8 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -159,8 +159,8 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -170,8 +170,8 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -181,8 +181,8 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -200,7 +200,7 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity,
 }
 
 type ApiGetActiveTenantRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
 }
 
@@ -211,24 +211,25 @@ func (r ApiGetActiveTenantRequest) Execute() (*ActiveTenantResponse, *http.Respo
 /*
 GetActiveTenant Get the active tenant for the authenticated user
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetActiveTenantRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetActiveTenantRequest
 */
 func (a *V1AuthAPIService) GetActiveTenant(ctx context.Context) ApiGetActiveTenantRequest {
 	return ApiGetActiveTenantRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ActiveTenantResponse
+//
+//	@return ActiveTenantResponse
 func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (*ActiveTenantResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ActiveTenantResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ActiveTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetActiveTenant")
@@ -330,8 +331,8 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -341,8 +342,8 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -352,8 +353,8 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -371,7 +372,7 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 }
 
 type ApiGetIdentityRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
 }
 
@@ -382,24 +383,25 @@ func (r ApiGetIdentityRequest) Execute() (*Identity, *http.Response, error) {
 /*
 GetIdentity Get current identity
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetIdentityRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetIdentityRequest
 */
 func (a *V1AuthAPIService) GetIdentity(ctx context.Context) ApiGetIdentityRequest {
 	return ApiGetIdentityRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Identity
+//
+//	@return Identity
 func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*Identity, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Identity
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Identity
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetIdentity")
@@ -473,8 +475,8 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*Identit
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -484,8 +486,8 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*Identit
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -503,7 +505,7 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*Identit
 }
 
 type ApiGetSessionRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
 }
 
@@ -514,24 +516,25 @@ func (r ApiGetSessionRequest) Execute() (*SessionResponse, *http.Response, error
 /*
 GetSession Get current session
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetSessionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetSessionRequest
 */
 func (a *V1AuthAPIService) GetSession(ctx context.Context) ApiGetSessionRequest {
 	return ApiGetSessionRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return SessionResponse
+//
+//	@return SessionResponse
 func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *SessionResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *SessionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetSession")
@@ -605,8 +608,8 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -616,8 +619,8 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -635,7 +638,7 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 }
 
 type ApiListTenantsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
 }
 
@@ -646,24 +649,25 @@ func (r ApiListTenantsRequest) Execute() (*ListTenantsResponse, *http.Response, 
 /*
 ListTenants List tenants the authenticated user belongs to
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListTenantsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListTenantsRequest
 */
 func (a *V1AuthAPIService) ListTenants(ctx context.Context) ApiListTenantsRequest {
 	return ApiListTenantsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListTenantsResponse
+//
+//	@return ListTenantsResponse
 func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTenantsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListTenantsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListTenantsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ListTenants")
@@ -765,8 +769,8 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -776,8 +780,8 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -787,8 +791,8 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -806,9 +810,9 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 }
 
 type ApiLogoutRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
-	cookie *string
+	cookie     *string
 }
 
 func (r ApiLogoutRequest) Cookie(cookie string) ApiLogoutRequest {
@@ -823,24 +827,25 @@ func (r ApiLogoutRequest) Execute() (*LogoutResponse, *http.Response, error) {
 /*
 Logout Logout user
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiLogoutRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiLogoutRequest
 */
 func (a *V1AuthAPIService) Logout(ctx context.Context) ApiLogoutRequest {
 	return ApiLogoutRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return LogoutResponse
+//
+//	@return LogoutResponse
 func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *LogoutResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *LogoutResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.Logout")
@@ -917,8 +922,8 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -928,8 +933,8 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -939,8 +944,8 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -950,8 +955,8 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -969,7 +974,7 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 }
 
 type ApiWhoAmIRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1AuthAPIService
 }
 
@@ -980,24 +985,25 @@ func (r ApiWhoAmIRequest) Execute() (*WhoAmIBody, *http.Response, error) {
 /*
 WhoAmI Get authenticated user identity
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiWhoAmIRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiWhoAmIRequest
 */
 func (a *V1AuthAPIService) WhoAmI(ctx context.Context) ApiWhoAmIRequest {
 	return ApiWhoAmIRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return WhoAmIBody
+//
+//	@return WhoAmIBody
 func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIBody, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *WhoAmIBody
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *WhoAmIBody
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.WhoAmI")
@@ -1071,8 +1077,8 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIBody, *http
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1082,8 +1088,8 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIBody, *http
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

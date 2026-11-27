@@ -126,4 +126,12 @@ if [ "$GENERATE_GO" = true ]; then
 fi
 
 echo ""
+echo -e "${BLUE}Formatting generated files...${NC}"
+bunx biome format --write sdk/core
+if [ "$GENERATE_GO" = true ]; then
+  gofmt -w sdk/core/go
+fi
+echo -e "${GREEN}✓ Generated files formatted${NC}"
+
+echo ""
 echo -e "${GREEN}SDK generation complete!${NC}"

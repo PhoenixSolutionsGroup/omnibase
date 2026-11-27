@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface MakePublicRequest {
 export function instanceOfMakePublicRequest(
 	value: object,
 ): value is MakePublicRequest {
-	if (!("path" in value) || value.path === undefined) return false;
+	if (!("path" in value) || value["path"] === undefined) return false;
 	return true;
 }
 
@@ -42,13 +43,13 @@ export function MakePublicRequestFromJSON(json: any): MakePublicRequest {
 
 export function MakePublicRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): MakePublicRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		path: json.path,
+		path: json["path"],
 	};
 }
 
@@ -58,13 +59,13 @@ export function MakePublicRequestToJSON(json: any): MakePublicRequest {
 
 export function MakePublicRequestToJSONTyped(
 	value?: MakePublicRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		path: value.path,
+		path: value["path"],
 	};
 }

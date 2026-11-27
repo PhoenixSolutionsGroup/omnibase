@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &CouponChange{}
 
 // CouponChange struct for CouponChange
 type CouponChange struct {
-	Action string `json:"action"`
-	CouponId string `json:"coupon_id"`
-	Name string `json:"name"`
+	Action   string  `json:"action"`
+	CouponId string  `json:"coupon_id"`
+	Name     string  `json:"name"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -155,7 +155,7 @@ func (o *CouponChange) SetStripeId(v string) {
 }
 
 func (o CouponChange) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -188,10 +188,10 @@ func (o *CouponChange) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -247,5 +247,3 @@ func (v *NullableCouponChange) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

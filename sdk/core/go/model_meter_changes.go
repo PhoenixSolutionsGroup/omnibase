@@ -21,8 +21,8 @@ var _ MappedNullable = &MeterChanges{}
 // MeterChanges struct for MeterChanges
 type MeterChanges struct {
 	Archived []MeterChange `json:"archived,omitempty"`
-	Created []MeterChange `json:"created,omitempty"`
-	Updated []MeterChange `json:"updated,omitempty"`
+	Created  []MeterChange `json:"created,omitempty"`
+	Updated  []MeterChange `json:"updated,omitempty"`
 }
 
 // NewMeterChanges instantiates a new MeterChanges object
@@ -142,7 +142,7 @@ func (o *MeterChanges) SetUpdated(v []MeterChange) {
 }
 
 func (o MeterChanges) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,5 +198,3 @@ func (v *NullableMeterChanges) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

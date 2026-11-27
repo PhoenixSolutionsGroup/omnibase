@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,12 +22,12 @@ var _ MappedNullable = &DeployNamespacesResponse{}
 
 // DeployNamespacesResponse struct for DeployNamespacesResponse
 type DeployNamespacesResponse struct {
-	ManagedMode bool `json:"managed_mode"`
-	Message string `json:"message"`
-	Path string `json:"path"`
+	ManagedMode     bool   `json:"managed_mode"`
+	Message         string `json:"message"`
+	Path            string `json:"path"`
 	RolesBackfilled *int64 `json:"roles_backfilled,omitempty"`
-	RolesSynced *int64 `json:"roles_synced,omitempty"`
-	TenantId string `json:"tenant_id"`
+	RolesSynced     *int64 `json:"roles_synced,omitempty"`
+	TenantId        string `json:"tenant_id"`
 }
 
 type _DeployNamespacesResponse DeployNamespacesResponse
@@ -214,7 +214,7 @@ func (o *DeployNamespacesResponse) SetTenantId(v string) {
 }
 
 func (o DeployNamespacesResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -252,10 +252,10 @@ func (o *DeployNamespacesResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -311,5 +311,3 @@ func (v *NullableDeployNamespacesResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

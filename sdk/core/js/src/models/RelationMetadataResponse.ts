@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -50,11 +51,11 @@ export interface RelationMetadataResponse {
 export function instanceOfRelationMetadataResponse(
 	value: object,
 ): value is RelationMetadataResponse {
-	if (!("displayName" in value) || value.displayName === undefined)
+	if (!("displayName" in value) || value["displayName"] === undefined)
 		return false;
-	if (!("group" in value) || value.group === undefined) return false;
-	if (!("name" in value) || value.name === undefined) return false;
-	if (!("subGroup" in value) || value.subGroup === undefined) return false;
+	if (!("group" in value) || value["group"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("subGroup" in value) || value["subGroup"] === undefined) return false;
 	return true;
 }
 
@@ -66,16 +67,16 @@ export function RelationMetadataResponseFromJSON(
 
 export function RelationMetadataResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): RelationMetadataResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		displayName: json.display_name,
-		group: json.group,
-		name: json.name,
-		subGroup: json.sub_group,
+		displayName: json["display_name"],
+		group: json["group"],
+		name: json["name"],
+		subGroup: json["sub_group"],
 	};
 }
 
@@ -87,16 +88,16 @@ export function RelationMetadataResponseToJSON(
 
 export function RelationMetadataResponseToJSONTyped(
 	value?: RelationMetadataResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		display_name: value.displayName,
-		group: value.group,
-		name: value.name,
-		sub_group: value.subGroup,
+		display_name: value["displayName"],
+		group: value["group"],
+		name: value["name"],
+		sub_group: value["subGroup"],
 	};
 }

@@ -12,12 +12,28 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { AuthTenant } from "./AuthTenant";
-import { AuthTenantFromJSON, AuthTenantToJSON } from "./AuthTenant";
+import {
+	AuthTenantFromJSON,
+	AuthTenantFromJSONTyped,
+	AuthTenantToJSON,
+	AuthTenantToJSONTyped,
+} from "./AuthTenant";
 import type { Identity } from "./Identity";
-import { IdentityFromJSON, IdentityToJSON } from "./Identity";
+import {
+	IdentityFromJSON,
+	IdentityFromJSONTyped,
+	IdentityToJSON,
+	IdentityToJSONTyped,
+} from "./Identity";
 import type { Session } from "./Session";
-import { SessionFromJSON, SessionToJSON } from "./Session";
+import {
+	SessionFromJSON,
+	SessionFromJSONTyped,
+	SessionToJSON,
+	SessionToJSONTyped,
+} from "./Session";
 
 /**
  *
@@ -51,8 +67,8 @@ export interface SessionResponse {
 export function instanceOfSessionResponse(
 	value: object,
 ): value is SessionResponse {
-	if (!("identity" in value) || value.identity === undefined) return false;
-	if (!("session" in value) || value.session === undefined) return false;
+	if (!("identity" in value) || value["identity"] === undefined) return false;
+	if (!("session" in value) || value["session"] === undefined) return false;
 	return true;
 }
 
@@ -62,15 +78,16 @@ export function SessionResponseFromJSON(json: any): SessionResponse {
 
 export function SessionResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): SessionResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		identity: IdentityFromJSON(json.identity),
-		session: SessionFromJSON(json.session),
-		tenant: json.tenant == null ? undefined : AuthTenantFromJSON(json.tenant),
+		identity: IdentityFromJSON(json["identity"]),
+		session: SessionFromJSON(json["session"]),
+		tenant:
+			json["tenant"] == null ? undefined : AuthTenantFromJSON(json["tenant"]),
 	};
 }
 
@@ -80,15 +97,15 @@ export function SessionResponseToJSON(json: any): SessionResponse {
 
 export function SessionResponseToJSONTyped(
 	value?: SessionResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		identity: IdentityToJSON(value.identity),
-		session: SessionToJSON(value.session),
-		tenant: AuthTenantToJSON(value.tenant),
+		identity: IdentityToJSON(value["identity"]),
+		session: SessionToJSON(value["session"]),
+		tenant: AuthTenantToJSON(value["tenant"]),
 	};
 }

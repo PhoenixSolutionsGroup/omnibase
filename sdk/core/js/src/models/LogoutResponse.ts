@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -38,9 +39,9 @@ export interface LogoutResponse {
 export function instanceOfLogoutResponse(
 	value: object,
 ): value is LogoutResponse {
-	if (!("logoutToken" in value) || value.logoutToken === undefined)
+	if (!("logoutToken" in value) || value["logoutToken"] === undefined)
 		return false;
-	if (!("logoutUrl" in value) || value.logoutUrl === undefined) return false;
+	if (!("logoutUrl" in value) || value["logoutUrl"] === undefined) return false;
 	return true;
 }
 
@@ -50,14 +51,14 @@ export function LogoutResponseFromJSON(json: any): LogoutResponse {
 
 export function LogoutResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): LogoutResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		logoutToken: json.logout_token,
-		logoutUrl: json.logout_url,
+		logoutToken: json["logout_token"],
+		logoutUrl: json["logout_url"],
 	};
 }
 
@@ -67,14 +68,14 @@ export function LogoutResponseToJSON(json: any): LogoutResponse {
 
 export function LogoutResponseToJSONTyped(
 	value?: LogoutResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		logout_token: value.logoutToken,
-		logout_url: value.logoutUrl,
+		logout_token: value["logoutToken"],
+		logout_url: value["logoutUrl"],
 	};
 }

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -38,8 +39,8 @@ export interface MakePublicResponse {
 export function instanceOfMakePublicResponse(
 	value: object,
 ): value is MakePublicResponse {
-	if (!("message" in value) || value.message === undefined) return false;
-	if (!("path" in value) || value.path === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("path" in value) || value["path"] === undefined) return false;
 	return true;
 }
 
@@ -49,14 +50,14 @@ export function MakePublicResponseFromJSON(json: any): MakePublicResponse {
 
 export function MakePublicResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): MakePublicResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
-		path: json.path,
+		message: json["message"],
+		path: json["path"],
 	};
 }
 
@@ -66,14 +67,14 @@ export function MakePublicResponseToJSON(json: any): MakePublicResponse {
 
 export function MakePublicResponseToJSONTyped(
 	value?: MakePublicResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
-		path: value.path,
+		message: value["message"],
+		path: value["path"],
 	};
 }

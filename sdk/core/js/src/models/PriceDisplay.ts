@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -51,15 +52,16 @@ export function PriceDisplayFromJSON(json: any): PriceDisplay {
 
 export function PriceDisplayFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): PriceDisplay {
 	if (json == null) {
 		return json;
 	}
 	return {
-		customText: json.custom_text == null ? undefined : json.custom_text,
-		showCurrency: json.show_currency == null ? undefined : json.show_currency,
-		suffix: json.suffix == null ? undefined : json.suffix,
+		customText: json["custom_text"] == null ? undefined : json["custom_text"],
+		showCurrency:
+			json["show_currency"] == null ? undefined : json["show_currency"],
+		suffix: json["suffix"] == null ? undefined : json["suffix"],
 	};
 }
 
@@ -69,15 +71,15 @@ export function PriceDisplayToJSON(json: any): PriceDisplay {
 
 export function PriceDisplayToJSONTyped(
 	value?: PriceDisplay | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		custom_text: value.customText,
-		show_currency: value.showCurrency,
-		suffix: value.suffix,
+		custom_text: value["customText"],
+		show_currency: value["showCurrency"],
+		suffix: value["suffix"],
 	};
 }

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -72,15 +73,16 @@ export interface CreateRoleRow {
  * Check if a given object implements the CreateRoleRow interface.
  */
 export function instanceOfCreateRoleRow(value: object): value is CreateRoleRow {
-	if (!("createdAt" in value) || value.createdAt === undefined) return false;
-	if (!("id" in value) || value.id === undefined) return false;
-	if (!("permissions" in value) || value.permissions === undefined)
+	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("permissions" in value) || value["permissions"] === undefined)
 		return false;
-	if (!("roleName" in value) || value.roleName === undefined) return false;
-	if (!("templateId" in value) || value.templateId === undefined) return false;
-	if (!("tenantId" in value) || value.tenantId === undefined) return false;
-	if (!("updatedAt" in value) || value.updatedAt === undefined) return false;
-	if (!("userIds" in value) || value.userIds === undefined) return false;
+	if (!("roleName" in value) || value["roleName"] === undefined) return false;
+	if (!("templateId" in value) || value["templateId"] === undefined)
+		return false;
+	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("userIds" in value) || value["userIds"] === undefined) return false;
 	return true;
 }
 
@@ -90,20 +92,20 @@ export function CreateRoleRowFromJSON(json: any): CreateRoleRow {
 
 export function CreateRoleRowFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CreateRoleRow {
 	if (json == null) {
 		return json;
 	}
 	return {
-		createdAt: new Date(json.created_at),
-		id: json.id,
-		permissions: json.permissions == null ? null : json.permissions,
-		roleName: json.role_name,
-		templateId: json.template_id,
-		tenantId: json.tenant_id,
-		updatedAt: new Date(json.updated_at),
-		userIds: json.user_ids == null ? null : json.user_ids,
+		createdAt: new Date(json["created_at"]),
+		id: json["id"],
+		permissions: json["permissions"] == null ? null : json["permissions"],
+		roleName: json["role_name"],
+		templateId: json["template_id"],
+		tenantId: json["tenant_id"],
+		updatedAt: new Date(json["updated_at"]),
+		userIds: json["user_ids"] == null ? null : json["user_ids"],
 	};
 }
 
@@ -113,20 +115,20 @@ export function CreateRoleRowToJSON(json: any): CreateRoleRow {
 
 export function CreateRoleRowToJSONTyped(
 	value?: CreateRoleRow | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		created_at: value.createdAt.toISOString(),
-		id: value.id,
-		permissions: value.permissions,
-		role_name: value.roleName,
-		template_id: value.templateId,
-		tenant_id: value.tenantId,
-		updated_at: value.updatedAt.toISOString(),
-		user_ids: value.userIds,
+		created_at: value["createdAt"].toISOString(),
+		id: value["id"],
+		permissions: value["permissions"],
+		role_name: value["roleName"],
+		template_id: value["templateId"],
+		tenant_id: value["tenantId"],
+		updated_at: value["updatedAt"].toISOString(),
+		user_ids: value["userIds"],
 	};
 }

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -38,9 +39,9 @@ export interface CreateRoleRequest {
 export function instanceOfCreateRoleRequest(
 	value: object,
 ): value is CreateRoleRequest {
-	if (!("permissions" in value) || value.permissions === undefined)
+	if (!("permissions" in value) || value["permissions"] === undefined)
 		return false;
-	if (!("roleName" in value) || value.roleName === undefined) return false;
+	if (!("roleName" in value) || value["roleName"] === undefined) return false;
 	return true;
 }
 
@@ -50,14 +51,14 @@ export function CreateRoleRequestFromJSON(json: any): CreateRoleRequest {
 
 export function CreateRoleRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): CreateRoleRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		permissions: json.permissions == null ? null : json.permissions,
-		roleName: json.role_name,
+		permissions: json["permissions"] == null ? null : json["permissions"],
+		roleName: json["role_name"],
 	};
 }
 
@@ -67,14 +68,14 @@ export function CreateRoleRequestToJSON(json: any): CreateRoleRequest {
 
 export function CreateRoleRequestToJSONTyped(
 	value?: CreateRoleRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		permissions: value.permissions,
-		role_name: value.roleName,
+		permissions: value["permissions"],
+		role_name: value["roleName"],
 	};
 }

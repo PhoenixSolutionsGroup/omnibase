@@ -20,11 +20,11 @@ var _ MappedNullable = &PriceUI{}
 
 // PriceUI struct for PriceUI
 type PriceUI struct {
-	BillingPeriod *string `json:"billing_period,omitempty"`
-	DisplayName *string `json:"display_name,omitempty"`
-	Features []string `json:"features,omitempty"`
-	Limits []PriceLimit `json:"limits,omitempty"`
-	PriceDisplay *PriceDisplay `json:"price_display,omitempty"`
+	BillingPeriod *string       `json:"billing_period,omitempty"`
+	DisplayName   *string       `json:"display_name,omitempty"`
+	Features      []string      `json:"features,omitempty"`
+	Limits        []PriceLimit  `json:"limits,omitempty"`
+	PriceDisplay  *PriceDisplay `json:"price_display,omitempty"`
 }
 
 // NewPriceUI instantiates a new PriceUI object
@@ -207,7 +207,7 @@ func (o *PriceUI) SetPriceDisplay(v PriceDisplay) {
 }
 
 func (o PriceUI) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -269,5 +269,3 @@ func (v *NullablePriceUI) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

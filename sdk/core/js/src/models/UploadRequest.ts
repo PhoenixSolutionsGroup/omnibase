@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -36,7 +37,7 @@ export interface UploadRequest {
  * Check if a given object implements the UploadRequest interface.
  */
 export function instanceOfUploadRequest(value: object): value is UploadRequest {
-	if (!("path" in value) || value.path === undefined) return false;
+	if (!("path" in value) || value["path"] === undefined) return false;
 	return true;
 }
 
@@ -46,14 +47,14 @@ export function UploadRequestFromJSON(json: any): UploadRequest {
 
 export function UploadRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UploadRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		metadata: json.metadata == null ? undefined : json.metadata,
-		path: json.path,
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		path: json["path"],
 	};
 }
 
@@ -63,14 +64,14 @@ export function UploadRequestToJSON(json: any): UploadRequest {
 
 export function UploadRequestToJSONTyped(
 	value?: UploadRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		metadata: value.metadata,
-		path: value.path,
+		metadata: value["metadata"],
+		path: value["path"],
 	};
 }

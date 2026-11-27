@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -23,7 +23,7 @@ var _ MappedNullable = &MeterCustomerMapping{}
 // MeterCustomerMapping struct for MeterCustomerMapping
 type MeterCustomerMapping struct {
 	EventPayloadKey string `json:"event_payload_key"`
-	Type string `json:"type"`
+	Type            string `json:"type"`
 }
 
 type _MeterCustomerMapping MeterCustomerMapping
@@ -96,7 +96,7 @@ func (o *MeterCustomerMapping) SetType(v string) {
 }
 
 func (o MeterCustomerMapping) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -124,10 +124,10 @@ func (o *MeterCustomerMapping) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullableMeterCustomerMapping) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,17 +22,17 @@ var _ MappedNullable = &PromotionCodeWithStripeID{}
 
 // PromotionCodeWithStripeID struct for PromotionCodeWithStripeID
 type PromotionCodeWithStripeID struct {
-	Active *bool `json:"active,omitempty"`
-	Code string `json:"code"`
-	Coupon string `json:"coupon"`
-	ExpiresAt *int64 `json:"expires_at,omitempty"`
-	FirstTimeTransaction *bool `json:"first_time_transaction,omitempty"`
-	Id string `json:"id"`
-	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-	MinimumAmount *int64 `json:"minimum_amount,omitempty"`
-	MinimumAmountCurrency *string `json:"minimum_amount_currency,omitempty"`
-	StripeId *string `json:"stripe_id,omitempty"`
+	Active                *bool             `json:"active,omitempty"`
+	Code                  string            `json:"code"`
+	Coupon                string            `json:"coupon"`
+	ExpiresAt             *int64            `json:"expires_at,omitempty"`
+	FirstTimeTransaction  *bool             `json:"first_time_transaction,omitempty"`
+	Id                    string            `json:"id"`
+	MaxRedemptions        *int64            `json:"max_redemptions,omitempty"`
+	Metadata              map[string]string `json:"metadata,omitempty"`
+	MinimumAmount         *int64            `json:"minimum_amount,omitempty"`
+	MinimumAmountCurrency *string           `json:"minimum_amount_currency,omitempty"`
+	StripeId              *string           `json:"stripe_id,omitempty"`
 }
 
 type _PromotionCodeWithStripeID PromotionCodeWithStripeID
@@ -386,7 +386,7 @@ func (o *PromotionCodeWithStripeID) SetStripeId(v string) {
 }
 
 func (o PromotionCodeWithStripeID) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -440,10 +440,10 @@ func (o *PromotionCodeWithStripeID) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -499,5 +499,3 @@ func (v *NullablePromotionCodeWithStripeID) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

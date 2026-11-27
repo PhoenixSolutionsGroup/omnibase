@@ -12,25 +12,34 @@
  * Do not edit the class manually.
  */
 
-import type { CouponWithStripeID } from "./CouponWithStripeID";
-import {
-	CouponWithStripeIDFromJSON,
-	CouponWithStripeIDToJSON,
-} from "./CouponWithStripeID";
+import { mapValues } from "../runtime";
 import type { MeterWithStripeID } from "./MeterWithStripeID";
 import {
 	MeterWithStripeIDFromJSON,
+	MeterWithStripeIDFromJSONTyped,
 	MeterWithStripeIDToJSON,
+	MeterWithStripeIDToJSONTyped,
 } from "./MeterWithStripeID";
 import type { ProductWithStripeIDs } from "./ProductWithStripeIDs";
 import {
 	ProductWithStripeIDsFromJSON,
+	ProductWithStripeIDsFromJSONTyped,
 	ProductWithStripeIDsToJSON,
+	ProductWithStripeIDsToJSONTyped,
 } from "./ProductWithStripeIDs";
+import type { CouponWithStripeID } from "./CouponWithStripeID";
+import {
+	CouponWithStripeIDFromJSON,
+	CouponWithStripeIDFromJSONTyped,
+	CouponWithStripeIDToJSON,
+	CouponWithStripeIDToJSONTyped,
+} from "./CouponWithStripeID";
 import type { PromotionCodeWithStripeID } from "./PromotionCodeWithStripeID";
 import {
 	PromotionCodeWithStripeIDFromJSON,
+	PromotionCodeWithStripeIDFromJSONTyped,
 	PromotionCodeWithStripeIDToJSON,
+	PromotionCodeWithStripeIDToJSONTyped,
 } from "./PromotionCodeWithStripeID";
 
 /**
@@ -77,8 +86,8 @@ export interface StripeConfigurationWithIDs {
 export function instanceOfStripeConfigurationWithIDs(
 	value: object,
 ): value is StripeConfigurationWithIDs {
-	if (!("products" in value) || value.products === undefined) return false;
-	if (!("version" in value) || value.version === undefined) return false;
+	if (!("products" in value) || value["products"] === undefined) return false;
+	if (!("version" in value) || value["version"] === undefined) return false;
 	return true;
 }
 
@@ -90,31 +99,31 @@ export function StripeConfigurationWithIDsFromJSON(
 
 export function StripeConfigurationWithIDsFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): StripeConfigurationWithIDs {
 	if (json == null) {
 		return json;
 	}
 	return {
 		coupons:
-			json.coupons == null
+			json["coupons"] == null
 				? undefined
-				: (json.coupons as Array<any>).map(CouponWithStripeIDFromJSON),
+				: (json["coupons"] as Array<any>).map(CouponWithStripeIDFromJSON),
 		meters:
-			json.meters == null
+			json["meters"] == null
 				? undefined
-				: (json.meters as Array<any>).map(MeterWithStripeIDFromJSON),
+				: (json["meters"] as Array<any>).map(MeterWithStripeIDFromJSON),
 		products:
-			json.products == null
+			json["products"] == null
 				? null
-				: (json.products as Array<any>).map(ProductWithStripeIDsFromJSON),
+				: (json["products"] as Array<any>).map(ProductWithStripeIDsFromJSON),
 		promotionCodes:
-			json.promotion_codes == null
+			json["promotion_codes"] == null
 				? undefined
-				: (json.promotion_codes as Array<any>).map(
+				: (json["promotion_codes"] as Array<any>).map(
 						PromotionCodeWithStripeIDFromJSON,
 					),
-		version: json.version,
+		version: json["version"],
 	};
 }
 
@@ -126,7 +135,7 @@ export function StripeConfigurationWithIDsToJSON(
 
 export function StripeConfigurationWithIDsToJSONTyped(
 	value?: StripeConfigurationWithIDs | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
@@ -134,23 +143,23 @@ export function StripeConfigurationWithIDsToJSONTyped(
 
 	return {
 		coupons:
-			value.coupons == null
+			value["coupons"] == null
 				? undefined
-				: (value.coupons as Array<any>).map(CouponWithStripeIDToJSON),
+				: (value["coupons"] as Array<any>).map(CouponWithStripeIDToJSON),
 		meters:
-			value.meters == null
+			value["meters"] == null
 				? undefined
-				: (value.meters as Array<any>).map(MeterWithStripeIDToJSON),
+				: (value["meters"] as Array<any>).map(MeterWithStripeIDToJSON),
 		products:
-			value.products == null
+			value["products"] == null
 				? null
-				: (value.products as Array<any>).map(ProductWithStripeIDsToJSON),
+				: (value["products"] as Array<any>).map(ProductWithStripeIDsToJSON),
 		promotion_codes:
-			value.promotionCodes == null
+			value["promotionCodes"] == null
 				? undefined
-				: (value.promotionCodes as Array<any>).map(
+				: (value["promotionCodes"] as Array<any>).map(
 						PromotionCodeWithStripeIDToJSON,
 					),
-		version: value.version,
+		version: value["version"],
 	};
 }

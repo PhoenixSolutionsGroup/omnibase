@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -36,9 +37,9 @@ export interface WhoAmIBody {
  * Check if a given object implements the WhoAmIBody interface.
  */
 export function instanceOfWhoAmIBody(value: object): value is WhoAmIBody {
-	if (!("authenticated" in value) || value.authenticated === undefined)
+	if (!("authenticated" in value) || value["authenticated"] === undefined)
 		return false;
-	if (!("userId" in value) || value.userId === undefined) return false;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
 	return true;
 }
 
@@ -48,14 +49,14 @@ export function WhoAmIBodyFromJSON(json: any): WhoAmIBody {
 
 export function WhoAmIBodyFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): WhoAmIBody {
 	if (json == null) {
 		return json;
 	}
 	return {
-		authenticated: json.authenticated,
-		userId: json.user_id,
+		authenticated: json["authenticated"],
+		userId: json["user_id"],
 	};
 }
 
@@ -65,14 +66,14 @@ export function WhoAmIBodyToJSON(json: any): WhoAmIBody {
 
 export function WhoAmIBodyToJSONTyped(
 	value?: WhoAmIBody | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		authenticated: value.authenticated,
-		user_id: value.userId,
+		authenticated: value["authenticated"],
+		user_id: value["userId"],
 	};
 }

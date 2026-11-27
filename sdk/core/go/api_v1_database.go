@@ -20,15 +20,14 @@ import (
 	"os"
 )
 
-
 // V1DatabaseAPIService V1DatabaseAPI service
 type V1DatabaseAPIService service
 
 type ApiGenerateDatabaseTypesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1DatabaseAPIService
-	language *string
-	schemas *string
+	language   *string
+	schemas    *string
 }
 
 func (r ApiGenerateDatabaseTypesRequest) Language(language string) ApiGenerateDatabaseTypesRequest {
@@ -48,24 +47,25 @@ func (r ApiGenerateDatabaseTypesRequest) Execute() (string, *http.Response, erro
 /*
 GenerateDatabaseTypes Generate type definitions for the database schema
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGenerateDatabaseTypesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGenerateDatabaseTypesRequest
 */
 func (a *V1DatabaseAPIService) GenerateDatabaseTypes(ctx context.Context) ApiGenerateDatabaseTypesRequest {
 	return ApiGenerateDatabaseTypesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return string
+//
+//	@return string
 func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabaseTypesRequest) (string, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1DatabaseAPIService.GenerateDatabaseTypes")
@@ -82,9 +82,9 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 	if r.language != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "language", r.language, "form", "")
 	} else {
-        var defaultValue string = "typescript"
-        parameterAddToHeaderOrQuery(localVarQueryParams, "language", defaultValue, "form", "")
-        r.language = &defaultValue
+		var defaultValue string = "typescript"
+		parameterAddToHeaderOrQuery(localVarQueryParams, "language", defaultValue, "form", "")
+		r.language = &defaultValue
 	}
 	if r.schemas != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "schemas", r.schemas, "form", "")
@@ -149,8 +149,8 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -160,8 +160,8 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -171,8 +171,8 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -182,8 +182,8 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -201,7 +201,7 @@ func (a *V1DatabaseAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabas
 }
 
 type ApiGetDatabaseMigrationStatusRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1DatabaseAPIService
 }
 
@@ -212,24 +212,25 @@ func (r ApiGetDatabaseMigrationStatusRequest) Execute() ([]AppliedMigration, *ht
 /*
 GetDatabaseMigrationStatus Get the status of applied migrations
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetDatabaseMigrationStatusRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetDatabaseMigrationStatusRequest
 */
 func (a *V1DatabaseAPIService) GetDatabaseMigrationStatus(ctx context.Context) ApiGetDatabaseMigrationStatusRequest {
 	return ApiGetDatabaseMigrationStatusRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []AppliedMigration
+//
+//	@return []AppliedMigration
 func (a *V1DatabaseAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabaseMigrationStatusRequest) ([]AppliedMigration, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []AppliedMigration
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []AppliedMigration
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1DatabaseAPIService.GetDatabaseMigrationStatus")
@@ -303,8 +304,8 @@ func (a *V1DatabaseAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -314,8 +315,8 @@ func (a *V1DatabaseAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -325,8 +326,8 @@ func (a *V1DatabaseAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabas
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -344,10 +345,10 @@ func (a *V1DatabaseAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabas
 }
 
 type ApiRollbackDatabaseMigrationsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1DatabaseAPIService
 	migrations *os.File
-	steps *string
+	steps      *string
 }
 
 func (r ApiRollbackDatabaseMigrationsRequest) Migrations(migrations *os.File) ApiRollbackDatabaseMigrationsRequest {
@@ -367,24 +368,25 @@ func (r ApiRollbackDatabaseMigrationsRequest) Execute() (*MigrationsDownResponse
 /*
 RollbackDatabaseMigrations Roll back database migrations
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiRollbackDatabaseMigrationsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiRollbackDatabaseMigrationsRequest
 */
 func (a *V1DatabaseAPIService) RollbackDatabaseMigrations(ctx context.Context) ApiRollbackDatabaseMigrationsRequest {
 	return ApiRollbackDatabaseMigrationsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return MigrationsDownResponse
+//
+//	@return MigrationsDownResponse
 func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDatabaseMigrationsRequest) (*MigrationsDownResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MigrationsDownResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MigrationsDownResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1DatabaseAPIService.RollbackDatabaseMigrations")
@@ -422,8 +424,8 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	var migrationsLocalVarFormFileName string
-	var migrationsLocalVarFileName     string
-	var migrationsLocalVarFileBytes    []byte
+	var migrationsLocalVarFileName string
+	var migrationsLocalVarFileBytes []byte
 
 	migrationsLocalVarFormFileName = "migrations"
 	migrationsLocalVarFile := r.migrations
@@ -480,8 +482,8 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -491,8 +493,8 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -502,8 +504,8 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -513,8 +515,8 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -532,7 +534,7 @@ func (a *V1DatabaseAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDa
 }
 
 type ApiUploadDatabaseMigrationsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1DatabaseAPIService
 	migrations *os.File
 }
@@ -549,24 +551,25 @@ func (r ApiUploadDatabaseMigrationsRequest) Execute() (*ApplyMigrationsResponse,
 /*
 UploadDatabaseMigrations Apply database migrations
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUploadDatabaseMigrationsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiUploadDatabaseMigrationsRequest
 */
 func (a *V1DatabaseAPIService) UploadDatabaseMigrations(ctx context.Context) ApiUploadDatabaseMigrationsRequest {
 	return ApiUploadDatabaseMigrationsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApplyMigrationsResponse
+//
+//	@return ApplyMigrationsResponse
 func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (*ApplyMigrationsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplyMigrationsResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplyMigrationsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1DatabaseAPIService.UploadDatabaseMigrations")
@@ -601,8 +604,8 @@ func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDataba
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	var migrationsLocalVarFormFileName string
-	var migrationsLocalVarFileName     string
-	var migrationsLocalVarFileBytes    []byte
+	var migrationsLocalVarFileName string
+	var migrationsLocalVarFileBytes []byte
 
 	migrationsLocalVarFormFileName = "migrations"
 	migrationsLocalVarFile := r.migrations
@@ -658,8 +661,8 @@ func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDataba
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -669,8 +672,8 @@ func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDataba
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -680,8 +683,8 @@ func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDataba
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -691,8 +694,8 @@ func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDataba
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

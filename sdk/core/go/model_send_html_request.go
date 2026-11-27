@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &SendHTMLRequest{}
 
 // SendHTMLRequest struct for SendHTMLRequest
 type SendHTMLRequest struct {
-	Body string `json:"body"`
-	Plain *string `json:"plain,omitempty"`
-	Subject string `json:"subject"`
-	To string `json:"to"`
+	Body    string  `json:"body"`
+	Plain   *string `json:"plain,omitempty"`
+	Subject string  `json:"subject"`
+	To      string  `json:"to"`
 }
 
 type _SendHTMLRequest SendHTMLRequest
@@ -155,7 +155,7 @@ func (o *SendHTMLRequest) SetTo(v string) {
 }
 
 func (o SendHTMLRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -188,10 +188,10 @@ func (o *SendHTMLRequest) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -247,5 +247,3 @@ func (v *NullableSendHTMLRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

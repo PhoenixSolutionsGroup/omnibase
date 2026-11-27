@@ -12,23 +12,32 @@
  * Do not edit the class manually.
  */
 
+import * as runtime from "../runtime";
 import type {
 	AuthTenant,
 	CreateTenantRequest,
 	CreateTenantResponse,
 	DeleteTenantResponse,
+	ErrorModel,
 	SwitchActiveRequest,
 	SwitchActiveResponse,
 } from "../models/index";
 import {
 	AuthTenantFromJSON,
+	AuthTenantToJSON,
+	CreateTenantRequestFromJSON,
 	CreateTenantRequestToJSON,
 	CreateTenantResponseFromJSON,
+	CreateTenantResponseToJSON,
 	DeleteTenantResponseFromJSON,
+	DeleteTenantResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	SwitchActiveRequestFromJSON,
 	SwitchActiveRequestToJSON,
 	SwitchActiveResponseFromJSON,
+	SwitchActiveResponseToJSON,
 } from "../models/index";
-import * as runtime from "../runtime";
 
 export interface CreateTenantOperationRequest {
 	createTenantRequest: CreateTenantRequest;
@@ -57,7 +66,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		requestParameters: CreateTenantOperationRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateTenantResponse>> {
-		if (requestParameters.createTenantRequest == null) {
+		if (requestParameters["createTenantRequest"] == null) {
 			throw new runtime.RequiredError(
 				"createTenantRequest",
 				'Required parameter "createTenantRequest" was null or undefined when calling createTenant().',
@@ -70,22 +79,22 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants`;
+		let urlPath = `/api/v1/tenants`;
 
 		const response = await this.request(
 			{
@@ -93,7 +102,9 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateTenantRequestToJSON(requestParameters.createTenantRequest),
+				body: CreateTenantRequestToJSON(
+					requestParameters["createTenantRequest"],
+				),
 			},
 			initOverrides,
 		);
@@ -127,22 +138,22 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants`;
+		let urlPath = `/api/v1/tenants`;
 
 		const response = await this.request(
 			{
@@ -176,7 +187,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		requestParameters: GetTenantByIDRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<AuthTenant>> {
-		if (requestParameters.tenantId == null) {
+		if (requestParameters["tenantId"] == null) {
 			throw new runtime.RequiredError(
 				"tenantId",
 				'Required parameter "tenantId" was null or undefined when calling getTenantByID().',
@@ -187,7 +198,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -195,7 +206,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/tenants/by-id/{tenant_id}`;
 		urlPath = urlPath.replace(
 			`{${"tenant_id"}}`,
-			encodeURIComponent(String(requestParameters.tenantId)),
+			encodeURIComponent(String(requestParameters["tenantId"])),
 		);
 
 		const response = await this.request(
@@ -234,7 +245,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		requestParameters: GetTenantByStripeCustomerIDRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<AuthTenant>> {
-		if (requestParameters.stripeCustomerId == null) {
+		if (requestParameters["stripeCustomerId"] == null) {
 			throw new runtime.RequiredError(
 				"stripeCustomerId",
 				'Required parameter "stripeCustomerId" was null or undefined when calling getTenantByStripeCustomerID().',
@@ -245,7 +256,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
@@ -253,7 +264,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		let urlPath = `/api/v1/tenants/by-stripe-customer/{stripe_customer_id}`;
 		urlPath = urlPath.replace(
 			`{${"stripe_customer_id"}}`,
-			encodeURIComponent(String(requestParameters.stripeCustomerId)),
+			encodeURIComponent(String(requestParameters["stripeCustomerId"])),
 		);
 
 		const response = await this.request(
@@ -292,7 +303,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 		requestParameters: SwitchActiveTenantRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<SwitchActiveResponse>> {
-		if (requestParameters.switchActiveRequest == null) {
+		if (requestParameters["switchActiveRequest"] == null) {
 			throw new runtime.RequiredError(
 				"switchActiveRequest",
 				'Required parameter "switchActiveRequest" was null or undefined when calling switchActiveTenant().',
@@ -305,22 +316,22 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/switch-active`;
+		let urlPath = `/api/v1/tenants/switch-active`;
 
 		const response = await this.request(
 			{
@@ -328,7 +339,9 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
 				method: "PUT",
 				headers: headerParameters,
 				query: queryParameters,
-				body: SwitchActiveRequestToJSON(requestParameters.switchActiveRequest),
+				body: SwitchActiveRequestToJSON(
+					requestParameters["switchActiveRequest"],
+				),
 			},
 			initOverrides,
 		);

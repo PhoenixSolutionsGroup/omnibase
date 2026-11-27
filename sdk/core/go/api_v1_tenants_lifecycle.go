@@ -20,13 +20,12 @@ import (
 	"strings"
 )
 
-
 // V1TenantsLifecycleAPIService V1TenantsLifecycleAPI service
 type V1TenantsLifecycleAPIService service
 
 type ApiCreateTenantRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsLifecycleAPIService
+	ctx                 context.Context
+	ApiService          *V1TenantsLifecycleAPIService
 	createTenantRequest *CreateTenantRequest
 }
 
@@ -42,24 +41,25 @@ func (r ApiCreateTenantRequest) Execute() (*CreateTenantResponse, *http.Response
 /*
 CreateTenant Create a tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateTenantRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateTenantRequest
 */
 func (a *V1TenantsLifecycleAPIService) CreateTenant(ctx context.Context) ApiCreateTenantRequest {
 	return ApiCreateTenantRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateTenantResponse
+//
+//	@return CreateTenantResponse
 func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*CreateTenantResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateTenantResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.CreateTenant")
@@ -166,8 +166,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -177,8 +177,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -188,8 +188,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -199,8 +199,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -210,8 +210,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -221,8 +221,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -232,8 +232,8 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -251,7 +251,7 @@ func (a *V1TenantsLifecycleAPIService) CreateTenantExecute(r ApiCreateTenantRequ
 }
 
 type ApiDeleteTenantRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsLifecycleAPIService
 }
 
@@ -262,24 +262,25 @@ func (r ApiDeleteTenantRequest) Execute() (*DeleteTenantResponse, *http.Response
 /*
 DeleteTenant Delete the current tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiDeleteTenantRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiDeleteTenantRequest
 */
 func (a *V1TenantsLifecycleAPIService) DeleteTenant(ctx context.Context) ApiDeleteTenantRequest {
 	return ApiDeleteTenantRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return DeleteTenantResponse
+//
+//	@return DeleteTenantResponse
 func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*DeleteTenantResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeleteTenantResponse
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeleteTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.DeleteTenant")
@@ -381,8 +382,8 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -392,8 +393,8 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -403,8 +404,8 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -414,8 +415,8 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -425,8 +426,8 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -444,9 +445,9 @@ func (a *V1TenantsLifecycleAPIService) DeleteTenantExecute(r ApiDeleteTenantRequ
 }
 
 type ApiGetTenantByIDRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *V1TenantsLifecycleAPIService
-	tenantId string
+	tenantId   string
 }
 
 func (r ApiGetTenantByIDRequest) Execute() (*AuthTenant, *http.Response, error) {
@@ -456,26 +457,27 @@ func (r ApiGetTenantByIDRequest) Execute() (*AuthTenant, *http.Response, error) 
 /*
 GetTenantByID Get tenant by ID
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param tenantId
- @return ApiGetTenantByIDRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param tenantId
+	@return ApiGetTenantByIDRequest
 */
 func (a *V1TenantsLifecycleAPIService) GetTenantByID(ctx context.Context, tenantId string) ApiGetTenantByIDRequest {
 	return ApiGetTenantByIDRequest{
 		ApiService: a,
-		ctx: ctx,
-		tenantId: tenantId,
+		ctx:        ctx,
+		tenantId:   tenantId,
 	}
 }
 
 // Execute executes the request
-//  @return AuthTenant
+//
+//	@return AuthTenant
 func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRequest) (*AuthTenant, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AuthTenant
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuthTenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.GetTenantByID")
@@ -550,8 +552,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -561,8 +563,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -572,8 +574,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -583,8 +585,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -594,8 +596,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -613,8 +615,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRe
 }
 
 type ApiGetTenantByStripeCustomerIDRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsLifecycleAPIService
+	ctx              context.Context
+	ApiService       *V1TenantsLifecycleAPIService
 	stripeCustomerId string
 }
 
@@ -625,26 +627,27 @@ func (r ApiGetTenantByStripeCustomerIDRequest) Execute() (*AuthTenant, *http.Res
 /*
 GetTenantByStripeCustomerID Get tenant by Stripe customer ID
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param stripeCustomerId
- @return ApiGetTenantByStripeCustomerIDRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param stripeCustomerId
+	@return ApiGetTenantByStripeCustomerIDRequest
 */
 func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerId string) ApiGetTenantByStripeCustomerIDRequest {
 	return ApiGetTenantByStripeCustomerIDRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:       a,
+		ctx:              ctx,
 		stripeCustomerId: stripeCustomerId,
 	}
 }
 
 // Execute executes the request
-//  @return AuthTenant
+//
+//	@return AuthTenant
 func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiGetTenantByStripeCustomerIDRequest) (*AuthTenant, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AuthTenant
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuthTenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.GetTenantByStripeCustomerID")
@@ -719,8 +722,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -730,8 +733,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -741,8 +744,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -752,8 +755,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -763,8 +766,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -782,8 +785,8 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiG
 }
 
 type ApiSwitchActiveTenantRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsLifecycleAPIService
+	ctx                 context.Context
+	ApiService          *V1TenantsLifecycleAPIService
 	switchActiveRequest *SwitchActiveRequest
 }
 
@@ -799,24 +802,25 @@ func (r ApiSwitchActiveTenantRequest) Execute() (*SwitchActiveResponse, *http.Re
 /*
 SwitchActiveTenant Switch the active tenant
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiSwitchActiveTenantRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiSwitchActiveTenantRequest
 */
 func (a *V1TenantsLifecycleAPIService) SwitchActiveTenant(ctx context.Context) ApiSwitchActiveTenantRequest {
 	return ApiSwitchActiveTenantRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return SwitchActiveResponse
+//
+//	@return SwitchActiveResponse
 func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantRequest) (*SwitchActiveResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *SwitchActiveResponse
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *SwitchActiveResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.SwitchActiveTenant")
@@ -923,8 +927,8 @@ func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -934,8 +938,8 @@ func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -945,8 +949,8 @@ func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -956,8 +960,8 @@ func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -967,8 +971,8 @@ func (a *V1TenantsLifecycleAPIService) SwitchActiveTenantExecute(r ApiSwitchActi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

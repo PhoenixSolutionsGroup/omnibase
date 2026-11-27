@@ -12,12 +12,20 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { ConfigChanges } from "./ConfigChanges";
-import { ConfigChangesFromJSON, ConfigChangesToJSON } from "./ConfigChanges";
+import {
+	ConfigChangesFromJSON,
+	ConfigChangesFromJSONTyped,
+	ConfigChangesToJSON,
+	ConfigChangesToJSONTyped,
+} from "./ConfigChanges";
 import type { StripeConfiguration } from "./StripeConfiguration";
 import {
 	StripeConfigurationFromJSON,
+	StripeConfigurationFromJSONTyped,
 	StripeConfigurationToJSON,
+	StripeConfigurationToJSONTyped,
 } from "./StripeConfiguration";
 
 /**
@@ -58,7 +66,7 @@ export interface ConfigResponse {
 export function instanceOfConfigResponse(
 	value: object,
 ): value is ConfigResponse {
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -68,20 +76,22 @@ export function ConfigResponseFromJSON(json: any): ConfigResponse {
 
 export function ConfigResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ConfigResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
 		changes:
-			json.changes == null ? undefined : ConfigChangesFromJSON(json.changes),
-		config:
-			json.config == null
+			json["changes"] == null
 				? undefined
-				: StripeConfigurationFromJSON(json.config),
-		errors: json.errors == null ? undefined : json.errors,
-		message: json.message,
+				: ConfigChangesFromJSON(json["changes"]),
+		config:
+			json["config"] == null
+				? undefined
+				: StripeConfigurationFromJSON(json["config"]),
+		errors: json["errors"] == null ? undefined : json["errors"],
+		message: json["message"],
 	};
 }
 
@@ -91,16 +101,16 @@ export function ConfigResponseToJSON(json: any): ConfigResponse {
 
 export function ConfigResponseToJSONTyped(
 	value?: ConfigResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		changes: ConfigChangesToJSON(value.changes),
-		config: StripeConfigurationToJSON(value.config),
-		errors: value.errors,
-		message: value.message,
+		changes: ConfigChangesToJSON(value["changes"]),
+		config: StripeConfigurationToJSON(value["config"]),
+		errors: value["errors"],
+		message: value["message"],
 	};
 }

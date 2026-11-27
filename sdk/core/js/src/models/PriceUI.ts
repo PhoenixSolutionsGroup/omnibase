@@ -12,10 +12,21 @@
  * Do not edit the class manually.
  */
 
-import type { PriceDisplay } from "./PriceDisplay";
-import { PriceDisplayFromJSON, PriceDisplayToJSON } from "./PriceDisplay";
+import { mapValues } from "../runtime";
 import type { PriceLimit } from "./PriceLimit";
-import { PriceLimitFromJSON, PriceLimitToJSON } from "./PriceLimit";
+import {
+	PriceLimitFromJSON,
+	PriceLimitFromJSONTyped,
+	PriceLimitToJSON,
+	PriceLimitToJSONTyped,
+} from "./PriceLimit";
+import type { PriceDisplay } from "./PriceDisplay";
+import {
+	PriceDisplayFromJSON,
+	PriceDisplayFromJSONTyped,
+	PriceDisplayToJSON,
+	PriceDisplayToJSONTyped,
+} from "./PriceDisplay";
 
 /**
  *
@@ -68,24 +79,25 @@ export function PriceUIFromJSON(json: any): PriceUI {
 
 export function PriceUIFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): PriceUI {
 	if (json == null) {
 		return json;
 	}
 	return {
 		billingPeriod:
-			json.billing_period == null ? undefined : json.billing_period,
-		displayName: json.display_name == null ? undefined : json.display_name,
-		features: json.features == null ? undefined : json.features,
+			json["billing_period"] == null ? undefined : json["billing_period"],
+		displayName:
+			json["display_name"] == null ? undefined : json["display_name"],
+		features: json["features"] == null ? undefined : json["features"],
 		limits:
-			json.limits == null
+			json["limits"] == null
 				? undefined
-				: (json.limits as Array<any>).map(PriceLimitFromJSON),
+				: (json["limits"] as Array<any>).map(PriceLimitFromJSON),
 		priceDisplay:
-			json.price_display == null
+			json["price_display"] == null
 				? undefined
-				: PriceDisplayFromJSON(json.price_display),
+				: PriceDisplayFromJSON(json["price_display"]),
 	};
 }
 
@@ -95,20 +107,20 @@ export function PriceUIToJSON(json: any): PriceUI {
 
 export function PriceUIToJSONTyped(
 	value?: PriceUI | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		billing_period: value.billingPeriod,
-		display_name: value.displayName,
-		features: value.features,
+		billing_period: value["billingPeriod"],
+		display_name: value["displayName"],
+		features: value["features"],
 		limits:
-			value.limits == null
+			value["limits"] == null
 				? undefined
-				: (value.limits as Array<any>).map(PriceLimitToJSON),
-		price_display: PriceDisplayToJSON(value.priceDisplay),
+				: (value["limits"] as Array<any>).map(PriceLimitToJSON),
+		price_display: PriceDisplayToJSON(value["priceDisplay"]),
 	};
 }

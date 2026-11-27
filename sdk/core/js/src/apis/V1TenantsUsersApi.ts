@@ -12,19 +12,26 @@
  * Do not edit the class manually.
  */
 
+import * as runtime from "../runtime";
 import type {
 	DeleteRequest,
+	ErrorModel,
 	UpdateUserRoleRequest,
 	UpdateUserRoleResponse,
 	UserResponse,
 } from "../models/index";
 import {
+	DeleteRequestFromJSON,
 	DeleteRequestToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	UpdateUserRoleRequestFromJSON,
 	UpdateUserRoleRequestToJSON,
 	UpdateUserRoleResponseFromJSON,
+	UpdateUserRoleResponseToJSON,
 	UserResponseFromJSON,
+	UserResponseToJSON,
 } from "../models/index";
-import * as runtime from "../runtime";
 
 export interface RemoveTenantUserRequest {
 	deleteRequest: DeleteRequest;
@@ -48,22 +55,22 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 
 		const headerParameters: runtime.HTTPHeaders = {};
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/users`;
+		let urlPath = `/api/v1/tenants/users`;
 
 		const response = await this.request(
 			{
@@ -97,7 +104,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 		requestParameters: RemoveTenantUserRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<any>> {
-		if (requestParameters.deleteRequest == null) {
+		if (requestParameters["deleteRequest"] == null) {
 			throw new runtime.RequiredError(
 				"deleteRequest",
 				'Required parameter "deleteRequest" was null or undefined when calling removeTenantUser().',
@@ -110,22 +117,22 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/users`;
+		let urlPath = `/api/v1/tenants/users`;
 
 		const response = await this.request(
 			{
@@ -133,7 +140,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 				method: "DELETE",
 				headers: headerParameters,
 				query: queryParameters,
-				body: DeleteRequestToJSON(requestParameters.deleteRequest),
+				body: DeleteRequestToJSON(requestParameters["deleteRequest"]),
 			},
 			initOverrides,
 		);
@@ -166,7 +173,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 		requestParameters: UpdateTenantUserRoleRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<UpdateUserRoleResponse>> {
-		if (requestParameters.updateUserRoleRequest == null) {
+		if (requestParameters["updateUserRoleRequest"] == null) {
 			throw new runtime.RequiredError(
 				"updateUserRoleRequest",
 				'Required parameter "updateUserRoleRequest" was null or undefined when calling updateTenantUserRole().',
@@ -179,22 +186,22 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/users`;
+		let urlPath = `/api/v1/tenants/users`;
 
 		const response = await this.request(
 			{
@@ -203,7 +210,7 @@ export class V1TenantsUsersApi extends runtime.BaseAPI {
 				headers: headerParameters,
 				query: queryParameters,
 				body: UpdateUserRoleRequestToJSON(
-					requestParameters.updateUserRoleRequest,
+					requestParameters["updateUserRoleRequest"],
 				),
 			},
 			initOverrides,

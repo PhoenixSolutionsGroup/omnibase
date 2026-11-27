@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -32,7 +33,7 @@ export interface DeleteObjectResponse {
 export function instanceOfDeleteObjectResponse(
 	value: object,
 ): value is DeleteObjectResponse {
-	if (!("message" in value) || value.message === undefined) return false;
+	if (!("message" in value) || value["message"] === undefined) return false;
 	return true;
 }
 
@@ -42,13 +43,13 @@ export function DeleteObjectResponseFromJSON(json: any): DeleteObjectResponse {
 
 export function DeleteObjectResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): DeleteObjectResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		message: json.message,
+		message: json["message"],
 	};
 }
 
@@ -58,13 +59,13 @@ export function DeleteObjectResponseToJSON(json: any): DeleteObjectResponse {
 
 export function DeleteObjectResponseToJSONTyped(
 	value?: DeleteObjectResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		message: value.message,
+		message: value["message"],
 	};
 }

@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { EmailSystemTemplate } from "./EmailSystemTemplate";
 import {
 	EmailSystemTemplateFromJSON,
+	EmailSystemTemplateFromJSONTyped,
 	EmailSystemTemplateToJSON,
+	EmailSystemTemplateToJSONTyped,
 } from "./EmailSystemTemplate";
 
 /**
@@ -44,8 +47,8 @@ export interface ListSystemTemplatesResponse {
 export function instanceOfListSystemTemplatesResponse(
 	value: object,
 ): value is ListSystemTemplatesResponse {
-	if (!("count" in value) || value.count === undefined) return false;
-	if (!("templates" in value) || value.templates === undefined) return false;
+	if (!("count" in value) || value["count"] === undefined) return false;
+	if (!("templates" in value) || value["templates"] === undefined) return false;
 	return true;
 }
 
@@ -57,17 +60,17 @@ export function ListSystemTemplatesResponseFromJSON(
 
 export function ListSystemTemplatesResponseFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ListSystemTemplatesResponse {
 	if (json == null) {
 		return json;
 	}
 	return {
-		count: json.count,
+		count: json["count"],
 		templates:
-			json.templates == null
+			json["templates"] == null
 				? null
-				: (json.templates as Array<any>).map(EmailSystemTemplateFromJSON),
+				: (json["templates"] as Array<any>).map(EmailSystemTemplateFromJSON),
 	};
 }
 
@@ -79,17 +82,17 @@ export function ListSystemTemplatesResponseToJSON(
 
 export function ListSystemTemplatesResponseToJSONTyped(
 	value?: ListSystemTemplatesResponse | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		count: value.count,
+		count: value["count"],
 		templates:
-			value.templates == null
+			value["templates"] == null
 				? null
-				: (value.templates as Array<any>).map(EmailSystemTemplateToJSON),
+				: (value["templates"] as Array<any>).map(EmailSystemTemplateToJSON),
 	};
 }

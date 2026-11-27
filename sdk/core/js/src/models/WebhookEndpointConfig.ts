@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -50,9 +51,9 @@ export interface WebhookEndpointConfig {
 export function instanceOfWebhookEndpointConfig(
 	value: object,
 ): value is WebhookEndpointConfig {
-	if (!("events" in value) || value.events === undefined) return false;
-	if (!("id" in value) || value.id === undefined) return false;
-	if (!("url" in value) || value.url === undefined) return false;
+	if (!("events" in value) || value["events"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("url" in value) || value["url"] === undefined) return false;
 	return true;
 }
 
@@ -64,16 +65,16 @@ export function WebhookEndpointConfigFromJSON(
 
 export function WebhookEndpointConfigFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): WebhookEndpointConfig {
 	if (json == null) {
 		return json;
 	}
 	return {
-		connect: json.connect == null ? undefined : json.connect,
-		events: json.events == null ? null : json.events,
-		id: json.id,
-		url: json.url,
+		connect: json["connect"] == null ? undefined : json["connect"],
+		events: json["events"] == null ? null : json["events"],
+		id: json["id"],
+		url: json["url"],
 	};
 }
 
@@ -83,16 +84,16 @@ export function WebhookEndpointConfigToJSON(json: any): WebhookEndpointConfig {
 
 export function WebhookEndpointConfigToJSONTyped(
 	value?: WebhookEndpointConfig | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		connect: value.connect,
-		events: value.events,
-		id: value.id,
-		url: value.url,
+		connect: value["connect"],
+		events: value["events"],
+		id: value["id"],
+		url: value["url"],
 	};
 }

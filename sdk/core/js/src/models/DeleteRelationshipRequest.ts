@@ -12,10 +12,13 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 import type { SubjectSetRequest } from "./SubjectSetRequest";
 import {
 	SubjectSetRequestFromJSON,
+	SubjectSetRequestFromJSONTyped,
 	SubjectSetRequestToJSON,
+	SubjectSetRequestToJSONTyped,
 } from "./SubjectSetRequest";
 
 /**
@@ -56,10 +59,11 @@ export interface DeleteRelationshipRequest {
 export function instanceOfDeleteRelationshipRequest(
 	value: object,
 ): value is DeleteRelationshipRequest {
-	if (!("namespace" in value) || value.namespace === undefined) return false;
-	if (!("object" in value) || value.object === undefined) return false;
-	if (!("relation" in value) || value.relation === undefined) return false;
-	if (!("subjectSet" in value) || value.subjectSet === undefined) return false;
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("relation" in value) || value["relation"] === undefined) return false;
+	if (!("subjectSet" in value) || value["subjectSet"] === undefined)
+		return false;
 	return true;
 }
 
@@ -71,16 +75,16 @@ export function DeleteRelationshipRequestFromJSON(
 
 export function DeleteRelationshipRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): DeleteRelationshipRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		namespace: json.namespace,
-		object: json.object,
-		relation: json.relation,
-		subjectSet: SubjectSetRequestFromJSON(json.subject_set),
+		namespace: json["namespace"],
+		object: json["object"],
+		relation: json["relation"],
+		subjectSet: SubjectSetRequestFromJSON(json["subject_set"]),
 	};
 }
 
@@ -92,16 +96,16 @@ export function DeleteRelationshipRequestToJSON(
 
 export function DeleteRelationshipRequestToJSONTyped(
 	value?: DeleteRelationshipRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		namespace: value.namespace,
-		object: value.object,
-		relation: value.relation,
-		subject_set: SubjectSetRequestToJSON(value.subjectSet),
+		namespace: value["namespace"],
+		object: value["object"],
+		relation: value["relation"],
+		subject_set: SubjectSetRequestToJSON(value["subjectSet"]),
 	};
 }

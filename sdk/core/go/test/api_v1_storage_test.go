@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1StorageAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	t.Run("Test V1StorageAPIService DeleteObject", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StorageAPI.DeleteObject(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	t.Run("Test V1StorageAPIService DownloadFile", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StorageAPI.DownloadFile(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	t.Run("Test V1StorageAPIService GetStorageCredentials", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StorageAPI.GetStorageCredentials(context.Background()).Execute()
 
@@ -60,7 +60,7 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	t.Run("Test V1StorageAPIService MakeFilePublic", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StorageAPI.MakeFilePublic(context.Background()).Execute()
 
@@ -72,7 +72,7 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	t.Run("Test V1StorageAPIService UploadFile", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1StorageAPI.UploadFile(context.Background()).Execute()
 

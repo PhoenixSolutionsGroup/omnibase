@@ -12,19 +12,26 @@
  * Do not edit the class manually.
  */
 
+import * as runtime from "../runtime";
 import type {
 	AcceptRequest,
 	AcceptResponse,
 	CreateRequest,
 	CreateResponse,
+	ErrorModel,
 } from "../models/index";
 import {
+	AcceptRequestFromJSON,
 	AcceptRequestToJSON,
 	AcceptResponseFromJSON,
+	AcceptResponseToJSON,
+	CreateRequestFromJSON,
 	CreateRequestToJSON,
 	CreateResponseFromJSON,
+	CreateResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
 } from "../models/index";
-import * as runtime from "../runtime";
 
 export interface AcceptInviteRequest {
 	acceptRequest: AcceptRequest;
@@ -45,7 +52,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 		requestParameters: AcceptInviteRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<AcceptResponse>> {
-		if (requestParameters.acceptRequest == null) {
+		if (requestParameters["acceptRequest"] == null) {
 			throw new runtime.RequiredError(
 				"acceptRequest",
 				'Required parameter "acceptRequest" was null or undefined when calling acceptInvite().',
@@ -58,22 +65,22 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/invites/accept`;
+		let urlPath = `/api/v1/tenants/invites/accept`;
 
 		const response = await this.request(
 			{
@@ -81,7 +88,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 				method: "PUT",
 				headers: headerParameters,
 				query: queryParameters,
-				body: AcceptRequestToJSON(requestParameters.acceptRequest),
+				body: AcceptRequestToJSON(requestParameters["acceptRequest"]),
 			},
 			initOverrides,
 		);
@@ -112,7 +119,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 		requestParameters: CreateInviteRequest,
 		initOverrides?: RequestInit | runtime.InitOverrideFunction,
 	): Promise<runtime.ApiResponse<CreateResponse>> {
-		if (requestParameters.createRequest == null) {
+		if (requestParameters["createRequest"] == null) {
 			throw new runtime.RequiredError(
 				"createRequest",
 				'Required parameter "createRequest" was null or undefined when calling createInvite().',
@@ -125,22 +132,22 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 
 		headerParameters["Content-Type"] = "application/json";
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Service-Key"] =
 				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-App-Key"] =
 				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
 		}
 
-		if (this.configuration?.apiKey) {
+		if (this.configuration && this.configuration.apiKey) {
 			headerParameters["X-Session-Token"] =
 				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
 		}
 
-		const urlPath = `/api/v1/tenants/invites`;
+		let urlPath = `/api/v1/tenants/invites`;
 
 		const response = await this.request(
 			{
@@ -148,7 +155,7 @@ export class V1TenantsInvitesApi extends runtime.BaseAPI {
 				method: "POST",
 				headers: headerParameters,
 				query: queryParameters,
-				body: CreateRequestToJSON(requestParameters.createRequest),
+				body: CreateRequestToJSON(requestParameters["createRequest"]),
 			},
 			initOverrides,
 		);

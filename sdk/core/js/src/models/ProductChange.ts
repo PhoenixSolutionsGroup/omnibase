@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -54,9 +55,9 @@ export interface ProductChange {
  * Check if a given object implements the ProductChange interface.
  */
 export function instanceOfProductChange(value: object): value is ProductChange {
-	if (!("action" in value) || value.action === undefined) return false;
-	if (!("productId" in value) || value.productId === undefined) return false;
-	if (!("productName" in value) || value.productName === undefined)
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("productId" in value) || value["productId"] === undefined) return false;
+	if (!("productName" in value) || value["productName"] === undefined)
 		return false;
 	return true;
 }
@@ -67,17 +68,17 @@ export function ProductChangeFromJSON(json: any): ProductChange {
 
 export function ProductChangeFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): ProductChange {
 	if (json == null) {
 		return json;
 	}
 	return {
-		action: json.action,
-		details: json.details == null ? undefined : json.details,
-		productId: json.product_id,
-		productName: json.product_name,
-		stripeId: json.stripe_id == null ? undefined : json.stripe_id,
+		action: json["action"],
+		details: json["details"] == null ? undefined : json["details"],
+		productId: json["product_id"],
+		productName: json["product_name"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
 	};
 }
 
@@ -87,17 +88,17 @@ export function ProductChangeToJSON(json: any): ProductChange {
 
 export function ProductChangeToJSONTyped(
 	value?: ProductChange | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		action: value.action,
-		details: value.details,
-		product_id: value.productId,
-		product_name: value.productName,
-		stripe_id: value.stripeId,
+		action: value["action"],
+		details: value["details"],
+		product_id: value["productId"],
+		product_name: value["productName"],
+		stripe_id: value["stripeId"],
 	};
 }

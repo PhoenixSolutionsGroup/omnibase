@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 
+import { mapValues } from "../runtime";
 /**
  *
  * @export
@@ -44,9 +45,9 @@ export interface UpsertTemplateRequest {
 export function instanceOfUpsertTemplateRequest(
 	value: object,
 ): value is UpsertTemplateRequest {
-	if (!("htmlBody" in value) || value.htmlBody === undefined) return false;
-	if (!("subject" in value) || value.subject === undefined) return false;
-	if (!("type" in value) || value.type === undefined) return false;
+	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
+	if (!("subject" in value) || value["subject"] === undefined) return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
 	return true;
 }
 
@@ -58,15 +59,15 @@ export function UpsertTemplateRequestFromJSON(
 
 export function UpsertTemplateRequestFromJSONTyped(
 	json: any,
-	_ignoreDiscriminator: boolean,
+	ignoreDiscriminator: boolean,
 ): UpsertTemplateRequest {
 	if (json == null) {
 		return json;
 	}
 	return {
-		htmlBody: json.html_body,
-		subject: json.subject,
-		type: json.type,
+		htmlBody: json["html_body"],
+		subject: json["subject"],
+		type: json["type"],
 	};
 }
 
@@ -76,15 +77,15 @@ export function UpsertTemplateRequestToJSON(json: any): UpsertTemplateRequest {
 
 export function UpsertTemplateRequestToJSONTyped(
 	value?: UpsertTemplateRequest | null,
-	_ignoreDiscriminator: boolean = false,
+	ignoreDiscriminator: boolean = false,
 ): any {
 	if (value == null) {
 		return value;
 	}
 
 	return {
-		html_body: value.htmlBody,
-		subject: value.subject,
-		type: value.type,
+		html_body: value["htmlBody"],
+		subject: value["subject"],
+		type: value["type"],
 	};
 }
