@@ -21,3 +21,6 @@ API_VERSION="$API_VERSION" \
   go run ./cmd/openapi "$OUT"
 
 echo "✓ OpenAPI spec written to apps/api/docs/openapi.json (API_VERSION=$API_VERSION)"
+
+cd "$ROOT_DIR"
+bun scripts/openapi-to-jsonschema.ts

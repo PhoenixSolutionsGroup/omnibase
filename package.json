@@ -15,7 +15,8 @@
     "test:api": "make -C apps/api test",
     "prepush": "bash .husky/pre-push",
     "prepare": "husky",
-    "release:preview": "./scripts/preview-releases.sh"
+    "release:preview": "./scripts/preview-releases.sh",
+    "generate:jsonschema": "bun ./scripts/openapi-to-jsonschema.ts"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.27.0",

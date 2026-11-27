@@ -1,82 +1,85 @@
 #!/usr/bin/env bun
 /**
- * Generates JSON Schema from OpenAPI stripe schema.
+ * Generates the standalone Stripe configuration JSON Schema from the generated OpenAPI document.
  *
  * Usage: bun scripts/openapi-to-jsonschema.ts
- *
- * This script:
- * 1. Reads the OpenAPI stripe.yaml schema
- * 2. Converts it to JSON Schema format using @openapi-contrib/openapi-schema-to-json-schema
- * 3. Transforms $refs and restructures for standalone JSON Schema use
- * 4. Outputs to apps/api/internal/static/stripe-config-schema.json
  */
 
 import { readFileSync, writeFileSync } from 'fs';
-import { load } from 'js-yaml';
-import { execSync } from 'child_process';
 
-const OPENAPI_YAML = 'apps/api/docs/schemas/stripe.yaml';
-const TMP_JSON = '/tmp/stripe-openapi.json';
-const TMP_CONVERTED = '/tmp/stripe-converted.json';
+const OPENAPI_FILE = 'apps/api/docs/openapi.json';
 const OUTPUT_FILE = 'apps/api/internal/static/stripe-config-schema.json';
+const ROOT_SCHEMA = 'StripeConfiguration';
 
-console.log('🔄 Step 1: Converting OpenAPI YAML to JSON...');
-const yaml = readFileSync(OPENAPI_YAML, 'utf8');
-const openapi = load(yaml);
-writeFileSync(TMP_JSON, JSON.stringify(openapi, null, 2));
+type Schema = Record<string, any>;
 
-console.log('🔄 Step 2: Converting OpenAPI schema to JSON Schema...');
-execSync(`bunx @openapi-contrib/openapi-schema-to-json-schema -f ${TMP_JSON} -o ${TMP_CONVERTED}`, {
-  stdio: 'inherit'
-});
+const spec = JSON.parse(readFileSync(OPENAPI_FILE, 'utf8'));
+const schemas: Record<string, Schema> = spec.components?.schemas ?? {};
 
-console.log('🔄 Step 3: Transforming to standalone JSON Schema...');
-const input = JSON.parse(readFileSync(TMP_CONVERTED, 'utf8'));
-const schemas = input.components.schemas;
+if (!schemas[ROOT_SCHEMA]) {
+  throw new Error(`Missing ${ROOT_SCHEMA} in ${OPENAPI_FILE}`);
+}
 
-// Function to recursively transform refs and clean up
-function transformRefs(obj: any): any {
-  if (obj === null || typeof obj !== 'object') return obj;
+const referenced = new Set<string>();
 
-  if (Array.isArray(obj)) {
-    return obj.map(transformRefs);
+function collect(name: string) {
+  if (referenced.has(name)) return;
+  referenced.add(name);
+  walk(schemas[name]);
+}
+
+function walk(value: unknown) {
+  if (Array.isArray(value)) {
+    for (const item of value) walk(item);
+    return;
   }
+  if (!value || typeof value !== 'object') return;
 
-  const result: any = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (key === '$ref' && typeof value === 'string') {
-      // Transform #/components/schemas/X to #/definitions/X
-      result[key] = value.replace('#/components/schemas/', '#/definitions/');
-    } else if (key === 'example' || key === 'examples') {
-      // Skip example fields - not needed for validation
+  for (const [key, child] of Object.entries(value)) {
+    if (key === '$ref' && typeof child === 'string') {
+      const prefix = '#/components/schemas/';
+      if (child.startsWith(prefix)) collect(child.slice(prefix.length));
       continue;
-    } else {
-      result[key] = transformRefs(value);
     }
+    walk(child);
+  }
+}
+
+function transform(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(transform);
+  if (!value || typeof value !== 'object') return value;
+
+  const result: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (key === 'example' || key === 'examples') continue;
+    if (key === '$ref' && typeof child === 'string') {
+      result[key] = child.replace('#/components/schemas/', '#/definitions/');
+      continue;
+    }
+    result[key] = transform(child);
   }
   return result;
 }
 
-// Transform all schemas
-const definitions: any = {};
-for (const [name, schema] of Object.entries(schemas)) {
-  definitions[name] = transformRefs(schema);
+collect(ROOT_SCHEMA);
+
+const definitions: Record<string, unknown> = {};
+for (const name of referenced) {
+  definitions[name] = transform(schemas[name]);
 }
 
-// Build the final JSON Schema with StripeConfiguration as root
-const stripeConfig = transformRefs(schemas.StripeConfiguration);
+const root = transform(schemas[ROOT_SCHEMA]) as Schema;
 
 const jsonSchema = {
-  '$schema': 'http://json-schema.org/draft-07/schema#',
-  '$id': 'https://omnibase.dev/schemas/stripe-config.json',
-  'title': 'Stripe Configuration Schema',
-  'description': 'Schema for Stripe product and pricing configuration',
-  'type': stripeConfig.type,
-  'required': stripeConfig.required,
-  'properties': stripeConfig.properties,
-  'definitions': definitions
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'https://omnibase.dev/schemas/stripe-config.json',
+  title: 'Stripe Configuration Schema',
+  description: 'Schema for Stripe product and pricing configuration',
+  type: root.type,
+  required: root.required,
+  properties: root.properties,
+  definitions,
 };
 
-writeFileSync(OUTPUT_FILE, JSON.stringify(jsonSchema, null, 2));
-
-console.log(`✅ Done! Schema written to ${OUTPUT_FILE}`);
+writeFileSync(OUTPUT_FILE, `${JSON.stringify(jsonSchema, null, 2)}\n`);
+console.log(`✅ Schema written to ${OUTPUT_FILE}`);
