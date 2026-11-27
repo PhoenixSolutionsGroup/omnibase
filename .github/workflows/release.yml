@@ -91,7 +91,6 @@ jobs:
       contents: read
     strategy:
       fail-fast: true
-      max-parallel: 1
       matrix:
         include: ${{ fromJSON(needs.select.outputs.dry) }}
 
