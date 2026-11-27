@@ -106,8 +106,6 @@ func sanitizePriceConfig(price Price) Price {
 	sanitized.UI = nil
 	sanitized.Public = nil
 	sanitized.Default = false
-	sanitized.EnterpriseTemplate = ""
-	sanitized.EnterpriseID = ""
 	if sanitized.BillingScheme == "" {
 		sanitized.BillingScheme = "per_unit"
 	}

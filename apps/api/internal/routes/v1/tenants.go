@@ -9,7 +9,6 @@ import (
 	"api/internal/handlers/v1/tenants/invites"
 	"api/internal/handlers/v1/tenants/lifecycle"
 	"api/internal/handlers/v1/tenants/roles"
-	"api/internal/handlers/v1/tenants/subscriptions"
 	"api/internal/handlers/v1/tenants/users"
 	"api/internal/logger"
 	"api/internal/middleware"
@@ -66,7 +65,6 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	billingSvc := billing.New(billing.Deps{
 		Repo:   repo,
 		Stripe: stripeClient,
-		FeePct: cfg.StripeConfig.PlatformFeePercent,
 	})
 	lifecycleHandler := lifecycle.New(lifecycle.Deps{
 		Repo:    repo,
@@ -76,21 +74,11 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Perms:   perms,
 		Auth:    authSvc,
 	})
-	subscriptionsHandler := subscriptions.New(subscriptions.Deps{
-		Repo:    repo,
-		Billing: billingSvc,
-	})
-	paymentsMiddleware := middleware.NewPaymentsMiddleware(d.DB)
-	manageBilling := huma.Middlewares{
-		middleware.GinToHuma(d.RBAC.CheckTenantPermission("manage_billing")),
-		middleware.GinToHuma(paymentsMiddleware.ResolveStripeCustomer()),
-	}
 
 	lifecycleTag := []string{"V1TenantsLifecycle"}
 	invitesTag := []string{"V1TenantsInvites"}
 	rolesTag := []string{"V1TenantsRoles"}
 	usersTag := []string{"V1TenantsUsers"}
-	subsTag := []string{"V1TenantsSubscriptions"}
 
 	tenantPermission := func(relation string) huma.Middlewares {
 		return huma.Middlewares{middleware.GinToHuma(d.RBAC.CheckTenantPermission(relation))}
@@ -185,34 +173,4 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Errors:  []int{400, 401, 404},
 		Summary: "Remove a user from the tenant", Tags: usersTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("remove_user"), usersHandler.Delete)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
-		Errors:  []int{400, 401, 404},
-		Summary: "List subscriptions for the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.List)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
-		Errors:  []int{400, 401, 404},
-		Summary: "Get a single tenant subscription", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Get)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
-		Errors:  []int{400, 401, 403, 404, 409, 429},
-		Summary: "Add a subscription to the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, manageBilling, subscriptionsHandler.Add)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
-		Errors:  []int{400, 401, 403, 404, 409, 429},
-		Summary: "Remove a subscription from the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, manageBilling, subscriptionsHandler.Remove)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
-		Errors:  []int{400, 401, 404},
-		Summary: "Get tenant billing status", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.BillingStatus)
 }

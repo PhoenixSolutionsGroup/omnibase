@@ -5,7 +5,7 @@ import { TopNavbar } from "@/components/top-navbar";
 import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
 import { useRouter } from "next/navigation";
-import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import type { AuthTenant as Tenant } from "@omnibase/core-js";
 import { ProjectOption } from "./project-dropdown";
 
 interface ProjectData {

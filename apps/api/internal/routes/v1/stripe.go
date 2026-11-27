@@ -9,14 +9,16 @@ import (
 	"api/internal/authn"
 	"api/internal/database/repository"
 	stripeHandlers "api/internal/handlers/v1/stripe"
+	stripeProxyHandlers "api/internal/handlers/v1/stripeproxy"
 	"api/internal/logger"
 	"api/internal/services"
 	"api/internal/services/billing"
 	"api/internal/services/stripe_client"
 	"api/internal/services/stripe_config"
+	"api/internal/services/stripe_proxy"
 )
 
-func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
+func SetUpStripeRoutes(group *gin.RouterGroup, root *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing stripe routes")
 	cfg := d.Cfg
 	repo := repository.New(d.Pool)
@@ -45,15 +47,25 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	billingSvc := billing.New(billing.Deps{
 		Repo:   repo,
 		Stripe: stripeClient,
-		FeePct: cfg.StripeConfig.PlatformFeePercent,
 	})
 
 	stripeHandler := stripeHandlers.New(stripeHandlers.Deps{
 		Repo:         repo,
 		StripeConfig: stripeConfigSvc,
-		Billing:      billingSvc,
 		Stripe:       stripeClient,
 	})
+
+	if d.Auth != nil {
+		proxyService := stripe_proxy.New(stripe_proxy.Deps{
+			Config:        cfg,
+			Repo:          repo,
+			ConfigService: stripeConfigSvc,
+			Tenants:       stripe_proxy.NewTenantStore(d.DB),
+			Billing:       billingSvc,
+		})
+		proxyHandler := stripeProxyHandlers.New(proxyService)
+		root.Any("/stripe/*path", d.Auth.RequireAuth(authn.AuthServiceKey), proxyHandler.Proxy)
+	}
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigSchema",
@@ -108,15 +120,6 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Summary:     "Get meter by ID",
 		Tags:        []string{"V1Stripe"},
 	}, authn.AuthNone, nil, stripeHandler.GetMeterByID)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "convertStripeIDToConfigID",
-		Errors:      []int{400, 401, 404},
-		Method:      http.MethodGet,
-		Path:        "/api/v1/stripe/convert/stripe-id/{stripe_id}",
-		Summary:     "Convert Stripe ID to config ID",
-		Tags:        []string{"V1Stripe"},
-	}, authn.AuthServiceKey|authn.AuthAppKey, nil, stripeHandler.ConvertStripeIDToConfigID)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigAdmin",
@@ -189,42 +192,6 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Summary:     "List all webhooks",
 		Tags:        []string{"V1Stripe"},
 	}, authn.AuthServiceKey, nil, stripeHandler.ListWebhooks)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "applyEnterpriseTemplate",
-		Errors:      []int{400, 401, 404},
-		Method:      http.MethodPost,
-		Path:        "/api/v1/stripe/admin/enterprise/apply-template",
-		Summary:     "Apply enterprise template pricing",
-		Tags:        []string{"V1Stripe"},
-	}, authn.AuthServiceKey, nil, stripeHandler.ApplyEnterpriseTemplate)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "applyEnterpriseCustom",
-		Errors:      []int{400, 401, 404},
-		Method:      http.MethodPost,
-		Path:        "/api/v1/stripe/admin/enterprise/apply-custom",
-		Summary:     "Apply custom enterprise pricing",
-		Tags:        []string{"V1Stripe"},
-	}, authn.AuthServiceKey, nil, stripeHandler.ApplyEnterpriseCustom)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "getEnterprisePricesByTemplate",
-		Errors:      []int{400, 401},
-		Method:      http.MethodGet,
-		Path:        "/api/v1/stripe/admin/enterprise/prices/by-template/{template}",
-		Summary:     "Get enterprise prices by template",
-		Tags:        []string{"V1Stripe"},
-	}, authn.AuthServiceKey, nil, stripeHandler.GetPricesByTemplate)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "getEnterprisePricesByID",
-		Errors:      []int{400, 401},
-		Method:      http.MethodGet,
-		Path:        "/api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}",
-		Summary:     "Get enterprise prices by ID",
-		Tags:        []string{"V1Stripe"},
-	}, authn.AuthServiceKey, nil, stripeHandler.GetPricesByEnterpriseID)
 
 	logger.Logger.Info("Stripe routes registration completed")
 }

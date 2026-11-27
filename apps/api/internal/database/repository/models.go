@@ -11,14 +11,12 @@ import (
 )
 
 type AuthTenant struct {
-	ID                 string    `json:"id"`
-	Name               string    `json:"name"`
-	StripeCustomerID   *string   `json:"stripe_customer_id"`
-	Type               string    `json:"type"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-	EnterpriseTemplate *string   `json:"enterprise_template"`
-	EnterpriseID       *string   `json:"enterprise_id"`
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	StripeCustomerID *string   `json:"stripe_customer_id"`
+	Type             string    `json:"type"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type AuthTenantInvite struct {

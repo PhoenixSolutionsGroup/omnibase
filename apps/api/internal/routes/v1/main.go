@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
+func InitRoutes(group *gin.RouterGroup, root *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing v1 API routes")
 
 	if d.Auth == nil {
@@ -24,7 +24,7 @@ func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	SetUpStorageRoutes(group.Group("/storage"), api, d)
 
 	logger.Logger.Debug("Setting up stripe routes at /stripe")
-	SetUpStripeRoutes(group.Group("/stripe"), api, d)
+	SetUpStripeRoutes(group.Group("/stripe"), root, api, d)
 
 	logger.Logger.Debug("Setting up database routes at /database")
 	SetUpDBRoutes(group.Group("/database"), api, d)
@@ -37,9 +37,6 @@ func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	logger.Logger.Debug("Setting up permission routes at /permissions")
 	SetUpPermissionRoutes(group.Group("/permissions"), api, d)
-
-	logger.Logger.Debug("Setting up payment routes at /payments")
-	SetUpPaymentRoutes(group.Group("/payments"), api, d)
 
 	logger.Logger.Debug("Setting up email routes at /email")
 	SetUpEmailRoutes(group.Group("/email"), api, d)

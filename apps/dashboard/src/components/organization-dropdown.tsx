@@ -1,7 +1,7 @@
 "use client";
 
 import { SwitchActiveTenant } from "@omnibase/shadcn";
-import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import type { AuthTenant as Tenant } from "@omnibase/core-js";
 
 interface OrganizationDropdownProps {
   tenants?: Tenant[];

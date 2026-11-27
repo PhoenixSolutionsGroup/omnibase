@@ -7,13 +7,12 @@ package repository
 
 import (
 	"context"
-	"time"
 )
 
 const createTenant = `-- name: CreateTenant :one
 INSERT INTO auth.tenants (id, name, stripe_customer_id, type)
 VALUES ($1, $2, $3, $4)
-RETURNING id, name, stripe_customer_id, enterprise_template, enterprise_id, type, created_at, updated_at
+RETURNING id, name, stripe_customer_id, type, created_at, updated_at
 `
 
 type CreateTenantParams struct {
@@ -23,31 +22,18 @@ type CreateTenantParams struct {
 	Type             string  `json:"type"`
 }
 
-type CreateTenantRow struct {
-	ID                 string    `json:"id"`
-	Name               string    `json:"name"`
-	StripeCustomerID   *string   `json:"stripe_customer_id"`
-	EnterpriseTemplate *string   `json:"enterprise_template"`
-	EnterpriseID       *string   `json:"enterprise_id"`
-	Type               string    `json:"type"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-}
-
-func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error) {
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (AuthTenant, error) {
 	row := q.db.QueryRow(ctx, createTenant,
 		arg.ID,
 		arg.Name,
 		arg.StripeCustomerID,
 		arg.Type,
 	)
-	var i CreateTenantRow
+	var i AuthTenant
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.StripeCustomerID,
-		&i.EnterpriseTemplate,
-		&i.EnterpriseID,
 		&i.Type,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -81,31 +67,18 @@ func (q *Queries) DeleteTenant(ctx context.Context, id string) error {
 }
 
 const getTenantByID = `-- name: GetTenantByID :one
-SELECT id, name, stripe_customer_id, enterprise_template, enterprise_id, type, created_at, updated_at
+SELECT id, name, stripe_customer_id, type, created_at, updated_at
 FROM auth.tenants
 WHERE id = $1
 `
 
-type GetTenantByIDRow struct {
-	ID                 string    `json:"id"`
-	Name               string    `json:"name"`
-	StripeCustomerID   *string   `json:"stripe_customer_id"`
-	EnterpriseTemplate *string   `json:"enterprise_template"`
-	EnterpriseID       *string   `json:"enterprise_id"`
-	Type               string    `json:"type"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-}
-
-func (q *Queries) GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error) {
+func (q *Queries) GetTenantByID(ctx context.Context, id string) (AuthTenant, error) {
 	row := q.db.QueryRow(ctx, getTenantByID, id)
-	var i GetTenantByIDRow
+	var i AuthTenant
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.StripeCustomerID,
-		&i.EnterpriseTemplate,
-		&i.EnterpriseID,
 		&i.Type,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -114,62 +87,21 @@ func (q *Queries) GetTenantByID(ctx context.Context, id string) (GetTenantByIDRo
 }
 
 const getTenantByStripeCustomerID = `-- name: GetTenantByStripeCustomerID :one
-SELECT id, name, stripe_customer_id, enterprise_template, enterprise_id, type, created_at, updated_at
+SELECT id, name, stripe_customer_id, type, created_at, updated_at
 FROM auth.tenants
 WHERE stripe_customer_id = $1
 `
 
-type GetTenantByStripeCustomerIDRow struct {
-	ID                 string    `json:"id"`
-	Name               string    `json:"name"`
-	StripeCustomerID   *string   `json:"stripe_customer_id"`
-	EnterpriseTemplate *string   `json:"enterprise_template"`
-	EnterpriseID       *string   `json:"enterprise_id"`
-	Type               string    `json:"type"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-}
-
-func (q *Queries) GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error) {
+func (q *Queries) GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (AuthTenant, error) {
 	row := q.db.QueryRow(ctx, getTenantByStripeCustomerID, stripeCustomerID)
-	var i GetTenantByStripeCustomerIDRow
+	var i AuthTenant
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.StripeCustomerID,
-		&i.EnterpriseTemplate,
-		&i.EnterpriseID,
 		&i.Type,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
-}
-
-const updateTenantEnterpriseID = `-- name: UpdateTenantEnterpriseID :exec
-UPDATE auth.tenants SET enterprise_id = $2 WHERE id = $1
-`
-
-type UpdateTenantEnterpriseIDParams struct {
-	ID           string  `json:"id"`
-	EnterpriseID *string `json:"enterprise_id"`
-}
-
-func (q *Queries) UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error {
-	_, err := q.db.Exec(ctx, updateTenantEnterpriseID, arg.ID, arg.EnterpriseID)
-	return err
-}
-
-const updateTenantEnterpriseTemplate = `-- name: UpdateTenantEnterpriseTemplate :exec
-UPDATE auth.tenants SET enterprise_template = $2 WHERE id = $1
-`
-
-type UpdateTenantEnterpriseTemplateParams struct {
-	ID                 string  `json:"id"`
-	EnterpriseTemplate *string `json:"enterprise_template"`
-}
-
-func (q *Queries) UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error {
-	_, err := q.db.Exec(ctx, updateTenantEnterpriseTemplate, arg.ID, arg.EnterpriseTemplate)
-	return err
 }

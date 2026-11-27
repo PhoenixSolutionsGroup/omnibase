@@ -16,8 +16,8 @@ import (
 var ListTenantsError = errors.New("Failed to list tenants")
 
 type UserTenantListItem struct {
-	IsActive bool                        `json:"is_active" required:"true" example:"true"`
-	Tenant   repository.GetTenantByIDRow `json:"tenant" required:"true"`
+	IsActive bool                  `json:"is_active" required:"true" example:"true"`
+	Tenant   repository.AuthTenant `json:"tenant" required:"true"`
 }
 
 type ListTenantsResponse struct {
@@ -47,15 +47,13 @@ func (h *Handler) ListTenants(ctx context.Context, in *ListTenantsInput) (*ListT
 	for _, r := range rows {
 		items = append(items, UserTenantListItem{
 			IsActive: r.IsActive,
-			Tenant: repository.GetTenantByIDRow{
-				ID:                 r.ID,
-				Name:               r.Name,
-				StripeCustomerID:   r.StripeCustomerID,
-				EnterpriseTemplate: r.EnterpriseTemplate,
-				EnterpriseID:       r.EnterpriseID,
-				Type:               r.Type,
-				CreatedAt:          r.CreatedAt,
-				UpdatedAt:          r.UpdatedAt,
+			Tenant: repository.AuthTenant{
+				ID:               r.ID,
+				Name:             r.Name,
+				StripeCustomerID: r.StripeCustomerID,
+				Type:             r.Type,
+				CreatedAt:        r.CreatedAt,
+				UpdatedAt:        r.UpdatedAt,
 			},
 		})
 	}

@@ -14,7 +14,7 @@ import (
 )
 
 type ActiveTenantResponse struct {
-	Tenant *repository.GetTenantByIDRow `json:"tenant,omitempty"`
+	Tenant *repository.AuthTenant `json:"tenant,omitempty"`
 }
 
 type GetActiveTenantInput struct {
@@ -46,15 +46,13 @@ func (h *Handler) GetActiveTenant(ctx context.Context, in *GetActiveTenantInput)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		logger.Logger.Warn("Failed to fetch active tenant for user", "user_id", in.UserID, "error", err)
 	} else if err == nil {
-		resp.Tenant = &repository.GetTenantByIDRow{
-			ID:                 row.ID,
-			Name:               row.Name,
-			StripeCustomerID:   row.StripeCustomerID,
-			EnterpriseTemplate: row.EnterpriseTemplate,
-			EnterpriseID:       row.EnterpriseID,
-			Type:               row.Type,
-			CreatedAt:          row.CreatedAt,
-			UpdatedAt:          row.UpdatedAt,
+		resp.Tenant = &repository.AuthTenant{
+			ID:               row.ID,
+			Name:             row.Name,
+			StripeCustomerID: row.StripeCustomerID,
+			Type:             row.Type,
+			CreatedAt:        row.CreatedAt,
+			UpdatedAt:        row.UpdatedAt,
 		}
 	}
 

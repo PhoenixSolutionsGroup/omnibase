@@ -166,7 +166,7 @@ func BuildAPI(r *gin.Engine, d v1_routes.Deps) huma.API {
 	api := humagin.New(r, humaCfg)
 
 	logger.Logger.Debug("Initializing v1 API routes")
-	v1_routes.InitRoutes(r.Group("/api/v1"), api, d)
+	v1_routes.InitRoutes(r.Group("/api/v1"), r.Group("/"), api, d)
 
 	relaxAdditionalPropertiesRequired(api)
 

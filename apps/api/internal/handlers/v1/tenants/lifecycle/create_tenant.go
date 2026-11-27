@@ -29,14 +29,12 @@ type CreateTenantResponse struct {
 }
 
 type TenantPayload struct {
-	ID                 string    `json:"id"`
-	Name               string    `json:"name"`
-	StripeCustomerID   *string   `json:"stripe_customer_id,omitempty"`
-	Type               string    `json:"type"`
-	EnterpriseTemplate *string   `json:"enterprise_template,omitempty"`
-	EnterpriseID       *string   `json:"enterprise_id,omitempty"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	StripeCustomerID *string   `json:"stripe_customer_id,omitempty"`
+	Type             string    `json:"type"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type CreateTenantInput struct {
@@ -128,14 +126,12 @@ func (h *Handler) CreateTenant(ctx context.Context, in *CreateTenantInput) (*Cre
 	logger.Logger.Info("tenant created", "tenant_id", tenantID, "user_id", userID)
 	return &CreateTenantOutput{Body: CreateTenantResponse{
 		Tenant: TenantPayload{
-			ID:                 row.ID,
-			Name:               row.Name,
-			StripeCustomerID:   row.StripeCustomerID,
-			Type:               row.Type,
-			EnterpriseTemplate: row.EnterpriseTemplate,
-			EnterpriseID:       row.EnterpriseID,
-			CreatedAt:          row.CreatedAt,
-			UpdatedAt:          row.UpdatedAt,
+			ID:               row.ID,
+			Name:             row.Name,
+			StripeCustomerID: row.StripeCustomerID,
+			Type:             row.Type,
+			CreatedAt:        row.CreatedAt,
+			UpdatedAt:        row.UpdatedAt,
 		},
 		Message: "Tenant created successfully",
 	}}, nil

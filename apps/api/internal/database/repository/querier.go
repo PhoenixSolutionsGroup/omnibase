@@ -19,7 +19,7 @@ type Querier interface {
 	CreateStorageObject(ctx context.Context, arg CreateStorageObjectParams) (CreateStorageObjectRow, error)
 	CreateStripeConfig(ctx context.Context, arg CreateStripeConfigParams) (StripeStripeConfig, error)
 	CreateStripeWebhook(ctx context.Context, arg CreateStripeWebhookParams) (CreateStripeWebhookRow, error)
-	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
+	CreateTenant(ctx context.Context, arg CreateTenantParams) (AuthTenant, error)
 	CreateTenantInvite(ctx context.Context, arg CreateTenantInviteParams) (AuthTenantInvite, error)
 	CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error
 	CreateTenantUser(ctx context.Context, arg CreateTenantUserParams) (AuthTenantUser, error)
@@ -42,8 +42,8 @@ type Querier interface {
 	GetStorageObjectByPath(ctx context.Context, arg GetStorageObjectByPathParams) (GetStorageObjectByPathRow, error)
 	GetStripeWebhookByStripeID(ctx context.Context, stripeID string) (GetStripeWebhookByStripeIDRow, error)
 	GetSystemEmailTemplateByName(ctx context.Context, name string) (EmailSystemTemplate, error)
-	GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error)
-	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error)
+	GetTenantByID(ctx context.Context, id string) (AuthTenant, error)
+	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (AuthTenant, error)
 	GetTenantUser(ctx context.Context, arg GetTenantUserParams) (AuthTenantUser, error)
 	ListEmailTemplatesForTenant(ctx context.Context, tenantID *string) ([]ListEmailTemplatesForTenantRow, error)
 	ListNamespaceDefinitions(ctx context.Context) ([]ListNamespaceDefinitionsRow, error)
@@ -64,8 +64,6 @@ type Querier interface {
 	SetActiveUserTenant(ctx context.Context, arg SetActiveUserTenantParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
 	UpdateStripeWebhook(ctx context.Context, arg UpdateStripeWebhookParams) error
-	UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error
-	UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
 	UpsertAppEmailTemplate(ctx context.Context, arg UpsertAppEmailTemplateParams) (UpsertAppEmailTemplateRow, error)
 	UpsertNamespaceDefinition(ctx context.Context, arg UpsertNamespaceDefinitionParams) error

@@ -553,22 +553,22 @@ func (_c *MockQuerier_CreateStripeWebhook_Call) RunAndReturn(run func(ctx contex
 }
 
 // CreateTenant provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) CreateTenant(ctx context.Context, arg repository.CreateTenantParams) (repository.CreateTenantRow, error) {
+func (_mock *MockQuerier) CreateTenant(ctx context.Context, arg repository.CreateTenantParams) (repository.AuthTenant, error) {
 	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateTenant")
 	}
 
-	var r0 repository.CreateTenantRow
+	var r0 repository.AuthTenant
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) (repository.CreateTenantRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) (repository.AuthTenant, error)); ok {
 		return returnFunc(ctx, arg)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) repository.CreateTenantRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) repository.AuthTenant); ok {
 		r0 = returnFunc(ctx, arg)
 	} else {
-		r0 = ret.Get(0).(repository.CreateTenantRow)
+		r0 = ret.Get(0).(repository.AuthTenant)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateTenantParams) error); ok {
 		r1 = returnFunc(ctx, arg)
@@ -608,12 +608,12 @@ func (_c *MockQuerier_CreateTenant_Call) Run(run func(ctx context.Context, arg r
 	return _c
 }
 
-func (_c *MockQuerier_CreateTenant_Call) Return(createTenantRow repository.CreateTenantRow, err error) *MockQuerier_CreateTenant_Call {
-	_c.Call.Return(createTenantRow, err)
+func (_c *MockQuerier_CreateTenant_Call) Return(authTenant repository.AuthTenant, err error) *MockQuerier_CreateTenant_Call {
+	_c.Call.Return(authTenant, err)
 	return _c
 }
 
-func (_c *MockQuerier_CreateTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantParams) (repository.CreateTenantRow, error)) *MockQuerier_CreateTenant_Call {
+func (_c *MockQuerier_CreateTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantParams) (repository.AuthTenant, error)) *MockQuerier_CreateTenant_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -2011,22 +2011,22 @@ func (_c *MockQuerier_GetSystemEmailTemplateByName_Call) RunAndReturn(run func(c
 }
 
 // GetTenantByID provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetTenantByID(ctx context.Context, id string) (repository.GetTenantByIDRow, error) {
+func (_mock *MockQuerier) GetTenantByID(ctx context.Context, id string) (repository.AuthTenant, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetTenantByID")
 	}
 
-	var r0 repository.GetTenantByIDRow
+	var r0 repository.AuthTenant
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.GetTenantByIDRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.AuthTenant, error)); ok {
 		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.GetTenantByIDRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.AuthTenant); ok {
 		r0 = returnFunc(ctx, id)
 	} else {
-		r0 = ret.Get(0).(repository.GetTenantByIDRow)
+		r0 = ret.Get(0).(repository.AuthTenant)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, id)
@@ -2066,33 +2066,33 @@ func (_c *MockQuerier_GetTenantByID_Call) Run(run func(ctx context.Context, id s
 	return _c
 }
 
-func (_c *MockQuerier_GetTenantByID_Call) Return(getTenantByIDRow repository.GetTenantByIDRow, err error) *MockQuerier_GetTenantByID_Call {
-	_c.Call.Return(getTenantByIDRow, err)
+func (_c *MockQuerier_GetTenantByID_Call) Return(authTenant repository.AuthTenant, err error) *MockQuerier_GetTenantByID_Call {
+	_c.Call.Return(authTenant, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetTenantByID_Call) RunAndReturn(run func(ctx context.Context, id string) (repository.GetTenantByIDRow, error)) *MockQuerier_GetTenantByID_Call {
+func (_c *MockQuerier_GetTenantByID_Call) RunAndReturn(run func(ctx context.Context, id string) (repository.AuthTenant, error)) *MockQuerier_GetTenantByID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetTenantByStripeCustomerID provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (repository.GetTenantByStripeCustomerIDRow, error) {
+func (_mock *MockQuerier) GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (repository.AuthTenant, error) {
 	ret := _mock.Called(ctx, stripeCustomerID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetTenantByStripeCustomerID")
 	}
 
-	var r0 repository.GetTenantByStripeCustomerIDRow
+	var r0 repository.AuthTenant
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *string) (repository.GetTenantByStripeCustomerIDRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *string) (repository.AuthTenant, error)); ok {
 		return returnFunc(ctx, stripeCustomerID)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *string) repository.GetTenantByStripeCustomerIDRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *string) repository.AuthTenant); ok {
 		r0 = returnFunc(ctx, stripeCustomerID)
 	} else {
-		r0 = ret.Get(0).(repository.GetTenantByStripeCustomerIDRow)
+		r0 = ret.Get(0).(repository.AuthTenant)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, *string) error); ok {
 		r1 = returnFunc(ctx, stripeCustomerID)
@@ -2132,12 +2132,12 @@ func (_c *MockQuerier_GetTenantByStripeCustomerID_Call) Run(run func(ctx context
 	return _c
 }
 
-func (_c *MockQuerier_GetTenantByStripeCustomerID_Call) Return(getTenantByStripeCustomerIDRow repository.GetTenantByStripeCustomerIDRow, err error) *MockQuerier_GetTenantByStripeCustomerID_Call {
-	_c.Call.Return(getTenantByStripeCustomerIDRow, err)
+func (_c *MockQuerier_GetTenantByStripeCustomerID_Call) Return(authTenant repository.AuthTenant, err error) *MockQuerier_GetTenantByStripeCustomerID_Call {
+	_c.Call.Return(authTenant, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetTenantByStripeCustomerID_Call) RunAndReturn(run func(ctx context.Context, stripeCustomerID *string) (repository.GetTenantByStripeCustomerIDRow, error)) *MockQuerier_GetTenantByStripeCustomerID_Call {
+func (_c *MockQuerier_GetTenantByStripeCustomerID_Call) RunAndReturn(run func(ctx context.Context, stripeCustomerID *string) (repository.AuthTenant, error)) *MockQuerier_GetTenantByStripeCustomerID_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -3407,120 +3407,6 @@ func (_c *MockQuerier_UpdateStripeWebhook_Call) Return(err error) *MockQuerier_U
 }
 
 func (_c *MockQuerier_UpdateStripeWebhook_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateStripeWebhookParams) error) *MockQuerier_UpdateStripeWebhook_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// UpdateTenantEnterpriseID provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) UpdateTenantEnterpriseID(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams) error {
-	ret := _mock.Called(ctx, arg)
-
-	if len(ret) == 0 {
-		panic("no return value specified for UpdateTenantEnterpriseID")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateTenantEnterpriseIDParams) error); ok {
-		r0 = returnFunc(ctx, arg)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockQuerier_UpdateTenantEnterpriseID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateTenantEnterpriseID'
-type MockQuerier_UpdateTenantEnterpriseID_Call struct {
-	*mock.Call
-}
-
-// UpdateTenantEnterpriseID is a helper method to define mock.On call
-//   - ctx context.Context
-//   - arg repository.UpdateTenantEnterpriseIDParams
-func (_e *MockQuerier_Expecter) UpdateTenantEnterpriseID(ctx any, arg any) *MockQuerier_UpdateTenantEnterpriseID_Call {
-	return &MockQuerier_UpdateTenantEnterpriseID_Call{Call: _e.mock.On("UpdateTenantEnterpriseID", ctx, arg)}
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) Run(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams)) *MockQuerier_UpdateTenantEnterpriseID_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 repository.UpdateTenantEnterpriseIDParams
-		if args[1] != nil {
-			arg1 = args[1].(repository.UpdateTenantEnterpriseIDParams)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) Return(err error) *MockQuerier_UpdateTenantEnterpriseID_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams) error) *MockQuerier_UpdateTenantEnterpriseID_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// UpdateTenantEnterpriseTemplate provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) UpdateTenantEnterpriseTemplate(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams) error {
-	ret := _mock.Called(ctx, arg)
-
-	if len(ret) == 0 {
-		panic("no return value specified for UpdateTenantEnterpriseTemplate")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateTenantEnterpriseTemplateParams) error); ok {
-		r0 = returnFunc(ctx, arg)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockQuerier_UpdateTenantEnterpriseTemplate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateTenantEnterpriseTemplate'
-type MockQuerier_UpdateTenantEnterpriseTemplate_Call struct {
-	*mock.Call
-}
-
-// UpdateTenantEnterpriseTemplate is a helper method to define mock.On call
-//   - ctx context.Context
-//   - arg repository.UpdateTenantEnterpriseTemplateParams
-func (_e *MockQuerier_Expecter) UpdateTenantEnterpriseTemplate(ctx any, arg any) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
-	return &MockQuerier_UpdateTenantEnterpriseTemplate_Call{Call: _e.mock.On("UpdateTenantEnterpriseTemplate", ctx, arg)}
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) Run(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams)) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 repository.UpdateTenantEnterpriseTemplateParams
-		if args[1] != nil {
-			arg1 = args[1].(repository.UpdateTenantEnterpriseTemplateParams)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) Return(err error) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams) error) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
 	_c.Call.Return(run)
 	return _c
 }

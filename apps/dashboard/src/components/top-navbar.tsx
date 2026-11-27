@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { OrganizationDropdown } from "./organization-dropdown";
 import { switchTenant } from "@/app/(dashboard)/(organization)/actions";
-import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import type { AuthTenant as Tenant } from "@omnibase/core-js";
 import { ProjectDropdown, ProjectOption } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
 import { MobileMenuOverlay, MobileProjectOverlay } from "./mobile-nav";
