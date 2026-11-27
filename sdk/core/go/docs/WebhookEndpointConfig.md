@@ -6,14 +6,14 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Connect** | Pointer to **bool** |  | [optional] 
 **Events** | **[]string** |  | 
-**Id** | Pointer to **string** |  | [optional] 
+**Id** | **string** |  | 
 **Url** | **string** |  | 
 
 ## Methods
 
 ### NewWebhookEndpointConfig
 
-`func NewWebhookEndpointConfig(events []string, url string, ) *WebhookEndpointConfig`
+`func NewWebhookEndpointConfig(events []string, id string, url string, ) *WebhookEndpointConfig`
 
 NewWebhookEndpointConfig instantiates a new WebhookEndpointConfig object
 This constructor will assign default values to properties that have it defined,
@@ -102,11 +102,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *WebhookEndpointConfig) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetUrl
 

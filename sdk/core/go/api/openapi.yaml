@@ -10410,6 +10410,7 @@ components:
           type: string
       required:
       - events
+      - id
       - url
     WhoAmIBody:
       additionalProperties: false

@@ -73,7 +73,6 @@ func TestStatusReportsPendingDriftAndUntracked(t *testing.T) {
 
 	appliedProducts := desiredProductsByID(appliedConfig)
 	appliedPrices := desiredPricesByID(appliedConfig)
-	appliedWebhooks := webhooksByURL(appliedConfig)
 	raw, err := json.Marshal(appliedConfig)
 	require.NoError(t, err)
 
@@ -158,7 +157,7 @@ func TestStatusReportsPendingDriftAndUntracked(t *testing.T) {
 					"metadata": map[string]string{
 						MetadataKeyConfigID: "webhook_a",
 						MetadataKeyManaged:  MetadataManagedValue,
-						MetadataKeyHash:     webhookConfigHash(appliedWebhooks["https://example.com/hook"]),
+						MetadataKeyHash:     webhookConfigHash(appliedConfig.Webhooks[0]),
 					},
 				},
 			}, "has_more": false})
@@ -191,7 +190,7 @@ func TestStatusReportsPendingDriftAndUntracked(t *testing.T) {
 
 	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindProduct, ID: "prod_b", Name: "Product B", State: statusStateModified, Reason: statusReasonExternalEdit, StripeID: "prod_b_stripe"})
 	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindPrice, ID: "price_a", State: statusStateMissing})
-	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindWebhook, ID: "https://example.com/hook", Name: "https://example.com/hook", State: statusStateModified, Reason: statusReasonExternalEdit, StripeID: "we_a"})
+	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindWebhook, ID: "webhook_a", Name: "https://example.com/hook", State: statusStateModified, Reason: statusReasonExternalEdit, StripeID: "we_a"})
 
 	require.Contains(t, status.Untracked, ConfigStatusEntry{Kind: statusKindProduct, ID: "prod_extra", Name: "Product Extra", State: statusStateUntracked, StripeID: "prod_extra_stripe"})
 	require.NotContains(t, status.Drift, ConfigStatusEntry{Kind: statusKindProduct, ID: "prod_a", Name: "Product A", State: statusStateModified})
@@ -738,9 +737,10 @@ func TestStatusReportsWebhookIDPending(t *testing.T) {
 		}},
 	}).run(t)
 
-	require.Equal(t, 1, status.Summary.Pending)
+	require.Equal(t, 2, status.Summary.Pending)
 	require.Equal(t, 0, status.Summary.Drift)
-	require.Contains(t, status.Pending, ConfigStatusEntry{Kind: statusKindWebhook, ID: "https://example.com/hook", Name: "https://example.com/hook", State: statusStateChanged})
+	require.Contains(t, status.Pending, ConfigStatusEntry{Kind: statusKindWebhook, ID: "webhook_new", Name: "https://example.com/hook", State: statusStateAdded})
+	require.Contains(t, status.Pending, ConfigStatusEntry{Kind: statusKindWebhook, ID: "webhook_old", Name: "https://example.com/hook", State: statusStateRemoved})
 }
 
 func TestStatusReportsWebhookMetadataDrift(t *testing.T) {
@@ -793,5 +793,5 @@ func TestStatusReportsWebhookMetadataDrift(t *testing.T) {
 
 	require.Equal(t, 0, status.Summary.Pending)
 	require.Equal(t, 1, status.Summary.Drift)
-	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindWebhook, ID: "https://example.com/hook", Name: "https://example.com/hook", State: statusStateModified, Reason: "apply_mismatch,disabled", StripeID: "we_a"})
+	require.Contains(t, status.Drift, ConfigStatusEntry{Kind: statusKindWebhook, ID: "webhook_a", Name: "https://example.com/hook", State: statusStateModified, Reason: "apply_mismatch,disabled", StripeID: "we_a"})
 }

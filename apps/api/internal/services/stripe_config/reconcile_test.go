@@ -1,10 +1,20 @@
 package stripe_config
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stripe/stripe-go/v82"
+
+	"api/internal/config"
+	"api/internal/database/repository"
+	repomocks "api/internal/mocks/repository"
+	"api/internal/services/stripe_client"
 )
 
 func TestManagedIdentityExtraction(t *testing.T) {
@@ -32,8 +42,12 @@ func TestManagedIdentityExtraction(t *testing.T) {
 
 func TestWebhookKeys(t *testing.T) {
 	require.Equal(t, "https://example.com/hook", managedWebhookKey(StripeWebhookInfo{URL: "https://example.com/hook"}))
-	require.Equal(t, "https://example.com/hook", desiredWebhookKey(WebhookEndpointConfig{ID: "webhook_a", URL: "https://example.com/hook"}))
-	require.Equal(t, "https://example.com/hook", desiredWebhookKey(WebhookEndpointConfig{URL: "https://example.com/hook"}))
+	require.Equal(t, "webhook_a", managedWebhookKey(StripeWebhookInfo{
+		URL:      "https://example.com/old",
+		Metadata: map[string]string{MetadataKeyManaged: MetadataManagedValue, MetadataKeyConfigID: "webhook_a"},
+	}))
+	require.Equal(t, "webhook_a", desiredWebhookKey(WebhookEndpointConfig{ID: "webhook_a", URL: "https://example.com/hook"}))
+	require.Equal(t, "webhook_a", desiredWebhookKey(WebhookEndpointConfig{ID: "webhook_a", URL: "https://example.com/new"}))
 }
 
 func TestProductNeedsRecreate(t *testing.T) {
@@ -134,4 +148,51 @@ func TestStringSetsEqual(t *testing.T) {
 	require.False(t, stringSetsEqual([]string{"a"}, []string{"a", "b"}))
 	require.False(t, stringSetsEqual([]string{"a"}, []string{"b"}))
 	require.True(t, stringSetsEqual(nil, nil))
+}
+
+func TestReconcileWebhooksUpdatesURLByConfigID(t *testing.T) {
+	var gotURL string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, http.MethodPost, r.Method)
+		require.Equal(t, "/v1/webhook_endpoints/we_1", r.URL.Path)
+		require.NoError(t, r.ParseForm())
+		gotURL = r.Form.Get("url")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"id":"we_1","object":"webhook_endpoint","url":"https://new.example.com/hook","enabled_events":["invoice.paid"]}`))
+	}))
+	defer server.Close()
+
+	repo := repomocks.NewMockQuerier(t)
+	repo.EXPECT().GetStripeWebhookByStripeID(mock.Anything, "we_1").Return(repository.GetStripeWebhookByStripeIDRow{
+		ID:       uuid.New(),
+		StripeID: "we_1",
+	}, nil)
+
+	service := &Service{
+		repo:   repo,
+		stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL}),
+	}
+	desired := &StripeConfiguration{Webhooks: []WebhookEndpointConfig{{
+		ID:     "webhook_a",
+		URL:    "https://new.example.com/hook",
+		Events: []string{"invoice.paid"},
+	}}}
+	actual := map[string]StripeWebhookInfo{
+		desiredWebhookKey(desired.Webhooks[0]): {
+			ID:     "we_1",
+			URL:    "https://old.example.com/hook",
+			Events: []string{"invoice.paid"},
+			Metadata: map[string]string{
+				MetadataKeyManaged:  MetadataManagedValue,
+				MetadataKeyConfigID: "webhook_a",
+				MetadataKeyHash:     "old-hash",
+			},
+		},
+	}
+	changes := &ConfigChanges{Webhooks: &WebhookChanges{}}
+
+	require.NoError(t, service.reconcileWebhooks(context.Background(), desired, actual, changes))
+	require.Equal(t, "https://new.example.com/hook", gotURL)
+	require.Len(t, changes.Webhooks.Updated, 1)
+	require.Equal(t, "https://new.example.com/hook", changes.Webhooks.Updated[0].URL)
 }

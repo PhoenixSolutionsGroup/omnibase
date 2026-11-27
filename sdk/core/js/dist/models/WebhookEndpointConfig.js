@@ -24,6 +24,8 @@ exports.WebhookEndpointConfigToJSONTyped = WebhookEndpointConfigToJSONTyped;
 function instanceOfWebhookEndpointConfig(value) {
     if (!('events' in value) || value['events'] === undefined)
         return false;
+    if (!('id' in value) || value['id'] === undefined)
+        return false;
     if (!('url' in value) || value['url'] === undefined)
         return false;
     return true;
@@ -38,7 +40,7 @@ function WebhookEndpointConfigFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'connect': json['connect'] == null ? undefined : json['connect'],
         'events': json['events'] == null ? null : json['events'],
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'url': json['url'],
     };
 }

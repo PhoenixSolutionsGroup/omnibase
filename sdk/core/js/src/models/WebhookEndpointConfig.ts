@@ -36,7 +36,7 @@ export interface WebhookEndpointConfig {
      * @type {string}
      * @memberof WebhookEndpointConfig
      */
-    id?: string;
+    id: string;
     /**
      * 
      * @type {string}
@@ -50,6 +50,7 @@ export interface WebhookEndpointConfig {
  */
 export function instanceOfWebhookEndpointConfig(value: object): value is WebhookEndpointConfig {
     if (!('events' in value) || value['events'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
     if (!('url' in value) || value['url'] === undefined) return false;
     return true;
 }
@@ -66,7 +67,7 @@ export function WebhookEndpointConfigFromJSONTyped(json: any, ignoreDiscriminato
         
         'connect': json['connect'] == null ? undefined : json['connect'],
         'events': json['events'] == null ? null : json['events'],
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'url': json['url'],
     };
 }

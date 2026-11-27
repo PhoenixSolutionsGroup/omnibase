@@ -32,7 +32,7 @@ export interface WebhookEndpointConfig {
      * @type {string}
      * @memberof WebhookEndpointConfig
      */
-    id?: string;
+    id: string;
     /**
      *
      * @type {string}

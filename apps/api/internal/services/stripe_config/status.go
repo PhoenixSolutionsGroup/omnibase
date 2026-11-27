@@ -310,22 +310,22 @@ func pendingStatus(desired, applied *StripeConfiguration) []ConfigStatusEntry {
 		}
 	}
 
-	desiredWebhooks := webhooksByURL(desired)
-	appliedWebhooks := webhooksByURL(applied)
-	for _, url := range sortedKeys(desiredWebhooks) {
-		desiredWebhook := desiredWebhooks[url]
-		appliedWebhook, ok := appliedWebhooks[url]
+	desiredWebhooks := webhooksByKey(desired)
+	appliedWebhooks := webhooksByKey(applied)
+	for _, key := range sortedKeys(desiredWebhooks) {
+		desiredWebhook := desiredWebhooks[key]
+		appliedWebhook, ok := appliedWebhooks[key]
 		if !ok {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateAdded, "", ""))
+			out = append(out, statusEntry(statusKindWebhook, key, desiredWebhook.URL, statusStateAdded, "", ""))
 			continue
 		}
 		if webhookConfigHash(desiredWebhook) != webhookConfigHash(appliedWebhook) {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateChanged, "", ""))
+			out = append(out, statusEntry(statusKindWebhook, key, desiredWebhook.URL, statusStateChanged, "", ""))
 		}
 	}
-	for _, url := range sortedKeys(appliedWebhooks) {
-		if _, ok := desiredWebhooks[url]; !ok {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateRemoved, "", ""))
+	for _, key := range sortedKeys(appliedWebhooks) {
+		if _, ok := desiredWebhooks[key]; !ok {
+			out = append(out, statusEntry(statusKindWebhook, key, appliedWebhooks[key].URL, statusStateRemoved, "", ""))
 		}
 	}
 
@@ -445,16 +445,16 @@ func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks m
 		}
 	}
 
-	appliedWebhooks := webhooksByURL(applied)
-	for _, url := range sortedKeys(appliedWebhooks) {
-		webhook := appliedWebhooks[url]
-		liveWebhook, ok := actualWebhooks[url]
+	appliedWebhooks := webhooksByKey(applied)
+	for _, key := range sortedKeys(appliedWebhooks) {
+		webhook := appliedWebhooks[key]
+		liveWebhook, ok := actualWebhooks[key]
 		if !ok {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateMissing, "", ""))
+			out = append(out, statusEntry(statusKindWebhook, key, webhook.URL, statusStateMissing, "", ""))
 			continue
 		}
 		if reasons := webhookDriftReasons(webhook, liveWebhook, checkWebhookHash); reasons != "" {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateModified, reasons, liveWebhook.ID))
+			out = append(out, statusEntry(statusKindWebhook, key, webhook.URL, statusStateModified, reasons, liveWebhook.ID))
 		}
 	}
 
@@ -537,20 +537,19 @@ func untrackedStatus(desired, applied *StripeConfiguration, live *liveState, act
 		out = append(out, statusEntry(statusKindMeter, eventName, meter.DisplayName, statusStateUntracked, "", meter.ID))
 	}
 
-	desiredWebhooks := webhooksByURL(desired)
-	appliedWebhooks := webhooksByURL(applied)
-	for _, url := range sortedKeys(actualWebhooks) {
-		webhook := actualWebhooks[url]
+	desiredWebhooks := webhooksByKey(desired)
+	appliedWebhooks := webhooksByKey(applied)
+	for key, webhook := range actualWebhooks {
 		if !isManagedMetadata(webhook.Metadata) {
 			continue
 		}
-		if _, ok := desiredWebhooks[url]; ok {
+		if _, ok := desiredWebhooks[key]; ok {
 			continue
 		}
-		if _, ok := appliedWebhooks[url]; ok {
+		if _, ok := appliedWebhooks[key]; ok {
 			continue
 		}
-		out = append(out, statusEntry(statusKindWebhook, url, url, statusStateUntracked, "", webhook.ID))
+		out = append(out, statusEntry(statusKindWebhook, key, webhook.URL, statusStateUntracked, "", webhook.ID))
 	}
 
 	return out
@@ -606,10 +605,10 @@ func meterID(meter Meter) string {
 	return meter.EventName
 }
 
-func webhooksByURL(config *StripeConfiguration) map[string]WebhookEndpointConfig {
+func webhooksByKey(config *StripeConfiguration) map[string]WebhookEndpointConfig {
 	out := make(map[string]WebhookEndpointConfig, len(config.Webhooks))
 	for _, webhook := range config.Webhooks {
-		out[webhook.URL] = webhook
+		out[desiredWebhookKey(webhook)] = webhook
 	}
 	return out
 }
