@@ -26,7 +26,7 @@ dry_run() {
   mv "$CORE_JS_DIR/package.json.tmp" "$CORE_JS_DIR/package.json"
 
   echo "DRY_RUN: validating npm publish of $PACKAGE@$VERSION"
-  (cd "$CORE_JS_DIR" && npm publish --dry-run --access public)
+  (cd "$CORE_JS_DIR" && npm publish --dry-run --tag dryrun --access public)
 
   echo "DRY_RUN: validating docker build of $IMAGE:$VERSION"
   docker buildx build --call=check --file apps/api/Dockerfile .
