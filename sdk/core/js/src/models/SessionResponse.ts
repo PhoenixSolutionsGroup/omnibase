@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 import {
-    GetTenantByIDRowFromJSON,
-    GetTenantByIDRowFromJSONTyped,
-    GetTenantByIDRowToJSON,
-    GetTenantByIDRowToJSONTyped,
-} from './GetTenantByIDRow';
+    AuthTenantFromJSON,
+    AuthTenantFromJSONTyped,
+    AuthTenantToJSON,
+    AuthTenantToJSONTyped,
+} from './AuthTenant';
 import type { Identity } from './Identity';
 import {
     IdentityFromJSON,
@@ -55,10 +55,10 @@ export interface SessionResponse {
     session: Session;
     /**
      * 
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof SessionResponse
      */
-    tenant?: GetTenantByIDRow;
+    tenant?: AuthTenant;
 }
 
 /**
@@ -82,7 +82,7 @@ export function SessionResponseFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'identity': IdentityFromJSON(json['identity']),
         'session': SessionFromJSON(json['session']),
-        'tenant': json['tenant'] == null ? undefined : GetTenantByIDRowFromJSON(json['tenant']),
+        'tenant': json['tenant'] == null ? undefined : AuthTenantFromJSON(json['tenant']),
     };
 }
 
@@ -99,7 +99,7 @@ export function SessionResponseToJSONTyped(value?: SessionResponse | null, ignor
         
         'identity': IdentityToJSON(value['identity']),
         'session': SessionToJSON(value['session']),
-        'tenant': GetTenantByIDRowToJSON(value['tenant']),
+        'tenant': AuthTenantToJSON(value['tenant']),
     };
 }
 

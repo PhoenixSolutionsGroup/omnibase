@@ -16,9 +16,9 @@ import (
 var GetSessionError = errors.New("Failed to get session")
 
 type SessionResponse struct {
-	Session  *kratos.Session              `json:"session" required:"true"`
-	Identity *kratos.Identity             `json:"identity" required:"true"`
-	Tenant   *repository.GetTenantByIDRow `json:"tenant,omitempty"`
+	Session  *kratos.Session        `json:"session" required:"true"`
+	Identity *kratos.Identity       `json:"identity" required:"true"`
+	Tenant   *repository.AuthTenant `json:"tenant,omitempty"`
 }
 
 type GetSessionInput struct {

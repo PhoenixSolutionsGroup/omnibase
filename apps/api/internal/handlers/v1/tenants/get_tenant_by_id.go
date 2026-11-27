@@ -21,7 +21,7 @@ type GetTenantByIDInput struct {
 }
 
 type GetTenantByIDOutput struct {
-	Body repository.GetTenantByIDRow
+	Body repository.AuthTenant
 }
 
 func (h *Handler) GetTenantByID(ctx context.Context, in *GetTenantByIDInput) (*GetTenantByIDOutput, error) {

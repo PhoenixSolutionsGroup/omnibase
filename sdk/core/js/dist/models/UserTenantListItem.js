@@ -18,7 +18,7 @@ exports.UserTenantListItemFromJSON = UserTenantListItemFromJSON;
 exports.UserTenantListItemFromJSONTyped = UserTenantListItemFromJSONTyped;
 exports.UserTenantListItemToJSON = UserTenantListItemToJSON;
 exports.UserTenantListItemToJSONTyped = UserTenantListItemToJSONTyped;
-const GetTenantByIDRow_1 = require("./GetTenantByIDRow");
+const AuthTenant_1 = require("./AuthTenant");
 /**
  * Check if a given object implements the UserTenantListItem interface.
  */
@@ -38,7 +38,7 @@ function UserTenantListItemFromJSONTyped(json, ignoreDiscriminator) {
     }
     return {
         'isActive': json['is_active'],
-        'tenant': (0, GetTenantByIDRow_1.GetTenantByIDRowFromJSON)(json['tenant']),
+        'tenant': (0, AuthTenant_1.AuthTenantFromJSON)(json['tenant']),
     };
 }
 function UserTenantListItemToJSON(json) {
@@ -50,6 +50,6 @@ function UserTenantListItemToJSONTyped(value, ignoreDiscriminator = false) {
     }
     return {
         'is_active': value['isActive'],
-        'tenant': (0, GetTenantByIDRow_1.GetTenantByIDRowToJSON)(value['tenant']),
+        'tenant': (0, AuthTenant_1.AuthTenantToJSON)(value['tenant']),
     };
 }

@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 /**
  *
  * @export
@@ -24,10 +24,10 @@ export interface UserTenantListItem {
     isActive: boolean;
     /**
      *
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof UserTenantListItem
      */
-    tenant: GetTenantByIDRow;
+    tenant: AuthTenant;
 }
 /**
  * Check if a given object implements the UserTenantListItem interface.

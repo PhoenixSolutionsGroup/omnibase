@@ -6,7 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
+`tenant` | [AuthTenant](AuthTenant.md)
 
 ## Example
 

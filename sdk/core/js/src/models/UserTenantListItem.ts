@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 import {
-    GetTenantByIDRowFromJSON,
-    GetTenantByIDRowFromJSONTyped,
-    GetTenantByIDRowToJSON,
-    GetTenantByIDRowToJSONTyped,
-} from './GetTenantByIDRow';
+    AuthTenantFromJSON,
+    AuthTenantFromJSONTyped,
+    AuthTenantToJSON,
+    AuthTenantToJSONTyped,
+} from './AuthTenant';
 
 /**
  * 
@@ -35,10 +35,10 @@ export interface UserTenantListItem {
     isActive: boolean;
     /**
      * 
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof UserTenantListItem
      */
-    tenant: GetTenantByIDRow;
+    tenant: AuthTenant;
 }
 
 /**
@@ -61,7 +61,7 @@ export function UserTenantListItemFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'isActive': json['is_active'],
-        'tenant': GetTenantByIDRowFromJSON(json['tenant']),
+        'tenant': AuthTenantFromJSON(json['tenant']),
     };
 }
 
@@ -77,7 +77,7 @@ export function UserTenantListItemToJSONTyped(value?: UserTenantListItem | null,
     return {
         
         'is_active': value['isActive'],
-        'tenant': GetTenantByIDRowToJSON(value['tenant']),
+        'tenant': AuthTenantToJSON(value['tenant']),
     };
 }
 

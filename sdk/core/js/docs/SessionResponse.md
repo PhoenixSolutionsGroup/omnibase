@@ -8,7 +8,7 @@ Name | Type
 ------------ | -------------
 `identity` | [Identity](Identity.md)
 `session` | [Session](Session.md)
-`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
+`tenant` | [AuthTenant](AuthTenant.md)
 
 ## Example
 

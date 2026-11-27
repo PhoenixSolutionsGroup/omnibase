@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Identity** | [**Identity**](Identity.md) |  | 
 **Session** | [**Session**](Session.md) |  | 
-**Tenant** | Pointer to [**GetTenantByIDRow**](GetTenantByIDRow.md) |  | [optional] 
+**Tenant** | Pointer to [**AuthTenant**](AuthTenant.md) |  | [optional] 
 
 ## Methods
 
@@ -69,20 +69,20 @@ SetSession sets Session field to given value.
 
 ### GetTenant
 
-`func (o *SessionResponse) GetTenant() GetTenantByIDRow`
+`func (o *SessionResponse) GetTenant() AuthTenant`
 
 GetTenant returns the Tenant field if non-nil, zero value otherwise.
 
 ### GetTenantOk
 
-`func (o *SessionResponse) GetTenantOk() (*GetTenantByIDRow, bool)`
+`func (o *SessionResponse) GetTenantOk() (*AuthTenant, bool)`
 
 GetTenantOk returns a tuple with the Tenant field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTenant
 
-`func (o *SessionResponse) SetTenant(v GetTenantByIDRow)`
+`func (o *SessionResponse) SetTenant(v AuthTenant)`
 
 SetTenant sets Tenant field to given value.
 

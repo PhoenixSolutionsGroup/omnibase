@@ -70,8 +70,6 @@ type Price struct {
 	TiersMode          string            `json:"tiers_mode,omitempty"`
 	Tiers              []Tier            `json:"tiers,omitempty"`
 	Default            bool              `json:"default,omitempty"`
-	EnterpriseTemplate string            `json:"enterprise_template,omitempty"`
-	EnterpriseID       string            `json:"enterprise_id,omitempty"`
 	Metadata           map[string]string `json:"metadata,omitempty"`
 	UI                 *PriceUI          `json:"ui,omitempty"`
 }

@@ -24,6 +24,11 @@ func NewBadRequestResponse(ctx *gin.Context, message string) {
 	ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: message})
 }
 
+func NewUnprocessableEntityResponse(ctx *gin.Context, message string) {
+	logger.Logger.Info("Unprocessable entity", "status", http.StatusUnprocessableEntity, "path", ctx.Request.URL.Path, "error", message)
+	ctx.JSON(http.StatusUnprocessableEntity, ErrorResponse{Error: message})
+}
+
 func NewInternalServerErrorResponse(ctx *gin.Context, err error) {
 	logger.Logger.Error("Internal server error", "status", http.StatusInternalServerError, "path", ctx.Request.URL.Path, "error", err)
 	ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Internal Server Error"})

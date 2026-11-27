@@ -17,7 +17,7 @@ ORDER BY joined_at ASC;
 
 -- name: GetActiveTenantForUser :one
 SELECT
-    t.id, t.name, t.stripe_customer_id, t.enterprise_template, t.enterprise_id, t.type, t.created_at, t.updated_at,
+    t.id, t.name, t.stripe_customer_id, t.type, t.created_at, t.updated_at,
     tu.is_active
 FROM auth.tenant_users tu
 JOIN auth.tenants t ON t.id = tu.tenant_id
@@ -26,7 +26,7 @@ LIMIT 1;
 
 -- name: ListTenantsForUser :many
 SELECT
-    t.id, t.name, t.stripe_customer_id, t.enterprise_template, t.enterprise_id, t.type, t.created_at, t.updated_at,
+    t.id, t.name, t.stripe_customer_id, t.type, t.created_at, t.updated_at,
     tu.is_active
 FROM auth.tenant_users tu
 JOIN auth.tenants t ON t.id = tu.tenant_id

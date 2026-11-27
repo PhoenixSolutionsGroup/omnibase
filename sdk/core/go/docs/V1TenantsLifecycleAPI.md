@@ -137,7 +137,7 @@ Other parameters are passed through a pointer to a apiDeleteTenantRequest struct
 
 ## GetTenantByID
 
-> GetTenantByIDRow GetTenantByID(ctx, tenantId).Execute()
+> AuthTenant GetTenantByID(ctx, tenantId).Execute()
 
 Get tenant by ID
 
@@ -163,7 +163,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsLifecycleAPI.GetTenantByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetTenantByID`: GetTenantByIDRow
+	// response from `GetTenantByID`: AuthTenant
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsLifecycleAPI.GetTenantByID`: %v\n", resp)
 }
 ```
@@ -187,7 +187,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetTenantByIDRow**](GetTenantByIDRow.md)
+[**AuthTenant**](AuthTenant.md)
 
 ### Authorization
 
@@ -205,7 +205,7 @@ Name | Type | Description  | Notes
 
 ## GetTenantByStripeCustomerID
 
-> GetTenantByStripeCustomerIDRow GetTenantByStripeCustomerID(ctx, stripeCustomerId).Execute()
+> AuthTenant GetTenantByStripeCustomerID(ctx, stripeCustomerId).Execute()
 
 Get tenant by Stripe customer ID
 
@@ -231,7 +231,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsLifecycleAPI.GetTenantByStripeCustomerID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetTenantByStripeCustomerID`: GetTenantByStripeCustomerIDRow
+	// response from `GetTenantByStripeCustomerID`: AuthTenant
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsLifecycleAPI.GetTenantByStripeCustomerID`: %v\n", resp)
 }
 ```
@@ -255,7 +255,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetTenantByStripeCustomerIDRow**](GetTenantByStripeCustomerIDRow.md)
+[**AuthTenant**](AuthTenant.md)
 
 ### Authorization
 

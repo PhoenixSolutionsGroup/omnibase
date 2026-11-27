@@ -20,7 +20,7 @@ var _ MappedNullable = &ActiveTenantResponse{}
 
 // ActiveTenantResponse struct for ActiveTenantResponse
 type ActiveTenantResponse struct {
-	Tenant *GetTenantByIDRow `json:"tenant,omitempty"`
+	Tenant *AuthTenant `json:"tenant,omitempty"`
 }
 
 // NewActiveTenantResponse instantiates a new ActiveTenantResponse object
@@ -41,9 +41,9 @@ func NewActiveTenantResponseWithDefaults() *ActiveTenantResponse {
 }
 
 // GetTenant returns the Tenant field value if set, zero value otherwise.
-func (o *ActiveTenantResponse) GetTenant() GetTenantByIDRow {
+func (o *ActiveTenantResponse) GetTenant() AuthTenant {
 	if o == nil || IsNil(o.Tenant) {
-		var ret GetTenantByIDRow
+		var ret AuthTenant
 		return ret
 	}
 	return *o.Tenant
@@ -51,7 +51,7 @@ func (o *ActiveTenantResponse) GetTenant() GetTenantByIDRow {
 
 // GetTenantOk returns a tuple with the Tenant field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ActiveTenantResponse) GetTenantOk() (*GetTenantByIDRow, bool) {
+func (o *ActiveTenantResponse) GetTenantOk() (*AuthTenant, bool) {
 	if o == nil || IsNil(o.Tenant) {
 		return nil, false
 	}
@@ -67,8 +67,8 @@ func (o *ActiveTenantResponse) HasTenant() bool {
 	return false
 }
 
-// SetTenant gets a reference to the given GetTenantByIDRow and assigns it to the Tenant field.
-func (o *ActiveTenantResponse) SetTenant(v GetTenantByIDRow) {
+// SetTenant gets a reference to the given AuthTenant and assigns it to the Tenant field.
+func (o *ActiveTenantResponse) SetTenant(v AuthTenant) {
 	o.Tenant = &v
 }
 

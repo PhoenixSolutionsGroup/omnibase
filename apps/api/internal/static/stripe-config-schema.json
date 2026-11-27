@@ -9,1481 +9,556 @@
     "products"
   ],
   "properties": {
-    "version": {
-      "type": "string",
-      "description": "Configuration version in semantic versioning format"
-    },
-    "webhooks": {
-      "type": "array",
-      "description": "List of webhook endpoint configurations",
+    "coupons": {
       "items": {
-        "$ref": "#/definitions/WebhookEndpointConfig"
-      }
+        "$ref": "#/definitions/Coupon"
+      },
+      "type": [
+        "array",
+        "null"
+      ]
     },
     "meters": {
-      "type": "array",
-      "description": "List of billing meters for metered pricing (required when any price uses usage_type metered)",
       "items": {
         "$ref": "#/definitions/Meter"
-      }
+      },
+      "type": [
+        "array",
+        "null"
+      ]
     },
     "products": {
-      "type": "array",
-      "description": "List of products with their prices",
       "items": {
         "$ref": "#/definitions/Product"
-      }
+      },
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "promotion_codes": {
+      "items": {
+        "$ref": "#/definitions/PromotionCode"
+      },
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "webhooks": {
+      "items": {
+        "$ref": "#/definitions/WebhookEndpointConfig"
+      },
+      "type": [
+        "array",
+        "null"
+      ]
     }
   },
   "definitions": {
-    "CurrencyCode": {
-      "type": "string",
-      "description": "Three-letter ISO currency code (lowercase)",
-      "enum": [
-        "usd",
-        "eur",
-        "gbp",
-        "cad",
-        "aud",
-        "jpy",
-        "inr",
-        "brl",
-        "mxn",
-        "sgd",
-        "hkd",
-        "nzd",
-        "chf",
-        "sek",
-        "dkk",
-        "nok",
-        "pln",
-        "czk",
-        "ils",
-        "zar"
-      ]
-    },
-    "BillingInterval": {
-      "type": "string",
-      "description": "Billing interval for recurring prices",
-      "enum": [
-        "day",
-        "week",
-        "month",
-        "year"
-      ]
-    },
-    "UsageType": {
-      "type": "string",
-      "description": "Usage type for recurring prices",
-      "enum": [
-        "licensed",
-        "metered"
-      ]
-    },
-    "PerUnitBillingScheme": {
-      "type": "string",
-      "description": "Billing scheme type for per-unit pricing",
-      "enum": [
-        "per_unit"
-      ],
-      "default": "per_unit"
-    },
-    "TieredBillingScheme": {
-      "type": "string",
-      "description": "Billing scheme type for tiered pricing",
-      "enum": [
-        "tiered"
-      ]
-    },
-    "TiersMode": {
-      "type": "string",
-      "description": "Tiers mode for tiered pricing",
-      "enum": [
-        "graduated",
-        "volume"
-      ]
-    },
     "StripeConfiguration": {
-      "type": "object",
-      "required": [
-        "version",
-        "products"
-      ],
+      "additionalProperties": false,
       "properties": {
-        "version": {
-          "type": "string",
-          "description": "Configuration version in semantic versioning format"
-        },
-        "webhooks": {
-          "type": "array",
-          "description": "List of webhook endpoint configurations",
+        "coupons": {
           "items": {
-            "$ref": "#/definitions/WebhookEndpointConfig"
-          }
+            "$ref": "#/definitions/Coupon"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         },
         "meters": {
-          "type": "array",
-          "description": "List of billing meters for metered pricing (required when any price uses usage_type metered)",
           "items": {
             "$ref": "#/definitions/Meter"
-          }
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         },
         "products": {
-          "type": "array",
-          "description": "List of products with their prices",
           "items": {
             "$ref": "#/definitions/Product"
-          }
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "promotion_codes": {
+          "items": {
+            "$ref": "#/definitions/PromotionCode"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "webhooks": {
+          "items": {
+            "$ref": "#/definitions/WebhookEndpointConfig"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         }
-      }
-    },
-    "StripeConfigurationWithIDs": {
-      "type": "object",
+      },
       "required": [
         "version",
         "products"
       ],
-      "properties": {
-        "version": {
-          "type": "string",
-          "description": "Configuration version"
-        },
-        "webhooks": {
-          "type": "array",
-          "description": "List of webhook endpoint configurations",
-          "items": {
-            "$ref": "#/definitions/WebhookEndpointConfig"
-          }
-        },
-        "meters": {
-          "type": "array",
-          "description": "List of billing meters with Stripe IDs",
-          "items": {
-            "$ref": "#/definitions/MeterWithStripeID"
-          }
-        },
-        "products": {
-          "type": "array",
-          "description": "List of products with Stripe IDs",
-          "items": {
-            "$ref": "#/definitions/ProductWithStripeIDs"
-          }
-        }
-      }
+      "type": "object"
     },
-    "Product": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "prices"
-      ],
+    "Coupon": {
+      "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Product identifier (config ID)"
+        "amount_off": {
+          "format": "int64",
+          "type": "integer"
         },
-        "stripe_id": {
-          "type": "string",
-          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe products)"
+        "applies_to": {
+          "items": {
+            "type": "string"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "string"
+        },
+        "duration_in_months": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "max_redemptions": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
         },
         "name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Product name"
+          "type": "string"
         },
-        "description": {
-          "type": "string",
-          "description": "Product description"
-        },
-        "type": {
-          "type": "string",
-          "description": "Product type",
-          "enum": [
-            "service",
-            "good"
-          ]
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional string metadata to set on the Stripe object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "prices": {
-          "type": "array",
-          "minItems": 1,
-          "description": "List of prices for this product",
-          "items": {
-            "$ref": "#/definitions/Price"
-          }
-        },
-        "ui": {
-          "$ref": "#/definitions/ProductUI"
-        }
-      }
-    },
-    "ProductWithStripeIDs": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "prices"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Product identifier (config ID)"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Product name"
-        },
-        "description": {
-          "type": "string",
-          "description": "Product description"
-        },
-        "type": {
-          "type": "string",
-          "description": "Product type",
-          "enum": [
-            "service",
-            "good"
-          ]
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional string metadata to set on the Stripe object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "prices": {
-          "type": "array",
-          "minItems": 1,
-          "description": "List of prices with Stripe IDs",
-          "items": {
-            "$ref": "#/definitions/PriceWithStripeID"
-          }
-        },
-        "ui": {
-          "$ref": "#/definitions/ProductUI"
-        },
-        "stripe_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "Actual Stripe product ID (null for free products)"
-        }
-      }
-    },
-    "Price": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/PerUnitPrice"
-        },
-        {
-          "$ref": "#/definitions/TieredPrice"
-        }
-      ]
-    },
-    "PerUnitPrice": {
-      "type": "object",
-      "required": [
-        "id",
-        "currency",
-        "amount"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Price identifier (config ID)"
-        },
-        "stripe_id": {
-          "type": "string",
-          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe prices)"
-        },
-        "public": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether price is visible in public API (null/true = public, false = enterprise only)"
-        },
-        "tax_included_in_price": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether tax is included in the price (null/false = exclusive)"
-        },
-        "amount": {
-          "type": "number",
+        "percent_off": {
           "format": "double",
-          "minimum": 0,
-          "description": "Price amount (supports decimals for sub-cent hourly pricing)"
+          "type": "number"
         },
-        "currency": {
-          "$ref": "#/definitions/CurrencyCode"
-        },
-        "interval": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/BillingInterval"
-            },
-            {
-              "description": "Billing interval for recurring prices (required when usage_type is metered)"
-            }
-          ]
-        },
-        "interval_count": {
-          "type": "integer",
-          "description": "Number of intervals between billings (default 1)"
-        },
-        "usage_type": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/UsageType"
-            },
-            {
-              "description": "Usage type for recurring prices (when set to metered, interval and meter are required)"
-            }
-          ]
-        },
-        "meter": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)"
-        },
-        "billing_scheme": {
-          "$ref": "#/definitions/PerUnitBillingScheme"
-        },
-        "default": {
-          "type": "boolean",
-          "description": "Mark as default price for the product"
-        },
-        "enterprise_template": {
-          "type": "string",
-          "description": "Enterprise template group for shared pricing tiers"
-        },
-        "enterprise_id": {
-          "type": "string",
-          "description": "Enterprise pricing group ID for tenant-specific pricing"
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional string metadata to set on the Stripe object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "ui": {
-          "$ref": "#/definitions/PriceUI"
-        }
-      },
-      "if": {
-        "properties": {
-          "usage_type": {
-            "const": "metered"
-          }
-        },
-        "required": [
-          "usage_type"
-        ]
-      },
-      "then": {
-        "required": [
-          "interval",
-          "meter"
-        ]
-      }
-    },
-    "TieredPrice": {
-      "type": "object",
-      "required": [
-        "id",
-        "currency",
-        "billing_scheme",
-        "tiers_mode",
-        "tiers"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Price identifier (config ID)"
+        "redeem_by": {
+          "format": "int64",
+          "type": "integer"
         },
         "stripe_id": {
-          "type": "string",
-          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe prices)"
-        },
-        "public": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether price is visible in public API (null/true = public, false = enterprise only)"
-        },
-        "tax_included_in_price": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether tax is included in the price (null/false = exclusive)"
-        },
-        "currency": {
-          "$ref": "#/definitions/CurrencyCode"
-        },
-        "interval": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/BillingInterval"
-            },
-            {
-              "description": "Billing interval for recurring prices (required when usage_type is metered)"
-            }
-          ]
-        },
-        "interval_count": {
-          "type": "integer",
-          "description": "Number of intervals between billings (default 1)"
-        },
-        "usage_type": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/UsageType"
-            },
-            {
-              "description": "Usage type for recurring prices (when set to metered, interval and meter are required)"
-            }
-          ]
-        },
-        "meter": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)"
-        },
-        "billing_scheme": {
-          "$ref": "#/definitions/TieredBillingScheme"
-        },
-        "tiers_mode": {
-          "$ref": "#/definitions/TiersMode"
-        },
-        "tiers": {
-          "type": "array",
-          "description": "Pricing tiers",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/Tier"
-          }
-        },
-        "default": {
-          "type": "boolean",
-          "description": "Mark as default price for the product"
-        },
-        "enterprise_template": {
-          "type": "string",
-          "description": "Enterprise template group for shared pricing tiers"
-        },
-        "enterprise_id": {
-          "type": "string",
-          "description": "Enterprise pricing group ID for tenant-specific pricing"
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional string metadata to set on the Stripe object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "ui": {
-          "$ref": "#/definitions/PriceUI"
+          "type": "string"
         }
       },
-      "if": {
-        "properties": {
-          "usage_type": {
-            "const": "metered"
-          }
-        },
-        "required": [
-          "usage_type"
-        ]
-      },
-      "then": {
-        "required": [
-          "interval",
-          "meter"
-        ]
-      }
-    },
-    "PriceWithStripeID": {
-      "type": "object",
       "required": [
         "id",
-        "currency"
+        "duration"
       ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Price identifier (config ID)"
-        },
-        "public": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether price is visible in public API"
-        },
-        "tax_included_in_price": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether tax is included in the price"
-        },
-        "amount": {
-          "type": "number",
-          "format": "double",
-          "minimum": 0,
-          "description": "Price amount (supports decimals for sub-cent hourly pricing)"
-        },
-        "currency": {
-          "$ref": "#/definitions/CurrencyCode"
-        },
-        "interval": {
-          "$ref": "#/definitions/BillingInterval"
-        },
-        "interval_count": {
-          "type": "integer",
-          "description": "Number of intervals between billings"
-        },
-        "usage_type": {
-          "$ref": "#/definitions/UsageType"
-        },
-        "meter": {
-          "type": "string",
-          "description": "Meter ID for metered pricing"
-        },
-        "billing_scheme": {
-          "type": "string",
-          "nullable": true,
-          "description": "Billing scheme type"
-        },
-        "tiers_mode": {
-          "type": "string",
-          "nullable": true,
-          "description": "Tiers mode"
-        },
-        "tiers": {
-          "type": "array",
-          "description": "Pricing tiers",
-          "items": {
-            "$ref": "#/definitions/Tier"
-          }
-        },
-        "default": {
-          "type": "boolean",
-          "description": "Mark as default price"
-        },
-        "enterprise_template": {
-          "type": "string",
-          "description": "Enterprise template group for shared pricing tiers"
-        },
-        "enterprise_id": {
-          "type": "string",
-          "description": "Enterprise pricing group ID for tenant-specific pricing"
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional string metadata to set on the Stripe object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "ui": {
-          "$ref": "#/definitions/PriceUI"
-        },
-        "stripe_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "Actual Stripe price ID (null for free prices)"
-        }
-      }
-    },
-    "Tier": {
-      "type": "object",
-      "properties": {
-        "up_to": {
-          "oneOf": [
-            {
-              "type": "integer",
-              "description": "Upper limit of this tier"
-            },
-            {
-              "type": "string",
-              "enum": [
-                "inf"
-              ],
-              "description": "Infinite tier (last tier)"
-            }
-          ]
-        },
-        "flat_amount": {
-          "type": "integer",
-          "format": "int64",
-          "nullable": true,
-          "description": "Flat fee for this tier"
-        },
-        "unit_amount": {
-          "type": "integer",
-          "format": "int64",
-          "nullable": true,
-          "description": "Per-unit price for this tier"
-        }
-      }
+      "type": "object"
     },
     "Meter": {
-      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "customer_mapping": {
+          "$ref": "#/definitions/MeterCustomerMapping"
+        },
+        "default_aggregation": {
+          "$ref": "#/definitions/MeterDefaultAggregation"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "event_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "stripe_id": {
+          "type": "string"
+        },
+        "value_settings": {
+          "$ref": "#/definitions/MeterValueSettings"
+        }
+      },
       "required": [
         "id",
         "display_name",
         "event_name",
         "default_aggregation"
       ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Meter identifier (config ID)"
-        },
-        "stripe_id": {
-          "type": "string",
-          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe meters)"
-        },
-        "display_name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Human-readable meter name"
-        },
-        "event_name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Event name to track for this meter"
-        },
-        "default_aggregation": {
-          "$ref": "#/definitions/MeterDefaultAggregation"
-        },
-        "customer_mapping": {
-          "$ref": "#/definitions/MeterCustomerMapping"
-        },
-        "value_settings": {
-          "$ref": "#/definitions/MeterValueSettings"
-        }
-      }
-    },
-    "MeterWithStripeID": {
-      "type": "object",
-      "required": [
-        "id",
-        "display_name",
-        "event_name",
-        "default_aggregation"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Meter identifier (config ID)"
-        },
-        "display_name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Human-readable meter name"
-        },
-        "event_name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Event name to track"
-        },
-        "default_aggregation": {
-          "$ref": "#/definitions/MeterDefaultAggregation"
-        },
-        "customer_mapping": {
-          "$ref": "#/definitions/MeterCustomerMapping"
-        },
-        "value_settings": {
-          "$ref": "#/definitions/MeterValueSettings"
-        },
-        "stripe_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "Actual Stripe meter ID"
-        }
-      }
-    },
-    "MeterDefaultAggregation": {
-      "type": "object",
-      "required": [
-        "formula"
-      ],
-      "properties": {
-        "formula": {
-          "type": "string",
-          "description": "Aggregation formula for meter events",
-          "enum": [
-            "sum",
-            "count",
-            "last"
-          ]
-        }
-      }
+      "type": "object"
     },
     "MeterCustomerMapping": {
-      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "event_payload_key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
       "required": [
         "event_payload_key",
         "type"
       ],
+      "type": "object"
+    },
+    "MeterDefaultAggregation": {
+      "additionalProperties": false,
       "properties": {
-        "event_payload_key": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Key in event payload to identify customer (must be different from value_settings.event_payload_key)"
-        },
-        "type": {
-          "type": "string",
-          "description": "Mapping type",
-          "enum": [
-            "by_id"
-          ]
+        "formula": {
+          "type": "string"
         }
-      }
+      },
+      "required": [
+        "formula"
+      ],
+      "type": "object"
     },
     "MeterValueSettings": {
-      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "event_payload_key": {
+          "type": "string"
+        }
+      },
       "required": [
         "event_payload_key"
       ],
-      "properties": {
-        "event_payload_key": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Key in event payload containing the usage value (must be different from customer_mapping.event_payload_key)"
-        }
-      }
+      "type": "object"
     },
-    "ProductUI": {
-      "type": "object",
+    "Product": {
+      "additionalProperties": false,
       "properties": {
-        "display_name": {
-          "type": "string",
-          "description": "Display name for UI"
+        "description": {
+          "type": "string"
         },
-        "tagline": {
-          "type": "string",
-          "description": "Short tagline"
+        "id": {
+          "type": "string"
         },
-        "features": {
-          "type": "array",
-          "description": "List of product features",
-          "items": {
+        "metadata": {
+          "additionalProperties": {
             "type": "string"
-          }
+          },
+          "type": "object"
         },
-        "badge": {
-          "type": "string",
-          "description": "Badge text (e.g., \"Popular\", \"Best Value\")"
+        "name": {
+          "type": "string"
         },
-        "cta_text": {
-          "type": "string",
-          "description": "Call-to-action button text"
+        "prices": {
+          "items": {
+            "$ref": "#/definitions/Price"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         },
-        "highlighted": {
-          "type": "boolean",
-          "description": "Whether to highlight this product"
+        "stripe_id": {
+          "type": "string"
         },
-        "sort_order": {
-          "type": "integer",
-          "description": "Display order for sorting"
+        "type": {
+          "type": "string"
+        },
+        "ui": {
+          "$ref": "#/definitions/ProductUI"
         }
-      }
+      },
+      "required": [
+        "id",
+        "name",
+        "prices"
+      ],
+      "type": "object"
+    },
+    "Price": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "format": "double",
+          "type": "number"
+        },
+        "billing_scheme": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "default": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "interval": {
+          "type": "string"
+        },
+        "interval_count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "meter": {
+          "type": "string"
+        },
+        "public": {
+          "type": "boolean"
+        },
+        "stripe_id": {
+          "type": "string"
+        },
+        "tax_included_in_price": {
+          "type": "boolean"
+        },
+        "tiers": {
+          "items": {
+            "$ref": "#/definitions/Tier"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "tiers_mode": {
+          "type": "string"
+        },
+        "ui": {
+          "$ref": "#/definitions/PriceUI"
+        },
+        "usage_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "currency"
+      ],
+      "type": "object"
+    },
+    "Tier": {
+      "additionalProperties": false,
+      "properties": {
+        "flat_amount": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "unit_amount": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "up_to": {}
+      },
+      "required": [
+        "up_to"
+      ],
+      "type": "object"
     },
     "PriceUI": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
+        "billing_period": {
+          "type": "string"
+        },
         "display_name": {
-          "type": "string",
-          "description": "Display name for this price tier"
+          "type": "string"
+        },
+        "features": {
+          "items": {
+            "type": "string"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "limits": {
+          "items": {
+            "$ref": "#/definitions/PriceLimit"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         },
         "price_display": {
           "$ref": "#/definitions/PriceDisplay"
-        },
-        "billing_period": {
-          "type": "string",
-          "description": "Human-readable billing period"
-        },
-        "features": {
-          "type": "array",
-          "description": "Features specific to this price",
-          "items": {
-            "type": "string"
-          }
-        },
-        "limits": {
-          "type": "array",
-          "description": "Usage limits for this price",
-          "items": {
-            "$ref": "#/definitions/PriceLimit"
-          }
         }
-      }
-    },
-    "PriceDisplay": {
-      "type": "object",
-      "properties": {
-        "custom_text": {
-          "type": "string",
-          "description": "Custom text to display instead of price"
-        },
-        "show_currency": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Whether to show currency symbol"
-        },
-        "suffix": {
-          "type": "string",
-          "description": "Text to append after price"
-        }
-      }
+      },
+      "type": "object"
     },
     "PriceLimit": {
-      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {
+          "format": "double",
+          "type": "number"
+        }
+      },
       "required": [
         "text"
       ],
-      "properties": {
-        "text": {
-          "type": "string",
-          "description": "Limit description"
-        },
-        "value": {
-          "type": "number",
-          "format": "double",
-          "nullable": true,
-          "description": "Numeric limit value"
-        },
-        "unit": {
-          "type": "string",
-          "description": "Unit of measurement"
-        }
-      }
+      "type": "object"
     },
-    "StripeConfigResponse": {
-      "type": "object",
-      "required": [
-        "id",
-        "config",
-        "version",
-        "created_at",
-        "updated_at"
-      ],
+    "PriceDisplay": {
+      "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Configuration ID"
+        "custom_text": {
+          "type": "string"
         },
-        "config": {
-          "$ref": "#/definitions/StripeConfigurationWithIDs"
+        "show_currency": {
+          "type": "boolean"
         },
-        "version": {
-          "type": "string",
-          "description": "Configuration version"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Last update timestamp"
+        "suffix": {
+          "type": "string"
         }
-      }
+      },
+      "type": "object"
     },
-    "ConfigHistoryResponse": {
-      "type": "object",
-      "required": [
-        "configs",
-        "pagination"
-      ],
+    "ProductUI": {
+      "additionalProperties": false,
       "properties": {
-        "configs": {
-          "type": "array",
-          "description": "List of configuration entries",
+        "badge": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "features": {
           "items": {
-            "$ref": "#/definitions/ConfigHistoryItem"
-          }
-        },
-        "pagination": {
-          "$ref": "#/definitions/ConfigHistoryPagination"
-        }
-      }
-    },
-    "ConfigHistoryItem": {
-      "type": "object",
-      "required": [
-        "id",
-        "config",
-        "version",
-        "created_at",
-        "updated_at"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Configuration ID"
-        },
-        "config": {
-          "$ref": "#/definitions/StripeConfigurationWithIDs"
-        },
-        "version": {
-          "type": "string",
-          "description": "Configuration version"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Update timestamp"
-        },
-        "parse_error": {
-          "type": "string",
-          "nullable": true,
-          "description": "Parse error if configuration is invalid"
-        }
-      }
-    },
-    "ConfigHistoryPagination": {
-      "type": "object",
-      "required": [
-        "total",
-        "page",
-        "per_page",
-        "total_pages",
-        "has_next",
-        "has_prev"
-      ],
-      "properties": {
-        "total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of configurations"
-        },
-        "page": {
-          "type": "integer",
-          "description": "Current page number"
-        },
-        "per_page": {
-          "type": "integer",
-          "description": "Items per page"
-        },
-        "total_pages": {
-          "type": "integer",
-          "description": "Total pages"
-        },
-        "has_next": {
-          "type": "boolean",
-          "description": "Whether there is a next page"
-        },
-        "has_prev": {
-          "type": "boolean",
-          "description": "Whether there is a previous page"
-        }
-      }
-    },
-    "StripeIDConversionResponse": {
-      "type": "object",
-      "required": [
-        "stripe_id",
-        "config_id",
-        "item_type",
-        "config_uuid"
-      ],
-      "properties": {
-        "stripe_id": {
-          "type": "string",
-          "description": "Stripe ID"
-        },
-        "config_id": {
-          "type": "string",
-          "description": "Config ID"
-        },
-        "item_type": {
-          "type": "string",
-          "description": "Item type (product, price, or meter)",
-          "enum": [
-            "product",
-            "price",
-            "meter",
-            "coupon",
-            "promotion_code"
+            "type": "string"
+          },
+          "type": [
+            "array",
+            "null"
           ]
         },
-        "config_uuid": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Configuration UUID that this mapping belongs to"
-        }
-      }
-    },
-    "ArchiveAllResponse": {
-      "type": "object",
-      "required": [
-        "message",
-        "archived_items",
-        "archive_errors",
-        "total_archived",
-        "total_errors"
-      ],
-      "properties": {
-        "message": {
-          "type": "string",
-          "description": "Success message"
+        "highlighted": {
+          "type": "boolean"
         },
-        "archived_items": {
-          "type": "array",
-          "description": "List of successfully archived items",
-          "items": {
+        "sort_order": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "tagline": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PromotionCode": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "string"
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "first_time_transaction": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "max_redemptions": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "metadata": {
+          "additionalProperties": {
             "type": "string"
-          }
+          },
+          "type": "object"
         },
-        "archive_errors": {
-          "type": "array",
-          "description": "List of items that failed to archive",
-          "items": {
-            "type": "string"
-          }
+        "minimum_amount": {
+          "format": "int64",
+          "type": "integer"
         },
-        "total_archived": {
-          "type": "integer",
-          "description": "Total number of archived items"
+        "minimum_amount_currency": {
+          "type": "string"
         },
-        "total_errors": {
-          "type": "integer",
-          "description": "Total number of errors"
-        },
-        "warning": {
-          "type": "string",
-          "nullable": true,
-          "description": "Warning message if there were errors"
+        "stripe_id": {
+          "type": "string"
         }
-      }
-    },
-    "PriceResponse": {
-      "type": "object",
+      },
       "required": [
-        "price",
-        "product"
+        "id",
+        "code",
+        "coupon"
       ],
-      "properties": {
-        "price": {
-          "$ref": "#/definitions/PriceWithStripeID",
-          "description": "The price with Stripe ID"
-        },
-        "product": {
-          "$ref": "#/definitions/ProductWithStripeIDs",
-          "description": "The parent product with Stripe IDs"
-        }
-      }
-    },
-    "ProductResponse": {
-      "type": "object",
-      "required": [
-        "product"
-      ],
-      "properties": {
-        "product": {
-          "$ref": "#/definitions/ProductWithStripeIDs",
-          "description": "The product with Stripe IDs"
-        }
-      }
-    },
-    "MeterResponse": {
-      "type": "object",
-      "required": [
-        "meter"
-      ],
-      "properties": {
-        "meter": {
-          "$ref": "#/definitions/MeterWithStripeID",
-          "description": "The meter with Stripe ID"
-        }
-      }
-    },
-    "StripeConfigUpdateRequest": {
-      "type": "object",
-      "required": [
-        "version",
-        "products"
-      ],
-      "properties": {
-        "version": {
-          "type": "string",
-          "description": "Configuration version (required, semantic version format)",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$"
-        },
-        "meters": {
-          "type": "array",
-          "description": "List of billing meters (optional array, items must be valid meter objects)",
-          "items": {
-            "$ref": "#/definitions/Meter"
-          }
-        },
-        "products": {
-          "type": "array",
-          "description": "List of products (required array, items must be valid product objects with id, name, and prices)",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/Product"
-          }
-        }
-      }
-    },
-    "StripeConfigValidateRequest": {
-      "type": "object",
-      "required": [
-        "version",
-        "products"
-      ],
-      "properties": {
-        "version": {
-          "type": "string",
-          "description": "Configuration version (required, semantic version format)",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$"
-        },
-        "meters": {
-          "type": "array",
-          "description": "List of billing meters (optional array, items must be valid meter objects)",
-          "items": {
-            "$ref": "#/definitions/Meter"
-          }
-        },
-        "products": {
-          "type": "array",
-          "description": "List of products (required array, items must be valid product objects with id, name, and prices)",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/Product"
-          }
-        }
-      }
-    },
-    "WebhooksConfigRequest": {
-      "type": "object",
-      "required": [
-        "webhooks"
-      ],
-      "properties": {
-        "webhooks": {
-          "type": "array",
-          "description": "List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/WebhookEndpointConfig"
-          }
-        }
-      }
+      "type": "object"
     },
     "WebhookEndpointConfig": {
-      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connect": {
+          "type": "boolean"
+        },
+        "events": {
+          "items": {
+            "type": "string"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
       "required": [
         "url",
         "events"
       ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Optional unique identifier for the webhook endpoint"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "description": "Webhook endpoint URL (supports ${VAR} env var interpolation via CLI)"
-        },
-        "events": {
-          "type": "array",
-          "minItems": 1,
-          "description": "List of Stripe event types to subscribe to",
-          "items": {
-            "type": "string",
-            "enum": [
-              "account.updated",
-              "account.application.deauthorized",
-              "account.external_account.created",
-              "account.external_account.updated",
-              "account.external_account.deleted",
-              "payment_intent.created",
-              "payment_intent.succeeded",
-              "payment_intent.payment_failed",
-              "payment_intent.canceled",
-              "payment_intent.requires_action",
-              "charge.succeeded",
-              "charge.failed",
-              "charge.refunded",
-              "charge.captured",
-              "charge.dispute.created",
-              "charge.dispute.updated",
-              "charge.dispute.closed",
-              "customer.created",
-              "customer.updated",
-              "customer.deleted",
-              "customer.subscription.created",
-              "customer.subscription.updated",
-              "customer.subscription.deleted",
-              "customer.subscription.trial_will_end",
-              "customer.subscription.paused",
-              "customer.subscription.resumed",
-              "invoice.created",
-              "invoice.finalized",
-              "invoice.paid",
-              "invoice.payment_failed",
-              "invoice.payment_action_required",
-              "invoice.upcoming",
-              "invoice.marked_uncollectible",
-              "invoice.voided",
-              "payout.created",
-              "payout.paid",
-              "payout.failed",
-              "payout.canceled",
-              "product.created",
-              "product.updated",
-              "product.deleted",
-              "price.created",
-              "price.updated",
-              "price.deleted",
-              "checkout.session.completed",
-              "checkout.session.expired",
-              "checkout.session.async_payment_succeeded",
-              "checkout.session.async_payment_failed",
-              "refund.created",
-              "refund.updated",
-              "payment_method.attached",
-              "payment_method.detached",
-              "transfer.created",
-              "transfer.reversed"
-            ]
-          }
-        },
-        "connect": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, listen to events from connected accounts (Stripe Connect)"
-        }
-      }
-    },
-    "WebhooksConfigResponse": {
-      "type": "object",
-      "required": [
-        "webhooks"
-      ],
-      "properties": {
-        "webhooks": {
-          "type": "array",
-          "description": "List of configured webhook endpoints with results",
-          "items": {
-            "$ref": "#/definitions/WebhookResult"
-          }
-        }
-      }
-    },
-    "WebhookResult": {
-      "type": "object",
-      "required": [
-        "stripe_id",
-        "url",
-        "events",
-        "connect",
-        "secret",
-        "action"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Internal webhook ID"
-        },
-        "stripe_id": {
-          "type": "string",
-          "description": "Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx)"
-        },
-        "url": {
-          "type": "string",
-          "description": "Webhook endpoint URL"
-        },
-        "events": {
-          "type": "array",
-          "description": "List of subscribed event types",
-          "items": {
-            "type": "string"
-          }
-        },
-        "connect": {
-          "type": "boolean",
-          "description": "Whether webhook listens to connected account events"
-        },
-        "secret": {
-          "type": "string",
-          "description": "Webhook signing secret for signature verification"
-        },
-        "action": {
-          "type": "string",
-          "description": "Action performed on the webhook",
-          "enum": [
-            "created",
-            "updated",
-            "unchanged"
-          ]
-        }
-      }
-    },
-    "WebhookSecretResponse": {
-      "type": "object",
-      "required": [
-        "id",
-        "stripe_id",
-        "url",
-        "secret",
-        "events",
-        "connect"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Internal webhook ID"
-        },
-        "stripe_id": {
-          "type": "string",
-          "description": "Stripe webhook endpoint ID"
-        },
-        "url": {
-          "type": "string",
-          "description": "Webhook endpoint URL"
-        },
-        "secret": {
-          "type": "string",
-          "description": "Webhook signing secret"
-        },
-        "events": {
-          "type": "array",
-          "description": "List of subscribed event types",
-          "items": {
-            "type": "string"
-          }
-        },
-        "connect": {
-          "type": "boolean",
-          "description": "Whether webhook listens to connected account events"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Last update timestamp"
-        }
-      }
-    },
-    "ApplyEnterpriseTemplateRequest": {
-      "type": "object",
-      "required": [
-        "tenant_id",
-        "enterprise_template"
-      ],
-      "properties": {
-        "tenant_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Tenant ID to apply enterprise pricing to"
-        },
-        "enterprise_template": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)"
-        }
-      }
-    },
-    "ApplyEnterpriseCustomRequest": {
-      "type": "object",
-      "required": [
-        "tenant_id",
-        "enterprise_id"
-      ],
-      "properties": {
-        "tenant_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Tenant ID to apply enterprise pricing to"
-        },
-        "enterprise_id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)"
-        }
-      }
-    },
-    "EnterpriseApplyResponse": {
-      "type": "object",
-      "required": [
-        "message",
-        "tenant_id",
-        "prices_swapped"
-      ],
-      "properties": {
-        "message": {
-          "type": "string",
-          "description": "Success message"
-        },
-        "tenant_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Tenant ID that pricing was applied to"
-        },
-        "prices_swapped": {
-          "type": "integer",
-          "description": "Number of subscription prices that were swapped"
-        },
-        "swapped_details": {
-          "type": "array",
-          "description": "Details of each price swap performed",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "EnterprisePricesResponse": {
-      "type": "object",
-      "required": [
-        "prices",
-        "count"
-      ],
-      "properties": {
-        "prices": {
-          "type": "array",
-          "description": "List of enterprise prices matching the query",
-          "items": {
-            "$ref": "#/definitions/PriceWithStripeID"
-          }
-        },
-        "count": {
-          "type": "integer",
-          "description": "Total number of prices returned"
-        }
-      }
+      "type": "object"
     }
   }
 }

@@ -21,7 +21,7 @@ type GetTenantByStripeCustomerIDInput struct {
 }
 
 type GetTenantByStripeCustomerIDOutput struct {
-	Body repository.GetTenantByStripeCustomerIDRow
+	Body repository.AuthTenant
 }
 
 func (h *Handler) GetTenantByStripeCustomerID(ctx context.Context, in *GetTenantByStripeCustomerIDInput) (*GetTenantByStripeCustomerIDOutput, error) {

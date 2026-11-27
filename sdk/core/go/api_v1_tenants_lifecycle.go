@@ -449,7 +449,7 @@ type ApiGetTenantByIDRequest struct {
 	tenantId string
 }
 
-func (r ApiGetTenantByIDRequest) Execute() (*GetTenantByIDRow, *http.Response, error) {
+func (r ApiGetTenantByIDRequest) Execute() (*AuthTenant, *http.Response, error) {
 	return r.ApiService.GetTenantByIDExecute(r)
 }
 
@@ -469,13 +469,13 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByID(ctx context.Context, tenant
 }
 
 // Execute executes the request
-//  @return GetTenantByIDRow
-func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRequest) (*GetTenantByIDRow, *http.Response, error) {
+//  @return AuthTenant
+func (a *V1TenantsLifecycleAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRequest) (*AuthTenant, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetTenantByIDRow
+		localVarReturnValue  *AuthTenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.GetTenantByID")
@@ -618,7 +618,7 @@ type ApiGetTenantByStripeCustomerIDRequest struct {
 	stripeCustomerId string
 }
 
-func (r ApiGetTenantByStripeCustomerIDRequest) Execute() (*GetTenantByStripeCustomerIDRow, *http.Response, error) {
+func (r ApiGetTenantByStripeCustomerIDRequest) Execute() (*AuthTenant, *http.Response, error) {
 	return r.ApiService.GetTenantByStripeCustomerIDExecute(r)
 }
 
@@ -638,13 +638,13 @@ func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerID(ctx context.C
 }
 
 // Execute executes the request
-//  @return GetTenantByStripeCustomerIDRow
-func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiGetTenantByStripeCustomerIDRequest) (*GetTenantByStripeCustomerIDRow, *http.Response, error) {
+//  @return AuthTenant
+func (a *V1TenantsLifecycleAPIService) GetTenantByStripeCustomerIDExecute(r ApiGetTenantByStripeCustomerIDRequest) (*AuthTenant, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetTenantByStripeCustomerIDRow
+		localVarReturnValue  *AuthTenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsLifecycleAPIService.GetTenantByStripeCustomerID")

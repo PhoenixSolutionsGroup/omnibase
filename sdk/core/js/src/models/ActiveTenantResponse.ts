@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { GetTenantByIDRow } from './GetTenantByIDRow';
+import type { AuthTenant } from './AuthTenant';
 import {
-    GetTenantByIDRowFromJSON,
-    GetTenantByIDRowFromJSONTyped,
-    GetTenantByIDRowToJSON,
-    GetTenantByIDRowToJSONTyped,
-} from './GetTenantByIDRow';
+    AuthTenantFromJSON,
+    AuthTenantFromJSONTyped,
+    AuthTenantToJSON,
+    AuthTenantToJSONTyped,
+} from './AuthTenant';
 
 /**
  * 
@@ -29,10 +29,10 @@ import {
 export interface ActiveTenantResponse {
     /**
      * 
-     * @type {GetTenantByIDRow}
+     * @type {AuthTenant}
      * @memberof ActiveTenantResponse
      */
-    tenant?: GetTenantByIDRow;
+    tenant?: AuthTenant;
 }
 
 /**
@@ -52,7 +52,7 @@ export function ActiveTenantResponseFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'tenant': json['tenant'] == null ? undefined : GetTenantByIDRowFromJSON(json['tenant']),
+        'tenant': json['tenant'] == null ? undefined : AuthTenantFromJSON(json['tenant']),
     };
 }
 
@@ -67,7 +67,7 @@ export function ActiveTenantResponseToJSONTyped(value?: ActiveTenantResponse | n
 
     return {
         
-        'tenant': GetTenantByIDRowToJSON(value['tenant']),
+        'tenant': AuthTenantToJSON(value['tenant']),
     };
 }
 

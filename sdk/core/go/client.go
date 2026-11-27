@@ -56,8 +56,6 @@ type APIClient struct {
 
 	V1DatabaseAPI *V1DatabaseAPIService
 
-	V1PaymentsAPI *V1PaymentsAPIService
-
 	V1PermissionsAPI *V1PermissionsAPIService
 
 	V1StorageAPI *V1StorageAPIService
@@ -69,8 +67,6 @@ type APIClient struct {
 	V1TenantsLifecycleAPI *V1TenantsLifecycleAPIService
 
 	V1TenantsRolesAPI *V1TenantsRolesAPIService
-
-	V1TenantsSubscriptionsAPI *V1TenantsSubscriptionsAPIService
 
 	V1TenantsUsersAPI *V1TenantsUsersAPIService
 }
@@ -94,14 +90,12 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.V1AuthAPI = (*V1AuthAPIService)(&c.common)
 	c.V1ConfigurationAPI = (*V1ConfigurationAPIService)(&c.common)
 	c.V1DatabaseAPI = (*V1DatabaseAPIService)(&c.common)
-	c.V1PaymentsAPI = (*V1PaymentsAPIService)(&c.common)
 	c.V1PermissionsAPI = (*V1PermissionsAPIService)(&c.common)
 	c.V1StorageAPI = (*V1StorageAPIService)(&c.common)
 	c.V1StripeAPI = (*V1StripeAPIService)(&c.common)
 	c.V1TenantsInvitesAPI = (*V1TenantsInvitesAPIService)(&c.common)
 	c.V1TenantsLifecycleAPI = (*V1TenantsLifecycleAPIService)(&c.common)
 	c.V1TenantsRolesAPI = (*V1TenantsRolesAPIService)(&c.common)
-	c.V1TenantsSubscriptionsAPI = (*V1TenantsSubscriptionsAPIService)(&c.common)
 	c.V1TenantsUsersAPI = (*V1TenantsUsersAPIService)(&c.common)
 
 	return c

@@ -88,8 +88,6 @@ func TestPriceConfigHashIgnoresPresentationFields(t *testing.T) {
 	changed.StripeID = "price_linked"
 	changed.Public = &public
 	changed.Default = true
-	changed.EnterpriseTemplate = "enterprise"
-	changed.EnterpriseID = "ent_1"
 	changed.UI = &PriceUI{DisplayName: "A"}
 
 	require.Equal(t, priceConfigHash(original), priceConfigHash(changed))

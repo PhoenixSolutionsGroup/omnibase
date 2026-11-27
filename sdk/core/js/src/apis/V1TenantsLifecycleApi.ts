@@ -15,16 +15,17 @@
 
 import * as runtime from '../runtime';
 import type {
+  AuthTenant,
   CreateTenantRequest,
   CreateTenantResponse,
   DeleteTenantResponse,
   ErrorModel,
-  GetTenantByIDRow,
-  GetTenantByStripeCustomerIDRow,
   SwitchActiveRequest,
   SwitchActiveResponse,
 } from '../models/index';
 import {
+    AuthTenantFromJSON,
+    AuthTenantToJSON,
     CreateTenantRequestFromJSON,
     CreateTenantRequestToJSON,
     CreateTenantResponseFromJSON,
@@ -33,10 +34,6 @@ import {
     DeleteTenantResponseToJSON,
     ErrorModelFromJSON,
     ErrorModelToJSON,
-    GetTenantByIDRowFromJSON,
-    GetTenantByIDRowToJSON,
-    GetTenantByStripeCustomerIDRowFromJSON,
-    GetTenantByStripeCustomerIDRowToJSON,
     SwitchActiveRequestFromJSON,
     SwitchActiveRequestToJSON,
     SwitchActiveResponseFromJSON,
@@ -159,7 +156,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
     /**
      * Get tenant by ID
      */
-    async getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByIDRow>> {
+    async getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>> {
         if (requestParameters['tenantId'] == null) {
             throw new runtime.RequiredError(
                 'tenantId',
@@ -186,13 +183,13 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantByIDRowFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthTenantFromJSON(jsonValue));
     }
 
     /**
      * Get tenant by ID
      */
-    async getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByIDRow> {
+    async getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant> {
         const response = await this.getTenantByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -200,7 +197,7 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
     /**
      * Get tenant by Stripe customer ID
      */
-    async getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByStripeCustomerIDRow>> {
+    async getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>> {
         if (requestParameters['stripeCustomerId'] == null) {
             throw new runtime.RequiredError(
                 'stripeCustomerId',
@@ -227,13 +224,13 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantByStripeCustomerIDRowFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthTenantFromJSON(jsonValue));
     }
 
     /**
      * Get tenant by Stripe customer ID
      */
-    async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByStripeCustomerIDRow> {
+    async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant> {
         const response = await this.getTenantByStripeCustomerIDRaw(requestParameters, initOverrides);
         return await response.value();
     }

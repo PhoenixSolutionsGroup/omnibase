@@ -10,25 +10,10 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ApplyEnterpriseCustomRequest, ApplyEnterpriseTemplateRequest, CalculatePriceCostRequest, CalculatePriceCostResponse, ConvertStripeIDResponse, EnterpriseApplyResponse, EnterprisePricesResponse, GetMeterResponse, GetPriceResponse, GetProductResponse, ListWebhooksResponse, StripeConfigResponse } from '../models/index';
-export interface ApplyEnterpriseCustomOperationRequest {
-    applyEnterpriseCustomRequest: ApplyEnterpriseCustomRequest;
-}
-export interface ApplyEnterpriseTemplateOperationRequest {
-    applyEnterpriseTemplateRequest: ApplyEnterpriseTemplateRequest;
-}
+import type { CalculatePriceCostRequest, CalculatePriceCostResponse, GetMeterResponse, GetPriceResponse, GetProductResponse, ListWebhooksResponse, StripeConfigResponse } from '../models/index';
 export interface CalculatePriceCostOperationRequest {
     priceId: string;
     calculatePriceCostRequest: CalculatePriceCostRequest;
-}
-export interface ConvertStripeIDToConfigIDRequest {
-    stripeId: string;
-}
-export interface GetEnterprisePricesByIDRequest {
-    enterpriseId: string;
-}
-export interface GetEnterprisePricesByTemplateRequest {
-    template: string;
 }
 export interface GetMeterByIDRequest {
     meterId: string;
@@ -44,22 +29,6 @@ export interface GetProductByIDRequest {
  */
 export declare class V1StripeApi extends runtime.BaseAPI {
     /**
-     * Apply custom enterprise pricing
-     */
-    applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>>;
-    /**
-     * Apply custom enterprise pricing
-     */
-    applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse>;
-    /**
-     * Apply enterprise template pricing
-     */
-    applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>>;
-    /**
-     * Apply enterprise template pricing
-     */
-    applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse>;
-    /**
      * Calculate cost for a price
      */
     calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCostResponse>>;
@@ -67,30 +36,6 @@ export declare class V1StripeApi extends runtime.BaseAPI {
      * Calculate cost for a price
      */
     calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCostResponse>;
-    /**
-     * Convert Stripe ID to config ID
-     */
-    convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConvertStripeIDResponse>>;
-    /**
-     * Convert Stripe ID to config ID
-     */
-    convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConvertStripeIDResponse>;
-    /**
-     * Get enterprise prices by ID
-     */
-    getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>>;
-    /**
-     * Get enterprise prices by ID
-     */
-    getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse>;
-    /**
-     * Get enterprise prices by template
-     */
-    getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>>;
-    /**
-     * Get enterprise prices by template
-     */
-    getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse>;
     /**
      * Get meter by ID
      */

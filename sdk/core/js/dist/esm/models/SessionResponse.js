@@ -18,7 +18,7 @@ exports.SessionResponseFromJSON = SessionResponseFromJSON;
 exports.SessionResponseFromJSONTyped = SessionResponseFromJSONTyped;
 exports.SessionResponseToJSON = SessionResponseToJSON;
 exports.SessionResponseToJSONTyped = SessionResponseToJSONTyped;
-const GetTenantByIDRow_1 = require("./GetTenantByIDRow");
+const AuthTenant_1 = require("./AuthTenant");
 const Identity_1 = require("./Identity");
 const Session_1 = require("./Session");
 /**
@@ -41,7 +41,7 @@ function SessionResponseFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'identity': (0, Identity_1.IdentityFromJSON)(json['identity']),
         'session': (0, Session_1.SessionFromJSON)(json['session']),
-        'tenant': json['tenant'] == null ? undefined : (0, GetTenantByIDRow_1.GetTenantByIDRowFromJSON)(json['tenant']),
+        'tenant': json['tenant'] == null ? undefined : (0, AuthTenant_1.AuthTenantFromJSON)(json['tenant']),
     };
 }
 function SessionResponseToJSON(json) {
@@ -54,6 +54,6 @@ function SessionResponseToJSONTyped(value, ignoreDiscriminator = false) {
     return {
         'identity': (0, Identity_1.IdentityToJSON)(value['identity']),
         'session': (0, Session_1.SessionToJSON)(value['session']),
-        'tenant': (0, GetTenantByIDRow_1.GetTenantByIDRowToJSON)(value['tenant']),
+        'tenant': (0, AuthTenant_1.AuthTenantToJSON)(value['tenant']),
     };
 }

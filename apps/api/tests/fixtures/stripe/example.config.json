@@ -46,8 +46,7 @@
           "amount": 9000,
           "currency": "usd",
           "interval": "month",
-          "interval_count": 1,
-          "enterprise_template": "tier1_10pct_off"
+          "interval_count": 1
         },
         {
           "id": "price_test_base_monthly_tier2",
@@ -55,8 +54,7 @@
           "amount": 7500,
           "currency": "usd",
           "interval": "month",
-          "interval_count": 1,
-          "enterprise_template": "tier2_25pct_off"
+          "interval_count": 1
         },
         {
           "id": "price_test_base_monthly_acme",
@@ -64,8 +62,7 @@
           "amount": 8000,
           "currency": "usd",
           "interval": "month",
-          "interval_count": 1,
-          "enterprise_id": "acme_corp"
+          "interval_count": 1
         }
       ]
     },
@@ -99,8 +96,14 @@
           "billing_scheme": "tiered",
           "tiers_mode": "graduated",
           "tiers": [
-            { "up_to": 10, "unit_amount": 2000 },
-            { "up_to": "inf", "unit_amount": 1500 }
+            {
+              "up_to": 10,
+              "unit_amount": 2000
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1500
+            }
           ]
         }
       ]
@@ -114,7 +117,7 @@
         {
           "id": "price_test_compute_hourly",
           "public": true,
-          "amount": 0.50,
+          "amount": 0.5,
           "currency": "usd",
           "interval": "month",
           "usage_type": "metered",
@@ -128,8 +131,7 @@
           "currency": "usd",
           "interval": "month",
           "usage_type": "metered",
-          "meter": "meter_test_api_calls",
-          "enterprise_template": "tier1_10pct_off"
+          "meter": "meter_test_api_calls"
         },
         {
           "id": "price_test_compute_hourly_tier2",
@@ -138,18 +140,16 @@
           "currency": "usd",
           "interval": "month",
           "usage_type": "metered",
-          "meter": "meter_test_api_calls",
-          "enterprise_template": "tier2_25pct_off"
+          "meter": "meter_test_api_calls"
         },
         {
           "id": "price_test_compute_hourly_acme",
           "public": false,
-          "amount": 0.40,
+          "amount": 0.4,
           "currency": "usd",
           "interval": "month",
           "usage_type": "metered",
-          "meter": "meter_test_api_calls",
-          "enterprise_id": "acme_corp"
+          "meter": "meter_test_api_calls"
         }
       ]
     }

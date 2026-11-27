@@ -84,15 +84,6 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1DatabaseApi* | [**getDatabaseMigrationStatus**](docs/V1DatabaseApi.md#getdatabasemigrationstatus) | **GET** /api/v1/database/migrations/status | Get the status of applied migrations
 *V1DatabaseApi* | [**rollbackDatabaseMigrations**](docs/V1DatabaseApi.md#rollbackdatabasemigrations) | **POST** /api/v1/database/migrations/down | Roll back database migrations
 *V1DatabaseApi* | [**uploadDatabaseMigrations**](docs/V1DatabaseApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Apply database migrations
-*V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitem) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
-*V1PaymentsApi* | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
-*V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create a Stripe checkout session
-*V1PaymentsApi* | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create a Stripe customer portal session
-*V1PaymentsApi* | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create a Stripe invoice
-*V1PaymentsApi* | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoice) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
-*V1PaymentsApi* | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
-*V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record a Stripe meter usage event
-*V1PaymentsApi* | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
 *V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermission) | **POST** /api/v1/permissions/check | Check permission
 *V1PermissionsApi* | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship
 *V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
@@ -101,12 +92,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1StorageApi* | [**getStorageCredentials**](docs/V1StorageApi.md#getstoragecredentials) | **GET** /api/v1/storage/credentials | Get temporary S3 credentials
 *V1StorageApi* | [**makeFilePublic**](docs/V1StorageApi.md#makefilepublic) | **POST** /api/v1/storage/make-public | Make a file publicly accessible
 *V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
-*V1StripeApi* | [**applyEnterpriseCustom**](docs/V1StripeApi.md#applyenterprisecustomoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
-*V1StripeApi* | [**applyEnterpriseTemplate**](docs/V1StripeApi.md#applyenterprisetemplateoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing
 *V1StripeApi* | [**calculatePriceCost**](docs/V1StripeApi.md#calculatepricecostoperation) | **POST** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
-*V1StripeApi* | [**convertStripeIDToConfigID**](docs/V1StripeApi.md#convertstripeidtoconfigid) | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
-*V1StripeApi* | [**getEnterprisePricesByID**](docs/V1StripeApi.md#getenterprisepricesbyid) | **GET** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID
-*V1StripeApi* | [**getEnterprisePricesByTemplate**](docs/V1StripeApi.md#getenterprisepricesbytemplate) | **GET** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template
 *V1StripeApi* | [**getMeterByID**](docs/V1StripeApi.md#getmeterbyid) | **GET** /api/v1/stripe/config/meters/{meter_id} | Get meter by ID
 *V1StripeApi* | [**getPriceByID**](docs/V1StripeApi.md#getpricebyid) | **GET** /api/v1/stripe/config/prices/{price_id} | Get price by ID
 *V1StripeApi* | [**getProductByID**](docs/V1StripeApi.md#getproductbyid) | **GET** /api/v1/stripe/config/products/{product_id} | Get product by ID
@@ -125,11 +111,6 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1TenantsRolesApi* | [**listRoleDefinitions**](docs/V1TenantsRolesApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List role definitions
 *V1TenantsRolesApi* | [**listRoles**](docs/V1TenantsRolesApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles for the tenant
 *V1TenantsRolesApi* | [**updateRole**](docs/V1TenantsRolesApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update a role
-*V1TenantsSubscriptionsApi* | [**addSubscription**](docs/V1TenantsSubscriptionsApi.md#addsubscription) | **POST** /api/v1/tenants/subscriptions | Add a subscription to the tenant
-*V1TenantsSubscriptionsApi* | [**getTenantBillingStatus**](docs/V1TenantsSubscriptionsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get tenant billing status
-*V1TenantsSubscriptionsApi* | [**getTenantSubscription**](docs/V1TenantsSubscriptionsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription
-*V1TenantsSubscriptionsApi* | [**listTenantSubscriptions**](docs/V1TenantsSubscriptionsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | List subscriptions for the tenant
-*V1TenantsSubscriptionsApi* | [**removeSubscription**](docs/V1TenantsSubscriptionsApi.md#removesubscription) | **DELETE** /api/v1/tenants/subscriptions | Remove a subscription from the tenant
 *V1TenantsUsersApi* | [**listTenantUsers**](docs/V1TenantsUsersApi.md#listtenantusers) | **GET** /api/v1/tenants/users | List users in the tenant
 *V1TenantsUsersApi* | [**removeTenantUser**](docs/V1TenantsUsersApi.md#removetenantuser) | **DELETE** /api/v1/tenants/users | Remove a user from the tenant
 *V1TenantsUsersApi* | [**updateTenantUserRole**](docs/V1TenantsUsersApi.md#updatetenantuserrole) | **PUT** /api/v1/tenants/users | Update a tenant user\&#39;s role
@@ -140,18 +121,12 @@ All URIs are relative to *https://api.omnibase.tech*
 - [AcceptRequest](docs/AcceptRequest.md)
 - [AcceptResponse](docs/AcceptResponse.md)
 - [ActiveTenantResponse](docs/ActiveTenantResponse.md)
-- [AddLineItemByPriceRequest](docs/AddLineItemByPriceRequest.md)
-- [AddLineItemRequest](docs/AddLineItemRequest.md)
-- [AddRequest](docs/AddRequest.md)
-- [AddResponse](docs/AddResponse.md)
 - [AppliedMigration](docs/AppliedMigration.md)
-- [ApplyEnterpriseCustomRequest](docs/ApplyEnterpriseCustomRequest.md)
-- [ApplyEnterpriseTemplateRequest](docs/ApplyEnterpriseTemplateRequest.md)
 - [ApplyMigrationsResponse](docs/ApplyMigrationsResponse.md)
 - [ArchiveAllInputBody](docs/ArchiveAllInputBody.md)
 - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
+- [AuthTenant](docs/AuthTenant.md)
 - [AuthTenantInvite](docs/AuthTenantInvite.md)
-- [BillingStatusResponse](docs/BillingStatusResponse.md)
 - [CalculatePriceCostRequest](docs/CalculatePriceCostRequest.md)
 - [CalculatePriceCostResponse](docs/CalculatePriceCostResponse.md)
 - [CheckRequest](docs/CheckRequest.md)
@@ -164,16 +139,10 @@ All URIs are relative to *https://api.omnibase.tech*
 - [ConfigStatus](docs/ConfigStatus.md)
 - [ConfigStatusEntry](docs/ConfigStatusEntry.md)
 - [ConfigStatusSummary](docs/ConfigStatusSummary.md)
-- [ConvertStripeIDResponse](docs/ConvertStripeIDResponse.md)
 - [Coupon](docs/Coupon.md)
 - [CouponChange](docs/CouponChange.md)
 - [CouponChanges](docs/CouponChanges.md)
 - [CouponWithStripeID](docs/CouponWithStripeID.md)
-- [CreateCheckoutRequest](docs/CreateCheckoutRequest.md)
-- [CreateCheckoutResponse](docs/CreateCheckoutResponse.md)
-- [CreateInvoiceRequest](docs/CreateInvoiceRequest.md)
-- [CreatePortalRequest](docs/CreatePortalRequest.md)
-- [CreatePortalResponse](docs/CreatePortalResponse.md)
 - [CreateRelationshipRequest](docs/CreateRelationshipRequest.md)
 - [CreateRelationshipResponse](docs/CreateRelationshipResponse.md)
 - [CreateRequest](docs/CreateRequest.md)
@@ -196,24 +165,16 @@ All URIs are relative to *https://api.omnibase.tech*
 - [DownloadResponse](docs/DownloadResponse.md)
 - [EmailSystemTemplate](docs/EmailSystemTemplate.md)
 - [EmailTemplate](docs/EmailTemplate.md)
-- [EnterpriseApplyResponse](docs/EnterpriseApplyResponse.md)
-- [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
 - [ErrorDetail](docs/ErrorDetail.md)
 - [ErrorModel](docs/ErrorModel.md)
-- [FinalizeRequest](docs/FinalizeRequest.md)
 - [FormFile](docs/FormFile.md)
 - [GetMeterResponse](docs/GetMeterResponse.md)
 - [GetPriceResponse](docs/GetPriceResponse.md)
 - [GetProductResponse](docs/GetProductResponse.md)
 - [GetStorageCredentialsResponse](docs/GetStorageCredentialsResponse.md)
-- [GetTenantByIDRow](docs/GetTenantByIDRow.md)
-- [GetTenantByStripeCustomerIDRow](docs/GetTenantByStripeCustomerIDRow.md)
 - [Identity](docs/Identity.md)
 - [IdentityCredentials](docs/IdentityCredentials.md)
 - [IdentityName](docs/IdentityName.md)
-- [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
-- [InvoiceResponse](docs/InvoiceResponse.md)
-- [LineItem](docs/LineItem.md)
 - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
 - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
 - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)
@@ -250,12 +211,9 @@ All URIs are relative to *https://api.omnibase.tech*
 - [PromotionCodeChange](docs/PromotionCodeChange.md)
 - [PromotionCodeChanges](docs/PromotionCodeChanges.md)
 - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
-- [RecordUsageRequest](docs/RecordUsageRequest.md)
 - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
 - [RelationMetadata](docs/RelationMetadata.md)
 - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
-- [RemoveRequest](docs/RemoveRequest.md)
-- [RemoveResponse](docs/RemoveResponse.md)
 - [Requirements](docs/Requirements.md)
 - [SendHTMLRequest](docs/SendHTMLRequest.md)
 - [SendResponse](docs/SendResponse.md)
@@ -268,12 +226,10 @@ All URIs are relative to *https://api.omnibase.tech*
 - [StripeConfiguration](docs/StripeConfiguration.md)
 - [StripeConfigurationWithIDs](docs/StripeConfigurationWithIDs.md)
 - [SubjectSetRequest](docs/SubjectSetRequest.md)
-- [SubscriptionResponse](docs/SubscriptionResponse.md)
 - [SwitchActiveRequest](docs/SwitchActiveRequest.md)
 - [SwitchActiveResponse](docs/SwitchActiveResponse.md)
 - [TenantPayload](docs/TenantPayload.md)
 - [Tier](docs/Tier.md)
-- [UpdateInvoiceRequest](docs/UpdateInvoiceRequest.md)
 - [UpdateRolePermissionsRow](docs/UpdateRolePermissionsRow.md)
 - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
 - [UpdateUserRoleRequest](docs/UpdateUserRoleRequest.md)

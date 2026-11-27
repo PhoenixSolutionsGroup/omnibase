@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `isActive` | boolean
-`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
+`tenant` | [AuthTenant](AuthTenant.md)
 
 ## Example
 

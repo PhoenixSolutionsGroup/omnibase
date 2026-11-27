@@ -5,8 +5,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CreatedAt** | **time.Time** |  | 
-**EnterpriseId** | Pointer to **string** |  | [optional] 
-**EnterpriseTemplate** | Pointer to **string** |  | [optional] 
 **Id** | **string** |  | 
 **Name** | **string** |  | 
 **StripeCustomerId** | Pointer to **string** |  | [optional] 
@@ -51,56 +49,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
-### GetEnterpriseId
-
-`func (o *TenantPayload) GetEnterpriseId() string`
-
-GetEnterpriseId returns the EnterpriseId field if non-nil, zero value otherwise.
-
-### GetEnterpriseIdOk
-
-`func (o *TenantPayload) GetEnterpriseIdOk() (*string, bool)`
-
-GetEnterpriseIdOk returns a tuple with the EnterpriseId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseId
-
-`func (o *TenantPayload) SetEnterpriseId(v string)`
-
-SetEnterpriseId sets EnterpriseId field to given value.
-
-### HasEnterpriseId
-
-`func (o *TenantPayload) HasEnterpriseId() bool`
-
-HasEnterpriseId returns a boolean if a field has been set.
-
-### GetEnterpriseTemplate
-
-`func (o *TenantPayload) GetEnterpriseTemplate() string`
-
-GetEnterpriseTemplate returns the EnterpriseTemplate field if non-nil, zero value otherwise.
-
-### GetEnterpriseTemplateOk
-
-`func (o *TenantPayload) GetEnterpriseTemplateOk() (*string, bool)`
-
-GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEnterpriseTemplate
-
-`func (o *TenantPayload) SetEnterpriseTemplate(v string)`
-
-SetEnterpriseTemplate sets EnterpriseTemplate field to given value.
-
-### HasEnterpriseTemplate
-
-`func (o *TenantPayload) HasEnterpriseTemplate() bool`
-
-HasEnterpriseTemplate returns a boolean if a field has been set.
 
 ### GetId
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SwitchActiveTenant } from ".";
-import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import type { AuthTenant as Tenant } from "@omnibase/core-js";
 
 // Mock tenants data
 const mockTenants: Tenant[] = [

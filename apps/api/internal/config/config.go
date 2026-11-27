@@ -80,15 +80,14 @@ func (d DatabaseConfig) DSN() string {
 }
 
 type StripeConfig struct {
-	SecretKey          string
-	StripeAccountID    string
-	PlatformFeePercent float64
-	WebhookSecret      string
-	APIBaseURL         string
-	IsManaged          bool
-	ProxyURL           string
-	ProxyToken         string
-	BranchID           string
+	SecretKey       string
+	StripeAccountID string
+	WebhookSecret   string
+	APIBaseURL      string
+	IsManaged       bool
+	ProxyURL        string
+	ProxyToken      string
+	BranchID        string
 }
 
 type AuthConfig struct {
@@ -140,14 +139,13 @@ func New() *Config {
 			ConnMaxIdleTime: getDurationEnv("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
 		},
 		StripeConfig: StripeConfig{
-			SecretKey:          os.Getenv("STRIPE_SECRET_KEY"),
-			StripeAccountID:    os.Getenv("STRIPE_ACCOUNT_ID"),
-			PlatformFeePercent: getFloat64Env("PLATFORM_FEE_PERCENT", 0),
-			APIBaseURL:         os.Getenv("STRIPE_API_URL"),
-			IsManaged:          os.Getenv("OMNIBASE_MANAGED") == "true",
-			ProxyURL:           os.Getenv("MANAGED_HOSTING_API_URL"),
-			ProxyToken:         os.Getenv("INTERNAL_SERVICE_TOKEN"),
-			BranchID:           os.Getenv("MANAGED_BRANCH_ID"),
+			SecretKey:       os.Getenv("STRIPE_SECRET_KEY"),
+			StripeAccountID: os.Getenv("STRIPE_ACCOUNT_ID"),
+			APIBaseURL:      os.Getenv("STRIPE_API_URL"),
+			IsManaged:       os.Getenv("OMNIBASE_MANAGED") == "true",
+			ProxyURL:        os.Getenv("MANAGED_HOSTING_API_URL"),
+			ProxyToken:      os.Getenv("INTERNAL_SERVICE_TOKEN"),
+			BranchID:        os.Getenv("MANAGED_BRANCH_ID"),
 		},
 		AuthConfig: AuthConfig{
 			AuthURL:      os.Getenv("AUTH_URL"),
@@ -249,17 +247,6 @@ func getEnvOrDefault(key string, defaultValue string) string {
 	}
 	logger.Logger.Debug("Using default value for config", "key", key, "default", defaultValue)
 	return defaultValue
-}
-
-func getFloat64Env(key string, defaultValue float64) float64 {
-	envValue := os.Getenv(key)
-	value, err := strconv.ParseFloat(envValue, 64)
-	if err != nil {
-		logger.Logger.Debug("Failed to parse float64 env var, using default", "key", key, "value", envValue, "default", defaultValue, "error", err)
-		return defaultValue
-	}
-	logger.Logger.Trace("Loaded float64 config from environment", "key", key, "value", value)
-	return value
 }
 
 func getIntEnv(key string, defaultValue int) int {

@@ -63,18 +63,6 @@ export interface Price {
      * @type {string}
      * @memberof Price
      */
-    enterpriseId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Price
-     */
-    enterpriseTemplate?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Price
-     */
     id: string;
     /**
      * 
@@ -167,8 +155,6 @@ export function PriceFromJSONTyped(json: any, ignoreDiscriminator: boolean): Pri
         'billingScheme': json['billing_scheme'] == null ? undefined : json['billing_scheme'],
         'currency': json['currency'],
         '_default': json['default'] == null ? undefined : json['default'],
-        'enterpriseId': json['enterprise_id'] == null ? undefined : json['enterprise_id'],
-        'enterpriseTemplate': json['enterprise_template'] == null ? undefined : json['enterprise_template'],
         'id': json['id'],
         'interval': json['interval'] == null ? undefined : json['interval'],
         'intervalCount': json['interval_count'] == null ? undefined : json['interval_count'],
@@ -199,8 +185,6 @@ export function PriceToJSONTyped(value?: Price | null, ignoreDiscriminator: bool
         'billing_scheme': value['billingScheme'],
         'currency': value['currency'],
         'default': value['_default'],
-        'enterprise_id': value['enterpriseId'],
-        'enterprise_template': value['enterpriseTemplate'],
         'id': value['id'],
         'interval': value['interval'],
         'interval_count': value['intervalCount'],

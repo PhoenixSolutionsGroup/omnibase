@@ -26,18 +26,6 @@ export interface TenantPayload {
      * @type {string}
      * @memberof TenantPayload
      */
-    enterpriseId?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof TenantPayload
-     */
-    enterpriseTemplate?: string;
-    /**
-     *
-     * @type {string}
-     * @memberof TenantPayload
-     */
     id: string;
     /**
      *
