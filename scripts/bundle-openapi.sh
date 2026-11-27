@@ -12,7 +12,14 @@ if [ -z "${API_VERSION:-}" ] && [ -n "${GITHUB_ACTIONS:-}" ]; then
   API_VERSION="${LATEST_TAG#api-v}"
 fi
 
-API_VERSION="${API_VERSION:-0.0.0-dev}"
+if [ -z "${API_VERSION:-}" ] && [ -f "$OUT" ]; then
+  API_VERSION=$(jq -r '.info.version // empty' "$OUT" 2>/dev/null || true)
+fi
+
+if [ -z "${API_VERSION:-}" ]; then
+  echo "Error: API_VERSION is not set and apps/api/docs/openapi.json has no info.version" >&2
+  exit 1
+fi
 
 cd "$ROOT_DIR/apps/api"
 GIN_MODE=release \
