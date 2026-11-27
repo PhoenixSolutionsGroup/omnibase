@@ -1,3 +1,39 @@
+# [0.13.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.12.0...cli-v0.13.0) (2026-11-27)
+
+
+### Bug Fixes
+
+* **api:** renumber email migrations after main ([d7934ff](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d7934ff3adfb58b66d4214437611334042700585))
+* better error message when local isn't running ([acd5667](https://github.com/PhoenixSolutionsGroup/omnibase/commit/acd56677ce9737e0749f5c9084fc13fa398774ff))
+* **cli:** merge coupons and promotion codes from config files ([af2b76f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/af2b76fe98211b16b01e3a31dc5a76d0286cf3bf))
+* **cli:** reject unresolved webhook URLs consistently ([f202967](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f202967e1bb02a992300ef00c5a96967c7a199fd))
+* **deployments:** remove deployments name defaulting to 'default' ([c580a32](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c580a3237fab66dabad0fb3f8da14692bc3a2769))
+* **deployments:** use <slug>.omnibase-workers.app instead of <slug>.workers.omnibase.tech ([15fe9ac](https://github.com/PhoenixSolutionsGroup/omnibase/commit/15fe9ac1b1ae42436e2bd40e77ba9b5c4e35842d))
+* no console logs until omnibase starts ([0e58920](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0e5892093f7e56640a8d2a3706eefa02fa161fd6))
+* **payments:** add manage_billing permission ([f85e692](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f85e6922f57d831dfbebde5025bd7bd97494b686))
+* restrict invite roles and URLs to prevent owner escalation ([e74d7e5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e74d7e5db0ccb7af4fd725747fc01522cf064864))
+* **sdk:** stop tracking core-js dist and build packages before dependents ([6d04e5e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6d04e5e459c905a711e6aa1ae971ea1f6360bf1e))
+* update cli to use new provision args ([1adec91](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1adec910d9d6e2fad4ec7b013dc2b966b257dcb5))
+
+
+### Features
+
+* AGENTS.md file ([7199fc0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7199fc0fe57d887fe6c6106bccc59cb77f1e6bb2))
+* **api:** add tenant, system, and email history schema ([b3bab23](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b3bab239bab383d697a39c07fcccb7e86d1a7c09))
+* **api:** validate required config at startup ([cfcd89f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cfcd89f55ca8a8a4aae978980138608e3655b90f))
+* **cli:** add docs commands backed by static llms routes ([956c7b3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/956c7b3876a02282b4b832003585b42c94b34328))
+* **cli:** add stripe status command ([e7a6b60](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e7a6b60f30db4649467b03a54fb97c546e82affb))
+* **cli:** pin service versions in omnibase init and drop docker-compose sync ([985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906)), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
+* **cli:** print a service and deployment URL summary after start ([2705ad4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2705ad473167d249702ffb515f83907224d07673))
+* **cli:** run start in the foreground, add -d for detached mode ([f7c892a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f7c892acfc9ea96b1051af2238b73145775dde94))
+* **email:** record delivery history and rate limit sends per tenant ([e894528](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e894528e1404d8d6451861943787865f4130b221))
+* **permissions:** add email send and template management permissions ([2f2cd52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2f2cd528291ed4e61f0cd71a10230e40ec65e962))
+* **permissions:** API owns required namespaces and validates projects ([1e94d44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1e94d44e4c1837ffb2e1043594e65df1f05fd192))
+* proxy PostgREST through the API and remove client-held PostgREST tokens ([49d317f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/49d317f00f94a78ac71e719c08ee8f76622e8553))
+* **stripe-config:** scope archive-all to managed resources ([1367403](https://github.com/PhoenixSolutionsGroup/omnibase/commit/136740362813e551bfdc90902db2671951f84541))
+* **stripe:** depricate stripe endpoints for new stripe proxy  ([#210](https://github.com/PhoenixSolutionsGroup/omnibase/issues/210)) ([2d6d400](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2d6d400564bdc6e00ea3a8d4d4cfa0de79621bc9))
+* support metadata on stripe products and prices ([f4cf420](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f4cf420869cdb78411fe384d9c9bc473a22880d1))
+
 # [0.12.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.11.0...cli-v0.12.0) (2026-10-29)
 
 
