@@ -1,3 +1,21 @@
+# [0.10.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.9.1...shadcn-v0.10.0) (2026-11-27)
+
+
+### Bug Fixes
+
+* dark mode auth page ([ff1cef5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ff1cef5439e82b44dab227e1399ad4de6af406b6))
+* tenant-switch bg color ([39720ed](https://github.com/PhoenixSolutionsGroup/omnibase/commit/39720ed25cce38d8650d029fd31f0cfba5529c2a))
+
+
+### Features
+
+* add icons to oidc ([5a875d0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5a875d053aef58ee51829c38db99d501d23e4e3e))
+* **stripe:** depricate stripe endpoints for new stripe proxy  ([#210](https://github.com/PhoenixSolutionsGroup/omnibase/issues/210)) ([2d6d400](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2d6d400564bdc6e00ea3a8d4d4cfa0de79621bc9))
+* update colors to unify ([265717b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/265717b56106f9e25ca57256c5bd8e39196e54ce))
+* update registration form ([0e66195](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0e661956c7b500691660358dda5e93a817788af5))
+* update sdk button and card ui ([2cdd899](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2cdd8995281256df1b01ba2d627925012624764b))
+* update tenant select sdk ui ([d8a580c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d8a580c2e5b3f6301656f2087a66e080d744a156))
+
 ## [0.9.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.9.0...shadcn-v0.9.1) (2026-10-29)
 
 
