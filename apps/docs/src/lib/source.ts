@@ -4,6 +4,8 @@ import type * as PageTree from 'fumadocs-core/page-tree';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { openapiPlugin } from 'fumadocs-openapi/server';
 import versionData from '../../content/versions.json';
+import aliasData from '../../content/version-aliases.json';
+import fallbackData from '../../content/version-fallbacks.json';
 import apiLlms from '../../content/api-llms.json';
 
 // See https://fumadocs.dev/docs/headless/source-api for more info
@@ -14,29 +16,74 @@ export const source = loader({
 });
 
 const versions = versionData as Partial<Record<string, string>>;
+const aliases = aliasData as Partial<Record<string, Record<string, string>>>;
+const fallbacks = fallbackData as Partial<
+  Record<string, Record<string, Record<string, string>>>
+>;
 const versionedSections = new Set(['api', 'cli', 'nextjs', 'react', 'shadcn']);
+
+function resolveLatestVersion(section: string): string | undefined {
+  const seen = new Set<string>();
+  let current: string | undefined = versions[section];
+  while (current && !seen.has(current)) {
+    seen.add(current);
+    const next = aliases[section]?.[current];
+    if (!next) return current;
+    current = next;
+  }
+  return current;
+}
+
+function resolveAlias(section: string, version: string): string {
+  const seen = new Set<string>();
+  let current = version;
+  while (!seen.has(current)) {
+    seen.add(current);
+    const next = aliases[section]?.[current];
+    if (!next) return current;
+    current = next;
+  }
+  return current;
+}
+
+function latestVersionSet(section: string): Set<string> {
+  const result = new Set<string>();
+  const latest = resolveLatestVersion(section);
+  if (!latest) return result;
+  result.add(latest);
+  for (const target of Object.values(fallbacks[section]?.[latest] ?? {})) {
+    result.add(resolveAlias(section, target));
+  }
+  return result;
+}
+
+function isLatestVersion(section: string, version: string): boolean {
+  return latestVersionSet(section).has(version);
+}
 
 export function isLatestVersionPage(page: InferPageType<typeof source>) {
   const [section, version] = page.slugs;
   if (!section || !versionedSections.has(section)) return true;
   if (!version || version === 'dev') return true;
-  return versions[section] === version;
+  return isLatestVersion(section, version);
 }
 
 export function getPageImage(page: InferPageType<typeof source>) {
   const slugs = [...page.slugs];
   const [section, version] = slugs;
 
-  const latest = section ? versions[section] : undefined;
+  const latest = section ? resolveLatestVersion(section) : undefined;
   if (
     section &&
     version &&
     latest &&
     version !== 'dev' &&
     versionedSections.has(section) &&
-    latest !== version
+    !latestVersionSet(section).has(version)
   ) {
-    slugs[1] = latest;
+    const pathKey = slugs.slice(2).join('/');
+    const fallback = fallbacks[section]?.[versions[section] ?? '']?.[pathKey];
+    slugs[1] = fallback ? resolveAlias(section, fallback) : latest;
   }
 
   const segments = [...slugs, 'image.png'];
@@ -183,7 +230,8 @@ function pruneLatestFolder(folder: TreeFolder): TreeFolder {
       versionedSections.has(section) &&
       typeof child.root === 'string' &&
       child.name !== 'dev' &&
-      child.name !== versions[section]
+      typeof child.name === 'string' &&
+      !isLatestVersion(section, child.name)
     ) {
       return [];
     }

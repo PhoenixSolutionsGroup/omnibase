@@ -3,7 +3,7 @@ title: Delete a system email template
 full: true
 _openapi:
   preload:
-    - ./openapi.yaml
+    - ./openapi/0.21.0.json
   method: DELETE
   webhook: false
   toc: []
@@ -19,7 +19,7 @@ export default function Layout(props) {
   return (
     <>
       {props.children}
-      <OpenAPIPage document="./openapi.yaml" operations={[{"path":"/api/v1/email/system-templates/{name}","method":"delete"}]} showDescription />
+      <OpenAPIPage document="./openapi/0.21.0.json" operations={[{"path":"/api/v1/email/system-templates/{name}","method":"delete"}]} showDescription />
     </>
   );
 }

@@ -107,18 +107,34 @@ jobs:
         if: matrix.app == 'docs'
         run: git fetch --unshallow --tags --force 2>/dev/null || git fetch --tags --force
 
-      - name: Resolve release version
+      - name: Resolve docs version
         if: matrix.app == 'docs'
-        id: release
+        id: docs
         run: |
-          VERSION=$(git describe --tags --match 'api-v*' --abbrev=0 2>/dev/null | sed 's/^api-v//' || true)
-          echo "version=${VERSION:-dev}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            VERSION=$(git describe --tags --match 'api-v*' --abbrev=0 2>/dev/null | sed 's/^api-v//' || true)
+            echo "version=${VERSION:-dev}" >> "$GITHUB_OUTPUT"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=dev" >> "$GITHUB_OUTPUT"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Generate docs
         if: matrix.app == 'docs'
         env:
-          API_VERSION: ${{ steps.release.outputs.version }}
-        run: bun run generate:docs
+          API_VERSION: ${{ steps.docs.outputs.version }}
+          RELEASE: ${{ steps.docs.outputs.release }}
+        run: |
+          if [ "$RELEASE" = "false" ]; then
+            bun run generate:docs --openapi
+            exit 0
+          fi
+          if git show "api-v${API_VERSION}:apps/api/docs/openapi.json" > "$RUNNER_TEMP/api-openapi.json" 2>/dev/null; then
+            OPENAPI_SPEC_FILE="$RUNNER_TEMP/api-openapi.json" bun run generate:docs
+          else
+            bun run generate:docs
+          fi
 
       - name: Generate docs source
         if: matrix.app == 'docs'
@@ -135,7 +151,7 @@ jobs:
         if: matrix.app == 'docs' && github.event_name == 'workflow_run'
         continue-on-error: true
         run: |
-          git add apps/docs/content apps/docs/openapi.yaml apps/docs/openapi.json apps/api/docs/openapi.json
+          git add apps/docs/content apps/docs/openapi
           if git diff --staged --quiet; then
             echo "No documentation changes to commit"
             exit 0

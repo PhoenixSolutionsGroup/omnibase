@@ -346,9 +346,28 @@ title: "${title}"
 }
 
 const VERSION_ALIASES = join(ROOT, "apps/docs/content/version-aliases.json");
+const VERSION_FALLBACKS = join(ROOT, "apps/docs/content/version-fallbacks.json");
 const VERSION_DIR = /^\d+\.\d+\.\d+/;
+const OPENAPI_SPECS_DIR = join(ROOT, "apps/docs/openapi");
+const HTTP_METHODS = new Set([
+  "get",
+  "put",
+  "post",
+  "delete",
+  "patch",
+  "options",
+  "head",
+  "trace",
+]);
 
 type VersionAliases = Record<string, Record<string, string>>;
+type VersionFallbacks = Record<string, Record<string, Record<string, string>>>;
+
+type OpenAPISpec = {
+  info?: { version?: string };
+  paths?: Record<string, Record<string, unknown>>;
+  components?: Record<string, Record<string, unknown>>;
+};
 
 async function listFiles(dir: string, prefix = ""): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -382,6 +401,21 @@ async function sameDocsExceptVersion(
   return true;
 }
 
+async function sameSpecExceptVersion(previous: string, current: string): Promise<boolean> {
+  const previousFile = join(OPENAPI_SPECS_DIR, `${previous}.json`);
+  const currentFile = join(OPENAPI_SPECS_DIR, `${current}.json`);
+  if (!existsSync(previousFile) || !existsSync(currentFile)) return false;
+
+  const strip = async (file: string) => {
+    const spec = JSON.parse(await readFile(file, "utf-8")) as { info?: { version?: string } };
+    if (spec.info) delete spec.info.version;
+    return JSON.stringify(spec);
+  };
+
+  const [before, after] = await Promise.all([strip(previousFile), strip(currentFile)]);
+  return before === after;
+}
+
 async function readVersionAliases(): Promise<VersionAliases> {
   if (!existsSync(VERSION_ALIASES)) return {};
   return JSON.parse(await readFile(VERSION_ALIASES, "utf-8")) as VersionAliases;
@@ -393,15 +427,220 @@ async function writeFileAtomic(path: string, content: string): Promise<void> {
   await rename(tempPath, path);
 }
 
-/**
- * When a release leaves a section's docs unchanged, keep one copy under the
- * new version and redirect the previous version to it, so the release adds
- * no files to the deployed site.
- */
+async function readVersionFallbacks(): Promise<VersionFallbacks> {
+  if (!existsSync(VERSION_FALLBACKS)) return {};
+  return JSON.parse(await readFile(VERSION_FALLBACKS, "utf-8")) as VersionFallbacks;
+}
+
+async function writeVersionFallbacks(fallbacks: VersionFallbacks): Promise<void> {
+  await writeFileAtomic(VERSION_FALLBACKS, JSON.stringify(fallbacks, null, 2) + "\n");
+}
+
+async function clearVersionFallbacks(section: string, version: string): Promise<void> {
+  const fallbacks = await readVersionFallbacks();
+  const sectionFallbacks = fallbacks[section];
+  if (!sectionFallbacks?.[version]) return;
+  delete sectionFallbacks[version];
+  if (Object.keys(sectionFallbacks).length === 0) delete fallbacks[section];
+  await writeVersionFallbacks(fallbacks);
+}
+
+async function loadSpec(version: string): Promise<OpenAPISpec | null> {
+  const file = join(OPENAPI_SPECS_DIR, `${version}.json`);
+  if (!existsSync(file)) return null;
+  try {
+    return JSON.parse(await readFile(file, "utf-8")) as OpenAPISpec;
+  } catch {
+    return null;
+  }
+}
+
+function collectComponentRefs(
+  node: unknown,
+  spec: OpenAPISpec,
+  refs: Map<string, unknown>
+): void {
+  if (Array.isArray(node)) {
+    for (const item of node) collectComponentRefs(item, spec, refs);
+    return;
+  }
+  if (!node || typeof node !== "object") return;
+
+  const record = node as Record<string, unknown>;
+  const ref = record.$ref;
+  if (typeof ref === "string") {
+    const match = /^#\/components\/([^/]+)\/(.+)$/.exec(ref);
+    if (match) {
+      const [, type, name] = match;
+      const key = `${type}/${name}`;
+      if (!refs.has(key)) {
+        const target = (spec.components?.[type] as Record<string, unknown> | undefined)?.[
+          name!
+        ];
+        refs.set(key, target);
+        collectComponentRefs(target, spec, refs);
+      }
+    }
+  }
+
+  for (const value of Object.values(record)) collectComponentRefs(value, spec, refs);
+}
+
+function operationSubset(
+  spec: OpenAPISpec,
+  operation: { path: string; method: string }
+): string | null {
+  const pathItem = spec.paths?.[operation.path];
+  if (!pathItem) return null;
+  const item = pathItem[operation.method];
+  if (!item) return null;
+
+  const pathLevel = Object.fromEntries(
+    Object.entries(pathItem).filter(([key]) => !HTTP_METHODS.has(key))
+  );
+  const refs = new Map<string, unknown>();
+  collectComponentRefs({ pathLevel, operation: item }, spec, refs);
+  const components = Object.fromEntries(
+    [...refs.entries()].sort(([a], [b]) => a.localeCompare(b))
+  );
+
+  return JSON.stringify({ pathLevel, operation: item, components });
+}
+
+function parseOperation(content: string): { path: string; method: string } | null {
+  const match = /operations=\{(\[[\s\S]*?\])\}/.exec(content);
+  if (!match?.[1]) return null;
+  try {
+    const operations = JSON.parse(match[1]) as { path?: unknown; method?: unknown }[];
+    if (operations.length !== 1) return null;
+    const [operation] = operations;
+    if (typeof operation?.path !== "string" || typeof operation?.method !== "string") {
+      return null;
+    }
+    return { path: operation.path, method: operation.method.toLowerCase() };
+  } catch {
+    return null;
+  }
+}
+
+async function dedupeApiPages(current: string): Promise<void> {
+  if (current === "dev") return;
+
+  const sectionDir = join(DOCS_CONTENT, "api");
+  const currentDir = join(sectionDir, current);
+  if (!existsSync(currentDir)) return;
+
+  const older = (await readdir(sectionDir, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && VERSION_DIR.test(entry.name))
+    .map((entry) => entry.name)
+    .filter((name) => name !== current && name.localeCompare(current, undefined, { numeric: true }) < 0)
+    .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+  if (older.length === 0) return;
+
+  const specCache = new Map<string, OpenAPISpec | null>();
+  const specFor = async (version: string) => {
+    if (!specCache.has(version)) specCache.set(version, await loadSpec(version));
+    return specCache.get(version) ?? null;
+  };
+
+  const currentSpec = await specFor(current);
+  if (!currentSpec) return;
+
+  const removed: Record<string, string> = {};
+  for (const relFile of await listFiles(currentDir)) {
+    if (!relFile.endsWith(".mdx") || basename(relFile) === "index.mdx") continue;
+
+    const currentFile = join(currentDir, relFile);
+    const content = await readFile(currentFile, "utf-8");
+    const operation = parseOperation(content);
+    if (!operation) continue;
+
+    const currentSubset = operationSubset(currentSpec, operation);
+    if (!currentSubset) continue;
+
+    for (const candidate of older) {
+      const referenceFile = join(sectionDir, candidate, relFile);
+      if (!existsSync(referenceFile)) continue;
+
+      const referenceSpec = await specFor(candidate);
+      if (!referenceSpec) break;
+
+      const referenceSubset = operationSubset(referenceSpec, operation);
+      if (!referenceSubset) break;
+
+      const referenceContent = (await readFile(referenceFile, "utf-8")).replaceAll(
+        candidate,
+        current
+      );
+      if (referenceContent !== content || referenceSubset !== currentSubset) break;
+
+      await rm(currentFile);
+      removed[relFile.replace(/\.mdx$/, "")] = candidate;
+      break;
+    }
+  }
+
+  const folders = (await readdir(currentDir, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+
+  for (const folder of folders) {
+    const folderDir = join(currentDir, folder);
+    const hasKeptPage = (await readdir(folderDir, { withFileTypes: true })).some(
+      (entry) =>
+        entry.isFile() && entry.name.endsWith(".mdx") && entry.name !== "index.mdx"
+    );
+    if (hasKeptPage) continue;
+
+    for (const candidate of older) {
+      const referenceIndex = join(sectionDir, candidate, folder, "index.mdx");
+      if (!existsSync(referenceIndex)) continue;
+
+      const currentIndex = await readFile(join(folderDir, "index.mdx"), "utf-8");
+      const referenceContent = (await readFile(referenceIndex, "utf-8")).replaceAll(
+        candidate,
+        current
+      );
+      if (referenceContent !== currentIndex) break;
+
+      await rm(join(folderDir, "index.mdx"));
+      await rm(join(folderDir, "meta.json"), { force: true });
+      const remaining = await readdir(folderDir);
+      if (remaining.length === 0) await rm(folderDir, { recursive: true });
+
+      removed[folder] = candidate;
+      break;
+    }
+  }
+
+  const fallbacks = await readVersionFallbacks();
+  const sectionFallbacks = { ...(fallbacks.api ?? {}) };
+  if (Object.keys(removed).length > 0) {
+    sectionFallbacks[current] = removed;
+    fallbacks.api = sectionFallbacks;
+  } else if (sectionFallbacks[current]) {
+    delete sectionFallbacks[current];
+    if (Object.keys(sectionFallbacks).length === 0) delete fallbacks.api;
+    else fallbacks.api = sectionFallbacks;
+  } else {
+    return;
+  }
+
+  await writeVersionFallbacks(fallbacks);
+  if (Object.keys(removed).length > 0) {
+    console.log(
+      `    ↪ api ${current} reuses ${Object.keys(removed).length} unchanged page(s)`
+    );
+  }
+}
+
+
 async function collapseUnchangedVersion(section: string, current: string): Promise<void> {
   if (current === "dev") return;
 
   const sectionDir = join(DOCS_CONTENT, section);
+  if (!existsSync(sectionDir)) return;
+
   const previous = (await readdir(sectionDir, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && VERSION_DIR.test(entry.name))
     .map((entry) => entry.name)
@@ -412,19 +651,19 @@ async function collapseUnchangedVersion(section: string, current: string): Promi
   const previousDir = join(sectionDir, previous);
   const currentDir = join(sectionDir, current);
   if (!(await sameDocsExceptVersion(previousDir, previous, currentDir, current))) return;
+  if (section === "api" && !(await sameSpecExceptVersion(previous, current))) return;
 
   const aliases = await readVersionAliases();
   const sectionAliases = aliases[section] ?? {};
-  for (const [from, to] of Object.entries(sectionAliases)) {
-    if (to === previous) sectionAliases[from] = current;
-  }
-  sectionAliases[previous] = current;
+  sectionAliases[current] = previous;
   aliases[section] = sectionAliases;
   await writeFileAtomic(VERSION_ALIASES, JSON.stringify(aliases, null, 2) + "\n");
 
-  await rm(previousDir, { recursive: true });
+  await rm(currentDir, { recursive: true });
+  await rm(join(OPENAPI_SPECS_DIR, `${current}.json`), { force: true });
+  await clearVersionFallbacks(section, current);
 
-  console.log(`    ↪ ${section} ${previous} is unchanged, now redirects to ${current}`);
+  console.log(`    ↪ ${section} ${current} is unchanged, now redirects to ${previous}`);
 }
 
 async function writeVersionedSection(
@@ -696,26 +935,38 @@ async function generateOpenAPIDocs(): Promise<void> {
   console.log("\n📖 Generating OpenAPI documentation...\n");
 
   const openApiSource = join(ROOT, "apps/api/docs/openapi.json");
-  const openApiDest = join(ROOT, "apps/docs/openapi.yaml");
   const openApiOutput = join(DOCS_CONTENT, "api");
+  const apiVersion = resolveVersion("API_VERSION", "api");
+  const openApiId = `./openapi/${apiVersion}.json`;
+  const openApiDest = join(OPENAPI_SPECS_DIR, `${apiVersion}.json`);
 
-  // Run existing bundle-openapi.sh script
-  console.log("  → Bundling OpenAPI spec (using bundle-openapi.sh)...");
-  await run(["./scripts/bundle-openapi.sh"]);
+  const specOverride = process.env.OPENAPI_SPEC_FILE;
+  let specText: string;
+  if (specOverride) {
+    console.log(`  → Using OpenAPI spec from ${specOverride}...`);
+    specText = await readFile(specOverride, "utf-8");
+  } else {
+    console.log("  → Bundling OpenAPI spec (using bundle-openapi.sh)...");
+    await run(["./scripts/bundle-openapi.sh"]);
 
-  if (!existsSync(openApiSource)) {
-    console.error("  ✗ OpenAPI spec not found at", openApiSource);
-    return;
+    if (!existsSync(openApiSource)) {
+      console.error("  ✗ OpenAPI spec not found at", openApiSource);
+      return;
+    }
+    specText = await readFile(openApiSource, "utf-8");
   }
 
-  const spec = JSON.parse(await readFile(openApiSource, "utf-8")) as {
+  const spec = (
+    specOverride && /\.ya?ml$/i.test(specOverride)
+      ? (await import("yaml")).parse(specText)
+      : JSON.parse(specText)
+  ) as {
     info?: { version?: string };
     paths?: Record<string, Record<string, unknown>>;
     tags?: { name: string }[];
     components?: { schemas?: Record<string, unknown> };
   };
   const schemas = spec.components?.schemas ?? {};
-  const apiVersion = resolveVersion("API_VERSION", "api");
 
   const tagMap: Record<string, string> = {
     V1Auth: "V1 Auth",
@@ -784,9 +1035,7 @@ async function generateOpenAPIDocs(): Promise<void> {
     .sort((a, b) => tagIndex(a) - tagIndex(b) || a.localeCompare(b))
     .map((name) => ({ name }));
 
-  const yaml = await import("yaml");
-  await writeFile(openApiDest, yaml.stringify(spec));
-  console.log("    ✓ Wrote apps/docs/openapi.yaml");
+  await mkdir(OPENAPI_SPECS_DIR, { recursive: true });
 
   const versionDir = join(openApiOutput, apiVersion);
   const stagingDir = join(openApiOutput, `.staging-${apiVersion}`);
@@ -805,9 +1054,9 @@ async function generateOpenAPIDocs(): Promise<void> {
     const { createOpenAPI } = await import("fumadocs-openapi/server");
 
     // Create an OpenAPI instance for the generator
-    // Use the same schema ID as lib/openapi.ts
+    // Use the same schema ID as the generated manifest
     const openapi = createOpenAPI({
-      input: { "./openapi.yaml": spec },
+      input: { [openApiId]: spec },
     });
 
     await generateFiles({
@@ -820,11 +1069,9 @@ async function generateOpenAPIDocs(): Promise<void> {
     });
     console.log("    ✓ Generated OpenAPI docs");
 
-    const { bundled } = await openapi.getSchema("./openapi.yaml");
-    await writeFile(
-      join(ROOT, "apps/docs/openapi.json"),
-      JSON.stringify(bundled) + "\n"
-    );
+    const { bundled } = await openapi.getSchema(openApiId);
+    await writeFile(openApiDest, JSON.stringify(bundled) + "\n");
+    console.log(`    ✓ Wrote apps/docs/openapi/${apiVersion}.json`);
 
     // Generate meta.json files from OpenAPI tags
     console.log("  → Generating meta.json files from OpenAPI tags...");
@@ -1039,6 +1286,7 @@ async function generateOpenAPIDocs(): Promise<void> {
     }
 
     await collapseUnchangedVersion("api", apiVersion);
+    await dedupeApiPages(apiVersion);
 
     const apiMeta = {
       title: "API",

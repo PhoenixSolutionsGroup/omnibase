@@ -1,13 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 import { resolveRedirect } from './redirects';
+import versionData from '../content/versions.json';
 
-const versions = {
-  api: '0.21.0',
-  cli: '0.12.0',
-  nextjs: '0.9.1',
-  react: '0.3.7',
-  shadcn: '0.9.1',
-};
+const versions = versionData as Record<
+  'api' | 'cli' | 'nextjs' | 'react' | 'shadcn',
+  string
+>;
 
 const resolve = (
   path: string,
@@ -58,5 +56,59 @@ describe('resolveRedirect', () => {
     expect(resolve('/nextjs/0.8.0', aliases)).toBe('/nextjs/0.9.2');
     expect(resolve('/nextjs/0.9.2/Auth', aliases)).toBeNull();
     expect(resolve('/cli/0.9.0/start', aliases)).toBeNull();
+  });
+
+  test('redirects per-route fallbacks only for omitted pages', () => {
+    const fallbacks = { api: { '0.23.0': { 'auth/getSession': '0.22.2' } } };
+    expect(resolveRedirect('/api/0.23.0/auth/getSession', {}, versions, fallbacks)).toBe(
+      '/api/0.22.2/auth/getSession',
+    );
+    expect(resolveRedirect('/api/0.23.0/auth/getSession/', {}, versions, fallbacks)).toBe(
+      '/api/0.22.2/auth/getSession',
+    );
+    expect(
+      resolveRedirect('/llms.mdx/api/0.23.0/auth/getSession.md', {}, versions, fallbacks),
+    ).toBe('/llms.mdx/api/0.22.2/auth/getSession.md');
+    expect(
+      resolveRedirect(
+        '/og/docs/api/0.23.0/auth/getSession/image.png',
+        {},
+        versions,
+        fallbacks,
+      ),
+    ).toBe('/og/docs/api/0.22.2/auth/getSession/image.png');
+    expect(resolveRedirect('/api/0.23.0/storage/uploadFile', {}, versions, fallbacks)).toBeNull();
+  });
+
+  test('redirects omitted tag index pages', () => {
+    const fallbacks = { api: { '0.23.0': { auth: '0.22.2' } } };
+    expect(resolveRedirect('/api/0.23.0/auth', {}, versions, fallbacks)).toBe(
+      '/api/0.22.2/auth',
+    );
+    expect(resolveRedirect('/api/0.23.0/auth/', {}, versions, fallbacks)).toBe(
+      '/api/0.22.2/auth',
+    );
+    expect(resolveRedirect('/llms.mdx/api/0.23.0/auth.md', {}, versions, fallbacks)).toBe(
+      '/llms.mdx/api/0.22.2/auth.md',
+    );
+  });
+
+  test('version aliases take precedence over page fallbacks', () => {
+    const fallbacks = { api: { '0.23.0': { 'auth/getSession': '0.22.2' } } };
+    const collapsed = { api: { '0.23.0': '0.22.1' } };
+    expect(
+      resolveRedirect('/api/0.23.0/auth/getSession', collapsed, versions, fallbacks),
+    ).toBe('/api/0.22.1/auth/getSession');
+  });
+
+  test('redirects collapsed versions for llms and og assets', () => {
+    const aliases = { api: { '0.21.0': '0.22.2' } };
+    expect(resolve('/llms.mdx/api/0.21.0/auth/getSession.md', aliases)).toBe(
+      '/llms.mdx/api/0.22.2/auth/getSession.md',
+    );
+    expect(resolve('/og/docs/api/0.21.0/auth/getSession/image.png', aliases)).toBe(
+      '/og/docs/api/0.22.2/auth/getSession/image.png',
+    );
+    expect(resolve('/llms-full.txt', aliases)).toBeNull();
   });
 });
