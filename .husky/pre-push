@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 set -e
+
+echo "Checking formatting and lint with Biome..."
+bunx biome ci --changed --no-errors-on-unmatched
+
 echo "Regenerating SDK from huma spec..."
 bun run generate:sdk
+
 echo "Pre-push checks passed"
