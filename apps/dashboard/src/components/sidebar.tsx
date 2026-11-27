@@ -154,11 +154,6 @@ export const organizationNavigationItems = [
     icon: Users,
   },
   {
-    title: "Subscriptions",
-    href: "/subscriptions",
-    icon: CreditCard,
-  },
-  {
     title: "Domains",
     href: "/domains",
     icon: Globe,
