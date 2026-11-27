@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.5.0...permissions-v0.6.0) (2026-11-27)
+
+
+### Features
+
+* **storage:** fetch short-lived tokens for storage from managed-hosting for non self-hosted apps ([b587328](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b5873287723eb132066f243ce4e721acb550a19a))
+
 # [0.5.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.4.0...permissions-v0.5.0) (2026-11-19)
 
 
