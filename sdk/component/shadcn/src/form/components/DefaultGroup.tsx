@@ -1,6 +1,6 @@
 import type { UiNode } from "@ory/client-fetch";
 import { isUiNodeInputAttributes } from "../types";
-import { sortNodes } from "../utils";
+import { sortNodes, uiNodeKey } from "../utils";
 import { FormInput } from "./FormInput";
 import { HiddenInput } from "./HiddenInput";
 import { SubmitButton } from "./SubmitButton";
@@ -31,22 +31,23 @@ export function DefaultGroup({
 	return (
 		<form action={flowAction} method={flowMethod}>
 			<div className="space-y-4">
-				{sortedNodes.map((node, idx) => {
+				{sortedNodes.map((node) => {
 					if (!isUiNodeInputAttributes(node.attributes)) {
 						return null;
 					}
 
+					const key = uiNodeKey(node);
 					const { type } = node.attributes;
 
 					if (type === "hidden") {
-						return <HiddenInput key={idx} node={node} />;
+						return <HiddenInput key={key} node={node} />;
 					}
 
 					if (type === "submit") {
-						return <SubmitButton key={idx} node={node} />;
+						return <SubmitButton key={key} node={node} />;
 					}
 
-					return <FormInput key={idx} node={node} />;
+					return <FormInput key={key} node={node} />;
 				})}
 			</div>
 		</form>

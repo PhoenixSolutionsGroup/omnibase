@@ -10,6 +10,47 @@ const TYPE_ORDER: Record<string, number> = {
 	submit: 2,
 };
 
+/**
+ * 
+ * Helper function for ui key creation to not use index as key
+ * @param node 
+ * @returns 
+ */
+export function uiNodeKey(node: UiNode): string {
+	const attrs = node.attributes as {
+		name?: string;
+		type?: string;
+		value?: unknown;
+		src?: string;
+		text?: string | { text?: string };
+	};
+
+	if (typeof attrs.name === "string") {
+		const type = attrs.type ?? node.type;
+		const value = attrs.value == null ? "" : String(attrs.value);
+		return `${node.group}:${attrs.name}:${type}:${value}`;
+	}
+
+	if (typeof attrs.src === "string") {
+		return `${node.group}:img:${attrs.src}`;
+	}
+
+	const label = node.meta?.label;
+	if (label?.id != null) {
+		return `${node.group}:${node.type}:${label.id}`;
+	}
+
+	if (typeof attrs.text === "string") {
+		return `${node.group}:text:${attrs.text}`;
+	}
+
+	if (attrs.text && typeof attrs.text === "object" && attrs.text.text) {
+		return `${node.group}:text:${attrs.text.text}`;
+	}
+
+	return `${node.group}:${node.type}:${label?.text ?? ""}`;
+}
+
 export function sortNodes(nodes: UiNode[]): UiNode[] {
 	return [...nodes].sort((a, b) => {
 		const aIsInput = isUiNodeInputAttributes(a.attributes);

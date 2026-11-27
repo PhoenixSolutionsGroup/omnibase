@@ -10,6 +10,7 @@ import {
 	findSubmitButton,
 	groupNodesByGroup,
 	sortNodes,
+	uiNodeKey,
 } from "./utils";
 
 export type RecoveryFormProps = {
@@ -46,8 +47,8 @@ export function RecoveryForm({ flow, Header }: RecoveryFormProps) {
 						<div className="space-y-4">
 							{csrfToken && <HiddenInput node={csrfToken} />}
 
-							{inputNodes.map((node, idx) => (
-								<FormInput key={idx} node={node} />
+							{inputNodes.map((node) => (
+								<FormInput key={uiNodeKey(node)} node={node} />
 							))}
 
 							{submitButton && <SubmitButton node={submitButton} />}

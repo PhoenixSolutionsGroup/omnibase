@@ -1,4 +1,5 @@
 import type { UiNode } from "@ory/client-fetch";
+import { uiNodeKey } from "../utils";
 import { Divider } from "./Divider";
 import { FormInput } from "./FormInput";
 import { HiddenInput } from "./HiddenInput";
@@ -29,8 +30,8 @@ export function RegularGroup({
 				<div className="space-y-4">
 					{csrfToken && <HiddenInput node={csrfToken} />}
 
-					{inputNodes.map((node, idx) => (
-						<FormInput key={idx} node={node} />
+					{inputNodes.map((node) => (
+						<FormInput key={uiNodeKey(node)} node={node} />
 					))}
 
 					{submitButton && <SubmitButton node={submitButton} />}

@@ -16,6 +16,7 @@ import {
 	findSubmitButton,
 	groupNodesByGroup,
 	sortNodes,
+	uiNodeKey,
 } from "./utils";
 
 export type VerificationFormProps = {
@@ -69,7 +70,7 @@ export function VerificationForm({
 						<div className="space-y-4">
 							{csrfToken && <HiddenInput node={csrfToken} />}
 
-							{inputNodes.map((node, idx) => {
+							{inputNodes.map((node) => {
 								// Use PinInput for verification code, FormInput for others
 								const isCodeInput =
 									node.attributes.node_type === "input" &&
@@ -84,13 +85,13 @@ export function VerificationForm({
 
 								return isCodeInput ? (
 									<PinInput
-										key={idx}
+										key={uiNodeKey(node)}
 										node={node}
 										length={6}
 										initialValue={initialValue}
 									/>
 								) : (
-									<FormInput key={idx} node={node} />
+									<FormInput key={uiNodeKey(node)} node={node} />
 								);
 							})}
 

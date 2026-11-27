@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Messages } from "../components/ui/messages";
+import { uiNodeKey } from "./utils";
 
 export type SettingsFormProps = {
 	flow: SettingsFlow;
@@ -104,12 +105,12 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 										)}
 
 									{/* Render image nodes (e.g., QR codes for TOTP) */}
-									{imageNodes.map((node, index) => {
+									{imageNodes.map((node) => {
 										if (node.type === "img" && "src" in node.attributes) {
 											const imgAttrs = node.attributes as any;
 											return (
 												<div
-													key={`img-${index}`}
+													key={uiNodeKey(node)}
 													className="flex justify-center"
 												>
 													<img
@@ -126,7 +127,7 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 									})}
 
 									{/* Render text nodes (e.g., TOTP secrets) */}
-									{textNodes.map((node, index) => {
+									{textNodes.map((node) => {
 										if (node.type === "text" && "text" in node.attributes) {
 											const textContent =
 												typeof node.attributes.text === "string"
@@ -134,7 +135,7 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 													: node.attributes.text?.text || "";
 
 											return (
-												<div key={`text-${index}`} className="space-y-2">
+												<div key={uiNodeKey(node)} className="space-y-2">
 													{node.meta.label?.text && (
 														<Label className="text-sm text-muted-foreground">
 															{node.meta.label.text}

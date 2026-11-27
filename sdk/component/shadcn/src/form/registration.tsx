@@ -14,6 +14,7 @@ import {
 	findSubmitButton,
 	groupNodesByGroup,
 	sortNodes,
+	uiNodeKey,
 } from "./utils";
 
 export type RegistrationFormProps = {
@@ -87,12 +88,12 @@ export function RegistrationForm({
 								{csrfToken && <HiddenInput node={csrfToken} />}
 
 								{/* Render all hidden fields (traits stored from previous steps) */}
-								{hiddenNodes.map((node, idx) => (
-									<HiddenInput key={`hidden-${idx}`} node={node} />
+								{hiddenNodes.map((node) => (
+									<HiddenInput key={uiNodeKey(node)} node={node} />
 								))}
 
-								{inputNodes.map((node, idx) => (
-									<FormInput key={idx} node={node} />
+								{inputNodes.map((node) => (
+									<FormInput key={uiNodeKey(node)} node={node} />
 								))}
 
 								{submitButton && (
