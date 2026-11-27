@@ -467,7 +467,7 @@ export function PermissionsSelectorTree({
 
 			{/* Permissions Tree */}
 			{selectedNamespace && (!requiresObjectId || selectedObjectId) && (
-				<div className="border rounded-md p-2 max-h-[400px] overflow-y-auto">
+				<div className="border rounded-md p-2 max-h-100 overflow-y-auto">
 					{/* Ungrouped permissions */}
 					{groupedPermissions.ungrouped.map((perm) => (
 						<PermissionCheckbox

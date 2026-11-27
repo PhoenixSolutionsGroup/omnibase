@@ -530,7 +530,7 @@ export function PermissionsSelector({
 									placeholder="Namespace"
 									searchPlaceholder="Search namespaces..."
 									disabled={disabled}
-									className="w-1/3 min-w-[120px] rounded-r-none border-r-0"
+									className="w-1/3 min-w-30 rounded-r-none border-r-0"
 								/>
 
 								<Combobox

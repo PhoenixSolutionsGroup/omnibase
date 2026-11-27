@@ -82,7 +82,7 @@ function PricingCard({
 				isHighlighted ? "relative" : "",
 			)}
 		>
-			<div className="h-4 flex-shrink-0 relative">
+			<div className="h-4 shrink-0 relative">
 				{ui.badge && (
 					<div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
 						<div className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 whitespace-nowrap shadow-md">
@@ -265,7 +265,7 @@ export function PricingTable({
 						<div
 							key={p.id}
 							style={{ width: `${CARD_WIDTH}px` }}
-							className="flex-shrink-0"
+							className="shrink-0"
 						>
 							{renderCard(p)}
 						</div>
@@ -315,7 +315,7 @@ export function PricingTable({
 				<div
 					key={p.id}
 					style={{ width: `${CARD_WIDTH}px` }}
-					className="flex-shrink-0"
+					className="shrink-0"
 				>
 					{renderCard(p)}
 				</div>
@@ -363,7 +363,7 @@ export function PricingTable({
 						{sortedProducts.map((product) => (
 							<div
 								key={product.id}
-								className="flex-shrink-0"
+								className="shrink-0"
 								style={{ width: `${CARD_WIDTH}px` }}
 							>
 								{renderCard(product)}

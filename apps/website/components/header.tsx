@@ -70,7 +70,7 @@ export function Header() {
 									Compare
 								</NavigationMenuTrigger>
 								<NavigationMenuContent>
-									<div className="w-[160px] p-2">
+									<div className="w-40 p-2">
 										{compareItems.map((item) => (
 											<NavigationMenuLink key={item.href} asChild>
 												<Link
