@@ -12,78 +12,98 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { PromotionCodeChange } from './PromotionCodeChange';
+import type { PromotionCodeChange } from "./PromotionCodeChange";
 import {
-    PromotionCodeChangeFromJSON,
-    PromotionCodeChangeFromJSONTyped,
-    PromotionCodeChangeToJSON,
-    PromotionCodeChangeToJSONTyped,
-} from './PromotionCodeChange';
+	PromotionCodeChangeFromJSON,
+	PromotionCodeChangeToJSON,
+} from "./PromotionCodeChange";
 
 /**
- * 
+ *
  * @export
  * @interface PromotionCodeChanges
  */
 export interface PromotionCodeChanges {
-    /**
-     * 
-     * @type {Array<PromotionCodeChange>}
-     * @memberof PromotionCodeChanges
-     */
-    created?: Array<PromotionCodeChange> | null;
-    /**
-     * 
-     * @type {Array<PromotionCodeChange>}
-     * @memberof PromotionCodeChanges
-     */
-    deactivated?: Array<PromotionCodeChange> | null;
-    /**
-     * 
-     * @type {Array<PromotionCodeChange>}
-     * @memberof PromotionCodeChanges
-     */
-    updated?: Array<PromotionCodeChange> | null;
+	/**
+	 *
+	 * @type {Array<PromotionCodeChange>}
+	 * @memberof PromotionCodeChanges
+	 */
+	created?: Array<PromotionCodeChange> | null;
+	/**
+	 *
+	 * @type {Array<PromotionCodeChange>}
+	 * @memberof PromotionCodeChanges
+	 */
+	deactivated?: Array<PromotionCodeChange> | null;
+	/**
+	 *
+	 * @type {Array<PromotionCodeChange>}
+	 * @memberof PromotionCodeChanges
+	 */
+	updated?: Array<PromotionCodeChange> | null;
 }
 
 /**
  * Check if a given object implements the PromotionCodeChanges interface.
  */
-export function instanceOfPromotionCodeChanges(value: object): value is PromotionCodeChanges {
-    return true;
+export function instanceOfPromotionCodeChanges(
+	value: object,
+): value is PromotionCodeChanges {
+	return true;
 }
 
 export function PromotionCodeChangesFromJSON(json: any): PromotionCodeChanges {
-    return PromotionCodeChangesFromJSONTyped(json, false);
+	return PromotionCodeChangesFromJSONTyped(json, false);
 }
 
-export function PromotionCodeChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): PromotionCodeChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(PromotionCodeChangeFromJSON)),
-        'deactivated': json['deactivated'] == null ? undefined : ((json['deactivated'] as Array<any>).map(PromotionCodeChangeFromJSON)),
-        'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(PromotionCodeChangeFromJSON)),
-    };
+export function PromotionCodeChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PromotionCodeChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		created:
+			json["created"] == null
+				? undefined
+				: (json["created"] as Array<any>).map(PromotionCodeChangeFromJSON),
+		deactivated:
+			json["deactivated"] == null
+				? undefined
+				: (json["deactivated"] as Array<any>).map(PromotionCodeChangeFromJSON),
+		updated:
+			json["updated"] == null
+				? undefined
+				: (json["updated"] as Array<any>).map(PromotionCodeChangeFromJSON),
+	};
 }
 
 export function PromotionCodeChangesToJSON(json: any): PromotionCodeChanges {
-    return PromotionCodeChangesToJSONTyped(json, false);
+	return PromotionCodeChangesToJSONTyped(json, false);
 }
 
-export function PromotionCodeChangesToJSONTyped(value?: PromotionCodeChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PromotionCodeChangesToJSONTyped(
+	value?: PromotionCodeChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(PromotionCodeChangeToJSON)),
-        'deactivated': value['deactivated'] == null ? undefined : ((value['deactivated'] as Array<any>).map(PromotionCodeChangeToJSON)),
-        'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(PromotionCodeChangeToJSON)),
-    };
+	return {
+		created:
+			value["created"] == null
+				? undefined
+				: (value["created"] as Array<any>).map(PromotionCodeChangeToJSON),
+		deactivated:
+			value["deactivated"] == null
+				? undefined
+				: (value["deactivated"] as Array<any>).map(PromotionCodeChangeToJSON),
+		updated:
+			value["updated"] == null
+				? undefined
+				: (value["updated"] as Array<any>).map(PromotionCodeChangeToJSON),
+	};
 }
-

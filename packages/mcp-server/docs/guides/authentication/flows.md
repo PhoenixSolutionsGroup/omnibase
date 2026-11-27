@@ -1,4 +1,5 @@
 ---
+
 title: Authentication Flows
 description: Implementing login, registration, recovery, verification, and settings flows
 ---
@@ -28,44 +29,44 @@ The `FlowRouter` is a server component that handles dynamic authentication routi
 Create a catch-all route at `app/auth/[...flow]/page.tsx`:
 
 ```tsx title="app/auth/[...flow]/page.tsx"
-import { FlowRouter } from '@omnibase/nextjs/auth';
+import { FlowRouter } from "@omnibase/nextjs/auth";
 import {
-  LoginForm,
-  RegistrationForm,
-  RecoveryForm,
-  VerificationForm,
-  SettingsForm,
-  ErrorForm,
-} from '@omnibase/shadcn';
+	LoginForm,
+	RegistrationForm,
+	RecoveryForm,
+	VerificationForm,
+	SettingsForm,
+	ErrorForm,
+} from "@omnibase/shadcn";
 
 export default function AuthPage({
-  params,
-  searchParams,
+	params,
+	searchParams,
 }: {
-  params: Promise<{ flow: string[] }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	params: Promise<{ flow: string[] }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  return (
-    <FlowRouter
-      params={params}
-      searchParams={searchParams}
-      url="/auth"
-      returnTo="/"
-      flowMap={{
-        login: (flow) => (
-          <LoginForm flow={flow} register_url="/auth/registration" />
-        ),
-        registration: (flow) => (
-          <RegistrationForm flow={flow} login_url="/auth/login" />
-        ),
-        recovery: (flow) => <RecoveryForm flow={flow} />,
-        verification: (flow) => <VerificationForm flow={flow} />,
-        settings: (flow) => <SettingsForm flow={flow} />,
-        error: (error) => <ErrorForm error={error} login_url="/auth/login" />,
-      }}
-      onNotFound={<div>Page not found</div>}
-    />
-  );
+	return (
+		<FlowRouter
+			params={params}
+			searchParams={searchParams}
+			url="/auth"
+			returnTo="/"
+			flowMap={{
+				login: (flow) => (
+					<LoginForm flow={flow} register_url="/auth/registration" />
+				),
+				registration: (flow) => (
+					<RegistrationForm flow={flow} login_url="/auth/login" />
+				),
+				recovery: (flow) => <RecoveryForm flow={flow} />,
+				verification: (flow) => <VerificationForm flow={flow} />,
+				settings: (flow) => <SettingsForm flow={flow} />,
+				error: (error) => <ErrorForm error={error} login_url="/auth/login" />,
+			}}
+			onNotFound={<div>Page not found</div>}
+		/>
+	);
 }
 ```
 
@@ -79,10 +80,10 @@ The login flow authenticates existing users with email/password or OAuth.
 
 ```tsx
 <LoginForm
-  flow={flow}
-  register_url="/auth/registration"
-  Header={<h1>Welcome Back</h1>}
-/>
+	flow={flow}
+	register_url="/auth/registration"
+	Header={<h1>Welcome Back</h1>}
+/>;
 ```
 
 ### Features
@@ -119,10 +120,10 @@ The registration flow creates new user accounts.
 
 ```tsx
 <RegistrationForm
-  flow={flow}
-  login_url="/auth/login"
-  Header={<h1>Create Account</h1>}
-/>
+	flow={flow}
+	login_url="/auth/login"
+	Header={<h1>Create Account</h1>}
+/>;
 ```
 
 ### Features
@@ -139,11 +140,11 @@ By default, OmniBase collects these user traits:
 
 ```json
 {
-  "email": "user@example.com",
-  "name": {
-    "first": "John",
-    "last": "Doe"
-  }
+	"email": "user@example.com",
+	"name": {
+		"first": "John",
+		"last": "Doe"
+	}
 }
 ```
 
@@ -156,10 +157,7 @@ The recovery flow handles password reset via email.
 ### RecoveryForm Component
 
 ```tsx
-<RecoveryForm
-  flow={flow}
-  Header={<h1>Reset Password</h1>}
-/>
+<RecoveryForm flow={flow} Header={<h1>Reset Password</h1>} />;
 ```
 
 ### Recovery Flow Steps
@@ -190,10 +188,10 @@ The verification flow confirms email addresses.
 
 ```tsx
 <VerificationForm
-  flow={flow}
-  autoRedirect={true}
-  Header={<h1>Verify Email</h1>}
-/>
+	flow={flow}
+	autoRedirect={true}
+	Header={<h1>Verify Email</h1>}
+/>;
 ```
 
 ### Features
@@ -204,7 +202,7 @@ The verification flow confirms email addresses.
 - Resend code functionality
 
 > **Note:**
-Verification is triggered automatically after registration if email verification is enabled in your configuration.
+> Verification is triggered automatically after registration if email verification is enabled in your configuration.
 
 ---
 
@@ -215,35 +213,35 @@ The settings flow allows users to manage their account.
 ### SettingsForm Component
 
 ```tsx
-<SettingsForm flow={flow} />
+<SettingsForm flow={flow} />;
 ```
 
 ### Available Settings Sections
 
-| Section | Description |
-|---------|-------------|
-| **Profile** | Update name and other identity traits |
-| **Password** | Change account password |
-| **TOTP** | Set up authenticator app (Google Authenticator) |
-| **WebAuthn** | Register security keys |
-| **Passkeys** | Configure passkey authentication |
-| **Backup Codes** | Generate recovery codes |
+| Section          | Description                                     |
+| ---------------- | ----------------------------------------------- |
+| **Profile**      | Update name and other identity traits           |
+| **Password**     | Change account password                         |
+| **TOTP**         | Set up authenticator app (Google Authenticator) |
+| **WebAuthn**     | Register security keys                          |
+| **Passkeys**     | Configure passkey authentication                |
+| **Backup Codes** | Generate recovery codes                         |
 
 ### Linking to Settings
 
 ```tsx
 // Protected settings page
-import { protectedRoute } from '@omnibase/nextjs/auth';
+import { protectedRoute } from "@omnibase/nextjs/auth";
 
 export default async function SettingsPage() {
-  await protectedRoute('/auth/login');
+	await protectedRoute("/auth/login");
 
-  return (
-    <div>
-      <h1>Account Settings</h1>
-      <a href="/auth/settings">Manage your account</a>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Account Settings</h1>
+			<a href="/auth/settings">Manage your account</a>
+		</div>
+	);
 }
 ```
 
@@ -257,10 +255,10 @@ The error flow displays authentication errors gracefully.
 
 ```tsx
 <ErrorForm
-  error={error}
-  login_url="/auth/login"
-  Header={<h1>Something went wrong</h1>}
-/>
+	error={error}
+	login_url="/auth/login"
+	Header={<h1>Something went wrong</h1>}
+/>;
 ```
 
 ### Common Error Scenarios
@@ -278,65 +276,65 @@ The error flow displays authentication errors gracefully.
 After authentication, users often need to create or join an organization. Use the `TenantCreator` component:
 
 ```tsx title="FlowRouter onboarding handler"
-import { protectedRoute } from '@omnibase/nextjs/auth';
-import { TenantCreator } from '@omnibase/shadcn';
-import { V1TenantsApi } from '@omnibase/core-js';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { protectedRoute } from "@omnibase/nextjs/auth";
+import { TenantCreator } from "@omnibase/shadcn";
+import { V1TenantsApi } from "@omnibase/core-js";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 // Inside FlowRouter flowMap:
 onboarding: async () => {
-  const session = await protectedRoute('/auth/login');
-  const { token } = await searchParams;
+	const session = await protectedRoute("/auth/login");
+	const { token } = await searchParams;
 
-  return (
-    <TenantCreator
-      config={{
-        createForm: {
-          billingEmail: {
-            defaultValue: session.identity?.traits.email,
-          },
-          organizationName: {
-            defaultValue: `${session.identity?.traits.name.first}'s Organization`,
-          },
-        },
-        joinForm: {
-          token: { defaultValue: token },
-        },
-      }}
-      formActions={{
-        createOrganizationAction: async (formData: FormData) => {
-          'use server';
-          const name = formData.get('organizationName') as string;
-          const billingEmail = formData.get('billingEmail') as string;
+	return (
+		<TenantCreator
+			config={{
+				createForm: {
+					billingEmail: {
+						defaultValue: session.identity?.traits.email,
+					},
+					organizationName: {
+						defaultValue: `${session.identity?.traits.name.first}'s Organization`,
+					},
+				},
+				joinForm: {
+					token: { defaultValue: token },
+				},
+			}}
+			formActions={{
+				createOrganizationAction: async (formData: FormData) => {
+					"use server";
+					const name = formData.get("organizationName") as string;
+					const billingEmail = formData.get("billingEmail") as string;
 
-          const client = new V1TenantsApi(getConfig());
-          const { data } = await client.createTenant({
-            createTenantRequest: { name, billingEmail },
-            xUserId: session.identity?.id!,
-          });
+					const client = new V1TenantsApi(getConfig());
+					const { data } = await client.createTenant({
+						createTenantRequest: { name, billingEmail },
+						xUserId: session.identity?.id!,
+					});
 
-          const c = await cookies();
-          c.set('omnibase_postgrest_jwt', data.token!);
-          redirect('/');
-        },
-        joinOrganizationAction: async (formData: FormData) => {
-          'use server';
-          const token = formData.get('token') as string;
+					const c = await cookies();
+					c.set("omnibase_postgrest_jwt", data.token!);
+					redirect("/");
+				},
+				joinOrganizationAction: async (formData: FormData) => {
+					"use server";
+					const token = formData.get("token") as string;
 
-          const client = new V1TenantsApi(getConfig());
-          const { data } = await client.acceptInvite({
-            acceptInviteRequest: { token },
-          });
+					const client = new V1TenantsApi(getConfig());
+					const { data } = await client.acceptInvite({
+						acceptInviteRequest: { token },
+					});
 
-          const c = await cookies();
-          c.set('omnibase_postgrest_jwt', data.token!);
-          redirect('/');
-        },
-      }}
-    />
-  );
-}
+					const c = await cookies();
+					c.set("omnibase_postgrest_jwt", data.token!);
+					redirect("/");
+				},
+			}}
+		/>
+	);
+};
 ```
 
 ### TenantCreator Features
@@ -355,117 +353,117 @@ For custom implementations, you can fetch flows directly. Pass the `searchParams
 **getLoginFlow:**
 
 ```tsx title="app/auth/login/page.tsx"
-import { getLoginFlow } from '@omnibase/nextjs/auth';
+import { getLoginFlow } from "@omnibase/nextjs/auth";
 
 export default async function LoginPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const flow = await getLoginFlow({
-    url: '/auth/login',
-    searchParams,
-  });
+	const flow = await getLoginFlow({
+		url: "/auth/login",
+		searchParams,
+	});
 
-  if (!flow) {
-    return <div>Unable to load login form</div>;
-  }
+	if (!flow) {
+		return <div>Unable to load login form</div>;
+	}
 
-  return <CustomLoginForm flow={flow} />;
+	return <CustomLoginForm flow={flow} />;
 }
 ```
 
 **getRegistrationFlow:**
 
 ```tsx title="app/auth/registration/page.tsx"
-import { getRegistrationFlow } from '@omnibase/nextjs/auth';
+import { getRegistrationFlow } from "@omnibase/nextjs/auth";
 
 export default async function RegistrationPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const flow = await getRegistrationFlow({
-    url: '/auth/registration',
-    searchParams,
-  });
+	const flow = await getRegistrationFlow({
+		url: "/auth/registration",
+		searchParams,
+	});
 
-  if (!flow) {
-    return <div>Unable to load registration form</div>;
-  }
+	if (!flow) {
+		return <div>Unable to load registration form</div>;
+	}
 
-  return <CustomRegistrationForm flow={flow} />;
+	return <CustomRegistrationForm flow={flow} />;
 }
 ```
 
 **getRecoveryFlow:**
 
 ```tsx title="app/auth/recovery/page.tsx"
-import { getRecoveryFlow } from '@omnibase/nextjs/auth';
+import { getRecoveryFlow } from "@omnibase/nextjs/auth";
 
 export default async function RecoveryPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const flow = await getRecoveryFlow({
-    url: '/auth/recovery',
-    searchParams,
-  });
+	const flow = await getRecoveryFlow({
+		url: "/auth/recovery",
+		searchParams,
+	});
 
-  if (!flow) {
-    return <div>Unable to load recovery form</div>;
-  }
+	if (!flow) {
+		return <div>Unable to load recovery form</div>;
+	}
 
-  return <CustomRecoveryForm flow={flow} />;
+	return <CustomRecoveryForm flow={flow} />;
 }
 ```
 
 **getVerificationFlow:**
 
 ```tsx title="app/auth/verification/page.tsx"
-import { getVerificationFlow } from '@omnibase/nextjs/auth';
+import { getVerificationFlow } from "@omnibase/nextjs/auth";
 
 export default async function VerificationPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const flow = await getVerificationFlow({
-    url: '/auth/verification',
-    searchParams,
-  });
+	const flow = await getVerificationFlow({
+		url: "/auth/verification",
+		searchParams,
+	});
 
-  if (!flow) {
-    return <div>Unable to load verification form</div>;
-  }
+	if (!flow) {
+		return <div>Unable to load verification form</div>;
+	}
 
-  return <CustomVerificationForm flow={flow} />;
+	return <CustomVerificationForm flow={flow} />;
 }
 ```
 
 **getSettingsFlow:**
 
 ```tsx title="app/auth/settings/page.tsx"
-import { getSettingsFlow, protectedRoute } from '@omnibase/nextjs/auth';
+import { getSettingsFlow, protectedRoute } from "@omnibase/nextjs/auth";
 
 export default async function SettingsPage({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  await protectedRoute('/auth/login');
+	await protectedRoute("/auth/login");
 
-  const flow = await getSettingsFlow({
-    url: '/auth/settings',
-    searchParams,
-  });
+	const flow = await getSettingsFlow({
+		url: "/auth/settings",
+		searchParams,
+	});
 
-  if (!flow) {
-    return <div>Unable to load settings form</div>;
-  }
+	if (!flow) {
+		return <div>Unable to load settings form</div>;
+	}
 
-  return <CustomSettingsForm flow={flow} />;
+	return <CustomSettingsForm flow={flow} />;
 }
 ```
 
@@ -479,11 +477,11 @@ All shadcn components use Tailwind CSS and can be customized:
 
 ```css title="globals.css"
 :root {
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 47.4% 11.2%;
-  /* ... other shadcn variables */
+	--primary: 222.2 47.4% 11.2%;
+	--primary-foreground: 210 40% 98%;
+	--card: 0 0% 100%;
+	--card-foreground: 222.2 47.4% 11.2%;
+	/* ... other shadcn variables */
 }
 ```
 
@@ -491,14 +489,14 @@ All shadcn components use Tailwind CSS and can be customized:
 
 ```tsx
 <LoginForm
-  flow={flow}
-  Header={
-    <div className="text-center">
-      <img src="/logo.svg" alt="Logo" className="mx-auto h-12 w-12" />
-      <h1 className="mt-4 text-2xl font-bold">Welcome to MyApp</h1>
-    </div>
-  }
-/>
+	flow={flow}
+	Header={
+		<div className="text-center">
+			<img src="/logo.svg" alt="Logo" className="mx-auto h-12 w-12" />
+			<h1 className="mt-4 text-2xl font-bold">Welcome to MyApp</h1>
+		</div>
+	}
+/>;
 ```
 
 ### Building Custom Forms
@@ -507,26 +505,26 @@ For full control, build your own forms using the flow data:
 
 ```tsx
 function CustomLoginForm({ flow }: { flow: LoginFlow }) {
-  return (
-    <form action={flow.ui.action} method={flow.ui.method}>
-      {flow.ui.nodes.map((node, i) => {
-        if (node.attributes.node_type === 'input') {
-          const attrs = node.attributes as UiNodeInputAttributes;
-          return (
-            <input
-              key={i}
-              name={attrs.name}
-              type={attrs.type}
-              defaultValue={attrs.value}
-              required={attrs.required}
-            />
-          );
-        }
-        return null;
-      })}
-      <button type="submit">Sign In</button>
-    </form>
-  );
+	return (
+		<form action={flow.ui.action} method={flow.ui.method}>
+			{flow.ui.nodes.map((node, i) => {
+				if (node.attributes.node_type === "input") {
+					const attrs = node.attributes as UiNodeInputAttributes;
+					return (
+						<input
+							key={i}
+							name={attrs.name}
+							type={attrs.type}
+							defaultValue={attrs.value}
+							required={attrs.required}
+						/>
+					);
+				}
+				return null;
+			})}
+			<button type="submit">Sign In</button>
+		</form>
+	);
 }
 ```
 
@@ -541,9 +539,9 @@ Use the `return_to` query parameter:
 
 ```tsx
 // Link to login with return URL
-<a href={`/auth/login?return_to=${encodeURIComponent('/dashboard')}`}>
-  Sign In
-</a>
+<a href={`/auth/login?return_to=${encodeURIComponent("/dashboard")}`}>
+	Sign In
+</a>;
 ```
 
 The `FlowRouter` automatically handles the redirect after successful authentication.
@@ -571,12 +569,12 @@ OAuth errors are automatically routed to the `error` flow:
 
 ```tsx
 error: (error) => (
-  <ErrorForm
-    error={error}
-    login_url="/auth/login"
-    Header={<h1>Authentication Failed</h1>}
-  />
-)
+	<ErrorForm
+		error={error}
+		login_url="/auth/login"
+		Header={<h1>Authentication Failed</h1>}
+	/>
+);
 ```
 
 ---

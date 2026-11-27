@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Drift** | **int64** |  | 
-**Pending** | **int64** |  | 
-**Untracked** | **int64** |  | 
+| Name          | Type      | Description | Notes |
+| ------------- | --------- | ----------- | ----- |
+| **Drift**     | **int64** |             |
+| **Pending**   | **int64** |             |
+| **Untracked** | **int64** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetDrift sets Drift field to given value.
 
-
 ### GetPending
 
 `func (o *ConfigStatusSummary) GetPending() int64`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigStatusSummary) SetPending(v int64)`
 
 SetPending sets Pending field to given value.
-
 
 ### GetUntracked
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetUntracked sets Untracked field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

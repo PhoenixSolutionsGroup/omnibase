@@ -1,6 +1,4 @@
 {
-  "title": "Auth",
-  "pages": [
-    "reset"
-  ]
+	"title": "Auth",
+	"pages": ["reset"]
 }

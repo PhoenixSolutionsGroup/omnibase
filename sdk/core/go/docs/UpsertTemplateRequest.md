@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**HtmlBody** | **string** |  | 
-**Subject** | **string** |  | 
-**Type** | **string** |  | 
+| Name         | Type       | Description | Notes |
+| ------------ | ---------- | ----------- | ----- |
+| **HtmlBody** | **string** |             |
+| **Subject**  | **string** |             |
+| **Type**     | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetHtmlBody sets HtmlBody field to given value.
 
-
 ### GetSubject
 
 `func (o *UpsertTemplateRequest) GetSubject() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *UpsertTemplateRequest) SetSubject(v string)`
 
 SetSubject sets Subject field to given value.
-
 
 ### GetType
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetType sets Type field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

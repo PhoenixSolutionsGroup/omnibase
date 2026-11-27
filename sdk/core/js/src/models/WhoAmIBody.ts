@@ -12,64 +12,67 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface WhoAmIBody
  */
 export interface WhoAmIBody {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof WhoAmIBody
-     */
-    authenticated: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof WhoAmIBody
-     */
-    userId: string;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof WhoAmIBody
+	 */
+	authenticated: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WhoAmIBody
+	 */
+	userId: string;
 }
 
 /**
  * Check if a given object implements the WhoAmIBody interface.
  */
 export function instanceOfWhoAmIBody(value: object): value is WhoAmIBody {
-    if (!('authenticated' in value) || value['authenticated'] === undefined) return false;
-    if (!('userId' in value) || value['userId'] === undefined) return false;
-    return true;
+	if (!("authenticated" in value) || value["authenticated"] === undefined)
+		return false;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
+	return true;
 }
 
 export function WhoAmIBodyFromJSON(json: any): WhoAmIBody {
-    return WhoAmIBodyFromJSONTyped(json, false);
+	return WhoAmIBodyFromJSONTyped(json, false);
 }
 
-export function WhoAmIBodyFromJSONTyped(json: any, ignoreDiscriminator: boolean): WhoAmIBody {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'authenticated': json['authenticated'],
-        'userId': json['user_id'],
-    };
+export function WhoAmIBodyFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): WhoAmIBody {
+	if (json == null) {
+		return json;
+	}
+	return {
+		authenticated: json["authenticated"],
+		userId: json["user_id"],
+	};
 }
 
 export function WhoAmIBodyToJSON(json: any): WhoAmIBody {
-    return WhoAmIBodyToJSONTyped(json, false);
+	return WhoAmIBodyToJSONTyped(json, false);
 }
 
-export function WhoAmIBodyToJSONTyped(value?: WhoAmIBody | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function WhoAmIBodyToJSONTyped(
+	value?: WhoAmIBody | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'authenticated': value['authenticated'],
-        'user_id': value['userId'],
-    };
+	return {
+		authenticated: value["authenticated"],
+		user_id: value["userId"],
+	};
 }
-

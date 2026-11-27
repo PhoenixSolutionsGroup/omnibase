@@ -2,17 +2,17 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**ConfigId** | **string** |  | 
-**Connect** | **bool** |  | 
-**CreatedAt** | **time.Time** |  | 
-**Events** | **[]string** |  | 
-**Id** | **string** |  | 
-**Secret** | **string** |  | 
-**StripeId** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
-**Url** | **string** |  | 
+| Name          | Type          | Description | Notes |
+| ------------- | ------------- | ----------- | ----- |
+| **ConfigId**  | **string**    |             |
+| **Connect**   | **bool**      |             |
+| **CreatedAt** | **time.Time** |             |
+| **Events**    | **[]string**  |             |
+| **Id**        | **string**    |             |
+| **Secret**    | **string**    |             |
+| **StripeId**  | **string**    |             |
+| **UpdatedAt** | **time.Time** |             |
+| **Url**       | **string**    |             |
 
 ## Methods
 
@@ -52,7 +52,6 @@ and a boolean to check if the value has been set.
 
 SetConfigId sets ConfigId field to given value.
 
-
 ### GetConnect
 
 `func (o *ListStripeWebhooksRow) GetConnect() bool`
@@ -71,7 +70,6 @@ and a boolean to check if the value has been set.
 `func (o *ListStripeWebhooksRow) SetConnect(v bool)`
 
 SetConnect sets Connect field to given value.
-
 
 ### GetCreatedAt
 
@@ -92,7 +90,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetEvents
 
 `func (o *ListStripeWebhooksRow) GetEvents() []string`
@@ -112,17 +109,18 @@ and a boolean to check if the value has been set.
 
 SetEvents sets Events field to given value.
 
-
 ### SetEventsNil
 
 `func (o *ListStripeWebhooksRow) SetEventsNil(b bool)`
 
- SetEventsNil sets the value for Events to be an explicit nil
+SetEventsNil sets the value for Events to be an explicit nil
 
 ### UnsetEvents
+
 `func (o *ListStripeWebhooksRow) UnsetEvents()`
 
 UnsetEvents ensures that no value is present for Events, not even an explicit nil
+
 ### GetId
 
 `func (o *ListStripeWebhooksRow) GetId() string`
@@ -141,7 +139,6 @@ and a boolean to check if the value has been set.
 `func (o *ListStripeWebhooksRow) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetSecret
 
@@ -162,7 +159,6 @@ and a boolean to check if the value has been set.
 
 SetSecret sets Secret field to given value.
 
-
 ### GetStripeId
 
 `func (o *ListStripeWebhooksRow) GetStripeId() string`
@@ -181,7 +177,6 @@ and a boolean to check if the value has been set.
 `func (o *ListStripeWebhooksRow) SetStripeId(v string)`
 
 SetStripeId sets StripeId field to given value.
-
 
 ### GetUpdatedAt
 
@@ -202,7 +197,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
 ### GetUrl
 
 `func (o *ListStripeWebhooksRow) GetUrl() string`
@@ -222,8 +216,4 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

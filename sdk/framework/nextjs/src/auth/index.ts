@@ -91,8 +91,8 @@
 // Must be first import - configures NEXT_PUBLIC_ORY_SDK_URL before @ory/* imports
 import "./config";
 
-export * from "./provider";
 export * from "./flow-router";
 export * from "./get-flow";
 export * from "./protected-route";
+export * from "./provider";
 export * from "./session";

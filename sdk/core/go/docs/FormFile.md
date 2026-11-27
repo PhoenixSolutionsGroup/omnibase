@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**ContentType** | **string** |  | 
-**Filename** | **string** |  | 
-**IsSet** | **bool** |  | 
-**Size** | **int64** |  | 
+| Name            | Type       | Description | Notes |
+| --------------- | ---------- | ----------- | ----- |
+| **ContentType** | **string** |             |
+| **Filename**    | **string** |             |
+| **IsSet**       | **bool**   |             |
+| **Size**        | **int64**  |             |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetContentType sets ContentType field to given value.
 
-
 ### GetFilename
 
 `func (o *FormFile) GetFilename() string`
@@ -66,7 +65,6 @@ and a boolean to check if the value has been set.
 `func (o *FormFile) SetFilename(v string)`
 
 SetFilename sets Filename field to given value.
-
 
 ### GetIsSet
 
@@ -87,7 +85,6 @@ and a boolean to check if the value has been set.
 
 SetIsSet sets IsSet field to given value.
 
-
 ### GetSize
 
 `func (o *FormFile) GetSize() int64`
@@ -107,8 +104,4 @@ and a boolean to check if the value has been set.
 
 SetSize sets Size field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

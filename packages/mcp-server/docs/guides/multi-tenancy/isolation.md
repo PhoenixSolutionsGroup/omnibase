@@ -1,4 +1,5 @@
 ---
+
 title: Data Isolation
 description: Row-Level Security, JWT tokens, and tenant-scoped queries
 ---
@@ -29,12 +30,12 @@ OmniBase generates JWT tokens with tenant context:
 
 ```json
 {
-  "user_id": "550e8400-e29b-41d4-a716-446655440000",
-  "tenant_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-  "user_role": "owner",
-  "role": "anon_user",
-  "iat": 1699900000,
-  "exp": 1699986400
+	"user_id": "550e8400-e29b-41d4-a716-446655440000",
+	"tenant_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+	"user_role": "owner",
+	"role": "anon_user",
+	"iat": 1699900000,
+	"exp": 1699986400
 }
 ```
 
@@ -131,11 +132,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user;
 
 ### Policy Breakdown
 
-| Clause | Purpose |
-|--------|---------|
-| `FOR ALL` | Applies to SELECT, INSERT, UPDATE, DELETE |
-| `USING` | Filter condition for SELECT, UPDATE, DELETE |
-| `WITH CHECK` | Validation for INSERT, UPDATE |
+| Clause       | Purpose                                     |
+| ------------ | ------------------------------------------- |
+| `FOR ALL`    | Applies to SELECT, INSERT, UPDATE, DELETE   |
+| `USING`      | Filter condition for SELECT, UPDATE, DELETE |
+| `WITH CHECK` | Validation for INSERT, UPDATE               |
 
 ### Separate Policies Pattern
 
@@ -173,9 +174,9 @@ CREATE POLICY projects_delete ON projects
 ```typescript
 // Using PostgREST client
 const { data: projects } = await db
-  .from('projects')
-  .select('*')
-  .eq('status', 'active');
+	.from("projects")
+	.select("*")
+	.eq("status", "active");
 
 // Only returns projects where tenant_id = current user's active tenant
 // The WHERE tenant_id = '...' is added automatically by RLS
@@ -193,8 +194,7 @@ WHERE status = 'active'
   AND tenant_id = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 ```
 
-> **Note:**
-  RLS policies are enforced at the database level. Even direct SQL queries through PostgREST are filtered. There's no way for application code to bypass this protection.
+> **Note:** RLS policies are enforced at the database level. Even direct SQL queries through PostgREST are filtered. There's no way for application code to bypass this protection.
 
 ---
 
@@ -342,9 +342,9 @@ User requests through PostgREST can never access other tenants' data:
 // Even if you somehow know another tenant's ID,
 // RLS will filter it out
 const { data } = await db
-  .from('projects')
-  .select('*')
-  .eq('tenant_id', 'other-tenant-id');
+	.from("projects")
+	.select("*")
+	.eq("tenant_id", "other-tenant-id");
 
 // Returns: [] (empty array)
 ```
@@ -354,14 +354,14 @@ const { data } = await db
 For administrative operations, use service key authentication:
 
 ```typescript
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
-  headers: {
-    'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY,
-    'X-Tenant-Id': targetTenantId,  // Explicit tenant context
-  },
+	basePath: process.env.OMNIBASE_API_URL,
+	headers: {
+		"X-Service-Key": process.env.OMNIBASE_SERVICE_KEY,
+		"X-Tenant-Id": targetTenantId, // Explicit tenant context
+	},
 });
 ```
 
@@ -381,8 +381,7 @@ When a tenant is deleted, all related data is automatically cleaned up via forei
 -- └── All custom tables with tenant_id FK (CASCADE)
 ```
 
-> **Note:**
-  Always use `ON DELETE CASCADE` for the `tenant_id` foreign key to ensure proper cleanup when tenants are deleted.
+> **Note:** Always use `ON DELETE CASCADE` for the `tenant_id` foreign key to ensure proper cleanup when tenants are deleted.
 
 ---
 
@@ -416,14 +415,14 @@ OmniBase includes tests that verify tenant isolation:
 
 ```typescript
 // Create two separate users in separate tenants
-const user1 = await createUser({ email: 'user1@test.com' });
-const tenant1 = await createTenant({ name: 'Tenant 1' });
+const user1 = await createUser({ email: "user1@test.com" });
+const tenant1 = await createTenant({ name: "Tenant 1" });
 
-const user2 = await createUser({ email: 'user2@test.com' });
-const tenant2 = await createTenant({ name: 'Tenant 2' });
+const user2 = await createUser({ email: "user2@test.com" });
+const tenant2 = await createTenant({ name: "Tenant 2" });
 
 // Create data in tenant1
-await createProject({ name: 'Secret Project', tenantContext: tenant1 });
+await createProject({ name: "Secret Project", tenantContext: tenant1 });
 
 // Try to access from tenant2 context
 const projects = await listProjects({ tenantContext: tenant2 });

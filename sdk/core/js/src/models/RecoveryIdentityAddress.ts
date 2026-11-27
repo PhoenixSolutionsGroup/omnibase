@@ -12,97 +12,116 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface RecoveryIdentityAddress
  */
 export interface RecoveryIdentityAddress {
-    /**
-     * 
-     * @type {object}
-     * @memberof RecoveryIdentityAddress
-     */
-    additionalProperties?: object;
-    /**
-     * 
-     * @type {Date}
-     * @memberof RecoveryIdentityAddress
-     */
-    createdAt?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecoveryIdentityAddress
-     */
-    id: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof RecoveryIdentityAddress
-     */
-    updatedAt?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecoveryIdentityAddress
-     */
-    value: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecoveryIdentityAddress
-     */
-    via: string;
+	/**
+	 *
+	 * @type {object}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	additionalProperties?: object;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	createdAt?: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	updatedAt?: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	value: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RecoveryIdentityAddress
+	 */
+	via: string;
 }
 
 /**
  * Check if a given object implements the RecoveryIdentityAddress interface.
  */
-export function instanceOfRecoveryIdentityAddress(value: object): value is RecoveryIdentityAddress {
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('value' in value) || value['value'] === undefined) return false;
-    if (!('via' in value) || value['via'] === undefined) return false;
-    return true;
+export function instanceOfRecoveryIdentityAddress(
+	value: object,
+): value is RecoveryIdentityAddress {
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("value" in value) || value["value"] === undefined) return false;
+	if (!("via" in value) || value["via"] === undefined) return false;
+	return true;
 }
 
-export function RecoveryIdentityAddressFromJSON(json: any): RecoveryIdentityAddress {
-    return RecoveryIdentityAddressFromJSONTyped(json, false);
+export function RecoveryIdentityAddressFromJSON(
+	json: any,
+): RecoveryIdentityAddress {
+	return RecoveryIdentityAddressFromJSONTyped(json, false);
 }
 
-export function RecoveryIdentityAddressFromJSONTyped(json: any, ignoreDiscriminator: boolean): RecoveryIdentityAddress {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'additionalProperties': json['AdditionalProperties'] == null ? undefined : json['AdditionalProperties'],
-        'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'id': json['id'],
-        'updatedAt': json['updated_at'] == null ? undefined : (new Date(json['updated_at'])),
-        'value': json['value'],
-        'via': json['via'],
-    };
+export function RecoveryIdentityAddressFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): RecoveryIdentityAddress {
+	if (json == null) {
+		return json;
+	}
+	return {
+		additionalProperties:
+			json["AdditionalProperties"] == null
+				? undefined
+				: json["AdditionalProperties"],
+		createdAt:
+			json["created_at"] == null ? undefined : new Date(json["created_at"]),
+		id: json["id"],
+		updatedAt:
+			json["updated_at"] == null ? undefined : new Date(json["updated_at"]),
+		value: json["value"],
+		via: json["via"],
+	};
 }
 
-export function RecoveryIdentityAddressToJSON(json: any): RecoveryIdentityAddress {
-    return RecoveryIdentityAddressToJSONTyped(json, false);
+export function RecoveryIdentityAddressToJSON(
+	json: any,
+): RecoveryIdentityAddress {
+	return RecoveryIdentityAddressToJSONTyped(json, false);
 }
 
-export function RecoveryIdentityAddressToJSONTyped(value?: RecoveryIdentityAddress | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function RecoveryIdentityAddressToJSONTyped(
+	value?: RecoveryIdentityAddress | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'AdditionalProperties': value['additionalProperties'],
-        'created_at': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
-        'id': value['id'],
-        'updated_at': value['updatedAt'] == null ? value['updatedAt'] : value['updatedAt'].toISOString(),
-        'value': value['value'],
-        'via': value['via'],
-    };
+	return {
+		AdditionalProperties: value["additionalProperties"],
+		created_at:
+			value["createdAt"] == null
+				? value["createdAt"]
+				: value["createdAt"].toISOString(),
+		id: value["id"],
+		updated_at:
+			value["updatedAt"] == null
+				? value["updatedAt"]
+				: value["updatedAt"].toISOString(),
+		value: value["value"],
+		via: value["via"],
+	};
 }
-

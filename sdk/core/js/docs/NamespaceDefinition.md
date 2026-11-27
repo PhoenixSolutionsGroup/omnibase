@@ -1,18 +1,17 @@
-
 # NamespaceDefinition
 
 Definition of a permission namespace
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`namespace` | string
-`relations` | Array&lt;string&gt;
-`relationsMetadata` | [Array&lt;RelationMetadata&gt;](RelationMetadata.md)
-`subjectRelations` | { [key: string]: Array&lt;string&gt;; }
-`updatedAt` | Date
+| Name                | Type                                                 |
+| ------------------- | ---------------------------------------------------- |
+| `id`                | string                                               |
+| `namespace`         | string                                               |
+| `relations`         | Array&lt;string&gt;                                  |
+| `relationsMetadata` | [Array&lt;RelationMetadata&gt;](RelationMetadata.md) |
+| `subjectRelations`  | { [key: string]: Array&lt;string&gt;; }              |
+| `updatedAt`         | Date                                                 |
 
 ## Example
 
@@ -41,5 +40,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

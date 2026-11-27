@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Config** | [**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md) |  | 
-**CreatedAt** | **string** |  | 
-**Id** | **string** |  | 
-**ParseError** | Pointer to **string** |  | [optional] 
-**UpdatedAt** | **string** |  | 
-**Version** | **string** |  | 
+| Name           | Type                                                            | Description | Notes      |
+| -------------- | --------------------------------------------------------------- | ----------- | ---------- |
+| **Config**     | [**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md) |             |
+| **CreatedAt**  | **string**                                                      |             |
+| **Id**         | **string**                                                      |             |
+| **ParseError** | Pointer to **string**                                           |             | [optional] |
+| **UpdatedAt**  | **string**                                                      |             |
+| **Version**    | **string**                                                      |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetConfig sets Config field to given value.
 
-
 ### GetCreatedAt
 
 `func (o *ConfigHistoryItem) GetCreatedAt() string`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetId
 
 `func (o *ConfigHistoryItem) GetId() string`
@@ -88,7 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigHistoryItem) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetParseError
 
@@ -134,7 +131,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
 ### GetVersion
 
 `func (o *ConfigHistoryItem) GetVersion() string`
@@ -154,8 +150,4 @@ and a boolean to check if the value has been set.
 
 SetVersion sets Version field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

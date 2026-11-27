@@ -1,13 +1,11 @@
-
 # MigrationSuccessResponse
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`status` | number
-`message` | string
+| Name      | Type   |
+| --------- | ------ |
+| `status`  | number |
+| `message` | string |
 
 ## Example
 
@@ -32,5 +30,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

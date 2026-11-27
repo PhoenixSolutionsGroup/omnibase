@@ -12,71 +12,73 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface PriceLimit
  */
 export interface PriceLimit {
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceLimit
-     */
-    text: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceLimit
-     */
-    unit?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PriceLimit
-     */
-    value?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceLimit
+	 */
+	text: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceLimit
+	 */
+	unit?: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof PriceLimit
+	 */
+	value?: number;
 }
 
 /**
  * Check if a given object implements the PriceLimit interface.
  */
 export function instanceOfPriceLimit(value: object): value is PriceLimit {
-    if (!('text' in value) || value['text'] === undefined) return false;
-    return true;
+	if (!("text" in value) || value["text"] === undefined) return false;
+	return true;
 }
 
 export function PriceLimitFromJSON(json: any): PriceLimit {
-    return PriceLimitFromJSONTyped(json, false);
+	return PriceLimitFromJSONTyped(json, false);
 }
 
-export function PriceLimitFromJSONTyped(json: any, ignoreDiscriminator: boolean): PriceLimit {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'text': json['text'],
-        'unit': json['unit'] == null ? undefined : json['unit'],
-        'value': json['value'] == null ? undefined : json['value'],
-    };
+export function PriceLimitFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PriceLimit {
+	if (json == null) {
+		return json;
+	}
+	return {
+		text: json["text"],
+		unit: json["unit"] == null ? undefined : json["unit"],
+		value: json["value"] == null ? undefined : json["value"],
+	};
 }
 
 export function PriceLimitToJSON(json: any): PriceLimit {
-    return PriceLimitToJSONTyped(json, false);
+	return PriceLimitToJSONTyped(json, false);
 }
 
-export function PriceLimitToJSONTyped(value?: PriceLimit | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PriceLimitToJSONTyped(
+	value?: PriceLimit | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'text': value['text'],
-        'unit': value['unit'],
-        'value': value['value'],
-    };
+	return {
+		text: value["text"],
+		unit: value["unit"],
+		value: value["value"],
+	};
 }
-

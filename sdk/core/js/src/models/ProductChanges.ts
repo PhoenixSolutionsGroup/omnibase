@@ -12,78 +12,95 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ProductChange } from './ProductChange';
-import {
-    ProductChangeFromJSON,
-    ProductChangeFromJSONTyped,
-    ProductChangeToJSON,
-    ProductChangeToJSONTyped,
-} from './ProductChange';
+import type { ProductChange } from "./ProductChange";
+import { ProductChangeFromJSON, ProductChangeToJSON } from "./ProductChange";
 
 /**
- * 
+ *
  * @export
  * @interface ProductChanges
  */
 export interface ProductChanges {
-    /**
-     * 
-     * @type {Array<ProductChange>}
-     * @memberof ProductChanges
-     */
-    archived?: Array<ProductChange> | null;
-    /**
-     * 
-     * @type {Array<ProductChange>}
-     * @memberof ProductChanges
-     */
-    created?: Array<ProductChange> | null;
-    /**
-     * 
-     * @type {Array<ProductChange>}
-     * @memberof ProductChanges
-     */
-    updated?: Array<ProductChange> | null;
+	/**
+	 *
+	 * @type {Array<ProductChange>}
+	 * @memberof ProductChanges
+	 */
+	archived?: Array<ProductChange> | null;
+	/**
+	 *
+	 * @type {Array<ProductChange>}
+	 * @memberof ProductChanges
+	 */
+	created?: Array<ProductChange> | null;
+	/**
+	 *
+	 * @type {Array<ProductChange>}
+	 * @memberof ProductChanges
+	 */
+	updated?: Array<ProductChange> | null;
 }
 
 /**
  * Check if a given object implements the ProductChanges interface.
  */
-export function instanceOfProductChanges(value: object): value is ProductChanges {
-    return true;
+export function instanceOfProductChanges(
+	value: object,
+): value is ProductChanges {
+	return true;
 }
 
 export function ProductChangesFromJSON(json: any): ProductChanges {
-    return ProductChangesFromJSONTyped(json, false);
+	return ProductChangesFromJSONTyped(json, false);
 }
 
-export function ProductChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProductChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'archived': json['archived'] == null ? undefined : ((json['archived'] as Array<any>).map(ProductChangeFromJSON)),
-        'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(ProductChangeFromJSON)),
-        'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(ProductChangeFromJSON)),
-    };
+export function ProductChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ProductChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		archived:
+			json["archived"] == null
+				? undefined
+				: (json["archived"] as Array<any>).map(ProductChangeFromJSON),
+		created:
+			json["created"] == null
+				? undefined
+				: (json["created"] as Array<any>).map(ProductChangeFromJSON),
+		updated:
+			json["updated"] == null
+				? undefined
+				: (json["updated"] as Array<any>).map(ProductChangeFromJSON),
+	};
 }
 
 export function ProductChangesToJSON(json: any): ProductChanges {
-    return ProductChangesToJSONTyped(json, false);
+	return ProductChangesToJSONTyped(json, false);
 }
 
-export function ProductChangesToJSONTyped(value?: ProductChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ProductChangesToJSONTyped(
+	value?: ProductChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'archived': value['archived'] == null ? undefined : ((value['archived'] as Array<any>).map(ProductChangeToJSON)),
-        'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(ProductChangeToJSON)),
-        'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(ProductChangeToJSON)),
-    };
+	return {
+		archived:
+			value["archived"] == null
+				? undefined
+				: (value["archived"] as Array<any>).map(ProductChangeToJSON),
+		created:
+			value["created"] == null
+				? undefined
+				: (value["created"] as Array<any>).map(ProductChangeToJSON),
+		updated:
+			value["updated"] == null
+				? undefined
+				: (value["updated"] as Array<any>).map(ProductChangeToJSON),
+	};
 }
-

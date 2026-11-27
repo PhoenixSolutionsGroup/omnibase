@@ -12,64 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface MeterCustomerMapping
  */
 export interface MeterCustomerMapping {
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterCustomerMapping
-     */
-    eventPayloadKey: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterCustomerMapping
-     */
-    type: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterCustomerMapping
+	 */
+	eventPayloadKey: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterCustomerMapping
+	 */
+	type: string;
 }
 
 /**
  * Check if a given object implements the MeterCustomerMapping interface.
  */
-export function instanceOfMeterCustomerMapping(value: object): value is MeterCustomerMapping {
-    if (!('eventPayloadKey' in value) || value['eventPayloadKey'] === undefined) return false;
-    if (!('type' in value) || value['type'] === undefined) return false;
-    return true;
+export function instanceOfMeterCustomerMapping(
+	value: object,
+): value is MeterCustomerMapping {
+	if (!("eventPayloadKey" in value) || value["eventPayloadKey"] === undefined)
+		return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
+	return true;
 }
 
 export function MeterCustomerMappingFromJSON(json: any): MeterCustomerMapping {
-    return MeterCustomerMappingFromJSONTyped(json, false);
+	return MeterCustomerMappingFromJSONTyped(json, false);
 }
 
-export function MeterCustomerMappingFromJSONTyped(json: any, ignoreDiscriminator: boolean): MeterCustomerMapping {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'eventPayloadKey': json['event_payload_key'],
-        'type': json['type'],
-    };
+export function MeterCustomerMappingFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MeterCustomerMapping {
+	if (json == null) {
+		return json;
+	}
+	return {
+		eventPayloadKey: json["event_payload_key"],
+		type: json["type"],
+	};
 }
 
 export function MeterCustomerMappingToJSON(json: any): MeterCustomerMapping {
-    return MeterCustomerMappingToJSONTyped(json, false);
+	return MeterCustomerMappingToJSONTyped(json, false);
 }
 
-export function MeterCustomerMappingToJSONTyped(value?: MeterCustomerMapping | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MeterCustomerMappingToJSONTyped(
+	value?: MeterCustomerMapping | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'event_payload_key': value['eventPayloadKey'],
-        'type': value['type'],
-    };
+	return {
+		event_payload_key: value["eventPayloadKey"],
+		type: value["type"],
+	};
 }
-

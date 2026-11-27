@@ -1,541 +1,540 @@
 "use client";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+	ChevronDown,
+	Cloud,
+	Copy,
+	Database,
+	Eye,
+	EyeOff,
+	Globe,
+	Loader2,
+	Mail,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { Project } from "../dashboard/project-provisioning-dashboard";
 import {
-  Database,
-  Globe,
-  Cloud,
-  Mail,
-  Boxes,
-  Eye,
-  EyeOff,
-  Loader2,
-  ChevronDown,
-  Copy,
-} from "lucide-react";
-import { Project } from "../dashboard/project-provisioning-dashboard";
-import { toast } from "sonner";
-import { useState } from "react";
-import {
-  fetchProjectSecretKey,
-  fetchPostgrestServiceKey,
-  fetchDatabasePassword,
-  fetchDatabaseConnectionString,
-  fetchStorageCredentials,
+	fetchDatabaseConnectionString,
+	fetchDatabasePassword,
+	fetchPostgrestServiceKey,
+	fetchProjectSecretKey,
+	fetchStorageCredentials,
 } from "../settings/actions";
-import { Button } from "@/components/ui/button";
 
 interface ConfigurationClientProps {
-  project: Project;
+	project: Project;
 }
 
 interface ConfigItem {
-  label: string;
-  value: string | null | undefined;
-  sensitive?: boolean;
-  encryptedField?:
-    | "service_key"
-    | "postgrest_service_key"
-    | "database_password"
-    | "connection_string"
-    | "storage_secret_key";
+	label: string;
+	value: string | null | undefined;
+	sensitive?: boolean;
+	encryptedField?:
+		| "service_key"
+		| "postgrest_service_key"
+		| "database_password"
+		| "connection_string"
+		| "storage_secret_key";
 }
 
 interface ConfigSection {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  provider?: string | null;
-  items: ConfigItem[];
+	title: string;
+	description: string;
+	icon: React.ReactNode;
+	provider?: string | null;
+	items: ConfigItem[];
 }
 
 export function ConfigurationClient({ project }: ConfigurationClientProps) {
-  const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(
-    new Set(),
-  );
-  const [decryptedValues, setDecryptedValues] = useState<Map<string, string>>(
-    new Map(),
-  );
-  const [loadingSecrets, setLoadingSecrets] = useState<Set<string>>(new Set());
-  const [errors, setErrors] = useState<Map<string, string>>(new Map());
-  const [copyingEnv, setCopyingEnv] = useState(false);
+	const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(
+		new Set(),
+	);
+	const [decryptedValues, setDecryptedValues] = useState<Map<string, string>>(
+		new Map(),
+	);
+	const [loadingSecrets, setLoadingSecrets] = useState<Set<string>>(new Set());
+	const [errors, setErrors] = useState<Map<string, string>>(new Map());
+	const [copyingEnv, setCopyingEnv] = useState(false);
 
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard`);
-  };
+	const handleCopy = (text: string, label: string) => {
+		navigator.clipboard.writeText(text);
+		toast.success(`${label} copied to clipboard`);
+	};
 
-  const copyOmnibaseEnv = async () => {
-    setCopyingEnv(true);
-    try {
-      // Fetch the API service key
-      const result = await fetchProjectSecretKey(project.id);
+	const copyOmnibaseEnv = async () => {
+		setCopyingEnv(true);
+		try {
+			// Fetch the API service key
+			const result = await fetchProjectSecretKey(project.id);
 
-      let serviceKey = "UNAUTHORIZED";
-      if (result?.success && result.serviceKey) {
-        serviceKey = result.serviceKey;
-      }
+			let serviceKey = "UNAUTHORIZED";
+			if (result?.success && result.serviceKey) {
+				serviceKey = result.serviceKey;
+			}
 
-      const envVars = [
-        `OMNIBASE_BRANCH_ID=${project.id}`,
-        `OMNIBASE_API_URL=${project.api_url || ""}`,
-        `OMNIBASE_SERVICE_KEY=${serviceKey}`,
-      ].join("\n");
+			const envVars = [
+				`OMNIBASE_BRANCH_ID=${project.id}`,
+				`OMNIBASE_API_URL=${project.api_url || ""}`,
+				`OMNIBASE_SERVICE_KEY=${serviceKey}`,
+			].join("\n");
 
-      navigator.clipboard.writeText(envVars);
+			navigator.clipboard.writeText(envVars);
 
-      if (!result?.success) {
-        toast.warning(
-          "OmniBase env copied with placeholder for unauthorized keys",
-        );
-      } else {
-        toast.success("OmniBase environment variables copied to clipboard");
-      }
-    } catch (error) {
-      toast.error("Failed to copy environment variables");
-    } finally {
-      setCopyingEnv(false);
-    }
-  };
+			if (!result?.success) {
+				toast.warning(
+					"OmniBase env copied with placeholder for unauthorized keys",
+				);
+			} else {
+				toast.success("OmniBase environment variables copied to clipboard");
+			}
+		} catch (error) {
+			toast.error("Failed to copy environment variables");
+		} finally {
+			setCopyingEnv(false);
+		}
+	};
 
-  const copyAllEnv = async () => {
-    setCopyingEnv(true);
-    let hasUnauthorized = false;
+	const copyAllEnv = async () => {
+		setCopyingEnv(true);
+		let hasUnauthorized = false;
 
-    try {
-      // Fetch all sensitive values in parallel
-      const [
-        serviceKeyResult,
-        dbPasswordResult,
-        connStringResult,
-        storageResult,
-      ] = await Promise.all([
-        fetchProjectSecretKey(project.id),
-        fetchDatabasePassword(project.id),
-        fetchDatabaseConnectionString(project.id),
-        fetchStorageCredentials(project.id),
-      ]);
+		try {
+			// Fetch all sensitive values in parallel
+			const [
+				serviceKeyResult,
+				dbPasswordResult,
+				connStringResult,
+				storageResult,
+			] = await Promise.all([
+				fetchProjectSecretKey(project.id),
+				fetchDatabasePassword(project.id),
+				fetchDatabaseConnectionString(project.id),
+				fetchStorageCredentials(project.id),
+			]);
 
-      // Helper to get value or UNAUTHORIZED
-      const getValue = (
-        result: { success: boolean; [key: string]: any } | undefined,
-        key: string,
-      ) => {
-        if (result?.success && result[key]) {
-          return result[key];
-        }
-        hasUnauthorized = true;
-        return "UNAUTHORIZED";
-      };
+			// Helper to get value or UNAUTHORIZED
+			const getValue = (
+				result: { success: boolean; [key: string]: any } | undefined,
+				key: string,
+			) => {
+				if (result?.success && result[key]) {
+					return result[key];
+				}
+				hasUnauthorized = true;
+				return "UNAUTHORIZED";
+			};
 
-      const envVars: string[] = [];
+			const envVars: string[] = [];
 
-      // OmniBase core
-      envVars.push(`OMNIBASE_BRANCH_ID=${project.id}`);
-      if (project.api_url) envVars.push(`OMNIBASE_API_URL=${project.api_url}`);
-      envVars.push(
-        `OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`,
-      );
+			// OmniBase core
+			envVars.push(`OMNIBASE_BRANCH_ID=${project.id}`);
+			if (project.api_url) envVars.push(`OMNIBASE_API_URL=${project.api_url}`);
+			envVars.push(
+				`OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`,
+			);
 
-      // Database
-      if (project.postgrest_url)
-        envVars.push(`OMNIBASE_POSTGREST_URL=${project.postgrest_url}`);
-      if (project.database_host)
-        envVars.push(`OMNIBASE_DATABASE_HOST=${project.database_host}`);
-      if (project.database_port)
-        envVars.push(`OMNIBASE_DATABASE_PORT=${project.database_port}`);
-      if (project.database_name)
-        envVars.push(`OMNIBASE_DATABASE_NAME=${project.database_name}`);
-      if (project.database_username)
-        envVars.push(`OMNIBASE_DATABASE_USERNAME=${project.database_username}`);
-      envVars.push(
-        `OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`,
-      );
-      envVars.push(
-        `OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`,
-      );
+			// Database
+			if (project.postgrest_url)
+				envVars.push(`OMNIBASE_POSTGREST_URL=${project.postgrest_url}`);
+			if (project.database_host)
+				envVars.push(`OMNIBASE_DATABASE_HOST=${project.database_host}`);
+			if (project.database_port)
+				envVars.push(`OMNIBASE_DATABASE_PORT=${project.database_port}`);
+			if (project.database_name)
+				envVars.push(`OMNIBASE_DATABASE_NAME=${project.database_name}`);
+			if (project.database_username)
+				envVars.push(`OMNIBASE_DATABASE_USERNAME=${project.database_username}`);
+			envVars.push(
+				`OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`,
+			);
+			envVars.push(
+				`OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`,
+			);
 
-      // Storage
-      if (project.storage_bucket_name)
-        envVars.push(`OMNIBASE_STORAGE_BUCKET=${project.storage_bucket_name}`);
-      if (project.storage_endpoint)
-        envVars.push(`OMNIBASE_STORAGE_ENDPOINT=${project.storage_endpoint}`);
-      if (project.storage_access_key)
-        envVars.push(
-          `OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`,
-        );
-      envVars.push(
-        `OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`,
-      );
+			// Storage
+			if (project.storage_bucket_name)
+				envVars.push(`OMNIBASE_STORAGE_BUCKET=${project.storage_bucket_name}`);
+			if (project.storage_endpoint)
+				envVars.push(`OMNIBASE_STORAGE_ENDPOINT=${project.storage_endpoint}`);
+			if (project.storage_access_key)
+				envVars.push(
+					`OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`,
+				);
+			envVars.push(
+				`OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`,
+			);
 
-      // Email
-      // Email is configured via SES (tenant name + config set); no per-branch token.
+			// Email
+			// Email is configured via SES (tenant name + config set); no per-branch token.
 
-      // Worker URLs are now managed per-deployment — use 'cloud workers list' to see them
+			// Worker URLs are now managed per-deployment — use 'cloud workers list' to see them
 
-      navigator.clipboard.writeText(envVars.join("\n"));
+			navigator.clipboard.writeText(envVars.join("\n"));
 
-      if (hasUnauthorized) {
-        toast.warning(
-          "Environment variables copied. Some values show UNAUTHORIZED due to missing permissions.",
-        );
-      } else {
-        toast.success("All environment variables copied to clipboard");
-      }
-    } catch (error) {
-      toast.error("Failed to copy environment variables");
-    } finally {
-      setCopyingEnv(false);
-    }
-  };
+			if (hasUnauthorized) {
+				toast.warning(
+					"Environment variables copied. Some values show UNAUTHORIZED due to missing permissions.",
+				);
+			} else {
+				toast.success("All environment variables copied to clipboard");
+			}
+		} catch (error) {
+			toast.error("Failed to copy environment variables");
+		} finally {
+			setCopyingEnv(false);
+		}
+	};
 
-  const toggleReveal = async (key: string, encryptedField?: string) => {
-    const isCurrentlyRevealed = revealedSecrets.has(key);
+	const toggleReveal = async (key: string, encryptedField?: string) => {
+		const isCurrentlyRevealed = revealedSecrets.has(key);
 
-    // If hiding, just remove from revealed set
-    if (isCurrentlyRevealed) {
-      setRevealedSecrets((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(key);
-        return newSet;
-      });
-      return;
-    }
+		// If hiding, just remove from revealed set
+		if (isCurrentlyRevealed) {
+			setRevealedSecrets((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(key);
+				return newSet;
+			});
+			return;
+		}
 
-    // If revealing and we already have the decrypted value, just show it
-    if (decryptedValues.has(key)) {
-      setRevealedSecrets((prev) => {
-        const newSet = new Set(prev);
-        newSet.add(key);
-        return newSet;
-      });
-      return;
-    }
+		// If revealing and we already have the decrypted value, just show it
+		if (decryptedValues.has(key)) {
+			setRevealedSecrets((prev) => {
+				const newSet = new Set(prev);
+				newSet.add(key);
+				return newSet;
+			});
+			return;
+		}
 
-    // Otherwise, fetch the decrypted value from the backend
-    if (!encryptedField) {
-      return;
-    }
+		// Otherwise, fetch the decrypted value from the backend
+		if (!encryptedField) {
+			return;
+		}
 
-    setLoadingSecrets((prev) => new Set(prev).add(key));
-    setErrors((prev) => {
-      const newMap = new Map(prev);
-      newMap.delete(key);
-      return newMap;
-    });
+		setLoadingSecrets((prev) => new Set(prev).add(key));
+		setErrors((prev) => {
+			const newMap = new Map(prev);
+			newMap.delete(key);
+			return newMap;
+		});
 
-    try {
-      let result:
-        | {
-            success: boolean;
-            error?: string;
-            serviceKey?: string;
-            password?: string;
-            connectionString?: string;
-            token?: string;
-            accessKey?: string;
-            secretKey?: string;
-            endpoint?: string;
-            bucketName?: string;
-          }
-        | undefined;
-      switch (encryptedField) {
-        case "service_key":
-          result = await fetchProjectSecretKey(project.id);
-          if (result?.success && result.serviceKey) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.serviceKey!),
-            );
-          }
-          break;
-        case "postgrest_service_key":
-          result = await fetchPostgrestServiceKey(project.id);
-          if (result?.success && result.serviceKey) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.serviceKey!),
-            );
-          }
-          break;
-        case "database_password":
-          result = await fetchDatabasePassword(project.id);
-          if (result?.success && result.password) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.password!),
-            );
-          }
-          break;
-        case "connection_string":
-          result = await fetchDatabaseConnectionString(project.id);
-          if (result?.success && result.connectionString) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.connectionString!),
-            );
-          }
-          break;
-        case "storage_secret_key":
-          result = await fetchStorageCredentials(project.id);
-          if (result?.success && result.secretKey) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.secretKey!),
-            );
-          }
-          break;
-      }
+		try {
+			let result:
+				| {
+						success: boolean;
+						error?: string;
+						serviceKey?: string;
+						password?: string;
+						connectionString?: string;
+						token?: string;
+						accessKey?: string;
+						secretKey?: string;
+						endpoint?: string;
+						bucketName?: string;
+				  }
+				| undefined;
+			switch (encryptedField) {
+				case "service_key":
+					result = await fetchProjectSecretKey(project.id);
+					if (result?.success && result.serviceKey) {
+						setDecryptedValues((prev) =>
+							new Map(prev).set(key, result!.serviceKey!),
+						);
+					}
+					break;
+				case "postgrest_service_key":
+					result = await fetchPostgrestServiceKey(project.id);
+					if (result?.success && result.serviceKey) {
+						setDecryptedValues((prev) =>
+							new Map(prev).set(key, result!.serviceKey!),
+						);
+					}
+					break;
+				case "database_password":
+					result = await fetchDatabasePassword(project.id);
+					if (result?.success && result.password) {
+						setDecryptedValues((prev) =>
+							new Map(prev).set(key, result!.password!),
+						);
+					}
+					break;
+				case "connection_string":
+					result = await fetchDatabaseConnectionString(project.id);
+					if (result?.success && result.connectionString) {
+						setDecryptedValues((prev) =>
+							new Map(prev).set(key, result!.connectionString!),
+						);
+					}
+					break;
+				case "storage_secret_key":
+					result = await fetchStorageCredentials(project.id);
+					if (result?.success && result.secretKey) {
+						setDecryptedValues((prev) =>
+							new Map(prev).set(key, result!.secretKey!),
+						);
+					}
+					break;
+			}
 
-      if (result && result.success) {
-        setRevealedSecrets((prev) => {
-          const newSet = new Set(prev);
-          newSet.add(key);
-          return newSet;
-        });
-      } else if (result && result.error) {
-        setErrors((prev) => new Map(prev).set(key, result.error!));
-        toast.error(result.error);
-      }
-    } catch (error) {
-      const errorMessage = "Failed to decrypt secret";
-      setErrors((prev) => new Map(prev).set(key, errorMessage));
-      toast.error(errorMessage);
-    } finally {
-      setLoadingSecrets((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(key);
-        return newSet;
-      });
-    }
-  };
+			if (result && result.success) {
+				setRevealedSecrets((prev) => {
+					const newSet = new Set(prev);
+					newSet.add(key);
+					return newSet;
+				});
+			} else if (result && result.error) {
+				setErrors((prev) => new Map(prev).set(key, result.error!));
+				toast.error(result.error);
+			}
+		} catch (error) {
+			const errorMessage = "Failed to decrypt secret";
+			setErrors((prev) => new Map(prev).set(key, errorMessage));
+			toast.error(errorMessage);
+		} finally {
+			setLoadingSecrets((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(key);
+				return newSet;
+			});
+		}
+	};
 
-  const sections: ConfigSection[] = [
-    {
-      title: "API Endpoints",
-      description: "Core API service URLs",
-      icon: <Globe className="h-4 w-4" />,
-      // TODO: Possibly add `provider` here that shows deployment type/name
-      items: [
-        { label: "API URL", value: project.api_url },
-        {
-          label: "REST API Service Key",
-          value: project.api_service_key_encrypted,
-          sensitive: true,
-          encryptedField: "service_key",
-        },
-      ],
-    },
-    {
-      title: "Database",
-      description: "Database connection information",
-      icon: <Database className="h-4 w-4" />,
-      // TODO: Possibly add 'provider' here that shows database provider
-      items: [
-        { label: "PostgREST URL", value: project.postgrest_url },
-        { label: "Database Host", value: project.database_host },
-        { label: "Database Port", value: project.database_port?.toString() },
-        { label: "Database Name", value: project.database_name },
-        { label: "Database Username", value: project.database_username },
-        {
-          label: "Database Password",
-          value: project.database_password_encrypted,
-          sensitive: true,
-          encryptedField: "database_password",
-        },
-        {
-          label: "Connection String",
-          value: project.database_connection_string_encrypted,
-          sensitive: true,
-          encryptedField: "connection_string",
-        },
-      ],
-    },
-    {
-      title: "Storage",
-      description: "Object storage configuration",
-      icon: <Cloud className="h-4 w-4" />,
-      // TODO: Possibly add 'provider' here that shows storage provider
-      items: [
-        { label: "Storage Bucket Name", value: project.storage_bucket_name },
-        { label: "Storage Endpoint", value: project.storage_endpoint },
-        { label: "Storage Access Key", value: project.storage_access_key },
-        {
-          label: "Storage Secret Key",
-          value: project.storage_secret_key_encrypted,
-          sensitive: true,
-          encryptedField: "storage_secret_key",
-        },
-      ],
-    },
-    {
-      title: "Email",
-      description: "Email service configuration",
-      icon: <Mail className="h-5 w-5" />,
-      items: [
-        { label: "SES Tenant Name", value: project.ses_tenant_name },
-        { label: "SES Config Set", value: project.ses_config_set },
-      ],
-    },
-  ];
+	const sections: ConfigSection[] = [
+		{
+			title: "API Endpoints",
+			description: "Core API service URLs",
+			icon: <Globe className="h-4 w-4" />,
+			// TODO: Possibly add `provider` here that shows deployment type/name
+			items: [
+				{ label: "API URL", value: project.api_url },
+				{
+					label: "REST API Service Key",
+					value: project.api_service_key_encrypted,
+					sensitive: true,
+					encryptedField: "service_key",
+				},
+			],
+		},
+		{
+			title: "Database",
+			description: "Database connection information",
+			icon: <Database className="h-4 w-4" />,
+			// TODO: Possibly add 'provider' here that shows database provider
+			items: [
+				{ label: "PostgREST URL", value: project.postgrest_url },
+				{ label: "Database Host", value: project.database_host },
+				{ label: "Database Port", value: project.database_port?.toString() },
+				{ label: "Database Name", value: project.database_name },
+				{ label: "Database Username", value: project.database_username },
+				{
+					label: "Database Password",
+					value: project.database_password_encrypted,
+					sensitive: true,
+					encryptedField: "database_password",
+				},
+				{
+					label: "Connection String",
+					value: project.database_connection_string_encrypted,
+					sensitive: true,
+					encryptedField: "connection_string",
+				},
+			],
+		},
+		{
+			title: "Storage",
+			description: "Object storage configuration",
+			icon: <Cloud className="h-4 w-4" />,
+			// TODO: Possibly add 'provider' here that shows storage provider
+			items: [
+				{ label: "Storage Bucket Name", value: project.storage_bucket_name },
+				{ label: "Storage Endpoint", value: project.storage_endpoint },
+				{ label: "Storage Access Key", value: project.storage_access_key },
+				{
+					label: "Storage Secret Key",
+					value: project.storage_secret_key_encrypted,
+					sensitive: true,
+					encryptedField: "storage_secret_key",
+				},
+			],
+		},
+		{
+			title: "Email",
+			description: "Email service configuration",
+			icon: <Mail className="h-5 w-5" />,
+			items: [
+				{ label: "SES Tenant Name", value: project.ses_tenant_name },
+				{ label: "SES Config Set", value: project.ses_config_set },
+			],
+		},
+	];
 
-  // Filter out sections with no values
-  const visibleSections = sections
-    .map((section) => ({
-      ...section,
-      items: section.items.filter((item) => item.value),
-    }))
-    .filter((section) => section.items.length > 0);
+	// Filter out sections with no values
+	const visibleSections = sections
+		.map((section) => ({
+			...section,
+			items: section.items.filter((item) => item.value),
+		}))
+		.filter((section) => section.items.length > 0);
 
-  return (
-    <div className="max-w-5xl my-8 mx-auto">
-      <div className="mx-16 space-y-4">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Configuration</h1>
-            <p className="text-muted-foreground">
-              View and copy your project configuration and service URLs
-            </p>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-xs font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-              disabled={copyingEnv}
-            >
-              {copyingEnv ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Copy className="mr-2 h-4 w-4" />
-              )}
-              Copy Env
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={copyingEnv ? undefined : copyOmnibaseEnv}
-                className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
-              >
-                Copy OmniBase Env
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={copyingEnv ? undefined : copyAllEnv}
-                className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
-              >
-                Copy All Env Variables
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+	return (
+		<div className="max-w-5xl my-8 mx-auto">
+			<div className="mx-16 space-y-4">
+				{/* Header Section */}
+				<div className="flex flex-col md:flex-row items-start justify-between gap-3">
+					<div>
+						<h1 className="text-xl font-bold tracking-tight">Configuration</h1>
+						<p className="text-muted-foreground">
+							View and copy your project configuration and service URLs
+						</p>
+					</div>
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-xs font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+							disabled={copyingEnv}
+						>
+							{copyingEnv ? (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							) : (
+								<Copy className="mr-2 h-4 w-4" />
+							)}
+							Copy Env
+							<ChevronDown className="ml-2 h-4 w-4" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem
+								onClick={copyingEnv ? undefined : copyOmnibaseEnv}
+								className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+							>
+								Copy OmniBase Env
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={copyingEnv ? undefined : copyAllEnv}
+								className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+							>
+								Copy All Env Variables
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 
-        {/* Configuration Sections */}
-        <div className="space-y-6">
-          {visibleSections.map((section) => (
-            <Card key={section.title}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    {section.icon}
-                    {section.title}
-                  </CardTitle>
-                  {section.provider && (
-                    <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      {section.provider}
-                    </span>
-                  )}
-                </div>
-                <CardDescription>{section.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {section.items.map((item) => {
-                    const secretKey = `${section.title}-${item.label}`;
-                    const isRevealed = revealedSecrets.has(secretKey);
-                    const isLoading = loadingSecrets.has(secretKey);
-                    const error = errors.get(secretKey);
-                    const decryptedValue = decryptedValues.get(secretKey);
+				{/* Configuration Sections */}
+				<div className="space-y-6">
+					{visibleSections.map((section) => (
+						<Card key={section.title}>
+							<CardHeader>
+								<div className="flex items-center justify-between">
+									<CardTitle className="flex items-center gap-2">
+										{section.icon}
+										{section.title}
+									</CardTitle>
+									{section.provider && (
+										<span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+											{section.provider}
+										</span>
+									)}
+								</div>
+								<CardDescription>{section.description}</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div className="space-y-4">
+									{section.items.map((item) => {
+										const secretKey = `${section.title}-${item.label}`;
+										const isRevealed = revealedSecrets.has(secretKey);
+										const isLoading = loadingSecrets.has(secretKey);
+										const error = errors.get(secretKey);
+										const decryptedValue = decryptedValues.get(secretKey);
 
-                    // Determine what value to display
-                    let displayValue = item.value;
-                    if (item.sensitive && item.value) {
-                      if (isLoading) {
-                        displayValue = "Decrypting...";
-                      } else if (error) {
-                        displayValue = `Error: ${error}`;
-                      } else if (isRevealed && decryptedValue) {
-                        displayValue = decryptedValue;
-                      } else if (!isRevealed) {
-                        displayValue = "••••••••••••••••";
-                      }
-                    }
+										// Determine what value to display
+										let displayValue = item.value;
+										if (item.sensitive && item.value) {
+											if (isLoading) {
+												displayValue = "Decrypting...";
+											} else if (error) {
+												displayValue = `Error: ${error}`;
+											} else if (isRevealed && decryptedValue) {
+												displayValue = decryptedValue;
+											} else if (!isRevealed) {
+												displayValue = "••••••••••••••••";
+											}
+										}
 
-                    return (
-                      <div
-                        key={item.label}
-                        className="flex items-start justify-between gap-4 rounded-lg border p-3"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-muted-foreground">
-                            {item.label}
-                          </p>
-                          <p
-                            className={`mt-1 text-sm break-all ${
-                              error ? "text-destructive" : ""
-                            }`}
-                          >
-                            {displayValue}
-                          </p>
-                        </div>
-                        <div className="flex shrink-0 gap-2">
-                          {item.sensitive && item.value && (
-                            <Button
-                              onClick={() =>
-                                toggleReveal(secretKey, item.encryptedField)
-                              }
-                              disabled={isLoading}
-                              title={isRevealed ? "Hide" : "Reveal"}
-                              variant="outline"
-                            >
-                              {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : isRevealed ? (
-                                <EyeOff className="h-4 w-4" />
-                              ) : (
-                                <Eye className="h-4 w-4" />
-                              )}
-                            </Button>
-                          )}
-                          <Button
-                            onClick={() =>
-                              handleCopy(
-                                item.sensitive && isRevealed && decryptedValue
-                                  ? decryptedValue
-                                  : item.value || "",
-                                item.label,
-                              )
-                            }
-                            disabled={item.sensitive && !isRevealed}
-                            variant="outline"
-                          >
-                            Copy
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+										return (
+											<div
+												key={item.label}
+												className="flex items-start justify-between gap-4 rounded-lg border p-3"
+											>
+												<div className="min-w-0 flex-1">
+													<p className="text-sm font-medium text-muted-foreground">
+														{item.label}
+													</p>
+													<p
+														className={`mt-1 text-sm break-all ${
+															error ? "text-destructive" : ""
+														}`}
+													>
+														{displayValue}
+													</p>
+												</div>
+												<div className="flex shrink-0 gap-2">
+													{item.sensitive && item.value && (
+														<Button
+															onClick={() =>
+																toggleReveal(secretKey, item.encryptedField)
+															}
+															disabled={isLoading}
+															title={isRevealed ? "Hide" : "Reveal"}
+															variant="outline"
+														>
+															{isLoading ? (
+																<Loader2 className="h-4 w-4 animate-spin" />
+															) : isRevealed ? (
+																<EyeOff className="h-4 w-4" />
+															) : (
+																<Eye className="h-4 w-4" />
+															)}
+														</Button>
+													)}
+													<Button
+														onClick={() =>
+															handleCopy(
+																item.sensitive && isRevealed && decryptedValue
+																	? decryptedValue
+																	: item.value || "",
+																item.label,
+															)
+														}
+														disabled={item.sensitive && !isRevealed}
+														variant="outline"
+													>
+														Copy
+													</Button>
+												</div>
+											</div>
+										);
+									})}
+								</div>
+							</CardContent>
+						</Card>
+					))}
+				</div>
+			</div>
+		</div>
+	);
 }

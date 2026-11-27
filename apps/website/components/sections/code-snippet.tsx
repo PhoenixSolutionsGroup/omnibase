@@ -1,10 +1,10 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeBlock } from "@/components/code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const codeExamples = {
-  tenant: {
-    language: "typescript",
-    code: `import { Configuration, V1AuthApi, V1TenantsApi } from '@omnibase/core-js';
+	tenant: {
+		language: "typescript",
+		code: `import { Configuration, V1AuthApi, V1TenantsApi } from '@omnibase/core-js';
 
 const config = new Configuration({
   basePath: 'https://api.omnibase.tech',
@@ -22,10 +22,10 @@ const { data } = await tenantsApi.createTenant({
 
 console.log('Tenant:', data.data.tenant.id);
 console.log('Stripe Customer:', data.data.tenant.stripe_customer_id);`,
-  },
-  permission: {
-    language: "typescript",
-    code: `import { Configuration, V1PermissionsApi } from '@omnibase/core-js';
+	},
+	permission: {
+		language: "typescript",
+		code: `import { Configuration, V1PermissionsApi } from '@omnibase/core-js';
 
 const permissionsApi = new V1PermissionsApi(config);
 
@@ -43,10 +43,10 @@ const { data } = await permissionsApi.checkPermission({
 if (data.data.allowed) {
   // User can write to this project
 }`,
-  },
-  stripe: {
-    language: "json",
-    code: `{
+	},
+	stripe: {
+		language: "json",
+		code: `{
   "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
   "version": "1.0.0",
   "products": [
@@ -66,45 +66,45 @@ if (data.data.allowed) {
     }
   ]
 }`,
-  },
+	},
 };
 
 export function CodeSnippetSection() {
-  return (
-    <section className="py-20 bg-muted/30">
-      <div className="container mx-auto max-w-6xl px-4">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Developer-friendly by design
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            With our intuitive UI, comprehensive SDKs, and powerful APIs, you
-            can focus on growing your business while we handle the
-            infrastructure.
-          </p>
-        </div>
+	return (
+		<section className="py-20 bg-muted/30">
+			<div className="container mx-auto max-w-6xl px-4">
+				<div className="text-center">
+					<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+						Developer-friendly by design
+					</h2>
+					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+						With our intuitive UI, comprehensive SDKs, and powerful APIs, you
+						can focus on growing your business while we handle the
+						infrastructure.
+					</p>
+				</div>
 
-        <div className="mt-12 mx-auto max-w-3xl">
-          <Tabs defaultValue="tenant" className="w-full ">
-            <TabsList className="grid w-full grid-cols-3 ">
-              <TabsTrigger value="tenant" className="cursor-pointer">
-                Multi-Tenancy
-              </TabsTrigger>
-              <TabsTrigger value="permission" className="cursor-pointer">
-                Permissions
-              </TabsTrigger>
-              <TabsTrigger value="stripe" className="cursor-pointer">
-                Stripe Config
-              </TabsTrigger>
-            </TabsList>
-            {Object.entries(codeExamples).map(([key, { language, code }]) => (
-              <TabsContent key={key} value={key} className="mt-4">
-                <CodeBlock code={code} language={language} />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      </div>
-    </section>
-  );
+				<div className="mt-12 mx-auto max-w-3xl">
+					<Tabs defaultValue="tenant" className="w-full ">
+						<TabsList className="grid w-full grid-cols-3 ">
+							<TabsTrigger value="tenant" className="cursor-pointer">
+								Multi-Tenancy
+							</TabsTrigger>
+							<TabsTrigger value="permission" className="cursor-pointer">
+								Permissions
+							</TabsTrigger>
+							<TabsTrigger value="stripe" className="cursor-pointer">
+								Stripe Config
+							</TabsTrigger>
+						</TabsList>
+						{Object.entries(codeExamples).map(([key, { language, code }]) => (
+							<TabsContent key={key} value={key} className="mt-4">
+								<CodeBlock code={code} language={language} />
+							</TabsContent>
+						))}
+					</Tabs>
+				</div>
+			</div>
+		</section>
+	);
 }

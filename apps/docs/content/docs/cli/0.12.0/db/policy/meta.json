@@ -1,7 +1,4 @@
 {
-  "title": "Policy",
-  "pages": [
-    "typegen",
-    "new"
-  ]
+	"title": "Policy",
+	"pages": ["typegen", "new"]
 }

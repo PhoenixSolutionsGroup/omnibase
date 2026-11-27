@@ -1,48 +1,44 @@
-
 # Product
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`description` | string
-`id` | string
-`metadata` | { [key: string]: string; }
-`name` | string
-`prices` | [Array&lt;Price&gt;](Price.md)
-`stripeId` | string
-`type` | string
-`ui` | [ProductUI](ProductUI.md)
+| Name          | Type                           |
+| ------------- | ------------------------------ |
+| `description` | string                         |
+| `id`          | string                         |
+| `metadata`    | { [key: string]: string; }     |
+| `name`        | string                         |
+| `prices`      | [Array&lt;Price&gt;](Price.md) |
+| `stripeId`    | string                         |
+| `type`        | string                         |
+| `ui`          | [ProductUI](ProductUI.md)      |
 
 ## Example
 
 ```typescript
-import type { Product } from '@omnibase/core-js'
+import type { Product } from "@omnibase/core-js";
 
 // TODO: Update the object below with actual values
 const example = {
-  "description": null,
-  "id": null,
-  "metadata": null,
-  "name": null,
-  "prices": null,
-  "stripeId": null,
-  "type": null,
-  "ui": null,
-} satisfies Product
+	description: null,
+	id: null,
+	metadata: null,
+	name: null,
+	prices: null,
+	stripeId: null,
+	type: null,
+	ui: null,
+} satisfies Product;
 
-console.log(example)
+console.log(example);
 
 // Convert the instance to a JSON string
-const exampleJSON: string = JSON.stringify(example)
-console.log(exampleJSON)
+const exampleJSON: string = JSON.stringify(example);
+console.log(exampleJSON);
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as Product
-console.log(exampleParsed)
+const exampleParsed = JSON.parse(exampleJSON) as Product;
+console.log(exampleParsed);
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

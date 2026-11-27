@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface UpdateRoleRequest
  */
 export interface UpdateRoleRequest {
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof UpdateRoleRequest
-     */
-    permissions: Array<string> | null;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof UpdateRoleRequest
+	 */
+	permissions: Array<string> | null;
 }
 
 /**
  * Check if a given object implements the UpdateRoleRequest interface.
  */
-export function instanceOfUpdateRoleRequest(value: object): value is UpdateRoleRequest {
-    if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    return true;
+export function instanceOfUpdateRoleRequest(
+	value: object,
+): value is UpdateRoleRequest {
+	if (!("permissions" in value) || value["permissions"] === undefined)
+		return false;
+	return true;
 }
 
 export function UpdateRoleRequestFromJSON(json: any): UpdateRoleRequest {
-    return UpdateRoleRequestFromJSONTyped(json, false);
+	return UpdateRoleRequestFromJSONTyped(json, false);
 }
 
-export function UpdateRoleRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpdateRoleRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'permissions': json['permissions'] == null ? null : json['permissions'],
-    };
+export function UpdateRoleRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpdateRoleRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		permissions: json["permissions"] == null ? null : json["permissions"],
+	};
 }
 
 export function UpdateRoleRequestToJSON(json: any): UpdateRoleRequest {
-    return UpdateRoleRequestToJSONTyped(json, false);
+	return UpdateRoleRequestToJSONTyped(json, false);
 }
 
-export function UpdateRoleRequestToJSONTyped(value?: UpdateRoleRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpdateRoleRequestToJSONTyped(
+	value?: UpdateRoleRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'permissions': value['permissions'],
-    };
+	return {
+		permissions: value["permissions"],
+	};
 }
-

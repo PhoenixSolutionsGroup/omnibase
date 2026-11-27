@@ -12,90 +12,91 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { SubjectSetRequest } from './SubjectSetRequest';
+import type { SubjectSetRequest } from "./SubjectSetRequest";
 import {
-    SubjectSetRequestFromJSON,
-    SubjectSetRequestFromJSONTyped,
-    SubjectSetRequestToJSON,
-    SubjectSetRequestToJSONTyped,
-} from './SubjectSetRequest';
+	SubjectSetRequestFromJSON,
+	SubjectSetRequestToJSON,
+} from "./SubjectSetRequest";
 
 /**
- * 
+ *
  * @export
  * @interface CheckRequest
  */
 export interface CheckRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CheckRequest
-     */
-    namespace: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CheckRequest
-     */
-    object: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CheckRequest
-     */
-    relation: string;
-    /**
-     * 
-     * @type {SubjectSetRequest}
-     * @memberof CheckRequest
-     */
-    subjectSet: SubjectSetRequest;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CheckRequest
+	 */
+	namespace: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CheckRequest
+	 */
+	object: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CheckRequest
+	 */
+	relation: string;
+	/**
+	 *
+	 * @type {SubjectSetRequest}
+	 * @memberof CheckRequest
+	 */
+	subjectSet: SubjectSetRequest;
 }
 
 /**
  * Check if a given object implements the CheckRequest interface.
  */
 export function instanceOfCheckRequest(value: object): value is CheckRequest {
-    if (!('namespace' in value) || value['namespace'] === undefined) return false;
-    if (!('object' in value) || value['object'] === undefined) return false;
-    if (!('relation' in value) || value['relation'] === undefined) return false;
-    if (!('subjectSet' in value) || value['subjectSet'] === undefined) return false;
-    return true;
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("relation" in value) || value["relation"] === undefined) return false;
+	if (!("subjectSet" in value) || value["subjectSet"] === undefined)
+		return false;
+	return true;
 }
 
 export function CheckRequestFromJSON(json: any): CheckRequest {
-    return CheckRequestFromJSONTyped(json, false);
+	return CheckRequestFromJSONTyped(json, false);
 }
 
-export function CheckRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CheckRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'namespace': json['namespace'],
-        'object': json['object'],
-        'relation': json['relation'],
-        'subjectSet': SubjectSetRequestFromJSON(json['subject_set']),
-    };
+export function CheckRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CheckRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		namespace: json["namespace"],
+		object: json["object"],
+		relation: json["relation"],
+		subjectSet: SubjectSetRequestFromJSON(json["subject_set"]),
+	};
 }
 
 export function CheckRequestToJSON(json: any): CheckRequest {
-    return CheckRequestToJSONTyped(json, false);
+	return CheckRequestToJSONTyped(json, false);
 }
 
-export function CheckRequestToJSONTyped(value?: CheckRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CheckRequestToJSONTyped(
+	value?: CheckRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'namespace': value['namespace'],
-        'object': value['object'],
-        'relation': value['relation'],
-        'subject_set': SubjectSetRequestToJSON(value['subjectSet']),
-    };
+	return {
+		namespace: value["namespace"],
+		object: value["object"],
+		relation: value["relation"],
+		subject_set: SubjectSetRequestToJSON(value["subjectSet"]),
+	};
 }
-

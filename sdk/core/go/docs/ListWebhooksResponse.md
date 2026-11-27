@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Count** | **int64** |  | 
-**Webhooks** | [**[]ListStripeWebhooksRow**](ListStripeWebhooksRow.md) |  | 
+| Name         | Type                                                    | Description | Notes |
+| ------------ | ------------------------------------------------------- | ----------- | ----- |
+| **Count**    | **int64**                                               |             |
+| **Webhooks** | [**[]ListStripeWebhooksRow**](ListStripeWebhooksRow.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetCount sets Count field to given value.
 
-
 ### GetWebhooks
 
 `func (o *ListWebhooksResponse) GetWebhooks() []ListStripeWebhooksRow`
@@ -65,18 +64,16 @@ and a boolean to check if the value has been set.
 
 SetWebhooks sets Webhooks field to given value.
 
-
 ### SetWebhooksNil
 
 `func (o *ListWebhooksResponse) SetWebhooksNil(b bool)`
 
- SetWebhooksNil sets the value for Webhooks to be an explicit nil
+SetWebhooksNil sets the value for Webhooks to be an explicit nil
 
 ### UnsetWebhooks
+
 `func (o *ListWebhooksResponse) UnsetWebhooks()`
 
 UnsetWebhooks ensures that no value is present for Webhooks, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

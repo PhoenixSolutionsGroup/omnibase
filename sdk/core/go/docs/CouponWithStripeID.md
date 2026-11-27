@@ -2,20 +2,20 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AmountOff** | Pointer to **int64** |  | [optional] 
-**AppliesTo** | Pointer to **[]string** |  | [optional] 
-**Currency** | Pointer to **string** |  | [optional] 
-**Duration** | **string** |  | 
-**DurationInMonths** | Pointer to **int64** |  | [optional] 
-**Id** | **string** |  | 
-**MaxRedemptions** | Pointer to **int64** |  | [optional] 
-**Metadata** | Pointer to **map[string]string** |  | [optional] 
-**Name** | Pointer to **string** |  | [optional] 
-**PercentOff** | Pointer to **float64** |  | [optional] 
-**RedeemBy** | Pointer to **int64** |  | [optional] 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name                 | Type                             | Description | Notes      |
+| -------------------- | -------------------------------- | ----------- | ---------- |
+| **AmountOff**        | Pointer to **int64**             |             | [optional] |
+| **AppliesTo**        | Pointer to **[]string**          |             | [optional] |
+| **Currency**         | Pointer to **string**            |             | [optional] |
+| **Duration**         | **string**                       |             |
+| **DurationInMonths** | Pointer to **int64**             |             | [optional] |
+| **Id**               | **string**                       |             |
+| **MaxRedemptions**   | Pointer to **int64**             |             | [optional] |
+| **Metadata**         | Pointer to **map[string]string** |             | [optional] |
+| **Name**             | Pointer to **string**            |             | [optional] |
+| **PercentOff**       | Pointer to **float64**           |             | [optional] |
+| **RedeemBy**         | Pointer to **int64**             |             | [optional] |
+| **StripeId**         | Pointer to **string**            |             | [optional] |
 
 ## Methods
 
@@ -90,12 +90,14 @@ HasAppliesTo returns a boolean if a field has been set.
 
 `func (o *CouponWithStripeID) SetAppliesToNil(b bool)`
 
- SetAppliesToNil sets the value for AppliesTo to be an explicit nil
+SetAppliesToNil sets the value for AppliesTo to be an explicit nil
 
 ### UnsetAppliesTo
+
 `func (o *CouponWithStripeID) UnsetAppliesTo()`
 
 UnsetAppliesTo ensures that no value is present for AppliesTo, not even an explicit nil
+
 ### GetCurrency
 
 `func (o *CouponWithStripeID) GetCurrency() string`
@@ -140,7 +142,6 @@ and a boolean to check if the value has been set.
 
 SetDuration sets Duration field to given value.
 
-
 ### GetDurationInMonths
 
 `func (o *CouponWithStripeID) GetDurationInMonths() int64`
@@ -184,7 +185,6 @@ and a boolean to check if the value has been set.
 `func (o *CouponWithStripeID) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetMaxRedemptions
 
@@ -336,7 +336,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

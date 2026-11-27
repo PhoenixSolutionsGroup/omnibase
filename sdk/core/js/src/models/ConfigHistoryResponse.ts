@@ -12,79 +12,88 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ConfigHistoryItem } from './ConfigHistoryItem';
+import type { ConfigHistoryItem } from "./ConfigHistoryItem";
 import {
-    ConfigHistoryItemFromJSON,
-    ConfigHistoryItemFromJSONTyped,
-    ConfigHistoryItemToJSON,
-    ConfigHistoryItemToJSONTyped,
-} from './ConfigHistoryItem';
-import type { ConfigHistoryPagination } from './ConfigHistoryPagination';
+	ConfigHistoryItemFromJSON,
+	ConfigHistoryItemToJSON,
+} from "./ConfigHistoryItem";
+import type { ConfigHistoryPagination } from "./ConfigHistoryPagination";
 import {
-    ConfigHistoryPaginationFromJSON,
-    ConfigHistoryPaginationFromJSONTyped,
-    ConfigHistoryPaginationToJSON,
-    ConfigHistoryPaginationToJSONTyped,
-} from './ConfigHistoryPagination';
+	ConfigHistoryPaginationFromJSON,
+	ConfigHistoryPaginationToJSON,
+} from "./ConfigHistoryPagination";
 
 /**
- * 
+ *
  * @export
  * @interface ConfigHistoryResponse
  */
 export interface ConfigHistoryResponse {
-    /**
-     * 
-     * @type {Array<ConfigHistoryItem>}
-     * @memberof ConfigHistoryResponse
-     */
-    configs: Array<ConfigHistoryItem> | null;
-    /**
-     * 
-     * @type {ConfigHistoryPagination}
-     * @memberof ConfigHistoryResponse
-     */
-    pagination: ConfigHistoryPagination;
+	/**
+	 *
+	 * @type {Array<ConfigHistoryItem>}
+	 * @memberof ConfigHistoryResponse
+	 */
+	configs: Array<ConfigHistoryItem> | null;
+	/**
+	 *
+	 * @type {ConfigHistoryPagination}
+	 * @memberof ConfigHistoryResponse
+	 */
+	pagination: ConfigHistoryPagination;
 }
 
 /**
  * Check if a given object implements the ConfigHistoryResponse interface.
  */
-export function instanceOfConfigHistoryResponse(value: object): value is ConfigHistoryResponse {
-    if (!('configs' in value) || value['configs'] === undefined) return false;
-    if (!('pagination' in value) || value['pagination'] === undefined) return false;
-    return true;
+export function instanceOfConfigHistoryResponse(
+	value: object,
+): value is ConfigHistoryResponse {
+	if (!("configs" in value) || value["configs"] === undefined) return false;
+	if (!("pagination" in value) || value["pagination"] === undefined)
+		return false;
+	return true;
 }
 
-export function ConfigHistoryResponseFromJSON(json: any): ConfigHistoryResponse {
-    return ConfigHistoryResponseFromJSONTyped(json, false);
+export function ConfigHistoryResponseFromJSON(
+	json: any,
+): ConfigHistoryResponse {
+	return ConfigHistoryResponseFromJSONTyped(json, false);
 }
 
-export function ConfigHistoryResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigHistoryResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'configs': (json['configs'] == null ? null : (json['configs'] as Array<any>).map(ConfigHistoryItemFromJSON)),
-        'pagination': ConfigHistoryPaginationFromJSON(json['pagination']),
-    };
+export function ConfigHistoryResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ConfigHistoryResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		configs:
+			json["configs"] == null
+				? null
+				: (json["configs"] as Array<any>).map(ConfigHistoryItemFromJSON),
+		pagination: ConfigHistoryPaginationFromJSON(json["pagination"]),
+	};
 }
 
 export function ConfigHistoryResponseToJSON(json: any): ConfigHistoryResponse {
-    return ConfigHistoryResponseToJSONTyped(json, false);
+	return ConfigHistoryResponseToJSONTyped(json, false);
 }
 
-export function ConfigHistoryResponseToJSONTyped(value?: ConfigHistoryResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ConfigHistoryResponseToJSONTyped(
+	value?: ConfigHistoryResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'configs': (value['configs'] == null ? null : (value['configs'] as Array<any>).map(ConfigHistoryItemToJSON)),
-        'pagination': ConfigHistoryPaginationToJSON(value['pagination']),
-    };
+	return {
+		configs:
+			value["configs"] == null
+				? null
+				: (value["configs"] as Array<any>).map(ConfigHistoryItemToJSON),
+		pagination: ConfigHistoryPaginationToJSON(value["pagination"]),
+	};
 }
-

@@ -1,4 +1,5 @@
 ---
+
 title: Tenants
 description: Understanding the tenant model and data isolation
 ---
@@ -16,6 +17,7 @@ A **tenant** is an isolated container for users and data. Think of it as:
 - An **organization** in a developer platform
 
 Each tenant has:
+
 - Its own data, isolated via Row-Level Security
 - A Stripe customer for billing
 - Members with role-based permissions
@@ -74,6 +76,7 @@ Users can belong to multiple tenants. The **active tenant** determines:
 ```
 
 When a user authenticates:
+
 1. Their active tenant is stored in the session
 2. API requests include tenant context
 3. Database queries are automatically filtered
@@ -88,7 +91,7 @@ const tenants = await tenantsApi.listTenants();
 
 // Switch to a different tenant
 await tenantsApi.switchActiveTenant({
-  switchTenantRequest: { tenantId: 'globex' }
+	switchTenantRequest: { tenantId: "globex" },
 });
 
 // Now all queries are scoped to Globex
@@ -123,11 +126,11 @@ SELECT * FROM projects WHERE tenant_id = 'current-tenant-id';
 
 Each tenant has members with roles:
 
-| Role | Access Level |
-|------|--------------|
-| `owner` | Full control, can delete tenant |
-| `admin` | Manage members, view billing |
-| `member` | Standard access |
+| Role     | Access Level                    |
+| -------- | ------------------------------- |
+| `owner`  | Full control, can delete tenant |
+| `admin`  | Manage members, view billing    |
+| `member` | Standard access                 |
 
 ### Member Hierarchy
 

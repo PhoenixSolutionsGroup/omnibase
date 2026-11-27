@@ -1,16 +1,14 @@
 # V1TenantsLifecycleApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**createTenant**](V1TenantsLifecycleApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create a tenant |
-| [**deleteTenant**](V1TenantsLifecycleApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete the current tenant |
-| [**getTenantByID**](V1TenantsLifecycleApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID |
+| Method                                                                                  | HTTP request                                                    | Description                      |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| [**createTenant**](V1TenantsLifecycleApi.md#createtenantoperation)                      | **POST** /api/v1/tenants                                        | Create a tenant                  |
+| [**deleteTenant**](V1TenantsLifecycleApi.md#deletetenant)                               | **DELETE** /api/v1/tenants                                      | Delete the current tenant        |
+| [**getTenantByID**](V1TenantsLifecycleApi.md#gettenantbyid)                             | **GET** /api/v1/tenants/by-id/{tenant_id}                       | Get tenant by ID                 |
 | [**getTenantByStripeCustomerID**](V1TenantsLifecycleApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID |
-| [**switchActiveTenant**](V1TenantsLifecycleApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch the active tenant |
-
-
+| [**switchActiveTenant**](V1TenantsLifecycleApi.md#switchactivetenant)                   | **PUT** /api/v1/tenants/switch-active                           | Switch the active tenant         |
 
 ## createTenant
 
@@ -60,10 +58,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **createTenantRequest** | [CreateTenantRequest](CreateTenantRequest.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **createTenantRequest** | [CreateTenantRequest](CreateTenantRequest.md) |             |       |
 
 ### Return type
 
@@ -78,21 +75,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## deleteTenant
 
@@ -103,32 +99,29 @@ Delete the current tenant
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsLifecycleApi,
-} from '@omnibase/core-js';
-import type { DeleteTenantRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsLifecycleApi } from "@omnibase/core-js";
+import type { DeleteTenantRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsLifecycleApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsLifecycleApi(config);
 
-  try {
-    const data = await api.deleteTenant();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.deleteTenant();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -152,19 +145,18 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getTenantByID
 
@@ -175,31 +167,28 @@ Get tenant by ID
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsLifecycleApi,
-} from '@omnibase/core-js';
-import type { GetTenantByIDRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsLifecycleApi } from "@omnibase/core-js";
+import type { GetTenantByIDRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsLifecycleApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsLifecycleApi(config);
 
-  const body = {
-    // string
-    tenantId: tenantId_example,
-  } satisfies GetTenantByIDRequest;
+	const body = {
+		// string
+		tenantId: tenantId_example,
+	} satisfies GetTenantByIDRequest;
 
-  try {
-    const data = await api.getTenantByID(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getTenantByID(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -208,10 +197,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **tenantId** | `string` |  | [Defaults to `undefined`] |
+| Name         | Type     | Description | Notes                     |
+| ------------ | -------- | ----------- | ------------------------- |
+| **tenantId** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -226,19 +214,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getTenantByStripeCustomerID
 
@@ -249,31 +236,28 @@ Get tenant by Stripe customer ID
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsLifecycleApi,
-} from '@omnibase/core-js';
-import type { GetTenantByStripeCustomerIDRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsLifecycleApi } from "@omnibase/core-js";
+import type { GetTenantByStripeCustomerIDRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsLifecycleApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsLifecycleApi(config);
 
-  const body = {
-    // string
-    stripeCustomerId: stripeCustomerId_example,
-  } satisfies GetTenantByStripeCustomerIDRequest;
+	const body = {
+		// string
+		stripeCustomerId: stripeCustomerId_example,
+	} satisfies GetTenantByStripeCustomerIDRequest;
 
-  try {
-    const data = await api.getTenantByStripeCustomerID(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getTenantByStripeCustomerID(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -282,10 +266,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **stripeCustomerId** | `string` |  | [Defaults to `undefined`] |
+| Name                 | Type     | Description | Notes                     |
+| -------------------- | -------- | ----------- | ------------------------- |
+| **stripeCustomerId** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -300,19 +283,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## switchActiveTenant
 
@@ -362,10 +344,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **switchActiveRequest** | [SwitchActiveRequest](SwitchActiveRequest.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **switchActiveRequest** | [SwitchActiveRequest](SwitchActiveRequest.md) |             |       |
 
 ### Return type
 
@@ -380,16 +361,15 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

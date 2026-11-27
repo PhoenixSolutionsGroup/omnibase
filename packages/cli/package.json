@@ -1,64 +1,64 @@
 {
-  "name": "@omnibase/cli",
-  "version": "0.13.0",
-  "description": "OmniBase CLI - Manage Docker Compose services and environment configuration",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
-  },
-  "main": "dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./db/policies": "./dist/services/db/generate/policies.js",
-    "./db/rls-policies": "./dist/services/db/generate/rls-policies.js",
-    "./db/generate": "./dist/services/db/generate/generate.js"
-  },
-  "bin": {
-    "omnibase": "./dist/index.js"
-  },
-  "files": [
-    "dist/",
-    "templates/",
-    "docker/"
-  ],
-  "scripts": {
-    "build": "rm -rf dist && tsc && chmod +x dist/index.js",
-    "dev": "NODE_ENV=development bun src/index.ts",
-    "test": "bun test",
-    "start": "node dist/index.js",
-    "prepare": "bun run --cwd ../../sdk/core/js build && npm run build"
-  },
-  "keywords": [
-    "cli",
-    "docker",
-    "compose",
-    "omnibase"
-  ],
-  "author": "Phoenix Solutions Group",
-  "license": "MIT",
-  "dependencies": {
-    "@inquirer/prompts": "^8.1.0",
-    "@omnibase/core-js": "workspace:*",
-    "@ory/client": "^1.14.3",
-    "adm-zip": "^0.5.16",
-    "axios": "^1.6.0",
-    "chalk": "^5.6.2",
-    "commander": "^11.1.0",
-    "dotenv": "^16.3.1",
-    "form-data": "^4.0.0",
-    "jszip": "^3.10.1",
-    "ora": "^9.0.0",
-    "smol-toml": "^1.7.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.3.3",
-    "uuid": "^14.0.1"
-  },
-  "devDependencies": {
-    "@prisma/client": "^6.0.0",
-    "@types/adm-zip": "^0.5.8",
-    "@types/bun": "latest",
-    "@types/node": "^20.10.0",
-    "@types/uuid": "^11.0.0",
-    "ts-node": "^10.9.2"
-  }
+	"name": "@omnibase/cli",
+	"version": "0.13.0",
+	"description": "OmniBase CLI - Manage Docker Compose services and environment configuration",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/PhoenixSolutionsGroup/omnibase"
+	},
+	"main": "dist/index.js",
+	"exports": {
+		".": "./dist/index.js",
+		"./db/policies": "./dist/services/db/generate/policies.js",
+		"./db/rls-policies": "./dist/services/db/generate/rls-policies.js",
+		"./db/generate": "./dist/services/db/generate/generate.js"
+	},
+	"bin": {
+		"omnibase": "./dist/index.js"
+	},
+	"files": [
+		"dist/",
+		"templates/",
+		"docker/"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc && chmod +x dist/index.js",
+		"dev": "NODE_ENV=development bun src/index.ts",
+		"test": "bun test",
+		"start": "node dist/index.js",
+		"prepare": "bun run --cwd ../../sdk/core/js build && npm run build"
+	},
+	"keywords": [
+		"cli",
+		"docker",
+		"compose",
+		"omnibase"
+	],
+	"author": "Phoenix Solutions Group",
+	"license": "MIT",
+	"dependencies": {
+		"@inquirer/prompts": "^8.1.0",
+		"@omnibase/core-js": "workspace:*",
+		"@ory/client": "^1.14.3",
+		"adm-zip": "^0.5.16",
+		"axios": "^1.6.0",
+		"chalk": "^5.6.2",
+		"commander": "^11.1.0",
+		"dotenv": "^16.3.1",
+		"form-data": "^4.0.0",
+		"jszip": "^3.10.1",
+		"ora": "^9.0.0",
+		"smol-toml": "^1.7.0",
+		"tsx": "^4.19.0",
+		"typescript": "^5.3.3",
+		"uuid": "^14.0.1"
+	},
+	"devDependencies": {
+		"@prisma/client": "^6.0.0",
+		"@types/adm-zip": "^0.5.8",
+		"@types/bun": "latest",
+		"@types/node": "^20.10.0",
+		"@types/uuid": "^11.0.0",
+		"ts-node": "^10.9.2"
+	}
 }

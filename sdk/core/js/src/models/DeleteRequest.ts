@@ -12,55 +12,57 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface DeleteRequest
  */
 export interface DeleteRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteRequest
-     */
-    userId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteRequest
+	 */
+	userId: string;
 }
 
 /**
  * Check if a given object implements the DeleteRequest interface.
  */
 export function instanceOfDeleteRequest(value: object): value is DeleteRequest {
-    if (!('userId' in value) || value['userId'] === undefined) return false;
-    return true;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
+	return true;
 }
 
 export function DeleteRequestFromJSON(json: any): DeleteRequest {
-    return DeleteRequestFromJSONTyped(json, false);
+	return DeleteRequestFromJSONTyped(json, false);
 }
 
-export function DeleteRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'userId': json['user_id'],
-    };
+export function DeleteRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		userId: json["user_id"],
+	};
 }
 
 export function DeleteRequestToJSON(json: any): DeleteRequest {
-    return DeleteRequestToJSONTyped(json, false);
+	return DeleteRequestToJSONTyped(json, false);
 }
 
-export function DeleteRequestToJSONTyped(value?: DeleteRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteRequestToJSONTyped(
+	value?: DeleteRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'user_id': value['userId'],
-    };
+	return {
+		user_id: value["userId"],
+	};
 }
-

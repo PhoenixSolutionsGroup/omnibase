@@ -12,55 +12,59 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface SwitchActiveResponse
  */
 export interface SwitchActiveResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof SwitchActiveResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SwitchActiveResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the SwitchActiveResponse interface.
  */
-export function instanceOfSwitchActiveResponse(value: object): value is SwitchActiveResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfSwitchActiveResponse(
+	value: object,
+): value is SwitchActiveResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
 export function SwitchActiveResponseFromJSON(json: any): SwitchActiveResponse {
-    return SwitchActiveResponseFromJSONTyped(json, false);
+	return SwitchActiveResponseFromJSONTyped(json, false);
 }
 
-export function SwitchActiveResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SwitchActiveResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function SwitchActiveResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SwitchActiveResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
 export function SwitchActiveResponseToJSON(json: any): SwitchActiveResponse {
-    return SwitchActiveResponseToJSONTyped(json, false);
+	return SwitchActiveResponseToJSONTyped(json, false);
 }
 
-export function SwitchActiveResponseToJSONTyped(value?: SwitchActiveResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SwitchActiveResponseToJSONTyped(
+	value?: SwitchActiveResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

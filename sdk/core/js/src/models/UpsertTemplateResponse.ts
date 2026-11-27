@@ -12,72 +12,75 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { EmailTemplate } from './EmailTemplate';
-import {
-    EmailTemplateFromJSON,
-    EmailTemplateFromJSONTyped,
-    EmailTemplateToJSON,
-    EmailTemplateToJSONTyped,
-} from './EmailTemplate';
+import type { EmailTemplate } from "./EmailTemplate";
+import { EmailTemplateFromJSON, EmailTemplateToJSON } from "./EmailTemplate";
 
 /**
- * 
+ *
  * @export
  * @interface UpsertTemplateResponse
  */
 export interface UpsertTemplateResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertTemplateResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {EmailTemplate}
-     * @memberof UpsertTemplateResponse
-     */
-    template: EmailTemplate;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertTemplateResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {EmailTemplate}
+	 * @memberof UpsertTemplateResponse
+	 */
+	template: EmailTemplate;
 }
 
 /**
  * Check if a given object implements the UpsertTemplateResponse interface.
  */
-export function instanceOfUpsertTemplateResponse(value: object): value is UpsertTemplateResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('template' in value) || value['template'] === undefined) return false;
-    return true;
+export function instanceOfUpsertTemplateResponse(
+	value: object,
+): value is UpsertTemplateResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("template" in value) || value["template"] === undefined) return false;
+	return true;
 }
 
-export function UpsertTemplateResponseFromJSON(json: any): UpsertTemplateResponse {
-    return UpsertTemplateResponseFromJSONTyped(json, false);
+export function UpsertTemplateResponseFromJSON(
+	json: any,
+): UpsertTemplateResponse {
+	return UpsertTemplateResponseFromJSONTyped(json, false);
 }
 
-export function UpsertTemplateResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpsertTemplateResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'template': EmailTemplateFromJSON(json['template']),
-    };
+export function UpsertTemplateResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpsertTemplateResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		template: EmailTemplateFromJSON(json["template"]),
+	};
 }
 
-export function UpsertTemplateResponseToJSON(json: any): UpsertTemplateResponse {
-    return UpsertTemplateResponseToJSONTyped(json, false);
+export function UpsertTemplateResponseToJSON(
+	json: any,
+): UpsertTemplateResponse {
+	return UpsertTemplateResponseToJSONTyped(json, false);
 }
 
-export function UpsertTemplateResponseToJSONTyped(value?: UpsertTemplateResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpsertTemplateResponseToJSONTyped(
+	value?: UpsertTemplateResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'template': EmailTemplateToJSON(value['template']),
-    };
+	return {
+		message: value["message"],
+		template: EmailTemplateToJSON(value["template"]),
+	};
 }
-

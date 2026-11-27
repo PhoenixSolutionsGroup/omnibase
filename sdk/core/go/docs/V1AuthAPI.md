@@ -1,18 +1,16 @@
 # \V1AuthAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CreateUser**](V1AuthAPI.md#CreateUser) | **Post** /api/v1/auth/users | Create a new user identity
-[**GetActiveTenant**](V1AuthAPI.md#GetActiveTenant) | **Get** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user
-[**GetIdentity**](V1AuthAPI.md#GetIdentity) | **Get** /api/v1/auth/identity | Get current identity
-[**GetSession**](V1AuthAPI.md#GetSession) | **Get** /api/v1/auth/session | Get current session
-[**ListTenants**](V1AuthAPI.md#ListTenants) | **Get** /api/v1/auth/tenants | List tenants the authenticated user belongs to
-[**Logout**](V1AuthAPI.md#Logout) | **Post** /api/v1/auth/logout | Logout user
-[**WhoAmI**](V1AuthAPI.md#WhoAmI) | **Get** /api/v1/auth/whoami | Get authenticated user identity
-
-
+| Method                                              | HTTP request                       | Description                                      |
+| --------------------------------------------------- | ---------------------------------- | ------------------------------------------------ |
+| [**CreateUser**](V1AuthAPI.md#CreateUser)           | **Post** /api/v1/auth/users        | Create a new user identity                       |
+| [**GetActiveTenant**](V1AuthAPI.md#GetActiveTenant) | **Get** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user |
+| [**GetIdentity**](V1AuthAPI.md#GetIdentity)         | **Get** /api/v1/auth/identity      | Get current identity                             |
+| [**GetSession**](V1AuthAPI.md#GetSession)           | **Get** /api/v1/auth/session       | Get current session                              |
+| [**ListTenants**](V1AuthAPI.md#ListTenants)         | **Get** /api/v1/auth/tenants       | List tenants the authenticated user belongs to   |
+| [**Logout**](V1AuthAPI.md#Logout)                   | **Post** /api/v1/auth/logout       | Logout user                                      |
+| [**WhoAmI**](V1AuthAPI.md#WhoAmI)                   | **Get** /api/v1/auth/whoami        | Get authenticated user identity                  |
 
 ## CreateUser
 
@@ -49,16 +47,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateUserRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createUserRequest** | [**CreateUserRequest**](CreateUserRequest.md) |  | 
+| Name                  | Type                                          | Description | Notes |
+| --------------------- | --------------------------------------------- | ----------- | ----- |
+| **createUserRequest** | [**CreateUserRequest**](CreateUserRequest.md) |             |
 
 ### Return type
 
@@ -76,7 +71,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetActiveTenant
 
@@ -118,7 +112,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetActiveTenantRequest struct via the builder pattern
 
-
 ### Return type
 
 [**ActiveTenantResponse**](ActiveTenantResponse.md)
@@ -135,7 +128,6 @@ Other parameters are passed through a pointer to a apiGetActiveTenantRequest str
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetIdentity
 
@@ -177,7 +169,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetIdentityRequest struct via the builder pattern
 
-
 ### Return type
 
 [**Identity**](Identity.md)
@@ -194,7 +185,6 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetSession
 
@@ -236,7 +226,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetSessionRequest struct via the builder pattern
 
-
 ### Return type
 
 [**SessionResponse**](SessionResponse.md)
@@ -253,7 +242,6 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ListTenants
 
@@ -295,7 +283,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiListTenantsRequest struct via the builder pattern
 
-
 ### Return type
 
 [**ListTenantsResponse**](ListTenantsResponse.md)
@@ -312,7 +299,6 @@ Other parameters are passed through a pointer to a apiListTenantsRequest struct 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## Logout
 
@@ -349,16 +335,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiLogoutRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **cookie** | **string** |  | 
+| Name       | Type       | Description | Notes |
+| ---------- | ---------- | ----------- | ----- |
+| **cookie** | **string** |             |
 
 ### Return type
 
@@ -376,7 +359,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## WhoAmI
 
@@ -418,7 +400,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiWhoAmIRequest struct via the builder pattern
 
-
 ### Return type
 
 [**WhoAmIBody**](WhoAmIBody.md)
@@ -435,4 +416,3 @@ Other parameters are passed through a pointer to a apiWhoAmIRequest struct via t
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

@@ -12,89 +12,92 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ProductChange
  */
 export interface ProductChange {
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductChange
-     */
-    action: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof ProductChange
-     */
-    details?: Array<string> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductChange
-     */
-    productId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductChange
-     */
-    productName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductChange
-     */
-    stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductChange
+	 */
+	action: string;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof ProductChange
+	 */
+	details?: Array<string> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductChange
+	 */
+	productId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductChange
+	 */
+	productName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductChange
+	 */
+	stripeId?: string;
 }
 
 /**
  * Check if a given object implements the ProductChange interface.
  */
 export function instanceOfProductChange(value: object): value is ProductChange {
-    if (!('action' in value) || value['action'] === undefined) return false;
-    if (!('productId' in value) || value['productId'] === undefined) return false;
-    if (!('productName' in value) || value['productName'] === undefined) return false;
-    return true;
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("productId" in value) || value["productId"] === undefined) return false;
+	if (!("productName" in value) || value["productName"] === undefined)
+		return false;
+	return true;
 }
 
 export function ProductChangeFromJSON(json: any): ProductChange {
-    return ProductChangeFromJSONTyped(json, false);
+	return ProductChangeFromJSONTyped(json, false);
 }
 
-export function ProductChangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProductChange {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'action': json['action'],
-        'details': json['details'] == null ? undefined : json['details'],
-        'productId': json['product_id'],
-        'productName': json['product_name'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-    };
+export function ProductChangeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ProductChange {
+	if (json == null) {
+		return json;
+	}
+	return {
+		action: json["action"],
+		details: json["details"] == null ? undefined : json["details"],
+		productId: json["product_id"],
+		productName: json["product_name"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+	};
 }
 
 export function ProductChangeToJSON(json: any): ProductChange {
-    return ProductChangeToJSONTyped(json, false);
+	return ProductChangeToJSONTyped(json, false);
 }
 
-export function ProductChangeToJSONTyped(value?: ProductChange | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ProductChangeToJSONTyped(
+	value?: ProductChange | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'action': value['action'],
-        'details': value['details'],
-        'product_id': value['productId'],
-        'product_name': value['productName'],
-        'stripe_id': value['stripeId'],
-    };
+	return {
+		action: value["action"],
+		details: value["details"],
+		product_id: value["productId"],
+		product_name: value["productName"],
+		stripe_id: value["stripeId"],
+	};
 }
-

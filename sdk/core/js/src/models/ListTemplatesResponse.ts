@@ -12,72 +12,79 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { EmailTemplate } from './EmailTemplate';
-import {
-    EmailTemplateFromJSON,
-    EmailTemplateFromJSONTyped,
-    EmailTemplateToJSON,
-    EmailTemplateToJSONTyped,
-} from './EmailTemplate';
+import type { EmailTemplate } from "./EmailTemplate";
+import { EmailTemplateFromJSON, EmailTemplateToJSON } from "./EmailTemplate";
 
 /**
- * 
+ *
  * @export
  * @interface ListTemplatesResponse
  */
 export interface ListTemplatesResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof ListTemplatesResponse
-     */
-    count: number;
-    /**
-     * 
-     * @type {Array<EmailTemplate>}
-     * @memberof ListTemplatesResponse
-     */
-    templates: Array<EmailTemplate> | null;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ListTemplatesResponse
+	 */
+	count: number;
+	/**
+	 *
+	 * @type {Array<EmailTemplate>}
+	 * @memberof ListTemplatesResponse
+	 */
+	templates: Array<EmailTemplate> | null;
 }
 
 /**
  * Check if a given object implements the ListTemplatesResponse interface.
  */
-export function instanceOfListTemplatesResponse(value: object): value is ListTemplatesResponse {
-    if (!('count' in value) || value['count'] === undefined) return false;
-    if (!('templates' in value) || value['templates'] === undefined) return false;
-    return true;
+export function instanceOfListTemplatesResponse(
+	value: object,
+): value is ListTemplatesResponse {
+	if (!("count" in value) || value["count"] === undefined) return false;
+	if (!("templates" in value) || value["templates"] === undefined) return false;
+	return true;
 }
 
-export function ListTemplatesResponseFromJSON(json: any): ListTemplatesResponse {
-    return ListTemplatesResponseFromJSONTyped(json, false);
+export function ListTemplatesResponseFromJSON(
+	json: any,
+): ListTemplatesResponse {
+	return ListTemplatesResponseFromJSONTyped(json, false);
 }
 
-export function ListTemplatesResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListTemplatesResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'count': json['count'],
-        'templates': (json['templates'] == null ? null : (json['templates'] as Array<any>).map(EmailTemplateFromJSON)),
-    };
+export function ListTemplatesResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ListTemplatesResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		count: json["count"],
+		templates:
+			json["templates"] == null
+				? null
+				: (json["templates"] as Array<any>).map(EmailTemplateFromJSON),
+	};
 }
 
 export function ListTemplatesResponseToJSON(json: any): ListTemplatesResponse {
-    return ListTemplatesResponseToJSONTyped(json, false);
+	return ListTemplatesResponseToJSONTyped(json, false);
 }
 
-export function ListTemplatesResponseToJSONTyped(value?: ListTemplatesResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ListTemplatesResponseToJSONTyped(
+	value?: ListTemplatesResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'count': value['count'],
-        'templates': (value['templates'] == null ? null : (value['templates'] as Array<any>).map(EmailTemplateToJSON)),
-    };
+	return {
+		count: value["count"],
+		templates:
+			value["templates"] == null
+				? null
+				: (value["templates"] as Array<any>).map(EmailTemplateToJSON),
+	};
 }
-

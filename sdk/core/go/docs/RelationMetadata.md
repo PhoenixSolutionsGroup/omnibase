@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**DisplayName** | **string** |  | 
-**Group** | **NullableString** |  | 
-**Name** | **string** |  | 
-**Roles** | **[]string** |  | 
-**SubGroup** | **NullableString** |  | 
-**Subjects** | **[]string** |  | 
+| Name            | Type               | Description | Notes |
+| --------------- | ------------------ | ----------- | ----- |
+| **DisplayName** | **string**         |             |
+| **Group**       | **NullableString** |             |
+| **Name**        | **string**         |             |
+| **Roles**       | **[]string**       |             |
+| **SubGroup**    | **NullableString** |             |
+| **Subjects**    | **[]string**       |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetDisplayName sets DisplayName field to given value.
 
-
 ### GetGroup
 
 `func (o *RelationMetadata) GetGroup() string`
@@ -69,17 +68,18 @@ and a boolean to check if the value has been set.
 
 SetGroup sets Group field to given value.
 
-
 ### SetGroupNil
 
 `func (o *RelationMetadata) SetGroupNil(b bool)`
 
- SetGroupNil sets the value for Group to be an explicit nil
+SetGroupNil sets the value for Group to be an explicit nil
 
 ### UnsetGroup
+
 `func (o *RelationMetadata) UnsetGroup()`
 
 UnsetGroup ensures that no value is present for Group, not even an explicit nil
+
 ### GetName
 
 `func (o *RelationMetadata) GetName() string`
@@ -98,7 +98,6 @@ and a boolean to check if the value has been set.
 `func (o *RelationMetadata) SetName(v string)`
 
 SetName sets Name field to given value.
-
 
 ### GetRoles
 
@@ -119,17 +118,18 @@ and a boolean to check if the value has been set.
 
 SetRoles sets Roles field to given value.
 
-
 ### SetRolesNil
 
 `func (o *RelationMetadata) SetRolesNil(b bool)`
 
- SetRolesNil sets the value for Roles to be an explicit nil
+SetRolesNil sets the value for Roles to be an explicit nil
 
 ### UnsetRoles
+
 `func (o *RelationMetadata) UnsetRoles()`
 
 UnsetRoles ensures that no value is present for Roles, not even an explicit nil
+
 ### GetSubGroup
 
 `func (o *RelationMetadata) GetSubGroup() string`
@@ -149,17 +149,18 @@ and a boolean to check if the value has been set.
 
 SetSubGroup sets SubGroup field to given value.
 
-
 ### SetSubGroupNil
 
 `func (o *RelationMetadata) SetSubGroupNil(b bool)`
 
- SetSubGroupNil sets the value for SubGroup to be an explicit nil
+SetSubGroupNil sets the value for SubGroup to be an explicit nil
 
 ### UnsetSubGroup
+
 `func (o *RelationMetadata) UnsetSubGroup()`
 
 UnsetSubGroup ensures that no value is present for SubGroup, not even an explicit nil
+
 ### GetSubjects
 
 `func (o *RelationMetadata) GetSubjects() []string`
@@ -179,18 +180,16 @@ and a boolean to check if the value has been set.
 
 SetSubjects sets Subjects field to given value.
 
-
 ### SetSubjectsNil
 
 `func (o *RelationMetadata) SetSubjectsNil(b bool)`
 
- SetSubjectsNil sets the value for Subjects to be an explicit nil
+SetSubjectsNil sets the value for Subjects to be an explicit nil
 
 ### UnsetSubjects
+
 `func (o *RelationMetadata) UnsetSubjects()`
 
 UnsetSubjects ensures that no value is present for Subjects, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

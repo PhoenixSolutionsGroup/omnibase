@@ -1,6 +1,6 @@
 {
-  "title": "Self-Hosting",
-  "description": "Deploy Omnibase on your infrastructure",
-  "icon": "Server",
-  "pages": ["index"]
+	"title": "Self-Hosting",
+	"description": "Deploy Omnibase on your infrastructure",
+	"icon": "Server",
+	"pages": ["index"]
 }

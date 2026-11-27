@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import { EnvironmentConfig } from "./environment";
-import { getActiveProfile } from "./credentials";
 import { Configuration } from "@omnibase/core-js";
+import axios, { type AxiosInstance } from "axios";
+import { getActiveProfile } from "./credentials";
+import type { EnvironmentConfig } from "./environment";
 
 /**
  * Create SDK Configuration for core OmniBase operations.
@@ -9,29 +9,29 @@ import { Configuration } from "@omnibase/core-js";
  * Uses: OMNIBASE_API_URL
  */
 export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
-  const profile = getActiveProfile();
-  const headers: Record<string, string> = {};
+	const profile = getActiveProfile();
+	const headers: Record<string, string> = {};
 
-  if (env.branchId) {
-    headers["X-Project-ID"] = env.branchId;
-  }
+	if (env.branchId) {
+		headers["X-Project-ID"] = env.branchId;
+	}
 
-  if (env.name !== "local" && profile?.tenant_id) {
-    headers["X-Tenant-ID"] = profile.tenant_id;
-  }
+	if (env.name !== "local" && profile?.tenant_id) {
+		headers["X-Tenant-ID"] = profile.tenant_id;
+	}
 
-  if (env.name !== "local" && profile?.api_key) {
-    headers["X-Api-Key"] = profile.api_key;
-  }
+	if (env.name !== "local" && profile?.api_key) {
+		headers["X-Api-Key"] = profile.api_key;
+	}
 
-  if (env.omnibaseServiceKey) {
-    headers["X-Service-Key"] = env.omnibaseServiceKey;
-  }
+	if (env.omnibaseServiceKey) {
+		headers["X-Service-Key"] = env.omnibaseServiceKey;
+	}
 
-  return new Configuration({
-    basePath: env.omnibaseApiUrl,
-    headers,
-  });
+	return new Configuration({
+		basePath: env.omnibaseApiUrl,
+		headers,
+	});
 }
 
 /**
@@ -39,29 +39,27 @@ export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
  * Used for commands that don't depend on a specific branch/env (login, branch list, etc.).
  */
 export function createProfileClient(): AxiosInstance {
-  const profile = getActiveProfile();
-  if (!profile?.managed_hosting_url) {
-    throw new Error(
-      "Not logged in. Run 'omnibase cloud login' first."
-    );
-  }
+	const profile = getActiveProfile();
+	if (!profile?.managed_hosting_url) {
+		throw new Error("Not logged in. Run 'omnibase cloud login' first.");
+	}
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
 
-  if (profile.tenant_id) {
-    headers["X-Tenant-ID"] = profile.tenant_id;
-  }
+	if (profile.tenant_id) {
+		headers["X-Tenant-ID"] = profile.tenant_id;
+	}
 
-  if (profile.api_key) {
-    headers["X-Api-Key"] = profile.api_key;
-  }
+	if (profile.api_key) {
+		headers["X-Api-Key"] = profile.api_key;
+	}
 
-  return axios.create({
-    baseURL: profile.managed_hosting_url,
-    headers,
-  });
+	return axios.create({
+		baseURL: profile.managed_hosting_url,
+		headers,
+	});
 }
 
 /**
@@ -71,35 +69,35 @@ export function createProfileClient(): AxiosInstance {
  * Throws if MANAGED_HOSTING_API_URL is not configured.
  */
 export function createManagedHostingClient(
-  env: EnvironmentConfig
+	env: EnvironmentConfig,
 ): AxiosInstance {
-  const profile = getActiveProfile();
+	const profile = getActiveProfile();
 
-  if (!env.managedHostingApiUrl) {
-    throw new Error(
-      `MANAGED_HOSTING_API_URL is required for '${env.name}' environment. ` +
-        `This is needed for cloud operations like worker deployment.`
-    );
-  }
+	if (!env.managedHostingApiUrl) {
+		throw new Error(
+			`MANAGED_HOSTING_API_URL is required for '${env.name}' environment. ` +
+				`This is needed for cloud operations like worker deployment.`,
+		);
+	}
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
 
-  if (env.branchId) {
-    headers["X-Project-ID"] = env.branchId;
-  }
+	if (env.branchId) {
+		headers["X-Project-ID"] = env.branchId;
+	}
 
-  if (profile?.tenant_id) {
-    headers["X-Tenant-ID"] = profile.tenant_id;
-  }
+	if (profile?.tenant_id) {
+		headers["X-Tenant-ID"] = profile.tenant_id;
+	}
 
-  if (profile?.api_key) {
-    headers["X-Api-Key"] = profile.api_key;
-  }
+	if (profile?.api_key) {
+		headers["X-Api-Key"] = profile.api_key;
+	}
 
-  return axios.create({
-    baseURL: env.managedHostingApiUrl,
-    headers,
-  });
+	return axios.create({
+		baseURL: env.managedHostingApiUrl,
+		headers,
+	});
 }

@@ -12,72 +12,71 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { AuthTenant } from './AuthTenant';
-import {
-    AuthTenantFromJSON,
-    AuthTenantFromJSONTyped,
-    AuthTenantToJSON,
-    AuthTenantToJSONTyped,
-} from './AuthTenant';
+import type { AuthTenant } from "./AuthTenant";
+import { AuthTenantFromJSON, AuthTenantToJSON } from "./AuthTenant";
 
 /**
- * 
+ *
  * @export
  * @interface UserTenantListItem
  */
 export interface UserTenantListItem {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof UserTenantListItem
-     */
-    isActive: boolean;
-    /**
-     * 
-     * @type {AuthTenant}
-     * @memberof UserTenantListItem
-     */
-    tenant: AuthTenant;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof UserTenantListItem
+	 */
+	isActive: boolean;
+	/**
+	 *
+	 * @type {AuthTenant}
+	 * @memberof UserTenantListItem
+	 */
+	tenant: AuthTenant;
 }
 
 /**
  * Check if a given object implements the UserTenantListItem interface.
  */
-export function instanceOfUserTenantListItem(value: object): value is UserTenantListItem {
-    if (!('isActive' in value) || value['isActive'] === undefined) return false;
-    if (!('tenant' in value) || value['tenant'] === undefined) return false;
-    return true;
+export function instanceOfUserTenantListItem(
+	value: object,
+): value is UserTenantListItem {
+	if (!("isActive" in value) || value["isActive"] === undefined) return false;
+	if (!("tenant" in value) || value["tenant"] === undefined) return false;
+	return true;
 }
 
 export function UserTenantListItemFromJSON(json: any): UserTenantListItem {
-    return UserTenantListItemFromJSONTyped(json, false);
+	return UserTenantListItemFromJSONTyped(json, false);
 }
 
-export function UserTenantListItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserTenantListItem {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'isActive': json['is_active'],
-        'tenant': AuthTenantFromJSON(json['tenant']),
-    };
+export function UserTenantListItemFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UserTenantListItem {
+	if (json == null) {
+		return json;
+	}
+	return {
+		isActive: json["is_active"],
+		tenant: AuthTenantFromJSON(json["tenant"]),
+	};
 }
 
 export function UserTenantListItemToJSON(json: any): UserTenantListItem {
-    return UserTenantListItemToJSONTyped(json, false);
+	return UserTenantListItemToJSONTyped(json, false);
 }
 
-export function UserTenantListItemToJSONTyped(value?: UserTenantListItem | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UserTenantListItemToJSONTyped(
+	value?: UserTenantListItem | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'is_active': value['isActive'],
-        'tenant': AuthTenantToJSON(value['tenant']),
-    };
+	return {
+		is_active: value["isActive"],
+		tenant: AuthTenantToJSON(value["tenant"]),
+	};
 }
-

@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Path** | **string** |  | 
-**UploadUrl** | **string** |  | 
+| Name          | Type       | Description | Notes |
+| ------------- | ---------- | ----------- | ----- |
+| **Id**        | **string** |             |
+| **Path**      | **string** |             |
+| **UploadUrl** | **string** |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetPath
 
 `func (o *UploadResponse) GetPath() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *UploadResponse) SetPath(v string)`
 
 SetPath sets Path field to given value.
-
 
 ### GetUploadUrl
 
@@ -86,8 +84,4 @@ and a boolean to check if the value has been set.
 
 SetUploadUrl sets UploadUrl field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

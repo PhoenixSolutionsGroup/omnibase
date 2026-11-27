@@ -2,24 +2,24 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Amount** | Pointer to **float64** |  | [optional] 
-**BillingScheme** | Pointer to **string** |  | [optional] 
-**Currency** | **string** |  | 
-**Default** | Pointer to **bool** |  | [optional] 
-**Id** | **string** |  | 
-**Interval** | Pointer to **string** |  | [optional] 
-**IntervalCount** | Pointer to **int64** |  | [optional] 
-**Metadata** | Pointer to **map[string]string** |  | [optional] 
-**Meter** | Pointer to **string** |  | [optional] 
-**Public** | Pointer to **bool** |  | [optional] 
-**StripeId** | Pointer to **string** |  | [optional] 
-**TaxIncludedInPrice** | Pointer to **bool** |  | [optional] 
-**Tiers** | Pointer to [**[]Tier**](Tier.md) |  | [optional] 
-**TiersMode** | Pointer to **string** |  | [optional] 
-**Ui** | Pointer to [**PriceUI**](PriceUI.md) |  | [optional] 
-**UsageType** | Pointer to **string** |  | [optional] 
+| Name                   | Type                                 | Description | Notes      |
+| ---------------------- | ------------------------------------ | ----------- | ---------- |
+| **Amount**             | Pointer to **float64**               |             | [optional] |
+| **BillingScheme**      | Pointer to **string**                |             | [optional] |
+| **Currency**           | **string**                           |             |
+| **Default**            | Pointer to **bool**                  |             | [optional] |
+| **Id**                 | **string**                           |             |
+| **Interval**           | Pointer to **string**                |             | [optional] |
+| **IntervalCount**      | Pointer to **int64**                 |             | [optional] |
+| **Metadata**           | Pointer to **map[string]string**     |             | [optional] |
+| **Meter**              | Pointer to **string**                |             | [optional] |
+| **Public**             | Pointer to **bool**                  |             | [optional] |
+| **StripeId**           | Pointer to **string**                |             | [optional] |
+| **TaxIncludedInPrice** | Pointer to **bool**                  |             | [optional] |
+| **Tiers**              | Pointer to [**[]Tier**](Tier.md)     |             | [optional] |
+| **TiersMode**          | Pointer to **string**                |             | [optional] |
+| **Ui**                 | Pointer to [**PriceUI**](PriceUI.md) |             | [optional] |
+| **UsageType**          | Pointer to **string**                |             | [optional] |
 
 ## Methods
 
@@ -109,7 +109,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-
 ### GetDefault
 
 `func (o *PriceWithStripeID) GetDefault() bool`
@@ -153,7 +152,6 @@ and a boolean to check if the value has been set.
 `func (o *PriceWithStripeID) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetInterval
 
@@ -359,12 +357,14 @@ HasTiers returns a boolean if a field has been set.
 
 `func (o *PriceWithStripeID) SetTiersNil(b bool)`
 
- SetTiersNil sets the value for Tiers to be an explicit nil
+SetTiersNil sets the value for Tiers to be an explicit nil
 
 ### UnsetTiers
+
 `func (o *PriceWithStripeID) UnsetTiers()`
 
 UnsetTiers ensures that no value is present for Tiers, not even an explicit nil
+
 ### GetTiersMode
 
 `func (o *PriceWithStripeID) GetTiersMode() string`
@@ -440,7 +440,4 @@ SetUsageType sets UsageType field to given value.
 
 HasUsageType returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

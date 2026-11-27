@@ -1,11 +1,6 @@
 {
-  "title": "Authentication",
-  "description": "User authentication and session management",
-  "icon": "KeyRound",
-  "pages": [
-    "sessions",
-    "api-keys",
-    "flows",
-    "middleware"
-  ]
+	"title": "Authentication",
+	"description": "User authentication and session management",
+	"icon": "KeyRound",
+	"pages": ["sessions", "api-keys", "flows", "middleware"]
 }

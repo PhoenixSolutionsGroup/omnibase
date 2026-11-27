@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Drift** | [**[]ConfigStatusEntry**](ConfigStatusEntry.md) |  | 
-**Pending** | [**[]ConfigStatusEntry**](ConfigStatusEntry.md) |  | 
-**Summary** | [**ConfigStatusSummary**](ConfigStatusSummary.md) |  | 
-**Untracked** | [**[]ConfigStatusEntry**](ConfigStatusEntry.md) |  | 
+| Name          | Type                                              | Description | Notes |
+| ------------- | ------------------------------------------------- | ----------- | ----- |
+| **Drift**     | [**[]ConfigStatusEntry**](ConfigStatusEntry.md)   |             |
+| **Pending**   | [**[]ConfigStatusEntry**](ConfigStatusEntry.md)   |             |
+| **Summary**   | [**ConfigStatusSummary**](ConfigStatusSummary.md) |             |
+| **Untracked** | [**[]ConfigStatusEntry**](ConfigStatusEntry.md)   |             |
 
 ## Methods
 
@@ -47,17 +47,18 @@ and a boolean to check if the value has been set.
 
 SetDrift sets Drift field to given value.
 
-
 ### SetDriftNil
 
 `func (o *ConfigStatus) SetDriftNil(b bool)`
 
- SetDriftNil sets the value for Drift to be an explicit nil
+SetDriftNil sets the value for Drift to be an explicit nil
 
 ### UnsetDrift
+
 `func (o *ConfigStatus) UnsetDrift()`
 
 UnsetDrift ensures that no value is present for Drift, not even an explicit nil
+
 ### GetPending
 
 `func (o *ConfigStatus) GetPending() []ConfigStatusEntry`
@@ -77,17 +78,18 @@ and a boolean to check if the value has been set.
 
 SetPending sets Pending field to given value.
 
-
 ### SetPendingNil
 
 `func (o *ConfigStatus) SetPendingNil(b bool)`
 
- SetPendingNil sets the value for Pending to be an explicit nil
+SetPendingNil sets the value for Pending to be an explicit nil
 
 ### UnsetPending
+
 `func (o *ConfigStatus) UnsetPending()`
 
 UnsetPending ensures that no value is present for Pending, not even an explicit nil
+
 ### GetSummary
 
 `func (o *ConfigStatus) GetSummary() ConfigStatusSummary`
@@ -106,7 +108,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigStatus) SetSummary(v ConfigStatusSummary)`
 
 SetSummary sets Summary field to given value.
-
 
 ### GetUntracked
 
@@ -127,18 +128,16 @@ and a boolean to check if the value has been set.
 
 SetUntracked sets Untracked field to given value.
 
-
 ### SetUntrackedNil
 
 `func (o *ConfigStatus) SetUntrackedNil(b bool)`
 
- SetUntrackedNil sets the value for Untracked to be an explicit nil
+SetUntrackedNil sets the value for Untracked to be an explicit nil
 
 ### UnsetUntracked
+
 `func (o *ConfigStatus) UnsetUntracked()`
 
 UnsetUntracked ensures that no value is present for Untracked, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

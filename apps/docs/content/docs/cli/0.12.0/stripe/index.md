@@ -1,6 +1,6 @@
 ---
-title: "Stripe"
----
+
+## title: "Stripe"
 
 ## Summary
 

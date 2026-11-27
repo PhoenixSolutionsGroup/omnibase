@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**Id** | **string** |  | 
-**Name** | **string** |  | 
-**StripeCustomerId** | **NullableString** |  | 
-**Type** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
+| Name                 | Type               | Description | Notes |
+| -------------------- | ------------------ | ----------- | ----- |
+| **CreatedAt**        | **time.Time**      |             |
+| **Id**               | **string**         |             |
+| **Name**             | **string**         |             |
+| **StripeCustomerId** | **NullableString** |             |
+| **Type**             | **string**         |             |
+| **UpdatedAt**        | **time.Time**      |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetId
 
 `func (o *AuthTenant) GetId() string`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenant) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetName
 
@@ -89,7 +87,6 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
-
 ### GetStripeCustomerId
 
 `func (o *AuthTenant) GetStripeCustomerId() string`
@@ -109,17 +106,18 @@ and a boolean to check if the value has been set.
 
 SetStripeCustomerId sets StripeCustomerId field to given value.
 
-
 ### SetStripeCustomerIdNil
 
 `func (o *AuthTenant) SetStripeCustomerIdNil(b bool)`
 
- SetStripeCustomerIdNil sets the value for StripeCustomerId to be an explicit nil
+SetStripeCustomerIdNil sets the value for StripeCustomerId to be an explicit nil
 
 ### UnsetStripeCustomerId
+
 `func (o *AuthTenant) UnsetStripeCustomerId()`
 
 UnsetStripeCustomerId ensures that no value is present for StripeCustomerId, not even an explicit nil
+
 ### GetType
 
 `func (o *AuthTenant) GetType() string`
@@ -138,7 +136,6 @@ and a boolean to check if the value has been set.
 `func (o *AuthTenant) SetType(v string)`
 
 SetType sets Type field to given value.
-
 
 ### GetUpdatedAt
 
@@ -159,8 +156,4 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -12,86 +12,109 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { WebhookChange } from './WebhookChange';
-import {
-    WebhookChangeFromJSON,
-    WebhookChangeFromJSONTyped,
-    WebhookChangeToJSON,
-    WebhookChangeToJSONTyped,
-} from './WebhookChange';
+import type { WebhookChange } from "./WebhookChange";
+import { WebhookChangeFromJSON, WebhookChangeToJSON } from "./WebhookChange";
 
 /**
- * 
+ *
  * @export
  * @interface WebhookChanges
  */
 export interface WebhookChanges {
-    /**
-     * 
-     * @type {Array<WebhookChange>}
-     * @memberof WebhookChanges
-     */
-    created?: Array<WebhookChange> | null;
-    /**
-     * 
-     * @type {Array<WebhookChange>}
-     * @memberof WebhookChanges
-     */
-    deleted?: Array<WebhookChange> | null;
-    /**
-     * 
-     * @type {Array<WebhookChange>}
-     * @memberof WebhookChanges
-     */
-    unchanged?: Array<WebhookChange> | null;
-    /**
-     * 
-     * @type {Array<WebhookChange>}
-     * @memberof WebhookChanges
-     */
-    updated?: Array<WebhookChange> | null;
+	/**
+	 *
+	 * @type {Array<WebhookChange>}
+	 * @memberof WebhookChanges
+	 */
+	created?: Array<WebhookChange> | null;
+	/**
+	 *
+	 * @type {Array<WebhookChange>}
+	 * @memberof WebhookChanges
+	 */
+	deleted?: Array<WebhookChange> | null;
+	/**
+	 *
+	 * @type {Array<WebhookChange>}
+	 * @memberof WebhookChanges
+	 */
+	unchanged?: Array<WebhookChange> | null;
+	/**
+	 *
+	 * @type {Array<WebhookChange>}
+	 * @memberof WebhookChanges
+	 */
+	updated?: Array<WebhookChange> | null;
 }
 
 /**
  * Check if a given object implements the WebhookChanges interface.
  */
-export function instanceOfWebhookChanges(value: object): value is WebhookChanges {
-    return true;
+export function instanceOfWebhookChanges(
+	value: object,
+): value is WebhookChanges {
+	return true;
 }
 
 export function WebhookChangesFromJSON(json: any): WebhookChanges {
-    return WebhookChangesFromJSONTyped(json, false);
+	return WebhookChangesFromJSONTyped(json, false);
 }
 
-export function WebhookChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): WebhookChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(WebhookChangeFromJSON)),
-        'deleted': json['deleted'] == null ? undefined : ((json['deleted'] as Array<any>).map(WebhookChangeFromJSON)),
-        'unchanged': json['unchanged'] == null ? undefined : ((json['unchanged'] as Array<any>).map(WebhookChangeFromJSON)),
-        'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(WebhookChangeFromJSON)),
-    };
+export function WebhookChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): WebhookChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		created:
+			json["created"] == null
+				? undefined
+				: (json["created"] as Array<any>).map(WebhookChangeFromJSON),
+		deleted:
+			json["deleted"] == null
+				? undefined
+				: (json["deleted"] as Array<any>).map(WebhookChangeFromJSON),
+		unchanged:
+			json["unchanged"] == null
+				? undefined
+				: (json["unchanged"] as Array<any>).map(WebhookChangeFromJSON),
+		updated:
+			json["updated"] == null
+				? undefined
+				: (json["updated"] as Array<any>).map(WebhookChangeFromJSON),
+	};
 }
 
 export function WebhookChangesToJSON(json: any): WebhookChanges {
-    return WebhookChangesToJSONTyped(json, false);
+	return WebhookChangesToJSONTyped(json, false);
 }
 
-export function WebhookChangesToJSONTyped(value?: WebhookChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function WebhookChangesToJSONTyped(
+	value?: WebhookChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(WebhookChangeToJSON)),
-        'deleted': value['deleted'] == null ? undefined : ((value['deleted'] as Array<any>).map(WebhookChangeToJSON)),
-        'unchanged': value['unchanged'] == null ? undefined : ((value['unchanged'] as Array<any>).map(WebhookChangeToJSON)),
-        'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(WebhookChangeToJSON)),
-    };
+	return {
+		created:
+			value["created"] == null
+				? undefined
+				: (value["created"] as Array<any>).map(WebhookChangeToJSON),
+		deleted:
+			value["deleted"] == null
+				? undefined
+				: (value["deleted"] as Array<any>).map(WebhookChangeToJSON),
+		unchanged:
+			value["unchanged"] == null
+				? undefined
+				: (value["unchanged"] as Array<any>).map(WebhookChangeToJSON),
+		updated:
+			value["updated"] == null
+				? undefined
+				: (value["updated"] as Array<any>).map(WebhookChangeToJSON),
+	};
 }
-

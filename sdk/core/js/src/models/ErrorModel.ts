@@ -12,102 +12,105 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ErrorDetail } from './ErrorDetail';
-import {
-    ErrorDetailFromJSON,
-    ErrorDetailFromJSONTyped,
-    ErrorDetailToJSON,
-    ErrorDetailToJSONTyped,
-} from './ErrorDetail';
+import type { ErrorDetail } from "./ErrorDetail";
+import { ErrorDetailFromJSON, ErrorDetailToJSON } from "./ErrorDetail";
 
 /**
- * 
+ *
  * @export
  * @interface ErrorModel
  */
 export interface ErrorModel {
-    /**
-     * A human-readable explanation specific to this occurrence of the problem.
-     * @type {string}
-     * @memberof ErrorModel
-     */
-    detail?: string;
-    /**
-     * Optional list of individual error details
-     * @type {Array<ErrorDetail>}
-     * @memberof ErrorModel
-     */
-    errors?: Array<ErrorDetail> | null;
-    /**
-     * A URI reference that identifies the specific occurrence of the problem.
-     * @type {string}
-     * @memberof ErrorModel
-     */
-    instance?: string;
-    /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ErrorModel
-     */
-    status?: number;
-    /**
-     * A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
-     * @type {string}
-     * @memberof ErrorModel
-     */
-    title?: string;
-    /**
-     * A URI reference to human-readable documentation for the error.
-     * @type {string}
-     * @memberof ErrorModel
-     */
-    type?: string;
+	/**
+	 * A human-readable explanation specific to this occurrence of the problem.
+	 * @type {string}
+	 * @memberof ErrorModel
+	 */
+	detail?: string;
+	/**
+	 * Optional list of individual error details
+	 * @type {Array<ErrorDetail>}
+	 * @memberof ErrorModel
+	 */
+	errors?: Array<ErrorDetail> | null;
+	/**
+	 * A URI reference that identifies the specific occurrence of the problem.
+	 * @type {string}
+	 * @memberof ErrorModel
+	 */
+	instance?: string;
+	/**
+	 * HTTP status code
+	 * @type {number}
+	 * @memberof ErrorModel
+	 */
+	status?: number;
+	/**
+	 * A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+	 * @type {string}
+	 * @memberof ErrorModel
+	 */
+	title?: string;
+	/**
+	 * A URI reference to human-readable documentation for the error.
+	 * @type {string}
+	 * @memberof ErrorModel
+	 */
+	type?: string;
 }
 
 /**
  * Check if a given object implements the ErrorModel interface.
  */
 export function instanceOfErrorModel(value: object): value is ErrorModel {
-    return true;
+	return true;
 }
 
 export function ErrorModelFromJSON(json: any): ErrorModel {
-    return ErrorModelFromJSONTyped(json, false);
+	return ErrorModelFromJSONTyped(json, false);
 }
 
-export function ErrorModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorModel {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'detail': json['detail'] == null ? undefined : json['detail'],
-        'errors': json['errors'] == null ? undefined : ((json['errors'] as Array<any>).map(ErrorDetailFromJSON)),
-        'instance': json['instance'] == null ? undefined : json['instance'],
-        'status': json['status'] == null ? undefined : json['status'],
-        'title': json['title'] == null ? undefined : json['title'],
-        'type': json['type'] == null ? undefined : json['type'],
-    };
+export function ErrorModelFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ErrorModel {
+	if (json == null) {
+		return json;
+	}
+	return {
+		detail: json["detail"] == null ? undefined : json["detail"],
+		errors:
+			json["errors"] == null
+				? undefined
+				: (json["errors"] as Array<any>).map(ErrorDetailFromJSON),
+		instance: json["instance"] == null ? undefined : json["instance"],
+		status: json["status"] == null ? undefined : json["status"],
+		title: json["title"] == null ? undefined : json["title"],
+		type: json["type"] == null ? undefined : json["type"],
+	};
 }
 
 export function ErrorModelToJSON(json: any): ErrorModel {
-    return ErrorModelToJSONTyped(json, false);
+	return ErrorModelToJSONTyped(json, false);
 }
 
-export function ErrorModelToJSONTyped(value?: ErrorModel | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ErrorModelToJSONTyped(
+	value?: ErrorModel | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'detail': value['detail'],
-        'errors': value['errors'] == null ? undefined : ((value['errors'] as Array<any>).map(ErrorDetailToJSON)),
-        'instance': value['instance'],
-        'status': value['status'],
-        'title': value['title'],
-        'type': value['type'],
-    };
+	return {
+		detail: value["detail"],
+		errors:
+			value["errors"] == null
+				? undefined
+				: (value["errors"] as Array<any>).map(ErrorDetailToJSON),
+		instance: value["instance"],
+		status: value["status"],
+		title: value["title"],
+		type: value["type"],
+	};
 }
-

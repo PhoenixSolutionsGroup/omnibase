@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import type { Session } from "@ory/client";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/provider";
 
 /**
@@ -46,17 +46,17 @@ import { useAuth } from "@/context/provider";
  * @group Hooks
  */
 export function useSession() {
-  const auth = useAuth();
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+	const auth = useAuth();
+	const [session, setSession] = useState<Session | null>(null);
+	const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    auth
-      .toSession()
-      .then(({ data }) => setSession(data as Session))
-      .catch(() => setSession(null))
-      .finally(() => setLoading(false));
-  }, [auth]);
+	useEffect(() => {
+		auth
+			.toSession()
+			.then(({ data }) => setSession(data as Session))
+			.catch(() => setSession(null))
+			.finally(() => setLoading(false));
+	}, [auth]);
 
-  return { session, loading };
+	return { session, loading };
 }

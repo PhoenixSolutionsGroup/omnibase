@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface DownloadResponse
  */
 export interface DownloadResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DownloadResponse
-     */
-    downloadUrl: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DownloadResponse
+	 */
+	downloadUrl: string;
 }
 
 /**
  * Check if a given object implements the DownloadResponse interface.
  */
-export function instanceOfDownloadResponse(value: object): value is DownloadResponse {
-    if (!('downloadUrl' in value) || value['downloadUrl'] === undefined) return false;
-    return true;
+export function instanceOfDownloadResponse(
+	value: object,
+): value is DownloadResponse {
+	if (!("downloadUrl" in value) || value["downloadUrl"] === undefined)
+		return false;
+	return true;
 }
 
 export function DownloadResponseFromJSON(json: any): DownloadResponse {
-    return DownloadResponseFromJSONTyped(json, false);
+	return DownloadResponseFromJSONTyped(json, false);
 }
 
-export function DownloadResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DownloadResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'downloadUrl': json['download_url'],
-    };
+export function DownloadResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DownloadResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		downloadUrl: json["download_url"],
+	};
 }
 
 export function DownloadResponseToJSON(json: any): DownloadResponse {
-    return DownloadResponseToJSONTyped(json, false);
+	return DownloadResponseToJSONTyped(json, false);
 }
 
-export function DownloadResponseToJSONTyped(value?: DownloadResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DownloadResponseToJSONTyped(
+	value?: DownloadResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'download_url': value['downloadUrl'],
-    };
+	return {
+		download_url: value["downloadUrl"],
+	};
 }
-

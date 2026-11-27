@@ -1,9 +1,4 @@
 {
-  "title": "Storage",
-  "pages": [
-    "uploadFile",
-    "downloadFile",
-    "deleteObject",
-    "makeFilePublic"
-  ]
+	"title": "Storage",
+	"pages": ["uploadFile", "downloadFile", "deleteObject", "makeFilePublic"]
 }

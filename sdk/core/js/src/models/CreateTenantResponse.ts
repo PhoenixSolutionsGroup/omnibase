@@ -12,72 +12,71 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { TenantPayload } from './TenantPayload';
-import {
-    TenantPayloadFromJSON,
-    TenantPayloadFromJSONTyped,
-    TenantPayloadToJSON,
-    TenantPayloadToJSONTyped,
-} from './TenantPayload';
+import type { TenantPayload } from "./TenantPayload";
+import { TenantPayloadFromJSON, TenantPayloadToJSON } from "./TenantPayload";
 
 /**
- * 
+ *
  * @export
  * @interface CreateTenantResponse
  */
 export interface CreateTenantResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTenantResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {TenantPayload}
-     * @memberof CreateTenantResponse
-     */
-    tenant: TenantPayload;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateTenantResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {TenantPayload}
+	 * @memberof CreateTenantResponse
+	 */
+	tenant: TenantPayload;
 }
 
 /**
  * Check if a given object implements the CreateTenantResponse interface.
  */
-export function instanceOfCreateTenantResponse(value: object): value is CreateTenantResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('tenant' in value) || value['tenant'] === undefined) return false;
-    return true;
+export function instanceOfCreateTenantResponse(
+	value: object,
+): value is CreateTenantResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("tenant" in value) || value["tenant"] === undefined) return false;
+	return true;
 }
 
 export function CreateTenantResponseFromJSON(json: any): CreateTenantResponse {
-    return CreateTenantResponseFromJSONTyped(json, false);
+	return CreateTenantResponseFromJSONTyped(json, false);
 }
 
-export function CreateTenantResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateTenantResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'tenant': TenantPayloadFromJSON(json['tenant']),
-    };
+export function CreateTenantResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateTenantResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		tenant: TenantPayloadFromJSON(json["tenant"]),
+	};
 }
 
 export function CreateTenantResponseToJSON(json: any): CreateTenantResponse {
-    return CreateTenantResponseToJSONTyped(json, false);
+	return CreateTenantResponseToJSONTyped(json, false);
 }
 
-export function CreateTenantResponseToJSONTyped(value?: CreateTenantResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateTenantResponseToJSONTyped(
+	value?: CreateTenantResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'tenant': TenantPayloadToJSON(value['tenant']),
-    };
+	return {
+		message: value["message"],
+		tenant: TenantPayloadToJSON(value["tenant"]),
+	};
 }
-

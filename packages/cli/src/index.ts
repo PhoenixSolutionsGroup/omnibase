@@ -1,543 +1,551 @@
 #!/usr/bin/env node
 
+import { type ChildProcess, spawn } from "child_process";
 import { Command } from "commander";
-import * as path from "path";
 import * as fs from "fs";
-import { spawn, ChildProcess } from "child_process";
+import * as path from "path";
 import packageJson from "../package.json";
-import { addPermissionsCommands } from "./commands/permissions";
-import { addEnvironmentCommands } from "./commands/environment";
-import { addStripeCommands } from "./commands/stripe";
-import { addEmailCommands } from "./commands/email";
-import { addDbCommands } from "./commands/db";
 import { addAuthCommands } from "./commands/auth";
 import { addCloudCommands } from "./commands/cloud";
-import { addSyncCommands } from "./commands/sync";
-import { addRestartCommands } from "./commands/restart";
+import { addDbCommands } from "./commands/db";
 import { addDocsCommands } from "./commands/docs";
-import { findOmnibaseRoot, loadLocalEnvironment } from "./utils/environment";
-import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
-import { logger } from "./utils/logger";
-import {
-  SummaryEntry,
-  formatStartSummary,
-  waitForApiReady,
-} from "./utils/start-summary";
-import {
-  getComposeFiles,
-  validateComposeFiles,
-  runDockerComposeCommand,
-  spawnDockerComposeCommand,
-} from "./utils/docker";
+import { addEmailCommands } from "./commands/email";
+import { addEnvironmentCommands } from "./commands/environment";
+import { addPermissionsCommands } from "./commands/permissions";
+import { addRestartCommands } from "./commands/restart";
+import { addStripeCommands } from "./commands/stripe";
+import { addSyncCommands } from "./commands/sync";
 import { writeAgentPointers } from "./utils/agent-files";
 import {
-  VERSION_REPOS,
-  fetchLatestVersions,
-  pinVersionsInToml,
-} from "./utils/versions";
+	loadConfig,
+	loadWranglerConfigFile,
+	resolveStartEnv,
+} from "./utils/config";
 import {
-  compareNamespaceFiles,
-  fetchNamespaceFilesFromGithub,
-  fetchPermissionRequirements,
-  writeNamespaceFiles,
+	getComposeFiles,
+	runDockerComposeCommand,
+	spawnDockerComposeCommand,
+	validateComposeFiles,
+} from "./utils/docker";
+import { findOmnibaseRoot, loadLocalEnvironment } from "./utils/environment";
+import { logger } from "./utils/logger";
+import {
+	compareNamespaceFiles,
+	fetchNamespaceFilesFromGithub,
+	fetchPermissionRequirements,
+	writeNamespaceFiles,
 } from "./utils/permission-namespaces";
+import {
+	formatStartSummary,
+	type SummaryEntry,
+	waitForApiReady,
+} from "./utils/start-summary";
+import {
+	fetchLatestVersions,
+	pinVersionsInToml,
+	VERSION_REPOS,
+} from "./utils/versions";
 
 export const program = new Command();
 
 program
-  .name("omnibase")
-  .description(
-    "OmniBase CLI - Manage Docker Compose services and environment configuration",
-  )
-  .version(packageJson.version)
-  .option("--env <environment>", "Override environment for this command")
-  .option(
-    "--mode <mode>",
-    "Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)",
-  );
+	.name("omnibase")
+	.description(
+		"OmniBase CLI - Manage Docker Compose services and environment configuration",
+	)
+	.version(packageJson.version)
+	.option("--env <environment>", "Override environment for this command")
+	.option(
+		"--mode <mode>",
+		"Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)",
+	);
 
 function createTemplateFiles(targetDir: string): void {
-  const omnibaseDir = path.join(targetDir, "omnibase");
-  const templateDir = path.join(__dirname, "..", "templates");
+	const omnibaseDir = path.join(targetDir, "omnibase");
+	const templateDir = path.join(__dirname, "..", "templates");
 
-  if (!fs.existsSync(omnibaseDir)) {
-    fs.mkdirSync(omnibaseDir, { recursive: true });
-  }
+	if (!fs.existsSync(omnibaseDir)) {
+		fs.mkdirSync(omnibaseDir, { recursive: true });
+	}
 
-  fs.cpSync(templateDir, omnibaseDir, { recursive: true });
+	fs.cpSync(templateDir, omnibaseDir, { recursive: true });
 
-  const envExample = path.join(omnibaseDir, ".env.example");
-  const envLocal = path.join(omnibaseDir, ".env.local");
-  if (fs.existsSync(envExample) && !fs.existsSync(envLocal)) {
-    fs.copyFileSync(envExample, envLocal);
-  }
+	const envExample = path.join(omnibaseDir, ".env.example");
+	const envLocal = path.join(omnibaseDir, ".env.local");
+	if (fs.existsSync(envExample) && !fs.existsSync(envLocal)) {
+		fs.copyFileSync(envExample, envLocal);
+	}
 
-  writeAgentPointers(targetDir);
+	writeAgentPointers(targetDir);
 }
 
 async function pinTemplateVersions(
-  targetDir: string,
+	targetDir: string,
 ): Promise<Record<string, string> | null> {
-  const tomlPath = path.join(targetDir, "omnibase", "omnibase.toml");
-  const versions = await fetchLatestVersions();
-  const missing = Object.keys(VERSION_REPOS).filter((k) => !versions[k]);
-  if (missing.length > 0) {
-    logger.warn(
-      `Could not resolve the latest ${missing.join(", ")} version(s) from Docker Hub; [versions] left unpinned`,
-    );
-    return null;
-  }
-  const toml = fs.readFileSync(tomlPath, "utf-8");
-  fs.writeFileSync(tomlPath, pinVersionsInToml(toml, versions));
-  return versions;
+	const tomlPath = path.join(targetDir, "omnibase", "omnibase.toml");
+	const versions = await fetchLatestVersions();
+	const missing = Object.keys(VERSION_REPOS).filter((k) => !versions[k]);
+	if (missing.length > 0) {
+		logger.warn(
+			`Could not resolve the latest ${missing.join(", ")} version(s) from Docker Hub; [versions] left unpinned`,
+		);
+		return null;
+	}
+	const toml = fs.readFileSync(tomlPath, "utf-8");
+	fs.writeFileSync(tomlPath, pinVersionsInToml(toml, versions));
+	return versions;
 }
 
 async function seedPermissionNamespaces(
-  targetDir: string,
-  versions: Record<string, string> | null,
+	targetDir: string,
+	versions: Record<string, string> | null,
 ): Promise<void> {
-  const apiVersion = versions?.api;
-  if (!apiVersion) {
-    logger.info(
-      "Skipping permission namespace download (api version not pinned); 'omnibase start' will write them",
-    );
-    return;
-  }
+	const apiVersion = versions?.api;
+	if (!apiVersion) {
+		logger.info(
+			"Skipping permission namespace download (api version not pinned); 'omnibase start' will write them",
+		);
+		return;
+	}
 
-  try {
-    const files = await fetchNamespaceFilesFromGithub(apiVersion);
-    const written = writeNamespaceFiles(targetDir, files);
-    if (written.length > 0) {
-      logger.log(`  Permission namespaces: ${written.join(", ")}`);
-    }
-  } catch (error) {
-    logger.warn(
-      `Could not fetch permission namespaces for api ${apiVersion} from GitHub: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-    logger.log("  'omnibase start' will write them once the API is running");
-  }
+	try {
+		const files = await fetchNamespaceFilesFromGithub(apiVersion);
+		const written = writeNamespaceFiles(targetDir, files);
+		if (written.length > 0) {
+			logger.log(`  Permission namespaces: ${written.join(", ")}`);
+		}
+	} catch (error) {
+		logger.warn(
+			`Could not fetch permission namespaces for api ${apiVersion} from GitHub: ${
+				error instanceof Error ? error.message : String(error)
+			}`,
+		);
+		logger.log("  'omnibase start' will write them once the API is running");
+	}
 }
 
 async function syncPermissionNamespaces(root: string): Promise<void> {
-  const env = loadLocalEnvironment(root);
+	const env = loadLocalEnvironment(root);
 
-  let requirements;
-  try {
-    requirements = await fetchPermissionRequirements(env.omnibaseApiUrl);
-  } catch (error) {
-    logger.warn(
-      `Could not check permission namespaces: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-    return;
-  }
+	let requirements;
+	try {
+		requirements = await fetchPermissionRequirements(env.omnibaseApiUrl);
+	} catch (error) {
+		logger.warn(
+			`Could not check permission namespaces: ${
+				error instanceof Error ? error.message : String(error)
+			}`,
+		);
+		return;
+	}
 
-  if (!requirements) {
-    logger.warn(
-      "The running API does not expose /api/v1/permissions/requirements; upgrade `api` in [versions]",
-    );
-    return;
-  }
+	if (!requirements) {
+		logger.warn(
+			"The running API does not expose /api/v1/permissions/requirements; upgrade `api` in [versions]",
+		);
+		return;
+	}
 
-  const written = writeNamespaceFiles(root, requirements.files);
-  if (written.length > 0) {
-    logger.info(`Wrote missing permission namespaces: ${written.join(", ")}`);
-  }
+	const written = writeNamespaceFiles(root, requirements.files);
+	if (written.length > 0) {
+		logger.info(`Wrote missing permission namespaces: ${written.join(", ")}`);
+	}
 
-  const issues = compareNamespaceFiles(root, requirements).filter(
-    (issue) =>
-      issue.missingClass ||
-      issue.missingRelations.length > 0 ||
-      issue.missingPermits.length > 0,
-  );
+	const issues = compareNamespaceFiles(root, requirements).filter(
+		(issue) =>
+			issue.missingClass ||
+			issue.missingRelations.length > 0 ||
+			issue.missingPermits.length > 0,
+	);
 
-  for (const issue of issues) {
-    const details: string[] = [];
-    if (issue.missingClass) details.push("missing class");
-    if (issue.missingRelations.length > 0) {
-      details.push(`missing relations: ${issue.missingRelations.join(", ")}`);
-    }
-    if (issue.missingPermits.length > 0) {
-      details.push(`missing permits: ${issue.missingPermits.join(", ")}`);
-    }
-    logger.warn(
-      `omnibase/permissions/${issue.file}: ${issue.namespace} ${details.join("; ")}`,
-    );
-  }
+	for (const issue of issues) {
+		const details: string[] = [];
+		if (issue.missingClass) details.push("missing class");
+		if (issue.missingRelations.length > 0) {
+			details.push(`missing relations: ${issue.missingRelations.join(", ")}`);
+		}
+		if (issue.missingPermits.length > 0) {
+			details.push(`missing permits: ${issue.missingPermits.join(", ")}`);
+		}
+		logger.warn(
+			`omnibase/permissions/${issue.file}: ${issue.namespace} ${details.join("; ")}`,
+		);
+	}
 
-  if (issues.length > 0) {
-    logger.log("  Run 'omnibase permissions fix' to add the missing entries");
-  }
+	if (issues.length > 0) {
+		logger.log("  Run 'omnibase permissions fix' to add the missing entries");
+	}
 }
 
 async function runDockerCompose(
-  envOverride?: string,
-  composeMode?: string,
-  command?: string,
-  services: string[] = [],
-  stdio: "inherit" | "pipe" | "ignore" = "inherit",
+	envOverride?: string,
+	composeMode?: string,
+	command?: string,
+	services: string[] = [],
+	stdio: "inherit" | "pipe" | "ignore" = "inherit",
 ): Promise<void> {
-  try {
-    const envConfig = loadLocalEnvironment();
+	try {
+		const envConfig = loadLocalEnvironment();
 
-    logger.log(`Using environment: ${envConfig.name}`);
-    logger.log(`Using mode: ${composeMode || "local"}`);
+		logger.log(`Using environment: ${envConfig.name}`);
+		logger.log(`Using mode: ${composeMode || "local"}`);
 
-    const composeFiles = getComposeFiles(composeMode);
-    validateComposeFiles(composeFiles);
+		const composeFiles = getComposeFiles(composeMode);
+		validateComposeFiles(composeFiles);
 
-    runDockerComposeCommand(command || "up", services, {
-      mode: composeMode,
-      envConfig,
-      stdio,
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Docker compose command failed: ${error.message}`);
-    }
-    throw error;
-  }
+		runDockerComposeCommand(command || "up", services, {
+			mode: composeMode,
+			envConfig,
+			stdio,
+		});
+	} catch (error) {
+		if (error instanceof Error) {
+			throw new Error(`Docker compose command failed: ${error.message}`);
+		}
+		throw error;
+	}
 }
 
 async function startDockerComposeAttached(
-  envOverride: string | undefined,
-  composeMode: string | undefined,
-  command: string,
+	envOverride: string | undefined,
+	composeMode: string | undefined,
+	command: string,
 ): Promise<ChildProcess> {
-  const envConfig = loadLocalEnvironment();
+	const envConfig = loadLocalEnvironment();
 
-  logger.log(`Using environment: ${envConfig.name}`);
-  logger.log(`Using mode: ${composeMode || "local"}`);
+	logger.log(`Using environment: ${envConfig.name}`);
+	logger.log(`Using mode: ${composeMode || "local"}`);
 
-  const composeFiles = getComposeFiles(composeMode);
-  validateComposeFiles(composeFiles);
+	const composeFiles = getComposeFiles(composeMode);
+	validateComposeFiles(composeFiles);
 
-  return spawnDockerComposeCommand(command, [], {
-    mode: composeMode,
-    envConfig,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+	return spawnDockerComposeCommand(command, [], {
+		mode: composeMode,
+		envConfig,
+		stdio: ["ignore", "pipe", "pipe"],
+	});
 }
 
 program
-  .command("init")
-  .summary("Initialize a new omnibase project")
-  .description(
-    "Scaffold an `omnibase/` directory with the project template files.\n\n" +
-    "Creates `omnibase/omnibase.toml`, `omnibase/.env.local`, a Stripe " +
-    "config, and the default `omnibase/db/` layout. If an `omnibase/` " +
-    "directory already exists the command exits without changing anything.\n\n" +
-    "The generated `omnibase.toml` has a `[versions]` block pinning `auth`, " +
-    "`api`, and `perm` to the latest versions published on Docker Hub, so " +
-    "new projects don't pick up breaking images without a config change. " +
-    "If Docker Hub can't be reached, the block stays commented out and " +
-    "`omnibase start` runs `latest`.\n\n" +
-    "```bash\n" +
-    "omnibase init\n" +
-    "```\n\n" +
-    "After: edit `omnibase/omnibase.toml`, add secrets to " +
-    "`omnibase/.env.local`, then run `omnibase start`."
-  )
-  .action(async () => {
-    const currentDir = process.cwd();
-    const omnibaseDir = path.join(currentDir, "omnibase");
+	.command("init")
+	.summary("Initialize a new omnibase project")
+	.description(
+		"Scaffold an `omnibase/` directory with the project template files.\n\n" +
+			"Creates `omnibase/omnibase.toml`, `omnibase/.env.local`, a Stripe " +
+			"config, and the default `omnibase/db/` layout. If an `omnibase/` " +
+			"directory already exists the command exits without changing anything.\n\n" +
+			"The generated `omnibase.toml` has a `[versions]` block pinning `auth`, " +
+			"`api`, and `perm` to the latest versions published on Docker Hub, so " +
+			"new projects don't pick up breaking images without a config change. " +
+			"If Docker Hub can't be reached, the block stays commented out and " +
+			"`omnibase start` runs `latest`.\n\n" +
+			"```bash\n" +
+			"omnibase init\n" +
+			"```\n\n" +
+			"After: edit `omnibase/omnibase.toml`, add secrets to " +
+			"`omnibase/.env.local`, then run `omnibase start`.",
+	)
+	.action(async () => {
+		const currentDir = process.cwd();
+		const omnibaseDir = path.join(currentDir, "omnibase");
 
-    if (fs.existsSync(omnibaseDir)) {
-      logger.warn("omnibase directory already exists");
-      logger.log(
-        "  Remove the existing omnibase directory if you want to reinitialize",
-      );
-      return;
-    }
+		if (fs.existsSync(omnibaseDir)) {
+			logger.warn("omnibase directory already exists");
+			logger.log(
+				"  Remove the existing omnibase directory if you want to reinitialize",
+			);
+			return;
+		}
 
-    logger.start("Initializing omnibase project...");
-    createTemplateFiles(currentDir);
-    const versions = await pinTemplateVersions(currentDir);
-    await seedPermissionNamespaces(currentDir, versions);
-    logger.succeed("Project initialized successfully");
-    logger.newline();
-    logger.log("Next steps:");
-    logger.log("  1. Edit omnibase/omnibase.toml with your project configuration");
-    logger.log("  2. Add secrets to omnibase/.env.local");
-    logger.log("  3. Edit stripe.config.json with your Stripe products");
-    logger.log("  4. Run 'omnibase start' to begin development");
-  });
+		logger.start("Initializing omnibase project...");
+		createTemplateFiles(currentDir);
+		const versions = await pinTemplateVersions(currentDir);
+		await seedPermissionNamespaces(currentDir, versions);
+		logger.succeed("Project initialized successfully");
+		logger.newline();
+		logger.log("Next steps:");
+		logger.log(
+			"  1. Edit omnibase/omnibase.toml with your project configuration",
+		);
+		logger.log("  2. Add secrets to omnibase/.env.local");
+		logger.log("  3. Edit stripe.config.json with your Stripe products");
+		logger.log("  4. Run 'omnibase start' to begin development");
+	});
 
 let childProcesses: ChildProcess[] = [];
 let composeProcess: ChildProcess | null = null;
 let shuttingDown = false;
 
 function cleanup(): void {
-  for (const cp of childProcesses) {
-    if (!cp.killed) cp.kill("SIGTERM");
-  }
-  childProcesses = [];
+	for (const cp of childProcesses) {
+		if (!cp.killed) cp.kill("SIGTERM");
+	}
+	childProcesses = [];
 }
 
 // An attached `docker compose up` stops its containers on SIGINT; wait for it
 // to finish instead of exiting underneath it.
 function shutdown(signal: NodeJS.Signals): void {
-  shuttingDown = true;
-  cleanup();
-  const compose = composeProcess;
-  if (compose && compose.exitCode === null && compose.signalCode === null) {
-    if (signal === "SIGTERM") compose.kill("SIGTERM");
-    return;
-  }
-  process.exit(0);
+	shuttingDown = true;
+	cleanup();
+	const compose = composeProcess;
+	if (compose && compose.exitCode === null && compose.signalCode === null) {
+		if (signal === "SIGTERM") compose.kill("SIGTERM");
+		return;
+	}
+	process.exit(0);
 }
 
 process.on("SIGINT", () => {
-  logger.newline();
-  logger.info("Shutting down...");
-  shutdown("SIGINT");
+	logger.newline();
+	logger.info("Shutting down...");
+	shutdown("SIGINT");
 });
 
 process.on("SIGTERM", () => {
-  shutdown("SIGTERM");
+	shutdown("SIGTERM");
 });
 
 program
-  .command("start")
-  .summary("Start services and deployment dev servers")
-  .description(
-    "Start the local control-plane services with Docker Compose, then spawn " +
-    "a dev server for every deployment configured in omnibase.toml (or " +
-    "`omnibase/workers/`).\n\n" +
-    "The control plane runs in the foreground with `docker compose up`; " +
-    "container and dev-server logs are held back until the API reports ready, " +
-    "then stream normally. Press Ctrl+C to stop everything. Pass `-d` to start " +
-    "the containers detached (`docker compose up -d`) and stop them later " +
-    "with `omnibase stop`. Use `--verbose` to stream logs from the start. " +
-    "Each deployment " +
-    "directory runs `bun run dev` on `http://localhost:<port>` (default " +
-    "ports start at 8787 and increment per deployment).\n\n" +
-    "Readiness is determined by the API's `/health/ready` endpoint (2 minute " +
-    "timeout). Once the API reports ready, a summary lists the URL of each " +
-    "service " +
-    "(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
-    "deployment dev server. If startup fails or times out, the buffered logs " +
-    "are printed.\n\n" +
-    "Image versions: `auth`, `api`, and `perm` run the tags pinned under " +
-    "`[versions]` in omnibase.toml. Services not listed there run `latest`.\n\n" +
-    "Environment variables: the dev-server processes receive the same " +
-    "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
-    "(and `omnibase/.env.local` for the local environment), plus the " +
-    "deployment's wrangler " +
-    "`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
-    "the [`cloud env`](/cli/cloud/env) page.\n\n" +
-    "```bash\n" +
-    "omnibase start\n" +
-    "omnibase start -d\n" +
-    "omnibase start --build\n" +
-    "omnibase start --verbose\n" +
-    "```"
-  )
-  .option("--build", "Build images before starting containers")
-  .option("-d, --detach", "Run containers in the background")
-  .option("--verbose", "Stream container and dev-server logs from the start")
-  .action(async (cmdOptions) => {
-    const startupLogs: string[] = [];
-    let streamLogs = Boolean(cmdOptions.verbose);
-    let startupComplete = false;
+	.command("start")
+	.summary("Start services and deployment dev servers")
+	.description(
+		"Start the local control-plane services with Docker Compose, then spawn " +
+			"a dev server for every deployment configured in omnibase.toml (or " +
+			"`omnibase/workers/`).\n\n" +
+			"The control plane runs in the foreground with `docker compose up`; " +
+			"container and dev-server logs are held back until the API reports ready, " +
+			"then stream normally. Press Ctrl+C to stop everything. Pass `-d` to start " +
+			"the containers detached (`docker compose up -d`) and stop them later " +
+			"with `omnibase stop`. Use `--verbose` to stream logs from the start. " +
+			"Each deployment " +
+			"directory runs `bun run dev` on `http://localhost:<port>` (default " +
+			"ports start at 8787 and increment per deployment).\n\n" +
+			"Readiness is determined by the API's `/health/ready` endpoint (2 minute " +
+			"timeout). Once the API reports ready, a summary lists the URL of each " +
+			"service " +
+			"(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
+			"deployment dev server. If startup fails or times out, the buffered logs " +
+			"are printed.\n\n" +
+			"Image versions: `auth`, `api`, and `perm` run the tags pinned under " +
+			"`[versions]` in omnibase.toml. Services not listed there run `latest`.\n\n" +
+			"Environment variables: the dev-server processes receive the same " +
+			"resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
+			"(and `omnibase/.env.local` for the local environment), plus the " +
+			"deployment's wrangler " +
+			"`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
+			"the [`cloud env`](/cli/cloud/env) page.\n\n" +
+			"```bash\n" +
+			"omnibase start\n" +
+			"omnibase start -d\n" +
+			"omnibase start --build\n" +
+			"omnibase start --verbose\n" +
+			"```",
+	)
+	.option("--build", "Build images before starting containers")
+	.option("-d, --detach", "Run containers in the background")
+	.option("--verbose", "Stream container and dev-server logs from the start")
+	.action(async (cmdOptions) => {
+		const startupLogs: string[] = [];
+		let streamLogs = Boolean(cmdOptions.verbose);
+		let startupComplete = false;
 
-    const bufferLog = (line: string) => {
-      if (streamLogs) {
-        logger.log(line);
-        return;
-      }
-      startupLogs.push(line);
-    };
+		const bufferLog = (line: string) => {
+			if (streamLogs) {
+				logger.log(line);
+				return;
+			}
+			startupLogs.push(line);
+		};
 
-    const dumpStartupLogs = () => {
-      if (startupLogs.length === 0) return;
-      logger.newline();
-      logger.log("Startup logs:");
-      for (const line of startupLogs) logger.log(line);
-      startupLogs.length = 0;
-    };
+		const dumpStartupLogs = () => {
+			if (startupLogs.length === 0) return;
+			logger.newline();
+			logger.log("Startup logs:");
+			for (const line of startupLogs) logger.log(line);
+			startupLogs.length = 0;
+		};
 
-    const startStreamingLogs = () => {
-      streamLogs = true;
-      for (const line of startupLogs) logger.log(line);
-      startupLogs.length = 0;
-    };
+		const startStreamingLogs = () => {
+			streamLogs = true;
+			for (const line of startupLogs) logger.log(line);
+			startupLogs.length = 0;
+		};
 
-    const failStartup = (message: string): never => {
-      dumpStartupLogs();
-      cleanup();
-      if (composeProcess) {
-        composeProcess.kill("SIGTERM");
-        composeProcess = null;
-      }
-      logger.fail(message);
-      process.exit(1);
-    };
+		const failStartup = (message: string): never => {
+			dumpStartupLogs();
+			cleanup();
+			if (composeProcess) {
+				composeProcess.kill("SIGTERM");
+				composeProcess = null;
+			}
+			logger.fail(message);
+			process.exit(1);
+		};
 
-    try {
-      const globalOptions = program.opts();
-      const mode = globalOptions.mode || "local";
-      const detached = Boolean(cmdOptions.detach);
-      const composeCommand = [
-        "up",
-        detached ? "-d" : "",
-        cmdOptions.build ? "--build" : "",
-      ].filter(Boolean).join(" ");
+		try {
+			const globalOptions = program.opts();
+			const mode = globalOptions.mode || "local";
+			const detached = Boolean(cmdOptions.detach);
+			const composeCommand = [
+				"up",
+				detached ? "-d" : "",
+				cmdOptions.build ? "--build" : "",
+			]
+				.filter(Boolean)
+				.join(" ");
 
-      logger.start("Starting services...");
+			logger.start("Starting services...");
 
-      if (detached) {
-        await runDockerCompose(
-          globalOptions.env || "local",
-          mode,
-          composeCommand,
-          [],
-          "pipe",
-        );
-      } else {
-        const compose = await startDockerComposeAttached(
-          globalOptions.env || "local",
-          mode,
-          composeCommand,
-        );
-        composeProcess = compose;
-        compose.stdout?.on("data", (data: Buffer) => {
-          for (const line of data.toString().split("\n").filter(Boolean)) {
-            bufferLog(line);
-          }
-        });
-        compose.stderr?.on("data", (data: Buffer) => {
-          for (const line of data.toString().split("\n").filter(Boolean)) {
-            bufferLog(line);
-          }
-        });
-        compose.on("error", (error) => {
-          failStartup(`Docker compose failed to start: ${error.message}`);
-        });
-        compose.on("exit", (code, signal) => {
-          if (!startupComplete && !shuttingDown) {
-            failStartup(
-              `Docker compose exited before services became ready (${
-                signal ?? `code ${code}`
-              })`,
-            );
-            return;
-          }
-          cleanup();
-          process.exit(code ?? 0);
-        });
-      }
+			if (detached) {
+				await runDockerCompose(
+					globalOptions.env || "local",
+					mode,
+					composeCommand,
+					[],
+					"pipe",
+				);
+			} else {
+				const compose = await startDockerComposeAttached(
+					globalOptions.env || "local",
+					mode,
+					composeCommand,
+				);
+				composeProcess = compose;
+				compose.stdout?.on("data", (data: Buffer) => {
+					for (const line of data.toString().split("\n").filter(Boolean)) {
+						bufferLog(line);
+					}
+				});
+				compose.stderr?.on("data", (data: Buffer) => {
+					for (const line of data.toString().split("\n").filter(Boolean)) {
+						bufferLog(line);
+					}
+				});
+				compose.on("error", (error) => {
+					failStartup(`Docker compose failed to start: ${error.message}`);
+				});
+				compose.on("exit", (code, signal) => {
+					if (!startupComplete && !shuttingDown) {
+						failStartup(
+							`Docker compose exited before services became ready (${
+								signal ?? `code ${code}`
+							})`,
+						);
+						return;
+					}
+					cleanup();
+					process.exit(code ?? 0);
+				});
+			}
 
-      const root = findOmnibaseRoot();
-      const config = loadConfig(root);
-      const envName = globalOptions.env || "local";
+			const root = findOmnibaseRoot();
+			const config = loadConfig(root);
+			const envName = globalOptions.env || "local";
 
-      const deployments = config.deployments;
-      const started: SummaryEntry[] = [];
+			const deployments = config.deployments;
+			const started: SummaryEntry[] = [];
 
-      if (deployments.length === 0) {
-        bufferLog("No deployments configured; starting control plane only");
-      }
+			if (deployments.length === 0) {
+				bufferLog("No deployments configured; starting control plane only");
+			}
 
-      for (let i = 0; i < deployments.length; i++) {
-        const dep = deployments[i];
-        const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
-        const port = dep.port ?? 8787 + i;
+			for (let i = 0; i < deployments.length; i++) {
+				const dep = deployments[i];
+				const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
+				const port = dep.port ?? 8787 + i;
 
-        if (!fs.existsSync(depPath)) {
-          bufferLog(`! ${dep.name}: directory not found at ${depPath}`);
-          continue;
-        }
+				if (!fs.existsSync(depPath)) {
+					bufferLog(`! ${dep.name}: directory not found at ${depPath}`);
+					continue;
+				}
 
-        const wranglerConfig = loadWranglerConfigFile(depPath);
-        const env = resolveStartEnv(root, envName, wranglerConfig);
+				const wranglerConfig = loadWranglerConfigFile(depPath);
+				const env = resolveStartEnv(root, envName, wranglerConfig);
 
-        const cp = spawn("bun", ["run", "dev"], {
-          cwd: depPath,
-          stdio: ["ignore", "pipe", "pipe"],
-          env: { ...env, PORT: String(port) },
-        });
+				const cp = spawn("bun", ["run", "dev"], {
+					cwd: depPath,
+					stdio: ["ignore", "pipe", "pipe"],
+					env: { ...env, PORT: String(port) },
+				});
 
-        cp.stdout?.on("data", (data: Buffer) => {
-          for (const line of data.toString().split("\n").filter(Boolean)) {
-            bufferLog(`[${dep.name}] ${line}`);
-          }
-        });
+				cp.stdout?.on("data", (data: Buffer) => {
+					for (const line of data.toString().split("\n").filter(Boolean)) {
+						bufferLog(`[${dep.name}] ${line}`);
+					}
+				});
 
-        cp.stderr?.on("data", (data: Buffer) => {
-          for (const line of data.toString().split("\n").filter(Boolean)) {
-            bufferLog(`[${dep.name}] ${line}`);
-          }
-        });
+				cp.stderr?.on("data", (data: Buffer) => {
+					for (const line of data.toString().split("\n").filter(Boolean)) {
+						bufferLog(`[${dep.name}] ${line}`);
+					}
+				});
 
-        cp.on("exit", (code) => {
-          if (code !== null && code !== 0) {
-            if (!startupComplete && !shuttingDown) {
-              failStartup(
-                `[${dep.name}] exited with code ${code} before services became ready`,
-              );
-              return;
-            }
-            logger.warn(`[${dep.name}] exited with code ${code}`);
-          }
-        });
+				cp.on("exit", (code) => {
+					if (code !== null && code !== 0) {
+						if (!startupComplete && !shuttingDown) {
+							failStartup(
+								`[${dep.name}] exited with code ${code} before services became ready`,
+							);
+							return;
+						}
+						logger.warn(`[${dep.name}] exited with code ${code}`);
+					}
+				});
 
-        childProcesses.push(cp);
-        started.push({ name: dep.name, url: `http://localhost:${port}` });
-      }
+				childProcesses.push(cp);
+				started.push({ name: dep.name, url: `http://localhost:${port}` });
+			}
 
-      logger.update("Waiting for services to be ready...");
-      const ready = await waitForApiReady();
-      if (!ready) {
-        failStartup(
-          "API did not report ready within 2 minutes; services may still be starting",
-        );
-      }
+			logger.update("Waiting for services to be ready...");
+			const ready = await waitForApiReady();
+			if (!ready) {
+				failStartup(
+					"API did not report ready within 2 minutes; services may still be starting",
+				);
+			}
 
-      startupComplete = true;
-      logger.succeed("Omnibase is running");
-      await syncPermissionNamespaces(root);
-      formatStartSummary(started).forEach((line) => {
-        logger.log(line);
-      });
-      logger.newline();
-      logger.log(
-        detached
-          ? "Press Ctrl+C to stop the dev servers (run 'omnibase stop' to stop the containers)"
-          : "Press Ctrl+C to stop all services",
-      );
-      startStreamingLogs();
-    } catch (error) {
-      failStartup(error instanceof Error ? error.message : String(error));
-    }
-  });
+			startupComplete = true;
+			logger.succeed("Omnibase is running");
+			await syncPermissionNamespaces(root);
+			formatStartSummary(started).forEach((line) => {
+				logger.log(line);
+			});
+			logger.newline();
+			logger.log(
+				detached
+					? "Press Ctrl+C to stop the dev servers (run 'omnibase stop' to stop the containers)"
+					: "Press Ctrl+C to stop all services",
+			);
+			startStreamingLogs();
+		} catch (error) {
+			failStartup(error instanceof Error ? error.message : String(error));
+		}
+	});
 
 program
-  .command("stop")
-  .summary("Stop the Docker Compose services")
-  .description(
-    "Stop the local control-plane services started by `omnibase start` and " +
-    "terminate any spawned deployment dev servers.\n\n" +
-    "Runs `docker compose down` for the current compose mode.\n\n" +
-    "```bash\n" +
-    "omnibase stop\n" +
-    "```"
-  )
-  .action(async () => {
-    try {
-      const options = program.opts();
-      logger.start("Stopping services...");
-      cleanup();
-      await runDockerCompose("local", options.mode, "down");
-      logger.succeed("Services stopped");
-    } catch (error) {
-      logger.fail(error instanceof Error ? error.message : String(error));
-      process.exit(1);
-    }
-  });
+	.command("stop")
+	.summary("Stop the Docker Compose services")
+	.description(
+		"Stop the local control-plane services started by `omnibase start` and " +
+			"terminate any spawned deployment dev servers.\n\n" +
+			"Runs `docker compose down` for the current compose mode.\n\n" +
+			"```bash\n" +
+			"omnibase stop\n" +
+			"```",
+	)
+	.action(async () => {
+		try {
+			const options = program.opts();
+			logger.start("Stopping services...");
+			cleanup();
+			await runDockerCompose("local", options.mode, "down");
+			logger.succeed("Services stopped");
+		} catch (error) {
+			logger.fail(error instanceof Error ? error.message : String(error));
+			process.exit(1);
+		}
+	});
 
 // Add environment commands
 addEnvironmentCommands(program);
@@ -570,5 +578,5 @@ addRestartCommands(program);
 addDocsCommands(program);
 
 if (require.main === module) {
-  program.parse();
+	program.parse();
 }

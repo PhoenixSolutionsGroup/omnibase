@@ -12,55 +12,59 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface SwitchActiveRequest
  */
 export interface SwitchActiveRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof SwitchActiveRequest
-     */
-    tenantId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SwitchActiveRequest
+	 */
+	tenantId: string;
 }
 
 /**
  * Check if a given object implements the SwitchActiveRequest interface.
  */
-export function instanceOfSwitchActiveRequest(value: object): value is SwitchActiveRequest {
-    if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
-    return true;
+export function instanceOfSwitchActiveRequest(
+	value: object,
+): value is SwitchActiveRequest {
+	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	return true;
 }
 
 export function SwitchActiveRequestFromJSON(json: any): SwitchActiveRequest {
-    return SwitchActiveRequestFromJSONTyped(json, false);
+	return SwitchActiveRequestFromJSONTyped(json, false);
 }
 
-export function SwitchActiveRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SwitchActiveRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'tenantId': json['tenant_id'],
-    };
+export function SwitchActiveRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SwitchActiveRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		tenantId: json["tenant_id"],
+	};
 }
 
 export function SwitchActiveRequestToJSON(json: any): SwitchActiveRequest {
-    return SwitchActiveRequestToJSONTyped(json, false);
+	return SwitchActiveRequestToJSONTyped(json, false);
 }
 
-export function SwitchActiveRequestToJSONTyped(value?: SwitchActiveRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SwitchActiveRequestToJSONTyped(
+	value?: SwitchActiveRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'tenant_id': value['tenantId'],
-    };
+	return {
+		tenant_id: value["tenantId"],
+	};
 }
-

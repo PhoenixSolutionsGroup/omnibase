@@ -1,6 +1,6 @@
 ---
-title: "react"
----
+
+## title: "react"
 
 # @omnibase/react
 
@@ -14,34 +14,34 @@ The OmniBase React SDK provides React 19+ hooks, components, and context provide
 
 ## Features
 
-| Feature | Description | Documentation |
-|---------|-------------|---------------|
-| Session Management | React hook for accessing user session with loading states | [Session Docs](https://docs.omnibase.dev) |
-| Authentication Context | Provider component for app-wide authentication configuration | [Context Docs](https://docs.omnibase.dev) |
-| Route Protection | Component-based client-side route guards | [Protection Docs](https://docs.omnibase.dev) |
-| Direct Ory Access | Low-level hook for custom authentication flows | [API Reference](https://docs.omnibase.dev) |
-| Type Safety | Full TypeScript definitions with comprehensive type coverage | [Types Reference](https://docs.omnibase.dev) |
+| Feature                | Description                                                  | Documentation                                |
+| ---------------------- | ------------------------------------------------------------ | -------------------------------------------- |
+| Session Management     | React hook for accessing user session with loading states    | [Session Docs](https://docs.omnibase.dev)    |
+| Authentication Context | Provider component for app-wide authentication configuration | [Context Docs](https://docs.omnibase.dev)    |
+| Route Protection       | Component-based client-side route guards                     | [Protection Docs](https://docs.omnibase.dev) |
+| Direct Ory Access      | Low-level hook for custom authentication flows               | [API Reference](https://docs.omnibase.dev)   |
+| Type Safety            | Full TypeScript definitions with comprehensive type coverage | [Types Reference](https://docs.omnibase.dev) |
 
 ## Quick Start
 
 ```tsx
-import { AuthClientProvider, useSession } from '@omnibase/react';
+import { AuthClientProvider, useSession } from "@omnibase/react";
 
 function App() {
-  return (
-    <AuthClientProvider basePath="http://localhost:4000">
-      <Dashboard />
-    </AuthClientProvider>
-  );
+	return (
+		<AuthClientProvider basePath="http://localhost:4000">
+			<Dashboard />
+		</AuthClientProvider>
+	);
 }
 
 function Dashboard() {
-  const { session, loading } = useSession();
+	const { session, loading } = useSession();
 
-  if (loading) return <div>Loading...</div>;
-  if (!session || !session.active) return <div>Please log in</div>;
+	if (loading) return <div>Loading...</div>;
+	if (!session || !session.active) return <div>Please log in</div>;
 
-  return <div>Welcome, {session.identity.traits.email}!</div>;
+	return <div>Welcome, {session.identity.traits.email}!</div>;
 }
 ```
 
@@ -72,70 +72,74 @@ The SDK is organized into three main modules:
 ## Complete Workflow Example
 
 ```tsx
-import { 
-  AuthClientProvider, 
-  useSession, 
-  useAuth,
-  ProtectedRoute 
-} from '@omnibase/react';
-import { useRouter } from 'next/navigation';
+import {
+	AuthClientProvider,
+	useSession,
+	useAuth,
+	ProtectedRoute,
+} from "@omnibase/react";
+import { useRouter } from "next/navigation";
 
 // 1. Wrap your app with the provider
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthClientProvider basePath={process.env.NEXT_PUBLIC_API_URL!}>
-      {children}
-    </AuthClientProvider>
-  );
+export default function RootLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return (
+		<AuthClientProvider basePath={process.env.NEXT_PUBLIC_API_URL!}>
+			{children}
+		</AuthClientProvider>
+	);
 }
 
 // 2. Use session hook for authenticated components
 function UserProfile() {
-  const { session, loading } = useSession();
+	const { session, loading } = useSession();
 
-  if (loading) return <div>Loading profile...</div>;
-  
-  if (!session?.active) {
-    return <div>Not authenticated</div>;
-  }
+	if (loading) return <div>Loading profile...</div>;
 
-  return (
-    <div>
-      <h1>{session.identity.traits.email}</h1>
-      <p>User ID: {session.identity.id}</p>
-    </div>
-  );
+	if (!session?.active) {
+		return <div>Not authenticated</div>;
+	}
+
+	return (
+		<div>
+			<h1>{session.identity.traits.email}</h1>
+			<p>User ID: {session.identity.id}</p>
+		</div>
+	);
 }
 
 // 3. Protect routes with ProtectedRoute component
 function DashboardPage() {
-  const router = useRouter();
+	const router = useRouter();
 
-  return (
-    <ProtectedRoute
-      onInvalidSession={() => {
-        router.push('/auth/login');
-        return null;
-      }}
-    >
-      <div>
-        <h1>Protected Dashboard</h1>
-        <UserProfile />
-      </div>
-    </ProtectedRoute>
-  );
+	return (
+		<ProtectedRoute
+			onInvalidSession={() => {
+				router.push("/auth/login");
+				return null;
+			}}
+		>
+			<div>
+				<h1>Protected Dashboard</h1>
+				<UserProfile />
+			</div>
+		</ProtectedRoute>
+	);
 }
 
 // 4. Use direct Ory access for custom flows
 function LogoutButton() {
-  const ory = useAuth();
+	const ory = useAuth();
 
-  const handleLogout = async () => {
-    const { data } = await ory.createBrowserLogoutFlow();
-    window.location.href = data.logout_url;
-  };
+	const handleLogout = async () => {
+		const { data } = await ory.createBrowserLogoutFlow();
+		window.location.href = data.logout_url;
+	};
 
-  return <button onClick={handleLogout}>Sign Out</button>;
+	return <button onClick={handleLogout}>Sign Out</button>;
 }
 ```
 
@@ -145,20 +149,20 @@ The `useSession()` hook provides consistent error handling with loading states:
 
 ```tsx
 function SecureComponent() {
-  const { session, loading } = useSession();
+	const { session, loading } = useSession();
 
-  // Handle loading state
-  if (loading) {
-    return <div>Verifying session...</div>;
-  }
+	// Handle loading state
+	if (loading) {
+		return <div>Verifying session...</div>;
+	}
 
-  // Handle unauthenticated or inactive session
-  if (!session || !session.active) {
-    return <div>Access denied. Please log in.</div>;
-  }
+	// Handle unauthenticated or inactive session
+	if (!session || !session.active) {
+		return <div>Access denied. Please log in.</div>;
+	}
 
-  // Session is valid and active
-  return <div>Secure content for {session.identity.traits.email}</div>;
+	// Session is valid and active
+	return <div>Secure content for {session.identity.traits.email}</div>;
 }
 ```
 
@@ -174,15 +178,15 @@ NEXT_PUBLIC_API_URL=https://your-api-endpoint.com
 
 ## Environment Support
 
-| Environment | Status | Notes |
-|-------------|--------|-------|
-| React 19+ | ✅ | Required peer dependency |
-| React 18 | ❌ | Not supported |
-| TypeScript | ✅ | Full type definitions included |
-| Next.js | ✅ | Works with App Router and Pages Router |
-| Vite | ✅ | Full compatibility |
-| Create React App | ✅ | Full compatibility |
-| ESM/CJS | ✅ | Both module formats supported |
+| Environment      | Status | Notes                                  |
+| ---------------- | ------ | -------------------------------------- |
+| React 19+        | ✅     | Required peer dependency               |
+| React 18         | ❌     | Not supported                          |
+| TypeScript       | ✅     | Full type definitions included         |
+| Next.js          | ✅     | Works with App Router and Pages Router |
+| Vite             | ✅     | Full compatibility                     |
+| Create React App | ✅     | Full compatibility                     |
+| ESM/CJS          | ✅     | Both module formats supported          |
 
 ## Related Packages
 

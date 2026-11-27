@@ -8,7 +8,7 @@ serve:
   admin:
     base_url: ${AUTH_ADMIN_URL}
 
-selfservice:    
+selfservice:
   default_browser_return_url: ${WEBSITE_URL}
   allowed_return_urls:
     - ${WEBSITE_URL}${ALLOWED_RETURN_URLS_EXTRA}
@@ -28,8 +28,7 @@ selfservice:
       enabled: true
     oidc:
       enabled: true
-      config:
-        providers:{{OIDC_PROVIDERS}}
+      config: providers:{{OIDC_PROVIDERS}}
 
   flows:
     error:

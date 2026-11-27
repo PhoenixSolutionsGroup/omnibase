@@ -1,23 +1,22 @@
 import {
-  getRecoveryFlow as recoveryFlow,
-  getLoginFlow as loginFlow,
-  getRegistrationFlow as registrationFlow,
-  getSettingsFlow as settingsFlow,
-  getVerificationFlow as verificationFlow,
-  getLogoutFlow as logoutFlow,
-} from "@ory/nextjs/app";
-
-import {
-  FrontendApi,
-  Configuration,
-  type FlowError,
-  type LoginFlow,
-  type LogoutFlow,
-  type RecoveryFlow,
-  type RegistrationFlow,
-  type SettingsFlow,
-  type VerificationFlow,
+	Configuration,
+	type FlowError,
+	FrontendApi,
+	type LoginFlow,
+	type LogoutFlow,
+	type RecoveryFlow,
+	type RegistrationFlow,
+	type SettingsFlow,
+	type VerificationFlow,
 } from "@ory/client-fetch";
+import {
+	getLoginFlow as loginFlow,
+	getLogoutFlow as logoutFlow,
+	getRecoveryFlow as recoveryFlow,
+	getRegistrationFlow as registrationFlow,
+	getSettingsFlow as settingsFlow,
+	getVerificationFlow as verificationFlow,
+} from "@ory/nextjs/app";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -41,12 +40,12 @@ import { redirect } from "next/navigation";
  * @group Flow Retrieval
  */
 export type GetFlowProps = {
-  /** The UI URL for the specific authentication flow (e.g., '/auth/login') */
-  url: string;
-  /** Promise resolving to search parameters from the request, containing flow ID and state */
-  searchParams: Promise<{
-    [key: string]: string | string[] | undefined;
-  }>;
+	/** The UI URL for the specific authentication flow (e.g., '/auth/login') */
+	url: string;
+	/** Promise resolving to search parameters from the request, containing flow ID and state */
+	searchParams: Promise<{
+		[key: string]: string | string[] | undefined;
+	}>;
 };
 
 /**
@@ -82,14 +81,14 @@ export type GetFlowProps = {
  * @group Flow Retrieval
  */
 export const getLoginFlow = async (
-  props: GetFlowProps,
+	props: GetFlowProps,
 ): Promise<LoginFlow | null> => {
-  const flow = await loginFlow(
-    { project: { login_ui_url: props.url } },
-    props.searchParams,
-  );
-  if (!flow) return null;
-  else return flow;
+	const flow = await loginFlow(
+		{ project: { login_ui_url: props.url } },
+		props.searchParams,
+	);
+	if (!flow) return null;
+	else return flow;
 };
 
 /**
@@ -125,16 +124,16 @@ export const getLoginFlow = async (
  * @group Flow Retrieval
  */
 export const getRecoveryFlow = async (
-  props: GetFlowProps,
+	props: GetFlowProps,
 ): Promise<RecoveryFlow | null> => {
-  const flow = await recoveryFlow(
-    {
-      project: { recovery_ui_url: props.url },
-    },
-    props.searchParams,
-  );
-  if (!flow) return null;
-  else return flow;
+	const flow = await recoveryFlow(
+		{
+			project: { recovery_ui_url: props.url },
+		},
+		props.searchParams,
+	);
+	if (!flow) return null;
+	else return flow;
 };
 
 /**
@@ -170,16 +169,16 @@ export const getRecoveryFlow = async (
  * @group Flow Retrieval
  */
 export const getRegistrationFlow = async (
-  props: GetFlowProps,
+	props: GetFlowProps,
 ): Promise<RegistrationFlow | null> => {
-  const flow = await registrationFlow(
-    {
-      project: { registration_ui_url: props.url },
-    },
-    props.searchParams,
-  );
-  if (!flow) return null;
-  else return flow;
+	const flow = await registrationFlow(
+		{
+			project: { registration_ui_url: props.url },
+		},
+		props.searchParams,
+	);
+	if (!flow) return null;
+	else return flow;
 };
 
 /**
@@ -215,16 +214,16 @@ export const getRegistrationFlow = async (
  * @group Flow Retrieval
  */
 export const getSettingsFlow = async (
-  props: GetFlowProps,
+	props: GetFlowProps,
 ): Promise<SettingsFlow | null> => {
-  const flow = await settingsFlow(
-    {
-      project: { settings_ui_url: props.url },
-    },
-    props.searchParams,
-  );
-  if (!flow) return null;
-  else return flow;
+	const flow = await settingsFlow(
+		{
+			project: { settings_ui_url: props.url },
+		},
+		props.searchParams,
+	);
+	if (!flow) return null;
+	else return flow;
 };
 
 /**
@@ -260,16 +259,16 @@ export const getSettingsFlow = async (
  * @group Flow Retrieval
  */
 export const getVerificationFlow = async (
-  props: GetFlowProps,
+	props: GetFlowProps,
 ): Promise<VerificationFlow | null> => {
-  const flow = await verificationFlow(
-    {
-      project: { verification_ui_url: props.url },
-    },
-    props.searchParams,
-  );
-  if (!flow) return null;
-  else return flow;
+	const flow = await verificationFlow(
+		{
+			project: { verification_ui_url: props.url },
+		},
+		props.searchParams,
+	);
+	if (!flow) return null;
+	else return flow;
 };
 
 /**
@@ -283,10 +282,10 @@ export const getVerificationFlow = async (
  * @group Flow Retrieval
  */
 export type LogoutFlowReturnType = {
-  /** Logout flow object from Ory Kratos containing logout URL and token */
-  flow: LogoutFlow;
-  /** Server action that clears authentication cookies and completes logout */
-  action: () => Promise<void>;
+	/** Logout flow object from Ory Kratos containing logout URL and token */
+	flow: LogoutFlow;
+	/** Server action that clears authentication cookies and completes logout */
+	action: () => Promise<void>;
 };
 
 /**
@@ -330,29 +329,29 @@ export type LogoutFlowReturnType = {
  * @group Flow Retrieval
  */
 export const getLogoutFlow = async ({
-  returnTo,
+	returnTo,
 }: {
-  returnTo: string;
+	returnTo: string;
 }): Promise<LogoutFlowReturnType | null> => {
-  const flow: LogoutFlow = await logoutFlow({ returnTo });
-  if (!flow) return null;
-  else
-    return {
-      flow,
-      action: async () => {
-        "use server";
-        const cookieStore = await cookies();
-        cookieStore.delete("omnibase_session_token");
+	const flow: LogoutFlow = await logoutFlow({ returnTo });
+	if (!flow) return null;
+	else
+		return {
+			flow,
+			action: async () => {
+				"use server";
+				const cookieStore = await cookies();
+				cookieStore.delete("omnibase_session_token");
 
-        await fetch(flow.logout_url, {
-          credentials: "include",
-          headers: {
-            Cookie: cookieStore.toString(),
-          },
-        });
-        redirect(returnTo);
-      },
-    };
+				await fetch(flow.logout_url, {
+					credentials: "include",
+					headers: {
+						Cookie: cookieStore.toString(),
+					},
+				});
+				redirect(returnTo);
+			},
+		};
 };
 
 /**
@@ -363,10 +362,10 @@ export const getLogoutFlow = async ({
  * @group Flow Retrieval
  */
 export type GetErrorFlowProps = {
-  /** Promise resolving to search parameters containing the error ID */
-  searchParams: Promise<{
-    [key: string]: string | string[] | undefined;
-  }>;
+	/** Promise resolving to search parameters containing the error ID */
+	searchParams: Promise<{
+		[key: string]: string | string[] | undefined;
+	}>;
 };
 
 /**
@@ -400,24 +399,24 @@ export type GetErrorFlowProps = {
  * @group Flow Retrieval
  */
 export const getErrorFlow = async (
-  props: GetErrorFlowProps,
+	props: GetErrorFlowProps,
 ): Promise<FlowError | null> => {
-  const params = await props.searchParams;
-  const id = typeof params.id === "string" ? params.id : params.id?.[0];
+	const params = await props.searchParams;
+	const id = typeof params.id === "string" ? params.id : params.id?.[0];
 
-  if (!id) return null;
+	if (!id) return null;
 
-  const ory = new FrontendApi(
-    new Configuration({
-      basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL,
-    }),
-  );
+	const ory = new FrontendApi(
+		new Configuration({
+			basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL,
+		}),
+	);
 
-  try {
-    return await ory.getFlowError({ id });
-  } catch {
-    return null;
-  }
+	try {
+		return await ory.getFlowError({ id });
+	} catch {
+		return null;
+	}
 };
 
 export type { FlowError };

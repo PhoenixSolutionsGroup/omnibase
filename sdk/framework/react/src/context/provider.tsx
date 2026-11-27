@@ -1,5 +1,5 @@
-import { FrontendApi, Configuration } from "@ory/client";
-import { createContext, useContext, type ReactNode } from "react";
+import { Configuration, FrontendApi } from "@ory/client";
+import { createContext, type ReactNode, useContext } from "react";
 
 // Create context for Ory configuration
 const OryContext = createContext<FrontendApi | null>(null);
@@ -20,11 +20,11 @@ const OryContext = createContext<FrontendApi | null>(null);
  * @group Context
  */
 export type AuthProviderProps = {
-  /** Base URL for the Omnibase API endpoint */
-  basePath: string;
+	/** Base URL for the Omnibase API endpoint */
+	basePath: string;
 
-  /** React children components to be wrapped by the provider */
-  children: ReactNode;
+	/** React children components to be wrapped by the provider */
+	children: ReactNode;
 };
 
 /**
@@ -62,16 +62,16 @@ export type AuthProviderProps = {
  * @group Context
  */
 export function AuthClientProvider({ basePath, children }: AuthProviderProps) {
-  const ory = new FrontendApi(
-    new Configuration({
-      basePath,
-      baseOptions: {
-        withCredentials: true,
-      },
-    })
-  );
+	const ory = new FrontendApi(
+		new Configuration({
+			basePath,
+			baseOptions: {
+				withCredentials: true,
+			},
+		}),
+	);
 
-  return <OryContext.Provider value={ory}>{children}</OryContext.Provider>;
+	return <OryContext.Provider value={ory}>{children}</OryContext.Provider>;
 }
 
 /**
@@ -111,9 +111,9 @@ export function AuthClientProvider({ basePath, children }: AuthProviderProps) {
  * @group Context
  */
 export function useAuth() {
-  const context = useContext(OryContext);
-  if (!context) {
-    throw new Error("useOry must be used within OryProvider");
-  }
-  return context;
+	const context = useContext(OryContext);
+	if (!context) {
+		throw new Error("useOry must be used within OryProvider");
+	}
+	return context;
 }

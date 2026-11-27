@@ -12,54 +12,58 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ArchiveAllInputBody
  */
 export interface ArchiveAllInputBody {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ArchiveAllInputBody
-     */
-    force?: boolean;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof ArchiveAllInputBody
+	 */
+	force?: boolean;
 }
 
 /**
  * Check if a given object implements the ArchiveAllInputBody interface.
  */
-export function instanceOfArchiveAllInputBody(value: object): value is ArchiveAllInputBody {
-    return true;
+export function instanceOfArchiveAllInputBody(
+	value: object,
+): value is ArchiveAllInputBody {
+	return true;
 }
 
 export function ArchiveAllInputBodyFromJSON(json: any): ArchiveAllInputBody {
-    return ArchiveAllInputBodyFromJSONTyped(json, false);
+	return ArchiveAllInputBodyFromJSONTyped(json, false);
 }
 
-export function ArchiveAllInputBodyFromJSONTyped(json: any, ignoreDiscriminator: boolean): ArchiveAllInputBody {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'force': json['force'] == null ? undefined : json['force'],
-    };
+export function ArchiveAllInputBodyFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ArchiveAllInputBody {
+	if (json == null) {
+		return json;
+	}
+	return {
+		force: json["force"] == null ? undefined : json["force"],
+	};
 }
 
 export function ArchiveAllInputBodyToJSON(json: any): ArchiveAllInputBody {
-    return ArchiveAllInputBodyToJSONTyped(json, false);
+	return ArchiveAllInputBodyToJSONTyped(json, false);
 }
 
-export function ArchiveAllInputBodyToJSONTyped(value?: ArchiveAllInputBody | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ArchiveAllInputBodyToJSONTyped(
+	value?: ArchiveAllInputBody | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'force': value['force'],
-    };
+	return {
+		force: value["force"],
+	};
 }
-

@@ -12,141 +12,163 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
 import type {
-  AcceptRequest,
-  AcceptResponse,
-  CreateRequest,
-  CreateResponse,
-  ErrorModel,
-} from '../models/index';
+	AcceptRequest,
+	AcceptResponse,
+	CreateRequest,
+	CreateResponse,
+} from "../models/index";
 import {
-    AcceptRequestFromJSON,
-    AcceptRequestToJSON,
-    AcceptResponseFromJSON,
-    AcceptResponseToJSON,
-    CreateRequestFromJSON,
-    CreateRequestToJSON,
-    CreateResponseFromJSON,
-    CreateResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-} from '../models/index';
+	AcceptRequestToJSON,
+	AcceptResponseFromJSON,
+	CreateRequestToJSON,
+	CreateResponseFromJSON,
+} from "../models/index";
+import * as runtime from "../runtime";
 
 export interface AcceptInviteRequest {
-    acceptRequest: AcceptRequest;
+	acceptRequest: AcceptRequest;
 }
 
 export interface CreateInviteRequest {
-    createRequest: CreateRequest;
+	createRequest: CreateRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1TenantsInvitesApi extends runtime.BaseAPI {
+	/**
+	 * Accept a tenant invite
+	 */
+	async acceptInviteRaw(
+		requestParameters: AcceptInviteRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<AcceptResponse>> {
+		if (requestParameters["acceptRequest"] == null) {
+			throw new runtime.RequiredError(
+				"acceptRequest",
+				'Required parameter "acceptRequest" was null or undefined when calling acceptInvite().',
+			);
+		}
 
-    /**
-     * Accept a tenant invite
-     */
-    async acceptInviteRaw(requestParameters: AcceptInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AcceptResponse>> {
-        if (requestParameters['acceptRequest'] == null) {
-            throw new runtime.RequiredError(
-                'acceptRequest',
-                'Required parameter "acceptRequest" was null or undefined when calling acceptInvite().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/invites/accept`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "PUT",
+				headers: headerParameters,
+				query: queryParameters,
+				body: AcceptRequestToJSON(requestParameters["acceptRequest"]),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/tenants/invites/accept`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			AcceptResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: AcceptRequestToJSON(requestParameters['acceptRequest']),
-        }, initOverrides);
+	/**
+	 * Accept a tenant invite
+	 */
+	async acceptInvite(
+		requestParameters: AcceptInviteRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<AcceptResponse> {
+		const response = await this.acceptInviteRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AcceptResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Create a tenant invite
+	 */
+	async createInviteRaw(
+		requestParameters: CreateInviteRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CreateResponse>> {
+		if (requestParameters["createRequest"] == null) {
+			throw new runtime.RequiredError(
+				"createRequest",
+				'Required parameter "createRequest" was null or undefined when calling createInvite().',
+			);
+		}
 
-    /**
-     * Accept a tenant invite
-     */
-    async acceptInvite(requestParameters: AcceptInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AcceptResponse> {
-        const response = await this.acceptInviteRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Create a tenant invite
-     */
-    async createInviteRaw(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateResponse>> {
-        if (requestParameters['createRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createRequest',
-                'Required parameter "createRequest" was null or undefined when calling createInvite().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const urlPath = `/api/v1/tenants/invites`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CreateRequestToJSON(requestParameters["createRequest"]),
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CreateResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/tenants/invites`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateRequestToJSON(requestParameters['createRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Create a tenant invite
-     */
-    async createInvite(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateResponse> {
-        const response = await this.createInviteRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Create a tenant invite
+	 */
+	async createInvite(
+		requestParameters: CreateInviteRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CreateResponse> {
+		const response = await this.createInviteRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }

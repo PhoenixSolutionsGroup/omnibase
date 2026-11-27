@@ -12,55 +12,57 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface AcceptRequest
  */
 export interface AcceptRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof AcceptRequest
-     */
-    token: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AcceptRequest
+	 */
+	token: string;
 }
 
 /**
  * Check if a given object implements the AcceptRequest interface.
  */
 export function instanceOfAcceptRequest(value: object): value is AcceptRequest {
-    if (!('token' in value) || value['token'] === undefined) return false;
-    return true;
+	if (!("token" in value) || value["token"] === undefined) return false;
+	return true;
 }
 
 export function AcceptRequestFromJSON(json: any): AcceptRequest {
-    return AcceptRequestFromJSONTyped(json, false);
+	return AcceptRequestFromJSONTyped(json, false);
 }
 
-export function AcceptRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AcceptRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'token': json['token'],
-    };
+export function AcceptRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AcceptRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		token: json["token"],
+	};
 }
 
 export function AcceptRequestToJSON(json: any): AcceptRequest {
-    return AcceptRequestToJSONTyped(json, false);
+	return AcceptRequestToJSONTyped(json, false);
 }
 
-export function AcceptRequestToJSONTyped(value?: AcceptRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AcceptRequestToJSONTyped(
+	value?: AcceptRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'token': value['token'],
-    };
+	return {
+		token: value["token"],
+	};
 }
-

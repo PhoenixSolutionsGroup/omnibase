@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Count** | **int64** |  | 
-**Templates** | [**[]EmailTemplate**](EmailTemplate.md) |  | 
+| Name          | Type                                    | Description | Notes |
+| ------------- | --------------------------------------- | ----------- | ----- |
+| **Count**     | **int64**                               |             |
+| **Templates** | [**[]EmailTemplate**](EmailTemplate.md) |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetCount sets Count field to given value.
 
-
 ### GetTemplates
 
 `func (o *ListTemplatesResponse) GetTemplates() []EmailTemplate`
@@ -65,18 +64,16 @@ and a boolean to check if the value has been set.
 
 SetTemplates sets Templates field to given value.
 
-
 ### SetTemplatesNil
 
 `func (o *ListTemplatesResponse) SetTemplatesNil(b bool)`
 
- SetTemplatesNil sets the value for Templates to be an explicit nil
+SetTemplatesNil sets the value for Templates to be an explicit nil
 
 ### UnsetTemplates
+
 `func (o *ListTemplatesResponse) UnsetTemplates()`
 
 UnsetTemplates ensures that no value is present for Templates, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

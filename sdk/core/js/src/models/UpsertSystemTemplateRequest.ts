@@ -12,81 +12,90 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface UpsertSystemTemplateRequest
  */
 export interface UpsertSystemTemplateRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertSystemTemplateRequest
-     */
-    htmlBody: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertSystemTemplateRequest
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertSystemTemplateRequest
-     */
-    plaintextBody?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertSystemTemplateRequest
-     */
-    subject: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertSystemTemplateRequest
+	 */
+	htmlBody: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertSystemTemplateRequest
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertSystemTemplateRequest
+	 */
+	plaintextBody?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertSystemTemplateRequest
+	 */
+	subject: string;
 }
 
 /**
  * Check if a given object implements the UpsertSystemTemplateRequest interface.
  */
-export function instanceOfUpsertSystemTemplateRequest(value: object): value is UpsertSystemTemplateRequest {
-    if (!('htmlBody' in value) || value['htmlBody'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('subject' in value) || value['subject'] === undefined) return false;
-    return true;
+export function instanceOfUpsertSystemTemplateRequest(
+	value: object,
+): value is UpsertSystemTemplateRequest {
+	if (!("htmlBody" in value) || value["htmlBody"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("subject" in value) || value["subject"] === undefined) return false;
+	return true;
 }
 
-export function UpsertSystemTemplateRequestFromJSON(json: any): UpsertSystemTemplateRequest {
-    return UpsertSystemTemplateRequestFromJSONTyped(json, false);
+export function UpsertSystemTemplateRequestFromJSON(
+	json: any,
+): UpsertSystemTemplateRequest {
+	return UpsertSystemTemplateRequestFromJSONTyped(json, false);
 }
 
-export function UpsertSystemTemplateRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpsertSystemTemplateRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'htmlBody': json['html_body'],
-        'name': json['name'],
-        'plaintextBody': json['plaintext_body'] == null ? undefined : json['plaintext_body'],
-        'subject': json['subject'],
-    };
+export function UpsertSystemTemplateRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpsertSystemTemplateRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		htmlBody: json["html_body"],
+		name: json["name"],
+		plaintextBody:
+			json["plaintext_body"] == null ? undefined : json["plaintext_body"],
+		subject: json["subject"],
+	};
 }
 
-export function UpsertSystemTemplateRequestToJSON(json: any): UpsertSystemTemplateRequest {
-    return UpsertSystemTemplateRequestToJSONTyped(json, false);
+export function UpsertSystemTemplateRequestToJSON(
+	json: any,
+): UpsertSystemTemplateRequest {
+	return UpsertSystemTemplateRequestToJSONTyped(json, false);
 }
 
-export function UpsertSystemTemplateRequestToJSONTyped(value?: UpsertSystemTemplateRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpsertSystemTemplateRequestToJSONTyped(
+	value?: UpsertSystemTemplateRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'html_body': value['htmlBody'],
-        'name': value['name'],
-        'plaintext_body': value['plaintextBody'],
-        'subject': value['subject'],
-    };
+	return {
+		html_body: value["htmlBody"],
+		name: value["name"],
+		plaintext_body: value["plaintextBody"],
+		subject: value["subject"],
+	};
 }
-

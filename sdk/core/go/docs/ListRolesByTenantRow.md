@@ -2,16 +2,16 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**Id** | **string** |  | 
-**Permissions** | **[]string** |  | 
-**RoleName** | **string** |  | 
-**TemplateId** | **string** |  | 
-**TenantId** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
-**UserIds** | **[]string** |  | 
+| Name            | Type          | Description | Notes |
+| --------------- | ------------- | ----------- | ----- |
+| **CreatedAt**   | **time.Time** |             |
+| **Id**          | **string**    |             |
+| **Permissions** | **[]string**  |             |
+| **RoleName**    | **string**    |             |
+| **TemplateId**  | **string**    |             |
+| **TenantId**    | **string**    |             |
+| **UpdatedAt**   | **time.Time** |             |
+| **UserIds**     | **[]string**  |             |
 
 ## Methods
 
@@ -51,7 +51,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetId
 
 `func (o *ListRolesByTenantRow) GetId() string`
@@ -70,7 +69,6 @@ and a boolean to check if the value has been set.
 `func (o *ListRolesByTenantRow) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetPermissions
 
@@ -91,17 +89,18 @@ and a boolean to check if the value has been set.
 
 SetPermissions sets Permissions field to given value.
 
-
 ### SetPermissionsNil
 
 `func (o *ListRolesByTenantRow) SetPermissionsNil(b bool)`
 
- SetPermissionsNil sets the value for Permissions to be an explicit nil
+SetPermissionsNil sets the value for Permissions to be an explicit nil
 
 ### UnsetPermissions
+
 `func (o *ListRolesByTenantRow) UnsetPermissions()`
 
 UnsetPermissions ensures that no value is present for Permissions, not even an explicit nil
+
 ### GetRoleName
 
 `func (o *ListRolesByTenantRow) GetRoleName() string`
@@ -120,7 +119,6 @@ and a boolean to check if the value has been set.
 `func (o *ListRolesByTenantRow) SetRoleName(v string)`
 
 SetRoleName sets RoleName field to given value.
-
 
 ### GetTemplateId
 
@@ -141,7 +139,6 @@ and a boolean to check if the value has been set.
 
 SetTemplateId sets TemplateId field to given value.
 
-
 ### GetTenantId
 
 `func (o *ListRolesByTenantRow) GetTenantId() string`
@@ -160,7 +157,6 @@ and a boolean to check if the value has been set.
 `func (o *ListRolesByTenantRow) SetTenantId(v string)`
 
 SetTenantId sets TenantId field to given value.
-
 
 ### GetUpdatedAt
 
@@ -181,7 +177,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
 ### GetUserIds
 
 `func (o *ListRolesByTenantRow) GetUserIds() []string`
@@ -201,18 +196,16 @@ and a boolean to check if the value has been set.
 
 SetUserIds sets UserIds field to given value.
 
-
 ### SetUserIdsNil
 
 `func (o *ListRolesByTenantRow) SetUserIdsNil(b bool)`
 
- SetUserIdsNil sets the value for UserIds to be an explicit nil
+SetUserIdsNil sets the value for UserIds to be an explicit nil
 
 ### UnsetUserIds
+
 `func (o *ListRolesByTenantRow) UnsetUserIds()`
 
 UnsetUserIds ensures that no value is present for UserIds, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

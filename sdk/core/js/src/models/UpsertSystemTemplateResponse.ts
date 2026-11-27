@@ -12,72 +12,78 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { EmailSystemTemplate } from './EmailSystemTemplate';
+import type { EmailSystemTemplate } from "./EmailSystemTemplate";
 import {
-    EmailSystemTemplateFromJSON,
-    EmailSystemTemplateFromJSONTyped,
-    EmailSystemTemplateToJSON,
-    EmailSystemTemplateToJSONTyped,
-} from './EmailSystemTemplate';
+	EmailSystemTemplateFromJSON,
+	EmailSystemTemplateToJSON,
+} from "./EmailSystemTemplate";
 
 /**
- * 
+ *
  * @export
  * @interface UpsertSystemTemplateResponse
  */
 export interface UpsertSystemTemplateResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpsertSystemTemplateResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {EmailSystemTemplate}
-     * @memberof UpsertSystemTemplateResponse
-     */
-    template: EmailSystemTemplate;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpsertSystemTemplateResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {EmailSystemTemplate}
+	 * @memberof UpsertSystemTemplateResponse
+	 */
+	template: EmailSystemTemplate;
 }
 
 /**
  * Check if a given object implements the UpsertSystemTemplateResponse interface.
  */
-export function instanceOfUpsertSystemTemplateResponse(value: object): value is UpsertSystemTemplateResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('template' in value) || value['template'] === undefined) return false;
-    return true;
+export function instanceOfUpsertSystemTemplateResponse(
+	value: object,
+): value is UpsertSystemTemplateResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("template" in value) || value["template"] === undefined) return false;
+	return true;
 }
 
-export function UpsertSystemTemplateResponseFromJSON(json: any): UpsertSystemTemplateResponse {
-    return UpsertSystemTemplateResponseFromJSONTyped(json, false);
+export function UpsertSystemTemplateResponseFromJSON(
+	json: any,
+): UpsertSystemTemplateResponse {
+	return UpsertSystemTemplateResponseFromJSONTyped(json, false);
 }
 
-export function UpsertSystemTemplateResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpsertSystemTemplateResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'template': EmailSystemTemplateFromJSON(json['template']),
-    };
+export function UpsertSystemTemplateResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpsertSystemTemplateResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		template: EmailSystemTemplateFromJSON(json["template"]),
+	};
 }
 
-export function UpsertSystemTemplateResponseToJSON(json: any): UpsertSystemTemplateResponse {
-    return UpsertSystemTemplateResponseToJSONTyped(json, false);
+export function UpsertSystemTemplateResponseToJSON(
+	json: any,
+): UpsertSystemTemplateResponse {
+	return UpsertSystemTemplateResponseToJSONTyped(json, false);
 }
 
-export function UpsertSystemTemplateResponseToJSONTyped(value?: UpsertSystemTemplateResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpsertSystemTemplateResponseToJSONTyped(
+	value?: UpsertSystemTemplateResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'template': EmailSystemTemplateToJSON(value['template']),
-    };
+	return {
+		message: value["message"],
+		template: EmailSystemTemplateToJSON(value["template"]),
+	};
 }
-

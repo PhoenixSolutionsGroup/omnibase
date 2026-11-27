@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Namespace** | **string** |  | 
-**Object** | **string** |  | 
-**Relation** | Pointer to **string** |  | [optional] 
+| Name          | Type                  | Description | Notes      |
+| ------------- | --------------------- | ----------- | ---------- |
+| **Namespace** | **string**            |             |
+| **Object**    | **string**            |             |
+| **Relation**  | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetNamespace sets Namespace field to given value.
 
-
 ### GetObject
 
 `func (o *SubjectSetRequest) GetObject() string`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *SubjectSetRequest) SetObject(v string)`
 
 SetObject sets Object field to given value.
-
 
 ### GetRelation
 
@@ -92,7 +90,4 @@ SetRelation sets Relation field to given value.
 
 HasRelation returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

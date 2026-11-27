@@ -12,63 +12,65 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { ProductWithStripeIDs } from './ProductWithStripeIDs';
+import type { ProductWithStripeIDs } from "./ProductWithStripeIDs";
 import {
-    ProductWithStripeIDsFromJSON,
-    ProductWithStripeIDsFromJSONTyped,
-    ProductWithStripeIDsToJSON,
-    ProductWithStripeIDsToJSONTyped,
-} from './ProductWithStripeIDs';
+	ProductWithStripeIDsFromJSON,
+	ProductWithStripeIDsToJSON,
+} from "./ProductWithStripeIDs";
 
 /**
- * 
+ *
  * @export
  * @interface GetProductResponse
  */
 export interface GetProductResponse {
-    /**
-     * 
-     * @type {ProductWithStripeIDs}
-     * @memberof GetProductResponse
-     */
-    product: ProductWithStripeIDs;
+	/**
+	 *
+	 * @type {ProductWithStripeIDs}
+	 * @memberof GetProductResponse
+	 */
+	product: ProductWithStripeIDs;
 }
 
 /**
  * Check if a given object implements the GetProductResponse interface.
  */
-export function instanceOfGetProductResponse(value: object): value is GetProductResponse {
-    if (!('product' in value) || value['product'] === undefined) return false;
-    return true;
+export function instanceOfGetProductResponse(
+	value: object,
+): value is GetProductResponse {
+	if (!("product" in value) || value["product"] === undefined) return false;
+	return true;
 }
 
 export function GetProductResponseFromJSON(json: any): GetProductResponse {
-    return GetProductResponseFromJSONTyped(json, false);
+	return GetProductResponseFromJSONTyped(json, false);
 }
 
-export function GetProductResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetProductResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'product': ProductWithStripeIDsFromJSON(json['product']),
-    };
+export function GetProductResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): GetProductResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		product: ProductWithStripeIDsFromJSON(json["product"]),
+	};
 }
 
 export function GetProductResponseToJSON(json: any): GetProductResponse {
-    return GetProductResponseToJSONTyped(json, false);
+	return GetProductResponseToJSONTyped(json, false);
 }
 
-export function GetProductResponseToJSONTyped(value?: GetProductResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function GetProductResponseToJSONTyped(
+	value?: GetProductResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'product': ProductWithStripeIDsToJSON(value['product']),
-    };
+	return {
+		product: ProductWithStripeIDsToJSON(value["product"]),
+	};
 }
-

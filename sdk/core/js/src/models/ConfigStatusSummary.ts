@@ -12,73 +12,77 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ConfigStatusSummary
  */
 export interface ConfigStatusSummary {
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigStatusSummary
-     */
-    drift: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigStatusSummary
-     */
-    pending: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigStatusSummary
-     */
-    untracked: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigStatusSummary
+	 */
+	drift: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigStatusSummary
+	 */
+	pending: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigStatusSummary
+	 */
+	untracked: number;
 }
 
 /**
  * Check if a given object implements the ConfigStatusSummary interface.
  */
-export function instanceOfConfigStatusSummary(value: object): value is ConfigStatusSummary {
-    if (!('drift' in value) || value['drift'] === undefined) return false;
-    if (!('pending' in value) || value['pending'] === undefined) return false;
-    if (!('untracked' in value) || value['untracked'] === undefined) return false;
-    return true;
+export function instanceOfConfigStatusSummary(
+	value: object,
+): value is ConfigStatusSummary {
+	if (!("drift" in value) || value["drift"] === undefined) return false;
+	if (!("pending" in value) || value["pending"] === undefined) return false;
+	if (!("untracked" in value) || value["untracked"] === undefined) return false;
+	return true;
 }
 
 export function ConfigStatusSummaryFromJSON(json: any): ConfigStatusSummary {
-    return ConfigStatusSummaryFromJSONTyped(json, false);
+	return ConfigStatusSummaryFromJSONTyped(json, false);
 }
 
-export function ConfigStatusSummaryFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigStatusSummary {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'drift': json['drift'],
-        'pending': json['pending'],
-        'untracked': json['untracked'],
-    };
+export function ConfigStatusSummaryFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ConfigStatusSummary {
+	if (json == null) {
+		return json;
+	}
+	return {
+		drift: json["drift"],
+		pending: json["pending"],
+		untracked: json["untracked"],
+	};
 }
 
 export function ConfigStatusSummaryToJSON(json: any): ConfigStatusSummary {
-    return ConfigStatusSummaryToJSONTyped(json, false);
+	return ConfigStatusSummaryToJSONTyped(json, false);
 }
 
-export function ConfigStatusSummaryToJSONTyped(value?: ConfigStatusSummary | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ConfigStatusSummaryToJSONTyped(
+	value?: ConfigStatusSummary | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'drift': value['drift'],
-        'pending': value['pending'],
-        'untracked': value['untracked'],
-    };
+	return {
+		drift: value["drift"],
+		pending: value["pending"],
+		untracked: value["untracked"],
+	};
 }
-

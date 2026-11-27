@@ -1,14 +1,12 @@
 # \V1TenantsUsersAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**ListTenantUsers**](V1TenantsUsersAPI.md#ListTenantUsers) | **Get** /api/v1/tenants/users | List users in the tenant
-[**RemoveTenantUser**](V1TenantsUsersAPI.md#RemoveTenantUser) | **Delete** /api/v1/tenants/users | Remove a user from the tenant
-[**UpdateTenantUserRole**](V1TenantsUsersAPI.md#UpdateTenantUserRole) | **Put** /api/v1/tenants/users | Update a tenant user&#39;s role
-
-
+| Method                                                                | HTTP request                     | Description                     |
+| --------------------------------------------------------------------- | -------------------------------- | ------------------------------- |
+| [**ListTenantUsers**](V1TenantsUsersAPI.md#ListTenantUsers)           | **Get** /api/v1/tenants/users    | List users in the tenant        |
+| [**RemoveTenantUser**](V1TenantsUsersAPI.md#RemoveTenantUser)         | **Delete** /api/v1/tenants/users | Remove a user from the tenant   |
+| [**UpdateTenantUserRole**](V1TenantsUsersAPI.md#UpdateTenantUserRole) | **Put** /api/v1/tenants/users    | Update a tenant user&#39;s role |
 
 ## ListTenantUsers
 
@@ -50,7 +48,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiListTenantUsersRequest struct via the builder pattern
 
-
 ### Return type
 
 [**[]UserResponse**](UserResponse.md)
@@ -67,7 +64,6 @@ Other parameters are passed through a pointer to a apiListTenantUsersRequest str
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## RemoveTenantUser
 
@@ -104,16 +100,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiRemoveTenantUserRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **deleteRequest** | [**DeleteRequest**](DeleteRequest.md) |  | 
+| Name              | Type                                  | Description | Notes |
+| ----------------- | ------------------------------------- | ----------- | ----- |
+| **deleteRequest** | [**DeleteRequest**](DeleteRequest.md) |             |
 
 ### Return type
 
@@ -131,7 +124,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## UpdateTenantUserRole
 
@@ -168,16 +160,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUpdateTenantUserRoleRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **updateUserRoleRequest** | [**UpdateUserRoleRequest**](UpdateUserRoleRequest.md) |  | 
+| Name                      | Type                                                  | Description | Notes |
+| ------------------------- | ----------------------------------------------------- | ----------- | ----- |
+| **updateUserRoleRequest** | [**UpdateUserRoleRequest**](UpdateUserRoleRequest.md) |             |
 
 ### Return type
 
@@ -195,4 +184,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

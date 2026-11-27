@@ -12,108 +12,121 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface CalculatePriceCostResponse
  */
 export interface CalculatePriceCostResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CalculatePriceCostResponse
-     */
-    billingScheme: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CalculatePriceCostResponse
-     */
-    costCents: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CalculatePriceCostResponse
-     */
-    currency: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CalculatePriceCostResponse
-     */
-    effectiveUnitCostCents: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CalculatePriceCostResponse
-     */
-    priceId: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CalculatePriceCostResponse
-     */
-    quantity: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CalculatePriceCostResponse
-     */
-    tiersMode?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	billingScheme: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	costCents: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	currency: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	effectiveUnitCostCents: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	priceId: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	quantity: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CalculatePriceCostResponse
+	 */
+	tiersMode?: string;
 }
 
 /**
  * Check if a given object implements the CalculatePriceCostResponse interface.
  */
-export function instanceOfCalculatePriceCostResponse(value: object): value is CalculatePriceCostResponse {
-    if (!('billingScheme' in value) || value['billingScheme'] === undefined) return false;
-    if (!('costCents' in value) || value['costCents'] === undefined) return false;
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    if (!('effectiveUnitCostCents' in value) || value['effectiveUnitCostCents'] === undefined) return false;
-    if (!('priceId' in value) || value['priceId'] === undefined) return false;
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
-    return true;
+export function instanceOfCalculatePriceCostResponse(
+	value: object,
+): value is CalculatePriceCostResponse {
+	if (!("billingScheme" in value) || value["billingScheme"] === undefined)
+		return false;
+	if (!("costCents" in value) || value["costCents"] === undefined) return false;
+	if (!("currency" in value) || value["currency"] === undefined) return false;
+	if (
+		!("effectiveUnitCostCents" in value) ||
+		value["effectiveUnitCostCents"] === undefined
+	)
+		return false;
+	if (!("priceId" in value) || value["priceId"] === undefined) return false;
+	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	return true;
 }
 
-export function CalculatePriceCostResponseFromJSON(json: any): CalculatePriceCostResponse {
-    return CalculatePriceCostResponseFromJSONTyped(json, false);
+export function CalculatePriceCostResponseFromJSON(
+	json: any,
+): CalculatePriceCostResponse {
+	return CalculatePriceCostResponseFromJSONTyped(json, false);
 }
 
-export function CalculatePriceCostResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CalculatePriceCostResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'billingScheme': json['billing_scheme'],
-        'costCents': json['cost_cents'],
-        'currency': json['currency'],
-        'effectiveUnitCostCents': json['effective_unit_cost_cents'],
-        'priceId': json['price_id'],
-        'quantity': json['quantity'],
-        'tiersMode': json['tiers_mode'] == null ? undefined : json['tiers_mode'],
-    };
+export function CalculatePriceCostResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CalculatePriceCostResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		billingScheme: json["billing_scheme"],
+		costCents: json["cost_cents"],
+		currency: json["currency"],
+		effectiveUnitCostCents: json["effective_unit_cost_cents"],
+		priceId: json["price_id"],
+		quantity: json["quantity"],
+		tiersMode: json["tiers_mode"] == null ? undefined : json["tiers_mode"],
+	};
 }
 
-export function CalculatePriceCostResponseToJSON(json: any): CalculatePriceCostResponse {
-    return CalculatePriceCostResponseToJSONTyped(json, false);
+export function CalculatePriceCostResponseToJSON(
+	json: any,
+): CalculatePriceCostResponse {
+	return CalculatePriceCostResponseToJSONTyped(json, false);
 }
 
-export function CalculatePriceCostResponseToJSONTyped(value?: CalculatePriceCostResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CalculatePriceCostResponseToJSONTyped(
+	value?: CalculatePriceCostResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'billing_scheme': value['billingScheme'],
-        'cost_cents': value['costCents'],
-        'currency': value['currency'],
-        'effective_unit_cost_cents': value['effectiveUnitCostCents'],
-        'price_id': value['priceId'],
-        'quantity': value['quantity'],
-        'tiers_mode': value['tiersMode'],
-    };
+	return {
+		billing_scheme: value["billingScheme"],
+		cost_cents: value["costCents"],
+		currency: value["currency"],
+		effective_unit_cost_cents: value["effectiveUnitCostCents"],
+		price_id: value["priceId"],
+		quantity: value["quantity"],
+		tiers_mode: value["tiersMode"],
+	};
 }
-

@@ -12,99 +12,101 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { StripeConfigurationWithIDs } from './StripeConfigurationWithIDs';
+import type { StripeConfigurationWithIDs } from "./StripeConfigurationWithIDs";
 import {
-    StripeConfigurationWithIDsFromJSON,
-    StripeConfigurationWithIDsFromJSONTyped,
-    StripeConfigurationWithIDsToJSON,
-    StripeConfigurationWithIDsToJSONTyped,
-} from './StripeConfigurationWithIDs';
+	StripeConfigurationWithIDsFromJSON,
+	StripeConfigurationWithIDsToJSON,
+} from "./StripeConfigurationWithIDs";
 
 /**
- * 
+ *
  * @export
  * @interface StripeConfigResponse
  */
 export interface StripeConfigResponse {
-    /**
-     * 
-     * @type {StripeConfigurationWithIDs}
-     * @memberof StripeConfigResponse
-     */
-    config: StripeConfigurationWithIDs;
-    /**
-     * 
-     * @type {string}
-     * @memberof StripeConfigResponse
-     */
-    createdAt: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof StripeConfigResponse
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof StripeConfigResponse
-     */
-    updatedAt: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof StripeConfigResponse
-     */
-    version: string;
+	/**
+	 *
+	 * @type {StripeConfigurationWithIDs}
+	 * @memberof StripeConfigResponse
+	 */
+	config: StripeConfigurationWithIDs;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof StripeConfigResponse
+	 */
+	createdAt: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof StripeConfigResponse
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof StripeConfigResponse
+	 */
+	updatedAt: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof StripeConfigResponse
+	 */
+	version: string;
 }
 
 /**
  * Check if a given object implements the StripeConfigResponse interface.
  */
-export function instanceOfStripeConfigResponse(value: object): value is StripeConfigResponse {
-    if (!('config' in value) || value['config'] === undefined) return false;
-    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
-    if (!('version' in value) || value['version'] === undefined) return false;
-    return true;
+export function instanceOfStripeConfigResponse(
+	value: object,
+): value is StripeConfigResponse {
+	if (!("config" in value) || value["config"] === undefined) return false;
+	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	if (!("version" in value) || value["version"] === undefined) return false;
+	return true;
 }
 
 export function StripeConfigResponseFromJSON(json: any): StripeConfigResponse {
-    return StripeConfigResponseFromJSONTyped(json, false);
+	return StripeConfigResponseFromJSONTyped(json, false);
 }
 
-export function StripeConfigResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): StripeConfigResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'config': StripeConfigurationWithIDsFromJSON(json['config']),
-        'createdAt': json['created_at'],
-        'id': json['id'],
-        'updatedAt': json['updated_at'],
-        'version': json['version'],
-    };
+export function StripeConfigResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): StripeConfigResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		config: StripeConfigurationWithIDsFromJSON(json["config"]),
+		createdAt: json["created_at"],
+		id: json["id"],
+		updatedAt: json["updated_at"],
+		version: json["version"],
+	};
 }
 
 export function StripeConfigResponseToJSON(json: any): StripeConfigResponse {
-    return StripeConfigResponseToJSONTyped(json, false);
+	return StripeConfigResponseToJSONTyped(json, false);
 }
 
-export function StripeConfigResponseToJSONTyped(value?: StripeConfigResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function StripeConfigResponseToJSONTyped(
+	value?: StripeConfigResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'config': StripeConfigurationWithIDsToJSON(value['config']),
-        'created_at': value['createdAt'],
-        'id': value['id'],
-        'updated_at': value['updatedAt'],
-        'version': value['version'],
-    };
+	return {
+		config: StripeConfigurationWithIDsToJSON(value["config"]),
+		created_at: value["createdAt"],
+		id: value["id"],
+		updated_at: value["updatedAt"],
+		version: value["version"],
+	};
 }
-

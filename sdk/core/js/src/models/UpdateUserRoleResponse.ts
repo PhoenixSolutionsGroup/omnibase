@@ -12,55 +12,63 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface UpdateUserRoleResponse
  */
 export interface UpdateUserRoleResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateUserRoleResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpdateUserRoleResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the UpdateUserRoleResponse interface.
  */
-export function instanceOfUpdateUserRoleResponse(value: object): value is UpdateUserRoleResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfUpdateUserRoleResponse(
+	value: object,
+): value is UpdateUserRoleResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function UpdateUserRoleResponseFromJSON(json: any): UpdateUserRoleResponse {
-    return UpdateUserRoleResponseFromJSONTyped(json, false);
+export function UpdateUserRoleResponseFromJSON(
+	json: any,
+): UpdateUserRoleResponse {
+	return UpdateUserRoleResponseFromJSONTyped(json, false);
 }
 
-export function UpdateUserRoleResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpdateUserRoleResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function UpdateUserRoleResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpdateUserRoleResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function UpdateUserRoleResponseToJSON(json: any): UpdateUserRoleResponse {
-    return UpdateUserRoleResponseToJSONTyped(json, false);
+export function UpdateUserRoleResponseToJSON(
+	json: any,
+): UpdateUserRoleResponse {
+	return UpdateUserRoleResponseToJSONTyped(json, false);
 }
 
-export function UpdateUserRoleResponseToJSONTyped(value?: UpdateUserRoleResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpdateUserRoleResponseToJSONTyped(
+	value?: UpdateUserRoleResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

@@ -12,128 +12,141 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { MeterCustomerMapping } from './MeterCustomerMapping';
+import type { MeterCustomerMapping } from "./MeterCustomerMapping";
 import {
-    MeterCustomerMappingFromJSON,
-    MeterCustomerMappingFromJSONTyped,
-    MeterCustomerMappingToJSON,
-    MeterCustomerMappingToJSONTyped,
-} from './MeterCustomerMapping';
-import type { MeterValueSettings } from './MeterValueSettings';
+	MeterCustomerMappingFromJSON,
+	MeterCustomerMappingToJSON,
+} from "./MeterCustomerMapping";
+import type { MeterDefaultAggregation } from "./MeterDefaultAggregation";
 import {
-    MeterValueSettingsFromJSON,
-    MeterValueSettingsFromJSONTyped,
-    MeterValueSettingsToJSON,
-    MeterValueSettingsToJSONTyped,
-} from './MeterValueSettings';
-import type { MeterDefaultAggregation } from './MeterDefaultAggregation';
+	MeterDefaultAggregationFromJSON,
+	MeterDefaultAggregationToJSON,
+} from "./MeterDefaultAggregation";
+import type { MeterValueSettings } from "./MeterValueSettings";
 import {
-    MeterDefaultAggregationFromJSON,
-    MeterDefaultAggregationFromJSONTyped,
-    MeterDefaultAggregationToJSON,
-    MeterDefaultAggregationToJSONTyped,
-} from './MeterDefaultAggregation';
+	MeterValueSettingsFromJSON,
+	MeterValueSettingsToJSON,
+} from "./MeterValueSettings";
 
 /**
- * 
+ *
  * @export
  * @interface MeterWithStripeID
  */
 export interface MeterWithStripeID {
-    /**
-     * 
-     * @type {MeterCustomerMapping}
-     * @memberof MeterWithStripeID
-     */
-    customerMapping?: MeterCustomerMapping;
-    /**
-     * 
-     * @type {MeterDefaultAggregation}
-     * @memberof MeterWithStripeID
-     */
-    defaultAggregation: MeterDefaultAggregation;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterWithStripeID
-     */
-    displayName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterWithStripeID
-     */
-    eventName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterWithStripeID
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterWithStripeID
-     */
-    stripeId?: string;
-    /**
-     * 
-     * @type {MeterValueSettings}
-     * @memberof MeterWithStripeID
-     */
-    valueSettings?: MeterValueSettings;
+	/**
+	 *
+	 * @type {MeterCustomerMapping}
+	 * @memberof MeterWithStripeID
+	 */
+	customerMapping?: MeterCustomerMapping;
+	/**
+	 *
+	 * @type {MeterDefaultAggregation}
+	 * @memberof MeterWithStripeID
+	 */
+	defaultAggregation: MeterDefaultAggregation;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterWithStripeID
+	 */
+	displayName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterWithStripeID
+	 */
+	eventName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterWithStripeID
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterWithStripeID
+	 */
+	stripeId?: string;
+	/**
+	 *
+	 * @type {MeterValueSettings}
+	 * @memberof MeterWithStripeID
+	 */
+	valueSettings?: MeterValueSettings;
 }
 
 /**
  * Check if a given object implements the MeterWithStripeID interface.
  */
-export function instanceOfMeterWithStripeID(value: object): value is MeterWithStripeID {
-    if (!('defaultAggregation' in value) || value['defaultAggregation'] === undefined) return false;
-    if (!('displayName' in value) || value['displayName'] === undefined) return false;
-    if (!('eventName' in value) || value['eventName'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    return true;
+export function instanceOfMeterWithStripeID(
+	value: object,
+): value is MeterWithStripeID {
+	if (
+		!("defaultAggregation" in value) ||
+		value["defaultAggregation"] === undefined
+	)
+		return false;
+	if (!("displayName" in value) || value["displayName"] === undefined)
+		return false;
+	if (!("eventName" in value) || value["eventName"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	return true;
 }
 
 export function MeterWithStripeIDFromJSON(json: any): MeterWithStripeID {
-    return MeterWithStripeIDFromJSONTyped(json, false);
+	return MeterWithStripeIDFromJSONTyped(json, false);
 }
 
-export function MeterWithStripeIDFromJSONTyped(json: any, ignoreDiscriminator: boolean): MeterWithStripeID {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'customerMapping': json['customer_mapping'] == null ? undefined : MeterCustomerMappingFromJSON(json['customer_mapping']),
-        'defaultAggregation': MeterDefaultAggregationFromJSON(json['default_aggregation']),
-        'displayName': json['display_name'],
-        'eventName': json['event_name'],
-        'id': json['id'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-        'valueSettings': json['value_settings'] == null ? undefined : MeterValueSettingsFromJSON(json['value_settings']),
-    };
+export function MeterWithStripeIDFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MeterWithStripeID {
+	if (json == null) {
+		return json;
+	}
+	return {
+		customerMapping:
+			json["customer_mapping"] == null
+				? undefined
+				: MeterCustomerMappingFromJSON(json["customer_mapping"]),
+		defaultAggregation: MeterDefaultAggregationFromJSON(
+			json["default_aggregation"],
+		),
+		displayName: json["display_name"],
+		eventName: json["event_name"],
+		id: json["id"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		valueSettings:
+			json["value_settings"] == null
+				? undefined
+				: MeterValueSettingsFromJSON(json["value_settings"]),
+	};
 }
 
 export function MeterWithStripeIDToJSON(json: any): MeterWithStripeID {
-    return MeterWithStripeIDToJSONTyped(json, false);
+	return MeterWithStripeIDToJSONTyped(json, false);
 }
 
-export function MeterWithStripeIDToJSONTyped(value?: MeterWithStripeID | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MeterWithStripeIDToJSONTyped(
+	value?: MeterWithStripeID | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'customer_mapping': MeterCustomerMappingToJSON(value['customerMapping']),
-        'default_aggregation': MeterDefaultAggregationToJSON(value['defaultAggregation']),
-        'display_name': value['displayName'],
-        'event_name': value['eventName'],
-        'id': value['id'],
-        'stripe_id': value['stripeId'],
-        'value_settings': MeterValueSettingsToJSON(value['valueSettings']),
-    };
+	return {
+		customer_mapping: MeterCustomerMappingToJSON(value["customerMapping"]),
+		default_aggregation: MeterDefaultAggregationToJSON(
+			value["defaultAggregation"],
+		),
+		display_name: value["displayName"],
+		event_name: value["eventName"],
+		id: value["id"],
+		stripe_id: value["stripeId"],
+		value_settings: MeterValueSettingsToJSON(value["valueSettings"]),
+	};
 }
-

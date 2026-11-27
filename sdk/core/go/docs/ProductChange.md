@@ -2,13 +2,13 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Action** | **string** |  | 
-**Details** | Pointer to **[]string** |  | [optional] 
-**ProductId** | **string** |  | 
-**ProductName** | **string** |  | 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name            | Type                    | Description | Notes      |
+| --------------- | ----------------------- | ----------- | ---------- |
+| **Action**      | **string**              |             |
+| **Details**     | Pointer to **[]string** |             | [optional] |
+| **ProductId**   | **string**              |             |
+| **ProductName** | **string**              |             |
+| **StripeId**    | Pointer to **string**   |             | [optional] |
 
 ## Methods
 
@@ -48,7 +48,6 @@ and a boolean to check if the value has been set.
 
 SetAction sets Action field to given value.
 
-
 ### GetDetails
 
 `func (o *ProductChange) GetDetails() []string`
@@ -78,12 +77,14 @@ HasDetails returns a boolean if a field has been set.
 
 `func (o *ProductChange) SetDetailsNil(b bool)`
 
- SetDetailsNil sets the value for Details to be an explicit nil
+SetDetailsNil sets the value for Details to be an explicit nil
 
 ### UnsetDetails
+
 `func (o *ProductChange) UnsetDetails()`
 
 UnsetDetails ensures that no value is present for Details, not even an explicit nil
+
 ### GetProductId
 
 `func (o *ProductChange) GetProductId() string`
@@ -103,7 +104,6 @@ and a boolean to check if the value has been set.
 
 SetProductId sets ProductId field to given value.
 
-
 ### GetProductName
 
 `func (o *ProductChange) GetProductName() string`
@@ -122,7 +122,6 @@ and a boolean to check if the value has been set.
 `func (o *ProductChange) SetProductName(v string)`
 
 SetProductName sets ProductName field to given value.
-
 
 ### GetStripeId
 
@@ -149,7 +148,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

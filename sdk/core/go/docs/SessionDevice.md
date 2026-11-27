@@ -2,13 +2,13 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**Id** | **string** |  | 
-**IpAddress** | Pointer to **string** |  | [optional] 
-**Location** | Pointer to **string** |  | [optional] 
-**UserAgent** | Pointer to **string** |  | [optional] 
+| Name                          | Type                                  | Description | Notes      |
+| ----------------------------- | ------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}** |             | [optional] |
+| **Id**                        | **string**                            |             |
+| **IpAddress**                 | Pointer to **string**                 |             | [optional] |
+| **Location**                  | Pointer to **string**                 |             | [optional] |
+| **UserAgent**                 | Pointer to **string**                 |             | [optional] |
 
 ## Methods
 
@@ -72,7 +72,6 @@ and a boolean to check if the value has been set.
 `func (o *SessionDevice) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetIpAddress
 
@@ -149,7 +148,4 @@ SetUserAgent sets UserAgent field to given value.
 
 HasUserAgent returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

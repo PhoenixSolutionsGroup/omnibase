@@ -1,15 +1,15 @@
 {
-  "title": "0.21.0",
-  "root": "api",
-  "pages": [
-    "index",
-    "auth",
-    "configuration",
-    "database",
-    "payments",
-    "permissions",
-    "storage",
-    "stripe",
-    "tenants"
-  ]
+	"title": "0.21.0",
+	"root": "api",
+	"pages": [
+		"index",
+		"auth",
+		"configuration",
+		"database",
+		"payments",
+		"permissions",
+		"storage",
+		"stripe",
+		"tenants"
+	]
 }

@@ -12,82 +12,91 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface RelationMetadataResponse
  */
 export interface RelationMetadataResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RelationMetadataResponse
-     */
-    displayName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RelationMetadataResponse
-     */
-    group: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof RelationMetadataResponse
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RelationMetadataResponse
-     */
-    subGroup: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RelationMetadataResponse
+	 */
+	displayName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RelationMetadataResponse
+	 */
+	group: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RelationMetadataResponse
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof RelationMetadataResponse
+	 */
+	subGroup: string | null;
 }
 
 /**
  * Check if a given object implements the RelationMetadataResponse interface.
  */
-export function instanceOfRelationMetadataResponse(value: object): value is RelationMetadataResponse {
-    if (!('displayName' in value) || value['displayName'] === undefined) return false;
-    if (!('group' in value) || value['group'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('subGroup' in value) || value['subGroup'] === undefined) return false;
-    return true;
+export function instanceOfRelationMetadataResponse(
+	value: object,
+): value is RelationMetadataResponse {
+	if (!("displayName" in value) || value["displayName"] === undefined)
+		return false;
+	if (!("group" in value) || value["group"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("subGroup" in value) || value["subGroup"] === undefined) return false;
+	return true;
 }
 
-export function RelationMetadataResponseFromJSON(json: any): RelationMetadataResponse {
-    return RelationMetadataResponseFromJSONTyped(json, false);
+export function RelationMetadataResponseFromJSON(
+	json: any,
+): RelationMetadataResponse {
+	return RelationMetadataResponseFromJSONTyped(json, false);
 }
 
-export function RelationMetadataResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): RelationMetadataResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'displayName': json['display_name'],
-        'group': json['group'],
-        'name': json['name'],
-        'subGroup': json['sub_group'],
-    };
+export function RelationMetadataResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): RelationMetadataResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		displayName: json["display_name"],
+		group: json["group"],
+		name: json["name"],
+		subGroup: json["sub_group"],
+	};
 }
 
-export function RelationMetadataResponseToJSON(json: any): RelationMetadataResponse {
-    return RelationMetadataResponseToJSONTyped(json, false);
+export function RelationMetadataResponseToJSON(
+	json: any,
+): RelationMetadataResponse {
+	return RelationMetadataResponseToJSONTyped(json, false);
 }
 
-export function RelationMetadataResponseToJSONTyped(value?: RelationMetadataResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function RelationMetadataResponseToJSONTyped(
+	value?: RelationMetadataResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'display_name': value['displayName'],
-        'group': value['group'],
-        'name': value['name'],
-        'sub_group': value['subGroup'],
-    };
+	return {
+		display_name: value["displayName"],
+		group: value["group"],
+		name: value["name"],
+		sub_group: value["subGroup"],
+	};
 }
-

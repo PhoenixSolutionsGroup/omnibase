@@ -12,64 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface LogoutResponse
  */
 export interface LogoutResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof LogoutResponse
-     */
-    logoutToken: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LogoutResponse
-     */
-    logoutUrl: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof LogoutResponse
+	 */
+	logoutToken: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof LogoutResponse
+	 */
+	logoutUrl: string;
 }
 
 /**
  * Check if a given object implements the LogoutResponse interface.
  */
-export function instanceOfLogoutResponse(value: object): value is LogoutResponse {
-    if (!('logoutToken' in value) || value['logoutToken'] === undefined) return false;
-    if (!('logoutUrl' in value) || value['logoutUrl'] === undefined) return false;
-    return true;
+export function instanceOfLogoutResponse(
+	value: object,
+): value is LogoutResponse {
+	if (!("logoutToken" in value) || value["logoutToken"] === undefined)
+		return false;
+	if (!("logoutUrl" in value) || value["logoutUrl"] === undefined) return false;
+	return true;
 }
 
 export function LogoutResponseFromJSON(json: any): LogoutResponse {
-    return LogoutResponseFromJSONTyped(json, false);
+	return LogoutResponseFromJSONTyped(json, false);
 }
 
-export function LogoutResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): LogoutResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'logoutToken': json['logout_token'],
-        'logoutUrl': json['logout_url'],
-    };
+export function LogoutResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): LogoutResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		logoutToken: json["logout_token"],
+		logoutUrl: json["logout_url"],
+	};
 }
 
 export function LogoutResponseToJSON(json: any): LogoutResponse {
-    return LogoutResponseToJSONTyped(json, false);
+	return LogoutResponseToJSONTyped(json, false);
 }
 
-export function LogoutResponseToJSONTyped(value?: LogoutResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function LogoutResponseToJSONTyped(
+	value?: LogoutResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'logout_token': value['logoutToken'],
-        'logout_url': value['logoutUrl'],
-    };
+	return {
+		logout_token: value["logoutToken"],
+		logout_url: value["logoutUrl"],
+	};
 }
-

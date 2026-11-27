@@ -1,36 +1,32 @@
-
 # ApplyEnterpriseCustomRequest
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`enterpriseId` | string
-`tenantId` | string
+| Name           | Type   |
+| -------------- | ------ |
+| `enterpriseId` | string |
+| `tenantId`     | string |
 
 ## Example
 
 ```typescript
-import type { ApplyEnterpriseCustomRequest } from '@omnibase/core-js'
+import type { ApplyEnterpriseCustomRequest } from "@omnibase/core-js";
 
 // TODO: Update the object below with actual values
 const example = {
-  "enterpriseId": null,
-  "tenantId": null,
-} satisfies ApplyEnterpriseCustomRequest
+	enterpriseId: null,
+	tenantId: null,
+} satisfies ApplyEnterpriseCustomRequest;
 
-console.log(example)
+console.log(example);
 
 // Convert the instance to a JSON string
-const exampleJSON: string = JSON.stringify(example)
-console.log(exampleJSON)
+const exampleJSON: string = JSON.stringify(example);
+console.log(exampleJSON);
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as ApplyEnterpriseCustomRequest
-console.log(exampleParsed)
+const exampleParsed = JSON.parse(exampleJSON) as ApplyEnterpriseCustomRequest;
+console.log(exampleParsed);
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

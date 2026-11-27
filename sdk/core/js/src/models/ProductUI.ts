@@ -12,102 +12,105 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ProductUI
  */
 export interface ProductUI {
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductUI
-     */
-    badge?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductUI
-     */
-    ctaText?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductUI
-     */
-    displayName?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof ProductUI
-     */
-    features?: Array<string> | null;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ProductUI
-     */
-    highlighted?: boolean;
-    /**
-     * 
-     * @type {number}
-     * @memberof ProductUI
-     */
-    sortOrder?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProductUI
-     */
-    tagline?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductUI
+	 */
+	badge?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductUI
+	 */
+	ctaText?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductUI
+	 */
+	displayName?: string;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof ProductUI
+	 */
+	features?: Array<string> | null;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof ProductUI
+	 */
+	highlighted?: boolean;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ProductUI
+	 */
+	sortOrder?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof ProductUI
+	 */
+	tagline?: string;
 }
 
 /**
  * Check if a given object implements the ProductUI interface.
  */
 export function instanceOfProductUI(value: object): value is ProductUI {
-    return true;
+	return true;
 }
 
 export function ProductUIFromJSON(json: any): ProductUI {
-    return ProductUIFromJSONTyped(json, false);
+	return ProductUIFromJSONTyped(json, false);
 }
 
-export function ProductUIFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProductUI {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'badge': json['badge'] == null ? undefined : json['badge'],
-        'ctaText': json['cta_text'] == null ? undefined : json['cta_text'],
-        'displayName': json['display_name'] == null ? undefined : json['display_name'],
-        'features': json['features'] == null ? undefined : json['features'],
-        'highlighted': json['highlighted'] == null ? undefined : json['highlighted'],
-        'sortOrder': json['sort_order'] == null ? undefined : json['sort_order'],
-        'tagline': json['tagline'] == null ? undefined : json['tagline'],
-    };
+export function ProductUIFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ProductUI {
+	if (json == null) {
+		return json;
+	}
+	return {
+		badge: json["badge"] == null ? undefined : json["badge"],
+		ctaText: json["cta_text"] == null ? undefined : json["cta_text"],
+		displayName:
+			json["display_name"] == null ? undefined : json["display_name"],
+		features: json["features"] == null ? undefined : json["features"],
+		highlighted: json["highlighted"] == null ? undefined : json["highlighted"],
+		sortOrder: json["sort_order"] == null ? undefined : json["sort_order"],
+		tagline: json["tagline"] == null ? undefined : json["tagline"],
+	};
 }
 
 export function ProductUIToJSON(json: any): ProductUI {
-    return ProductUIToJSONTyped(json, false);
+	return ProductUIToJSONTyped(json, false);
 }
 
-export function ProductUIToJSONTyped(value?: ProductUI | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ProductUIToJSONTyped(
+	value?: ProductUI | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'badge': value['badge'],
-        'cta_text': value['ctaText'],
-        'display_name': value['displayName'],
-        'features': value['features'],
-        'highlighted': value['highlighted'],
-        'sort_order': value['sortOrder'],
-        'tagline': value['tagline'],
-    };
+	return {
+		badge: value["badge"],
+		cta_text: value["ctaText"],
+		display_name: value["displayName"],
+		features: value["features"],
+		highlighted: value["highlighted"],
+		sort_order: value["sortOrder"],
+		tagline: value["tagline"],
+	};
 }
-

@@ -1,12 +1,11 @@
-import type { ReactNode } from "react";
-
+import { SessionToJSON } from "@omnibase/core-js";
+import type { Session } from "@ory/client";
 import {
-  SessionProvider as OrySessionProvider,
-  type SessionProviderProps,
+	SessionProvider as OrySessionProvider,
+	type SessionProviderProps,
 } from "@ory/elements-react/client";
 import { getServerSession as getServerSessionOry } from "@ory/nextjs/app";
-import type { Session } from "@ory/client";
-import { SessionToJSON } from "@omnibase/core-js";
+import type { ReactNode } from "react";
 import { getTokenSession } from "./session";
 
 /**
@@ -57,11 +56,11 @@ import { getTokenSession } from "./session";
  * @group Session Management
  */
 export const getServerSession = async (): Promise<Session | null> => {
-  const tokenSession = await getTokenSession();
-  if (tokenSession) {
-    return SessionToJSON(tokenSession) as Session;
-  }
-  return getServerSessionOry() as unknown as Promise<Session | null>;
+	const tokenSession = await getTokenSession();
+	if (tokenSession) {
+		return SessionToJSON(tokenSession) as Session;
+	}
+	return getServerSessionOry() as unknown as Promise<Session | null>;
 };
 
 /**
@@ -111,11 +110,11 @@ export const getServerSession = async (): Promise<Session | null> => {
  * @group Session Management
  */
 export async function SessionProvider({ children }: { children?: ReactNode }) {
-  const session = await getServerSession();
+	const session = await getServerSession();
 
-  return (
-    <OrySessionProvider session={session as SessionProviderProps["session"]}>
-      {children}
-    </OrySessionProvider>
-  );
+	return (
+		<OrySessionProvider session={session as SessionProviderProps["session"]}>
+			{children}
+		</OrySessionProvider>
+	);
 }

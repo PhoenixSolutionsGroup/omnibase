@@ -1,38 +1,34 @@
-
 # SessionResponse
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`identity` | [Identity](Identity.md)
-`session` | [Session](Session.md)
-`tenant` | [AuthTenant](AuthTenant.md)
+| Name       | Type                        |
+| ---------- | --------------------------- |
+| `identity` | [Identity](Identity.md)     |
+| `session`  | [Session](Session.md)       |
+| `tenant`   | [AuthTenant](AuthTenant.md) |
 
 ## Example
 
 ```typescript
-import type { SessionResponse } from '@omnibase/core-js'
+import type { SessionResponse } from "@omnibase/core-js";
 
 // TODO: Update the object below with actual values
 const example = {
-  "identity": null,
-  "session": null,
-  "tenant": null,
-} satisfies SessionResponse
+	identity: null,
+	session: null,
+	tenant: null,
+} satisfies SessionResponse;
 
-console.log(example)
+console.log(example);
 
 // Convert the instance to a JSON string
-const exampleJSON: string = JSON.stringify(example)
-console.log(exampleJSON)
+const exampleJSON: string = JSON.stringify(example);
+console.log(exampleJSON);
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as SessionResponse
-console.log(exampleParsed)
+const exampleParsed = JSON.parse(exampleJSON) as SessionResponse;
+console.log(exampleParsed);
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

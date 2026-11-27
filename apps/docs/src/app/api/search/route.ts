@@ -1,14 +1,14 @@
-import { isLatestVersionPage, source } from '@/lib/source';
-import { createFromSource } from 'fumadocs-core/search/server';
+import { createFromSource } from "fumadocs-core/search/server";
+import { isLatestVersionPage, source } from "@/lib/source";
 
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 export const revalidate = false;
 
 const latestSource: typeof source = {
-  ...source,
-  getPages: (...args) => source.getPages(...args).filter(isLatestVersionPage),
+	...source,
+	getPages: (...args) => source.getPages(...args).filter(isLatestVersionPage),
 };
 
 export const { staticGET: GET } = createFromSource(latestSource, {
-  language: 'english',
+	language: "english",
 });

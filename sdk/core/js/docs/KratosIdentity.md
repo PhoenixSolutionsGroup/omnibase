@@ -1,23 +1,21 @@
-
 # KratosIdentity
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`schemaId` | string
-`schemaUrl` | string
-`state` | string
-`stateChangedAt` | Date
-`traits` | [KratosIdentityTraits](KratosIdentityTraits.md)
-`credentials` | [KratosIdentityCredentials](KratosIdentityCredentials.md)
-`verifiableAddresses` | [Array&lt;KratosIdentityVerifiableAddressesInner&gt;](KratosIdentityVerifiableAddressesInner.md)
-`recoveryAddresses` | [Array&lt;KratosIdentityRecoveryAddressesInner&gt;](KratosIdentityRecoveryAddressesInner.md)
-`organizationId` | string
-`createdAt` | Date
-`updatedAt` | Date
+| Name                  | Type                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `id`                  | string                                                                                           |
+| `schemaId`            | string                                                                                           |
+| `schemaUrl`           | string                                                                                           |
+| `state`               | string                                                                                           |
+| `stateChangedAt`      | Date                                                                                             |
+| `traits`              | [KratosIdentityTraits](KratosIdentityTraits.md)                                                  |
+| `credentials`         | [KratosIdentityCredentials](KratosIdentityCredentials.md)                                        |
+| `verifiableAddresses` | [Array&lt;KratosIdentityVerifiableAddressesInner&gt;](KratosIdentityVerifiableAddressesInner.md) |
+| `recoveryAddresses`   | [Array&lt;KratosIdentityRecoveryAddressesInner&gt;](KratosIdentityRecoveryAddressesInner.md)     |
+| `organizationId`      | string                                                                                           |
+| `createdAt`           | Date                                                                                             |
+| `updatedAt`           | Date                                                                                             |
 
 ## Example
 
@@ -52,5 +50,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

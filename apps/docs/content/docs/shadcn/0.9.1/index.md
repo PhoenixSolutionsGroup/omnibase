@@ -1,6 +1,6 @@
 ---
-title: "shadcn"
----
+
+## title: "shadcn"
 
 # @omnibase/shadcn
 
@@ -22,22 +22,22 @@ You do **not** run `shadcn add` for any primitive used by this package. The pack
 
 Bundled primitives:
 
-| Primitive | Used by |
-| --- | --- |
-| `alert` | auth error form |
-| `avatar` | `UserViewer` |
-| `button` | all components |
-| `card` | all components |
-| `checkbox` | `PermissionsSelectorTree` |
-| `collapsible` | `PermissionsSelectorTree` (groups/subgroups) |
-| `command` | `PermissionsSelector` (combobox) |
-| `dialog` | `command` |
-| `input` | forms, `RoleCreator` |
-| `label` | forms, `RoleCreator` |
-| `popover` | `PermissionsSelector` |
-| `select` | `TenantSwitcher`, `UserViewer`, `PermissionsSelectorTree` |
-| `separator` | `RoleCreator` |
-| `table` | `UserViewer` |
+| Primitive     | Used by                                                   |
+| ------------- | --------------------------------------------------------- |
+| `alert`       | auth error form                                           |
+| `avatar`      | `UserViewer`                                              |
+| `button`      | all components                                            |
+| `card`        | all components                                            |
+| `checkbox`    | `PermissionsSelectorTree`                                 |
+| `collapsible` | `PermissionsSelectorTree` (groups/subgroups)              |
+| `command`     | `PermissionsSelector` (combobox)                          |
+| `dialog`      | `command`                                                 |
+| `input`       | forms, `RoleCreator`                                      |
+| `label`       | forms, `RoleCreator`                                      |
+| `popover`     | `PermissionsSelector`                                     |
+| `select`      | `TenantSwitcher`, `UserViewer`, `PermissionsSelectorTree` |
+| `separator`   | `RoleCreator`                                             |
+| `table`       | `UserViewer`                                              |
 
 The Radix and utility runtime dependencies (`@radix-ui/react-*`, `cmdk`, `lucide-react`, `class-variance-authority`, `clsx`, `tailwind-merge`) are declared by the package and installed automatically.
 
@@ -77,11 +77,11 @@ If the `@source` path does not exist, Tailwind silently skips it and only classe
 import { RoleCreator } from "@omnibase/shadcn";
 
 <RoleCreator
-  definitions={definitions}
-  roles={roles}
-  namespaceMap={namespaceMap}
-  onRoleCreate={createRole}
-  onRoleUpdate={updateRole}
+	definitions={definitions}
+	roles={roles}
+	namespaceMap={namespaceMap}
+	onRoleCreate={createRole}
+	onRoleUpdate={updateRole}
 />;
 ```
 
@@ -89,11 +89,11 @@ import { RoleCreator } from "@omnibase/shadcn";
 
 ## Components
 
-| Export | Description |
-| --- | --- |
-| `LoginForm`, `RegistrationForm`, `VerificationForm`, `RecoveryForm`, `SettingsForm`, `ErrorForm` | Auth and account forms |
-| `TenantCreator`, `TenantSwitcher` | Tenant management |
-| `UserInvite`, `UserViewer` | People management |
-| `RoleCreator`, `RoleCreatorTree`, `RoleCreatorRows` | Role creation and editing |
-| `PermissionsSelector`, `PermissionsSelectorTree` | Standalone permission pickers |
-| `PricingTable` | Stripe-backed pricing |
+| Export                                                                                           | Description                   |
+| ------------------------------------------------------------------------------------------------ | ----------------------------- |
+| `LoginForm`, `RegistrationForm`, `VerificationForm`, `RecoveryForm`, `SettingsForm`, `ErrorForm` | Auth and account forms        |
+| `TenantCreator`, `TenantSwitcher`                                                                | Tenant management             |
+| `UserInvite`, `UserViewer`                                                                       | People management             |
+| `RoleCreator`, `RoleCreatorTree`, `RoleCreatorRows`                                              | Role creation and editing     |
+| `PermissionsSelector`, `PermissionsSelectorTree`                                                 | Standalone permission pickers |
+| `PricingTable`                                                                                   | Stripe-backed pricing         |

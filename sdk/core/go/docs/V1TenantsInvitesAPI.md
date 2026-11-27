@@ -1,13 +1,11 @@
 # \V1TenantsInvitesAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**AcceptInvite**](V1TenantsInvitesAPI.md#AcceptInvite) | **Put** /api/v1/tenants/invites/accept | Accept a tenant invite
-[**CreateInvite**](V1TenantsInvitesAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites | Create a tenant invite
-
-
+| Method                                                  | HTTP request                           | Description            |
+| ------------------------------------------------------- | -------------------------------------- | ---------------------- |
+| [**AcceptInvite**](V1TenantsInvitesAPI.md#AcceptInvite) | **Put** /api/v1/tenants/invites/accept | Accept a tenant invite |
+| [**CreateInvite**](V1TenantsInvitesAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites       | Create a tenant invite |
 
 ## AcceptInvite
 
@@ -44,16 +42,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiAcceptInviteRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **acceptRequest** | [**AcceptRequest**](AcceptRequest.md) |  | 
+| Name              | Type                                  | Description | Notes |
+| ----------------- | ------------------------------------- | ----------- | ----- |
+| **acceptRequest** | [**AcceptRequest**](AcceptRequest.md) |             |
 
 ### Return type
 
@@ -71,7 +66,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateInvite
 
@@ -108,16 +102,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateInviteRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createRequest** | [**CreateRequest**](CreateRequest.md) |  | 
+| Name              | Type                                  | Description | Notes |
+| ----------------- | ------------------------------------- | ----------- | ----- |
+| **createRequest** | [**CreateRequest**](CreateRequest.md) |             |
 
 ### Return type
 
@@ -135,4 +126,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

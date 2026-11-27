@@ -12,78 +12,93 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { CouponChange } from './CouponChange';
-import {
-    CouponChangeFromJSON,
-    CouponChangeFromJSONTyped,
-    CouponChangeToJSON,
-    CouponChangeToJSONTyped,
-} from './CouponChange';
+import type { CouponChange } from "./CouponChange";
+import { CouponChangeFromJSON, CouponChangeToJSON } from "./CouponChange";
 
 /**
- * 
+ *
  * @export
  * @interface CouponChanges
  */
 export interface CouponChanges {
-    /**
-     * 
-     * @type {Array<CouponChange>}
-     * @memberof CouponChanges
-     */
-    archived?: Array<CouponChange> | null;
-    /**
-     * 
-     * @type {Array<CouponChange>}
-     * @memberof CouponChanges
-     */
-    created?: Array<CouponChange> | null;
-    /**
-     * 
-     * @type {Array<CouponChange>}
-     * @memberof CouponChanges
-     */
-    updated?: Array<CouponChange> | null;
+	/**
+	 *
+	 * @type {Array<CouponChange>}
+	 * @memberof CouponChanges
+	 */
+	archived?: Array<CouponChange> | null;
+	/**
+	 *
+	 * @type {Array<CouponChange>}
+	 * @memberof CouponChanges
+	 */
+	created?: Array<CouponChange> | null;
+	/**
+	 *
+	 * @type {Array<CouponChange>}
+	 * @memberof CouponChanges
+	 */
+	updated?: Array<CouponChange> | null;
 }
 
 /**
  * Check if a given object implements the CouponChanges interface.
  */
 export function instanceOfCouponChanges(value: object): value is CouponChanges {
-    return true;
+	return true;
 }
 
 export function CouponChangesFromJSON(json: any): CouponChanges {
-    return CouponChangesFromJSONTyped(json, false);
+	return CouponChangesFromJSONTyped(json, false);
 }
 
-export function CouponChangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): CouponChanges {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'archived': json['archived'] == null ? undefined : ((json['archived'] as Array<any>).map(CouponChangeFromJSON)),
-        'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(CouponChangeFromJSON)),
-        'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(CouponChangeFromJSON)),
-    };
+export function CouponChangesFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CouponChanges {
+	if (json == null) {
+		return json;
+	}
+	return {
+		archived:
+			json["archived"] == null
+				? undefined
+				: (json["archived"] as Array<any>).map(CouponChangeFromJSON),
+		created:
+			json["created"] == null
+				? undefined
+				: (json["created"] as Array<any>).map(CouponChangeFromJSON),
+		updated:
+			json["updated"] == null
+				? undefined
+				: (json["updated"] as Array<any>).map(CouponChangeFromJSON),
+	};
 }
 
 export function CouponChangesToJSON(json: any): CouponChanges {
-    return CouponChangesToJSONTyped(json, false);
+	return CouponChangesToJSONTyped(json, false);
 }
 
-export function CouponChangesToJSONTyped(value?: CouponChanges | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CouponChangesToJSONTyped(
+	value?: CouponChanges | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'archived': value['archived'] == null ? undefined : ((value['archived'] as Array<any>).map(CouponChangeToJSON)),
-        'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(CouponChangeToJSON)),
-        'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(CouponChangeToJSON)),
-    };
+	return {
+		archived:
+			value["archived"] == null
+				? undefined
+				: (value["archived"] as Array<any>).map(CouponChangeToJSON),
+		created:
+			value["created"] == null
+				? undefined
+				: (value["created"] as Array<any>).map(CouponChangeToJSON),
+		updated:
+			value["updated"] == null
+				? undefined
+				: (value["updated"] as Array<any>).map(CouponChangeToJSON),
+	};
 }
-

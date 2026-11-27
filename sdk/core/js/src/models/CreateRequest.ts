@@ -12,73 +12,75 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface CreateRequest
  */
 export interface CreateRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRequest
-     */
-    email: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRequest
-     */
-    inviteUrl: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRequest
-     */
-    role: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRequest
+	 */
+	email: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRequest
+	 */
+	inviteUrl: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRequest
+	 */
+	role: string;
 }
 
 /**
  * Check if a given object implements the CreateRequest interface.
  */
 export function instanceOfCreateRequest(value: object): value is CreateRequest {
-    if (!('email' in value) || value['email'] === undefined) return false;
-    if (!('inviteUrl' in value) || value['inviteUrl'] === undefined) return false;
-    if (!('role' in value) || value['role'] === undefined) return false;
-    return true;
+	if (!("email" in value) || value["email"] === undefined) return false;
+	if (!("inviteUrl" in value) || value["inviteUrl"] === undefined) return false;
+	if (!("role" in value) || value["role"] === undefined) return false;
+	return true;
 }
 
 export function CreateRequestFromJSON(json: any): CreateRequest {
-    return CreateRequestFromJSONTyped(json, false);
+	return CreateRequestFromJSONTyped(json, false);
 }
 
-export function CreateRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'email': json['email'],
-        'inviteUrl': json['invite_url'],
-        'role': json['role'],
-    };
+export function CreateRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		email: json["email"],
+		inviteUrl: json["invite_url"],
+		role: json["role"],
+	};
 }
 
 export function CreateRequestToJSON(json: any): CreateRequest {
-    return CreateRequestToJSONTyped(json, false);
+	return CreateRequestToJSONTyped(json, false);
 }
 
-export function CreateRequestToJSONTyped(value?: CreateRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateRequestToJSONTyped(
+	value?: CreateRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'email': value['email'],
-        'invite_url': value['inviteUrl'],
-        'role': value['role'],
-    };
+	return {
+		email: value["email"],
+		invite_url: value["inviteUrl"],
+		role: value["role"],
+	};
 }
-

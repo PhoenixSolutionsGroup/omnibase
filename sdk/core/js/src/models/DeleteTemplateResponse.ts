@@ -12,55 +12,63 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface DeleteTemplateResponse
  */
 export interface DeleteTemplateResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteTemplateResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteTemplateResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the DeleteTemplateResponse interface.
  */
-export function instanceOfDeleteTemplateResponse(value: object): value is DeleteTemplateResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfDeleteTemplateResponse(
+	value: object,
+): value is DeleteTemplateResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function DeleteTemplateResponseFromJSON(json: any): DeleteTemplateResponse {
-    return DeleteTemplateResponseFromJSONTyped(json, false);
+export function DeleteTemplateResponseFromJSON(
+	json: any,
+): DeleteTemplateResponse {
+	return DeleteTemplateResponseFromJSONTyped(json, false);
 }
 
-export function DeleteTemplateResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteTemplateResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function DeleteTemplateResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteTemplateResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function DeleteTemplateResponseToJSON(json: any): DeleteTemplateResponse {
-    return DeleteTemplateResponseToJSONTyped(json, false);
+export function DeleteTemplateResponseToJSON(
+	json: any,
+): DeleteTemplateResponse {
+	return DeleteTemplateResponseToJSONTyped(json, false);
 }
 
-export function DeleteTemplateResponseToJSONTyped(value?: DeleteTemplateResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteTemplateResponseToJSONTyped(
+	value?: DeleteTemplateResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

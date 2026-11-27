@@ -12,70 +12,73 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface PriceDisplay
  */
 export interface PriceDisplay {
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceDisplay
-     */
-    customText?: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PriceDisplay
-     */
-    showCurrency?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceDisplay
-     */
-    suffix?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceDisplay
+	 */
+	customText?: string;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof PriceDisplay
+	 */
+	showCurrency?: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceDisplay
+	 */
+	suffix?: string;
 }
 
 /**
  * Check if a given object implements the PriceDisplay interface.
  */
 export function instanceOfPriceDisplay(value: object): value is PriceDisplay {
-    return true;
+	return true;
 }
 
 export function PriceDisplayFromJSON(json: any): PriceDisplay {
-    return PriceDisplayFromJSONTyped(json, false);
+	return PriceDisplayFromJSONTyped(json, false);
 }
 
-export function PriceDisplayFromJSONTyped(json: any, ignoreDiscriminator: boolean): PriceDisplay {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'customText': json['custom_text'] == null ? undefined : json['custom_text'],
-        'showCurrency': json['show_currency'] == null ? undefined : json['show_currency'],
-        'suffix': json['suffix'] == null ? undefined : json['suffix'],
-    };
+export function PriceDisplayFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PriceDisplay {
+	if (json == null) {
+		return json;
+	}
+	return {
+		customText: json["custom_text"] == null ? undefined : json["custom_text"],
+		showCurrency:
+			json["show_currency"] == null ? undefined : json["show_currency"],
+		suffix: json["suffix"] == null ? undefined : json["suffix"],
+	};
 }
 
 export function PriceDisplayToJSON(json: any): PriceDisplay {
-    return PriceDisplayToJSONTyped(json, false);
+	return PriceDisplayToJSONTyped(json, false);
 }
 
-export function PriceDisplayToJSONTyped(value?: PriceDisplay | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PriceDisplayToJSONTyped(
+	value?: PriceDisplay | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'custom_text': value['customText'],
-        'show_currency': value['showCurrency'],
-        'suffix': value['suffix'],
-    };
+	return {
+		custom_text: value["customText"],
+		show_currency: value["showCurrency"],
+		suffix: value["suffix"],
+	};
 }
-

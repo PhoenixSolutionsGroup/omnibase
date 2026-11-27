@@ -5,100 +5,100 @@ import { getProjectBranch } from "@/utils/get-project";
 import { fetchDatabasePassword } from "../settings/actions";
 
 type BranchDatabase = {
-  id: string;
-  database_host: string | null;
-  database_name: string | null;
-  database_username: string | null;
+	id: string;
+	database_host: string | null;
+	database_name: string | null;
+	database_username: string | null;
 };
 
 async function branchConnectionString(branch: BranchDatabase) {
-  if (
-    !branch.database_host ||
-    !branch.database_name ||
-    !branch.database_username
-  ) {
-    throw new Error("Branch database is not provisioned");
-  }
+	if (
+		!branch.database_host ||
+		!branch.database_name ||
+		!branch.database_username
+	) {
+		throw new Error("Branch database is not provisioned");
+	}
 
-  const passwordResult = await fetchDatabasePassword(branch.id);
-  if (!passwordResult.success || !passwordResult.password) {
-    throw new Error(
-      passwordResult.error || "Failed to fetch database password",
-    );
-  }
+	const passwordResult = await fetchDatabasePassword(branch.id);
+	if (!passwordResult.success || !passwordResult.password) {
+		throw new Error(
+			passwordResult.error || "Failed to fetch database password",
+		);
+	}
 
-  const password = encodeURIComponent(passwordResult.password);
-  return `postgresql://${branch.database_username}:${password}@${branch.database_host}:6432/${branch.database_name}?sslmode=verify-full`;
+	const password = encodeURIComponent(passwordResult.password);
+	return `postgresql://${branch.database_username}:${password}@${branch.database_host}:6432/${branch.database_name}?sslmode=verify-full`;
 }
 
 const pools = new Map<string, Pool>();
 const MAX_POOLS = 50;
 
 async function branchPool(projectId: string, projectBranch: string) {
-  const key = `${projectId}:${projectBranch}`;
-  const existing = pools.get(key);
-  if (existing) {
-    return existing;
-  }
+	const key = `${projectId}:${projectBranch}`;
+	const existing = pools.get(key);
+	if (existing) {
+		return existing;
+	}
 
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    throw new Error("Project not found");
-  }
+	const project = await getProjectBranch(projectId, projectBranch);
+	if (!project) {
+		throw new Error("Project not found");
+	}
 
-  const pool = new Pool({
-    connectionString: await branchConnectionString(project),
-    max: 2,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-    query_timeout: 30000,
-  });
-  pool.on("error", (error) => console.error("Branch pool error:", error));
+	const pool = new Pool({
+		connectionString: await branchConnectionString(project),
+		max: 2,
+		idleTimeoutMillis: 30000,
+		connectionTimeoutMillis: 10000,
+		query_timeout: 30000,
+	});
+	pool.on("error", (error) => console.error("Branch pool error:", error));
 
-  if (pools.size >= MAX_POOLS) {
-    const [oldestKey, oldestPool] = pools.entries().next().value!;
-    pools.delete(oldestKey);
-    void oldestPool.end();
-  }
+	if (pools.size >= MAX_POOLS) {
+		const [oldestKey, oldestPool] = pools.entries().next().value!;
+		pools.delete(oldestKey);
+		void oldestPool.end();
+	}
 
-  pools.set(key, pool);
-  return pool;
+	pools.set(key, pool);
+	return pool;
 }
 
 export interface TableColumn {
-  name: string;
-  type: string;
-  isNullable: boolean;
-  isPrimaryKey: boolean;
-  defaultValue: string | null;
+	name: string;
+	type: string;
+	isNullable: boolean;
+	isPrimaryKey: boolean;
+	defaultValue: string | null;
 }
 
 export interface TableInfo {
-  name: string;
-  schemaName: string;
-  columns: TableColumn[];
-  hasRlsPolicies: boolean;
+	name: string;
+	schemaName: string;
+	columns: TableColumn[];
+	hasRlsPolicies: boolean;
 }
 
 export interface SchemaInfo {
-  [schemaName: string]: TableInfo[];
+	[schemaName: string]: TableInfo[];
 }
 
 export async function fetchSchemaInfo(
-  projectId: string,
-  projectBranch: string,
+	projectId: string,
+	projectBranch: string,
 ): Promise<{ success: boolean; schemas?: SchemaInfo; error?: string }> {
-  let client: PoolClient;
-  try {
-    const pool = await branchPool(projectId, projectBranch);
-    client = await pool.connect();
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+	let client: PoolClient;
+	try {
+		const pool = await branchPool(projectId, projectBranch);
+		client = await pool.connect();
+	} catch (error: any) {
+		return { success: false, error: error.message };
+	}
 
-  try {
-    // Get all tables with their schemas using pg_catalog (much faster than information_schema)
-    const tablesResult = await client.query(`
+	try {
+		// Get all tables with their schemas using pg_catalog (much faster than information_schema)
+		const tablesResult = await client.query(`
       SELECT
         n.nspname AS table_schema,
         c.relname AS table_name,
@@ -127,93 +127,93 @@ export async function fetchSchemaInfo(
       ORDER BY n.nspname, c.relname, a.attnum
     `);
 
-    // Get RLS policy counts per table
-    const rlsResult = await client.query(`
+		// Get RLS policy counts per table
+		const rlsResult = await client.query(`
       SELECT schemaname, tablename, COUNT(*) as policy_count
       FROM pg_policies
       GROUP BY schemaname, tablename
     `);
 
-    const rlsPolicies = new Map<string, number>();
-    for (const row of rlsResult.rows) {
-      rlsPolicies.set(
-        `${row.schemaname}.${row.tablename}`,
-        parseInt(row.policy_count),
-      );
-    }
+		const rlsPolicies = new Map<string, number>();
+		for (const row of rlsResult.rows) {
+			rlsPolicies.set(
+				`${row.schemaname}.${row.tablename}`,
+				parseInt(row.policy_count),
+			);
+		}
 
-    // Group by schema and table
-    const schemas: SchemaInfo = {};
+		// Group by schema and table
+		const schemas: SchemaInfo = {};
 
-    for (const row of tablesResult.rows) {
-      const schemaName = row.table_schema;
-      const tableName = row.table_name;
+		for (const row of tablesResult.rows) {
+			const schemaName = row.table_schema;
+			const tableName = row.table_name;
 
-      if (!schemas[schemaName]) {
-        schemas[schemaName] = [];
-      }
+			if (!schemas[schemaName]) {
+				schemas[schemaName] = [];
+			}
 
-      let table = schemas[schemaName].find((t) => t.name === tableName);
-      if (!table) {
-        const policyCount = rlsPolicies.get(`${schemaName}.${tableName}`) || 0;
-        table = {
-          name: tableName,
-          schemaName,
-          columns: [],
-          hasRlsPolicies: policyCount > 0,
-        };
-        schemas[schemaName].push(table);
-      }
+			let table = schemas[schemaName].find((t) => t.name === tableName);
+			if (!table) {
+				const policyCount = rlsPolicies.get(`${schemaName}.${tableName}`) || 0;
+				table = {
+					name: tableName,
+					schemaName,
+					columns: [],
+					hasRlsPolicies: policyCount > 0,
+				};
+				schemas[schemaName].push(table);
+			}
 
-      table!.columns.push({
-        name: row.column_name,
-        type: row.udt_name || row.data_type,
-        isNullable: row.is_nullable === "YES",
-        isPrimaryKey: row.is_primary_key,
-        defaultValue: row.column_default,
-      });
-    }
+			table!.columns.push({
+				name: row.column_name,
+				type: row.udt_name || row.data_type,
+				isNullable: row.is_nullable === "YES",
+				isPrimaryKey: row.is_primary_key,
+				defaultValue: row.column_default,
+			});
+		}
 
-    // Notify PostgREST to reload its schema cache
-    await client.query("NOTIFY pgrst, 'reload schema';");
+		// Notify PostgREST to reload its schema cache
+		await client.query("NOTIFY pgrst, 'reload schema';");
 
-    return { success: true, schemas };
-  } catch (error: any) {
-    console.error("Error fetching schema info:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    client.release();
-  }
+		return { success: true, schemas };
+	} catch (error: any) {
+		console.error("Error fetching schema info:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		client.release();
+	}
 }
 
 export interface RLSPolicy {
-  policyname: string;
-  schemaname: string;
-  tablename: string;
-  cmd: string;
-  roles: string[];
-  qual: string | null;
-  with_check: string | null;
+	policyname: string;
+	schemaname: string;
+	tablename: string;
+	cmd: string;
+	roles: string[];
+	qual: string | null;
+	with_check: string | null;
 }
 
 export async function fetchRLSPolicies(
-  projectId: string,
-  projectBranch: string,
-  tableName: string,
-  schemaName: string = "public",
+	projectId: string,
+	projectBranch: string,
+	tableName: string,
+	schemaName: string = "public",
 ): Promise<{ success: boolean; policies?: RLSPolicy[]; error?: string }> {
-  let client: PoolClient;
-  try {
-    const pool = await branchPool(projectId, projectBranch);
+	let client: PoolClient;
+	try {
+		const pool = await branchPool(projectId, projectBranch);
 
-    client = await pool.connect();
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+		client = await pool.connect();
+	} catch (error: any) {
+		return { success: false, error: error.message };
+	}
 
-  try {
-    const result = await client.query(
-      `
+	try {
+		const result = await client.query(
+			`
       SELECT
         policyname,
         schemaname,
@@ -226,239 +226,239 @@ export async function fetchRLSPolicies(
       WHERE tablename = $1 AND schemaname = $2
       ORDER BY policyname
     `,
-      [tableName, schemaName],
-    );
+			[tableName, schemaName],
+		);
 
-    const policies: RLSPolicy[] = result.rows.map((row) => {
-      // Parse roles - PostgreSQL returns as {role1,role2} string or actual array
-      let roles: string[] = [];
-      if (Array.isArray(row.roles)) {
-        roles = row.roles;
-      } else if (typeof row.roles === "string") {
-        // Parse PostgreSQL array string format: {role1,role2}
-        roles = row.roles
-          .replace(/^\{|\}$/g, "")
-          .split(",")
-          .filter(Boolean);
-      }
-      return {
-        policyname: row.policyname,
-        schemaname: row.schemaname,
-        tablename: row.tablename,
-        cmd: row.cmd,
-        roles,
-        qual: row.qual,
-        with_check: row.with_check,
-      };
-    });
+		const policies: RLSPolicy[] = result.rows.map((row) => {
+			// Parse roles - PostgreSQL returns as {role1,role2} string or actual array
+			let roles: string[] = [];
+			if (Array.isArray(row.roles)) {
+				roles = row.roles;
+			} else if (typeof row.roles === "string") {
+				// Parse PostgreSQL array string format: {role1,role2}
+				roles = row.roles
+					.replace(/^\{|\}$/g, "")
+					.split(",")
+					.filter(Boolean);
+			}
+			return {
+				policyname: row.policyname,
+				schemaname: row.schemaname,
+				tablename: row.tablename,
+				cmd: row.cmd,
+				roles,
+				qual: row.qual,
+				with_check: row.with_check,
+			};
+		});
 
-    return { success: true, policies };
-  } catch (error: any) {
-    console.error("Error fetching RLS policies:", error.message);
-    return { success: false, error: error.message };
-  } finally {
-    client.release();
-  }
+		return { success: true, policies };
+	} catch (error: any) {
+		console.error("Error fetching RLS policies:", error.message);
+		return { success: false, error: error.message };
+	} finally {
+		client.release();
+	}
 }
 
 const FILTER_OPERATORS: Record<string, string> = {
-  eq: "=",
-  neq: "<>",
-  gt: ">",
-  lt: "<",
-  gte: ">=",
-  lte: "<=",
-  ilike: "ILIKE",
-  like: "LIKE",
+	eq: "=",
+	neq: "<>",
+	gt: ">",
+	lt: "<",
+	gte: ">=",
+	lte: "<=",
+	ilike: "ILIKE",
+	like: "LIKE",
 };
 
 const IS_LITERALS = new Set(["null", "true", "false"]);
 
 function quoteIdentifier(name: string) {
-  return `"${name.replace(/"/g, '""')}"`;
+	return `"${name.replace(/"/g, '""')}"`;
 }
 
 async function withBranchConnection<T>(
-  projectId: string,
-  projectBranch: string,
-  run: (client: PoolClient) => Promise<T>,
+	projectId: string,
+	projectBranch: string,
+	run: (client: PoolClient) => Promise<T>,
 ): Promise<{ success: true; result: T } | { success: false; error: string }> {
-  try {
-    const pool = await branchPool(projectId, projectBranch);
-    const client = await pool.connect();
-    try {
-      return { success: true, result: await run(client) };
-    } finally {
-      client.release();
-    }
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+	try {
+		const pool = await branchPool(projectId, projectBranch);
+		const client = await pool.connect();
+		try {
+			return { success: true, result: await run(client) };
+		} finally {
+			client.release();
+		}
+	} catch (error: any) {
+		return { success: false, error: error.message };
+	}
 }
 
 export interface TableRowFilter {
-  column: string;
-  operator: string;
-  value: string;
+	column: string;
+	operator: string;
+	value: string;
 }
 
 export interface TableRowOptions {
-  page: number;
-  pageSize: number;
-  sort: { column: string; order: "asc" | "desc" } | null;
-  filters: TableRowFilter[];
+	page: number;
+	pageSize: number;
+	sort: { column: string; order: "asc" | "desc" } | null;
+	filters: TableRowFilter[];
 }
 
 export async function fetchTableRows(
-  projectId: string,
-  projectBranch: string,
-  schemaName: string,
-  tableName: string,
-  options: TableRowOptions,
+	projectId: string,
+	projectBranch: string,
+	schemaName: string,
+	tableName: string,
+	options: TableRowOptions,
 ): Promise<{
-  success: boolean;
-  rows?: Record<string, unknown>[];
-  total?: number;
-  error?: string;
+	success: boolean;
+	rows?: Record<string, unknown>[];
+	total?: number;
+	error?: string;
 }> {
-  const params: unknown[] = [];
-  const where: string[] = [];
+	const params: unknown[] = [];
+	const where: string[] = [];
 
-  for (const filter of options.filters) {
-    if (filter.operator === "is") {
-      const literal = filter.value.trim().toLowerCase();
-      if (!IS_LITERALS.has(literal)) continue;
-      where.push(
-        `${quoteIdentifier(filter.column)} IS ${literal.toUpperCase()}`,
-      );
-      continue;
-    }
+	for (const filter of options.filters) {
+		if (filter.operator === "is") {
+			const literal = filter.value.trim().toLowerCase();
+			if (!IS_LITERALS.has(literal)) continue;
+			where.push(
+				`${quoteIdentifier(filter.column)} IS ${literal.toUpperCase()}`,
+			);
+			continue;
+		}
 
-    const operator = FILTER_OPERATORS[filter.operator];
-    if (!operator) continue;
+		const operator = FILTER_OPERATORS[filter.operator];
+		if (!operator) continue;
 
-    let value = filter.value;
-    if (!value && filter.operator !== "ilike" && filter.operator !== "like") {
-      continue;
-    }
-    if (
-      (filter.operator === "ilike" || filter.operator === "like") &&
-      !value.includes("%")
-    ) {
-      value = `%${value}%`;
-    }
+		let value = filter.value;
+		if (!value && filter.operator !== "ilike" && filter.operator !== "like") {
+			continue;
+		}
+		if (
+			(filter.operator === "ilike" || filter.operator === "like") &&
+			!value.includes("%")
+		) {
+			value = `%${value}%`;
+		}
 
-    params.push(value);
-    where.push(
-      `${quoteIdentifier(filter.column)} ${operator} $${params.length}`,
-    );
-  }
+		params.push(value);
+		where.push(
+			`${quoteIdentifier(filter.column)} ${operator} $${params.length}`,
+		);
+	}
 
-  const orderBy = options.sort
-    ? ` ORDER BY ${quoteIdentifier(options.sort.column)} ${
-        options.sort.order === "asc" ? "ASC" : "DESC"
-      }`
-    : "";
+	const orderBy = options.sort
+		? ` ORDER BY ${quoteIdentifier(options.sort.column)} ${
+				options.sort.order === "asc" ? "ASC" : "DESC"
+			}`
+		: "";
 
-  params.push(options.pageSize, options.page * options.pageSize);
-  const sql = `SELECT *, ctid::text AS __studio_ctid, count(*) OVER() AS __studio_total FROM ${quoteIdentifier(
-    schemaName,
-  )}.${quoteIdentifier(tableName)}${
-    where.length > 0 ? ` WHERE ${where.join(" AND ")}` : ""
-  }${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
+	params.push(options.pageSize, options.page * options.pageSize);
+	const sql = `SELECT *, ctid::text AS __studio_ctid, count(*) OVER() AS __studio_total FROM ${quoteIdentifier(
+		schemaName,
+	)}.${quoteIdentifier(tableName)}${
+		where.length > 0 ? ` WHERE ${where.join(" AND ")}` : ""
+	}${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
 
-  return withBranchConnection(projectId, projectBranch, async (client) => {
-    const result = await client.query(sql, params);
-    const rows = result.rows.map((row) => {
-      const { __studio_total, ...rest } = row;
-      return rest;
-    });
-    const total = rows.length > 0 ? Number(result.rows[0].__studio_total) : 0;
-    return { rows, total };
-  }).then((outcome) =>
-    outcome.success
-      ? { success: true, ...outcome.result }
-      : { success: false, error: outcome.error },
-  );
+	return withBranchConnection(projectId, projectBranch, async (client) => {
+		const result = await client.query(sql, params);
+		const rows = result.rows.map((row) => {
+			const { __studio_total, ...rest } = row;
+			return rest;
+		});
+		const total = rows.length > 0 ? Number(result.rows[0].__studio_total) : 0;
+		return { rows, total };
+	}).then((outcome) =>
+		outcome.success
+			? { success: true, ...outcome.result }
+			: { success: false, error: outcome.error },
+	);
 }
 
 export async function insertTableRow(
-  projectId: string,
-  projectBranch: string,
-  schemaName: string,
-  tableName: string,
-  values: Record<string, unknown>,
+	projectId: string,
+	projectBranch: string,
+	schemaName: string,
+	tableName: string,
+	values: Record<string, unknown>,
 ): Promise<{
-  success: boolean;
-  row?: Record<string, unknown>;
-  error?: string;
+	success: boolean;
+	row?: Record<string, unknown>;
+	error?: string;
 }> {
-  const columns = Object.keys(values);
-  const params = columns.map((column) => values[column]);
-  const sql =
-    columns.length > 0
-      ? `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
-          tableName,
-        )} (${columns.map(quoteIdentifier).join(", ")}) VALUES (${columns
-          .map((_, index) => `$${index + 1}`)
-          .join(", ")}) RETURNING *`
-      : `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
-          tableName,
-        )} DEFAULT VALUES RETURNING *`;
+	const columns = Object.keys(values);
+	const params = columns.map((column) => values[column]);
+	const sql =
+		columns.length > 0
+			? `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
+					tableName,
+				)} (${columns.map(quoteIdentifier).join(", ")}) VALUES (${columns
+					.map((_, index) => `$${index + 1}`)
+					.join(", ")}) RETURNING *`
+			: `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(
+					tableName,
+				)} DEFAULT VALUES RETURNING *`;
 
-  return withBranchConnection(projectId, projectBranch, async (client) => {
-    const result = await client.query(sql, params);
-    return { row: result.rows[0] };
-  }).then((outcome) =>
-    outcome.success
-      ? { success: true, ...outcome.result }
-      : { success: false, error: outcome.error },
-  );
+	return withBranchConnection(projectId, projectBranch, async (client) => {
+		const result = await client.query(sql, params);
+		return { row: result.rows[0] };
+	}).then((outcome) =>
+		outcome.success
+			? { success: true, ...outcome.result }
+			: { success: false, error: outcome.error },
+	);
 }
 
 export async function deleteTableRows(
-  projectId: string,
-  projectBranch: string,
-  schemaName: string,
-  tableName: string,
-  primaryKeys: string[],
-  rows: Record<string, unknown>[],
+	projectId: string,
+	projectBranch: string,
+	schemaName: string,
+	tableName: string,
+	primaryKeys: string[],
+	rows: Record<string, unknown>[],
 ): Promise<{ success: boolean; deleted?: number; error?: string }> {
-  if (rows.length === 0) {
-    return { success: true, deleted: 0 };
-  }
+	if (rows.length === 0) {
+		return { success: true, deleted: 0 };
+	}
 
-  const qualified = `${quoteIdentifier(schemaName)}.${quoteIdentifier(
-    tableName,
-  )}`;
+	const qualified = `${quoteIdentifier(schemaName)}.${quoteIdentifier(
+		tableName,
+	)}`;
 
-  let sql: string;
-  let params: unknown[];
+	let sql: string;
+	let params: unknown[];
 
-  if (primaryKeys.length > 0) {
-    const values: unknown[] = [];
-    const placeholders = rows.map((row) => {
-      const keys = primaryKeys.map((key) => {
-        values.push(row[key]);
-        return `$${values.length}`;
-      });
-      return `(${keys.join(", ")})`;
-    });
-    sql = `DELETE FROM ${qualified} WHERE (${primaryKeys
-      .map(quoteIdentifier)
-      .join(", ")}) IN (${placeholders.join(", ")})`;
-    params = values;
-  } else {
-    sql = `DELETE FROM ${qualified} WHERE ctid = ANY($1::tid[])`;
-    params = [rows.map((row) => row.__studio_ctid)];
-  }
+	if (primaryKeys.length > 0) {
+		const values: unknown[] = [];
+		const placeholders = rows.map((row) => {
+			const keys = primaryKeys.map((key) => {
+				values.push(row[key]);
+				return `$${values.length}`;
+			});
+			return `(${keys.join(", ")})`;
+		});
+		sql = `DELETE FROM ${qualified} WHERE (${primaryKeys
+			.map(quoteIdentifier)
+			.join(", ")}) IN (${placeholders.join(", ")})`;
+		params = values;
+	} else {
+		sql = `DELETE FROM ${qualified} WHERE ctid = ANY($1::tid[])`;
+		params = [rows.map((row) => row.__studio_ctid)];
+	}
 
-  return withBranchConnection(projectId, projectBranch, async (client) => {
-    const result = await client.query(sql, params);
-    return { deleted: result.rowCount ?? 0 };
-  }).then((outcome) =>
-    outcome.success
-      ? { success: true, ...outcome.result }
-      : { success: false, error: outcome.error },
-  );
+	return withBranchConnection(projectId, projectBranch, async (client) => {
+		const result = await client.query(sql, params);
+		return { deleted: result.rowCount ?? 0 };
+	}).then((outcome) =>
+		outcome.success
+			? { success: true, ...outcome.result }
+			: { success: false, error: outcome.error },
+	);
 }

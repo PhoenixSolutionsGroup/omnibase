@@ -12,62 +12,62 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { AuthTenant } from './AuthTenant';
-import {
-    AuthTenantFromJSON,
-    AuthTenantFromJSONTyped,
-    AuthTenantToJSON,
-    AuthTenantToJSONTyped,
-} from './AuthTenant';
+import type { AuthTenant } from "./AuthTenant";
+import { AuthTenantFromJSON, AuthTenantToJSON } from "./AuthTenant";
 
 /**
- * 
+ *
  * @export
  * @interface ActiveTenantResponse
  */
 export interface ActiveTenantResponse {
-    /**
-     * 
-     * @type {AuthTenant}
-     * @memberof ActiveTenantResponse
-     */
-    tenant?: AuthTenant;
+	/**
+	 *
+	 * @type {AuthTenant}
+	 * @memberof ActiveTenantResponse
+	 */
+	tenant?: AuthTenant;
 }
 
 /**
  * Check if a given object implements the ActiveTenantResponse interface.
  */
-export function instanceOfActiveTenantResponse(value: object): value is ActiveTenantResponse {
-    return true;
+export function instanceOfActiveTenantResponse(
+	value: object,
+): value is ActiveTenantResponse {
+	return true;
 }
 
 export function ActiveTenantResponseFromJSON(json: any): ActiveTenantResponse {
-    return ActiveTenantResponseFromJSONTyped(json, false);
+	return ActiveTenantResponseFromJSONTyped(json, false);
 }
 
-export function ActiveTenantResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActiveTenantResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'tenant': json['tenant'] == null ? undefined : AuthTenantFromJSON(json['tenant']),
-    };
+export function ActiveTenantResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ActiveTenantResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		tenant:
+			json["tenant"] == null ? undefined : AuthTenantFromJSON(json["tenant"]),
+	};
 }
 
 export function ActiveTenantResponseToJSON(json: any): ActiveTenantResponse {
-    return ActiveTenantResponseToJSONTyped(json, false);
+	return ActiveTenantResponseToJSONTyped(json, false);
 }
 
-export function ActiveTenantResponseToJSONTyped(value?: ActiveTenantResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ActiveTenantResponseToJSONTyped(
+	value?: ActiveTenantResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'tenant': AuthTenantToJSON(value['tenant']),
-    };
+	return {
+		tenant: AuthTenantToJSON(value["tenant"]),
+	};
 }
-

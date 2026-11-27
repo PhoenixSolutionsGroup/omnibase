@@ -1,129 +1,129 @@
-import { Command } from "commander";
 import axios from "axios";
-import { loadLocalEnvironment, selectEnvironment } from "../utils/environment";
+import type { Command } from "commander";
 import { getLocalServiceName } from "../config/services";
-import { logger } from "../utils/logger";
-import { handleCommandError } from "../utils/errors";
 import { getCommandContext } from "../utils/context";
 import { restartDockerService } from "../utils/docker";
+import { loadLocalEnvironment, selectEnvironment } from "../utils/environment";
+import { handleCommandError } from "../utils/errors";
+import { logger } from "../utils/logger";
 
 /**
  * Reset the auth service (restart)
  */
 async function resetAuth(options: {
-  env?: string;
-  mode?: string;
+	env?: string;
+	mode?: string;
 }): Promise<void> {
-  logger.start("Resetting auth service...");
+	logger.start("Resetting auth service...");
 
-  if (options.env === "local" || !options.env) {
-    await resetLocalService(options.mode);
-  } else {
-    await resetManagedService(options.env);
-  }
+	if (options.env === "local" || !options.env) {
+		await resetLocalService(options.mode);
+	} else {
+		await resetManagedService(options.env);
+	}
 
-  logger.succeed("Auth service reset successfully!");
+	logger.succeed("Auth service reset successfully!");
 }
 
 /**
  * Reset local Docker Compose service
  */
 async function resetLocalService(mode?: string): Promise<void> {
-  const dockerService = getLocalServiceName("auth");
-  if (!dockerService) {
-    throw new Error("Unknown service: auth");
-  }
+	const dockerService = getLocalServiceName("auth");
+	if (!dockerService) {
+		throw new Error("Unknown service: auth");
+	}
 
-  logger.update(`Restarting Docker service: ${dockerService}...`);
+	logger.update(`Restarting Docker service: ${dockerService}...`);
 
-  try {
-    const envConfig = loadLocalEnvironment();
-    await restartDockerService(dockerService, { mode, envConfig });
-    logger.succeed(`Docker service ${dockerService} restarted`);
-  } catch (error) {
-    logger.fail("Failed to restart Docker service");
-    logger.log(
-      `   Please run manually: docker compose restart ${dockerService}`
-    );
-    throw error;
-  }
+	try {
+		const envConfig = loadLocalEnvironment();
+		await restartDockerService(dockerService, { mode, envConfig });
+		logger.succeed(`Docker service ${dockerService} restarted`);
+	} catch (error) {
+		logger.fail("Failed to restart Docker service");
+		logger.log(
+			`   Please run manually: docker compose restart ${dockerService}`,
+		);
+		throw error;
+	}
 }
 
 /**
  * Reset managed Cloud Run service via API
  */
 async function resetManagedService(env?: string): Promise<void> {
-  const envConfig = await selectEnvironment(env);
+	const envConfig = await selectEnvironment(env);
 
-  logger.update(`Restarting Cloud Run service via ${envConfig.name}...`);
+	logger.update(`Restarting Cloud Run service via ${envConfig.name}...`);
 
-  try {
-    const response = await axios.post(
-      `${envConfig.omnibaseApiUrl}/api/v1/services/restart`,
-      {
-        service_name: "auth",
-      },
-      {
-        headers: {
-          "X-Service-Key": envConfig.omnibaseServiceKey,
-        },
-      }
-    );
+	try {
+		const response = await axios.post(
+			`${envConfig.omnibaseApiUrl}/api/v1/services/restart`,
+			{
+				service_name: "auth",
+			},
+			{
+				headers: {
+					"X-Service-Key": envConfig.omnibaseServiceKey,
+				},
+			},
+		);
 
-    logger.succeed(`Service restarted: ${response.data.message}`);
+		logger.succeed(`Service restarted: ${response.data.message}`);
 
-    if (response.data.restarted_services) {
-      logger.log(
-        `   Restarted ${response.data.restarted_services.length} service(s)`
-      );
-      response.data.restarted_services.forEach((svc: string) => {
-        logger.log(`   - ${svc}`);
-      });
-    }
+		if (response.data.restarted_services) {
+			logger.log(
+				`   Restarted ${response.data.restarted_services.length} service(s)`,
+			);
+			response.data.restarted_services.forEach((svc: string) => {
+				logger.log(`   - ${svc}`);
+			});
+		}
 
-    if (response.data.failed_services?.length > 0) {
-      logger.warn(
-        `${response.data.failed_services.length} service(s) failed to restart`
-      );
-      response.data.failed_services.forEach((svc: string) => {
-        logger.log(`   - ${svc}`);
-      });
-    }
-  } catch (error) {
-    await handleCommandError(error);
-  }
+		if (response.data.failed_services?.length > 0) {
+			logger.warn(
+				`${response.data.failed_services.length} service(s) failed to restart`,
+			);
+			response.data.failed_services.forEach((svc: string) => {
+				logger.log(`   - ${svc}`);
+			});
+		}
+	} catch (error) {
+		await handleCommandError(error);
+	}
 }
 
 /**
  * Add auth commands to the CLI program
  */
 export function addAuthCommands(program: Command): void {
-  const auth = program
-    .command("auth")
-    .summary("Manage the authentication service")
-    .description(
-      "Manage the authentication (auth) service — currently restarting it in " +
-      "the local or cloud environment."
-    );
+	const auth = program
+		.command("auth")
+		.summary("Manage the authentication service")
+		.description(
+			"Manage the authentication (auth) service — currently restarting it in " +
+				"the local or cloud environment.",
+		);
 
-  auth
-    .command("reset")
-    .summary("Reset (restart) the authentication service")
-    .description(
-      "Restart the authentication service.\n\n" +
-      "For the local environment (`--env local` or unset) it restarts the " +
-      "`auth` Docker Compose service. For a cloud environment it calls the " +
-      "branch's API to restart the auth service and reports which services " +
-      "restarted or failed.\n\n" +
-      "Use this after changing auth configuration to pick up the new settings.\n\n" +
-      "```bash\n" +
-      "omnibase auth reset\n" +
-      "omnibase auth reset --env local\n" +
-      "omnibase auth reset --env dev\n" +
-      "```"
-    )
-    .action(async () => {
-      const ctx = getCommandContext(program);
-      await resetAuth({ env: ctx.environment, mode: ctx.mode });
-    });
+	auth
+		.command("reset")
+		.summary("Reset (restart) the authentication service")
+		.description(
+			"Restart the authentication service.\n\n" +
+				"For the local environment (`--env local` or unset) it restarts the " +
+				"`auth` Docker Compose service. For a cloud environment it calls the " +
+				"branch's API to restart the auth service and reports which services " +
+				"restarted or failed.\n\n" +
+				"Use this after changing auth configuration to pick up the new settings.\n\n" +
+				"```bash\n" +
+				"omnibase auth reset\n" +
+				"omnibase auth reset --env local\n" +
+				"omnibase auth reset --env dev\n" +
+				"```",
+		)
+		.action(async () => {
+			const ctx = getCommandContext(program);
+			await resetAuth({ env: ctx.environment, mode: ctx.mode });
+		});
 }

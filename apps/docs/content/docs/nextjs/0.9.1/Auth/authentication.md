@@ -1,6 +1,6 @@
 ---
-title: "Authentication"
----
+
+## title: "Authentication"
 
 # Authentication
 
@@ -29,8 +29,8 @@ pages, layouts, and Server Actions that require authentication.
 
 #### Parameters
 
-| Parameter | Type | Default value | Description |
-| ------ | ------ | ------ | ------ |
+| Parameter    | Type     | Default value   | Description                                            |
+| ------------ | -------- | --------------- | ------------------------------------------------------ |
 | `redirectTo` | `string` | `"/auth/login"` | Path to redirect to when session is invalid or missing |
 
 #### Returns

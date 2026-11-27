@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Created** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
-**Deleted** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
-**Unchanged** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
-**Updated** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
+| Name          | Type                                               | Description | Notes      |
+| ------------- | -------------------------------------------------- | ----------- | ---------- |
+| **Created**   | Pointer to [**[]WebhookChange**](WebhookChange.md) |             | [optional] |
+| **Deleted**   | Pointer to [**[]WebhookChange**](WebhookChange.md) |             | [optional] |
+| **Unchanged** | Pointer to [**[]WebhookChange**](WebhookChange.md) |             | [optional] |
+| **Updated**   | Pointer to [**[]WebhookChange**](WebhookChange.md) |             | [optional] |
 
 ## Methods
 
@@ -57,12 +57,14 @@ HasCreated returns a boolean if a field has been set.
 
 `func (o *WebhookChanges) SetCreatedNil(b bool)`
 
- SetCreatedNil sets the value for Created to be an explicit nil
+SetCreatedNil sets the value for Created to be an explicit nil
 
 ### UnsetCreated
+
 `func (o *WebhookChanges) UnsetCreated()`
 
 UnsetCreated ensures that no value is present for Created, not even an explicit nil
+
 ### GetDeleted
 
 `func (o *WebhookChanges) GetDeleted() []WebhookChange`
@@ -92,12 +94,14 @@ HasDeleted returns a boolean if a field has been set.
 
 `func (o *WebhookChanges) SetDeletedNil(b bool)`
 
- SetDeletedNil sets the value for Deleted to be an explicit nil
+SetDeletedNil sets the value for Deleted to be an explicit nil
 
 ### UnsetDeleted
+
 `func (o *WebhookChanges) UnsetDeleted()`
 
 UnsetDeleted ensures that no value is present for Deleted, not even an explicit nil
+
 ### GetUnchanged
 
 `func (o *WebhookChanges) GetUnchanged() []WebhookChange`
@@ -127,12 +131,14 @@ HasUnchanged returns a boolean if a field has been set.
 
 `func (o *WebhookChanges) SetUnchangedNil(b bool)`
 
- SetUnchangedNil sets the value for Unchanged to be an explicit nil
+SetUnchangedNil sets the value for Unchanged to be an explicit nil
 
 ### UnsetUnchanged
+
 `func (o *WebhookChanges) UnsetUnchanged()`
 
 UnsetUnchanged ensures that no value is present for Unchanged, not even an explicit nil
+
 ### GetUpdated
 
 `func (o *WebhookChanges) GetUpdated() []WebhookChange`
@@ -162,13 +168,12 @@ HasUpdated returns a boolean if a field has been set.
 
 `func (o *WebhookChanges) SetUpdatedNil(b bool)`
 
- SetUpdatedNil sets the value for Updated to be an explicit nil
+SetUpdatedNil sets the value for Updated to be an explicit nil
 
 ### UnsetUpdated
+
 `func (o *WebhookChanges) UnsetUpdated()`
 
 UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

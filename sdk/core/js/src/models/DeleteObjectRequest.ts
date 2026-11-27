@@ -12,55 +12,59 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface DeleteObjectRequest
  */
 export interface DeleteObjectRequest {
-    /**
-     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
-     * @type {string}
-     * @memberof DeleteObjectRequest
-     */
-    path: string;
+	/**
+	 * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
+	 * @type {string}
+	 * @memberof DeleteObjectRequest
+	 */
+	path: string;
 }
 
 /**
  * Check if a given object implements the DeleteObjectRequest interface.
  */
-export function instanceOfDeleteObjectRequest(value: object): value is DeleteObjectRequest {
-    if (!('path' in value) || value['path'] === undefined) return false;
-    return true;
+export function instanceOfDeleteObjectRequest(
+	value: object,
+): value is DeleteObjectRequest {
+	if (!("path" in value) || value["path"] === undefined) return false;
+	return true;
 }
 
 export function DeleteObjectRequestFromJSON(json: any): DeleteObjectRequest {
-    return DeleteObjectRequestFromJSONTyped(json, false);
+	return DeleteObjectRequestFromJSONTyped(json, false);
 }
 
-export function DeleteObjectRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteObjectRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'path': json['path'],
-    };
+export function DeleteObjectRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteObjectRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		path: json["path"],
+	};
 }
 
 export function DeleteObjectRequestToJSON(json: any): DeleteObjectRequest {
-    return DeleteObjectRequestToJSONTyped(json, false);
+	return DeleteObjectRequestToJSONTyped(json, false);
 }
 
-export function DeleteObjectRequestToJSONTyped(value?: DeleteObjectRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteObjectRequestToJSONTyped(
+	value?: DeleteObjectRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'path': value['path'],
-    };
+	return {
+		path: value["path"],
+	};
 }
-

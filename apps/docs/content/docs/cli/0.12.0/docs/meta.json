@@ -1,8 +1,4 @@
 {
-  "title": "Docs",
-  "pages": [
-    "list",
-    "search",
-    "get"
-  ]
+	"title": "Docs",
+	"pages": ["list", "search", "get"]
 }

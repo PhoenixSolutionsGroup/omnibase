@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**Id** | **string** |  | 
-**Name** | **string** |  | 
-**StripeCustomerId** | Pointer to **string** |  | [optional] 
-**Type** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
+| Name                 | Type                  | Description | Notes      |
+| -------------------- | --------------------- | ----------- | ---------- |
+| **CreatedAt**        | **time.Time**         |             |
+| **Id**               | **string**            |             |
+| **Name**             | **string**            |             |
+| **StripeCustomerId** | Pointer to **string** |             | [optional] |
+| **Type**             | **string**            |             |
+| **UpdatedAt**        | **time.Time**         |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetId
 
 `func (o *TenantPayload) GetId() string`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetName
 
 `func (o *TenantPayload) GetName() string`
@@ -88,7 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *TenantPayload) SetName(v string)`
 
 SetName sets Name field to given value.
-
 
 ### GetStripeCustomerId
 
@@ -134,7 +131,6 @@ and a boolean to check if the value has been set.
 
 SetType sets Type field to given value.
 
-
 ### GetUpdatedAt
 
 `func (o *TenantPayload) GetUpdatedAt() time.Time`
@@ -154,8 +150,4 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

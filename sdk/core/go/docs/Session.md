@@ -2,19 +2,19 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**Active** | Pointer to **bool** |  | [optional] 
-**AuthenticatedAt** | Pointer to **time.Time** |  | [optional] 
-**AuthenticationMethods** | Pointer to [**[]SessionAuthenticationMethod**](SessionAuthenticationMethod.md) |  | [optional] 
-**AuthenticatorAssuranceLevel** | Pointer to **string** |  | [optional] 
-**Devices** | Pointer to [**[]SessionDevice**](SessionDevice.md) |  | [optional] 
-**ExpiresAt** | Pointer to **time.Time** |  | [optional] 
-**Id** | **string** |  | 
-**Identity** | Pointer to [**Identity**](Identity.md) |  | [optional] 
-**IssuedAt** | Pointer to **time.Time** |  | [optional] 
-**Tokenized** | Pointer to **string** |  | [optional] 
+| Name                            | Type                                                                           | Description | Notes      |
+| ------------------------------- | ------------------------------------------------------------------------------ | ----------- | ---------- |
+| **AdditionalPropertiesField**   | Pointer to **map[string]interface{}**                                          |             | [optional] |
+| **Active**                      | Pointer to **bool**                                                            |             | [optional] |
+| **AuthenticatedAt**             | Pointer to **time.Time**                                                       |             | [optional] |
+| **AuthenticationMethods**       | Pointer to [**[]SessionAuthenticationMethod**](SessionAuthenticationMethod.md) |             | [optional] |
+| **AuthenticatorAssuranceLevel** | Pointer to **string**                                                          |             | [optional] |
+| **Devices**                     | Pointer to [**[]SessionDevice**](SessionDevice.md)                             |             | [optional] |
+| **ExpiresAt**                   | Pointer to **time.Time**                                                       |             | [optional] |
+| **Id**                          | **string**                                                                     |             |
+| **Identity**                    | Pointer to [**Identity**](Identity.md)                                         |             | [optional] |
+| **IssuedAt**                    | Pointer to **time.Time**                                                       |             | [optional] |
+| **Tokenized**                   | Pointer to **string**                                                          |             | [optional] |
 
 ## Methods
 
@@ -139,12 +139,14 @@ HasAuthenticationMethods returns a boolean if a field has been set.
 
 `func (o *Session) SetAuthenticationMethodsNil(b bool)`
 
- SetAuthenticationMethodsNil sets the value for AuthenticationMethods to be an explicit nil
+SetAuthenticationMethodsNil sets the value for AuthenticationMethods to be an explicit nil
 
 ### UnsetAuthenticationMethods
+
 `func (o *Session) UnsetAuthenticationMethods()`
 
 UnsetAuthenticationMethods ensures that no value is present for AuthenticationMethods, not even an explicit nil
+
 ### GetAuthenticatorAssuranceLevel
 
 `func (o *Session) GetAuthenticatorAssuranceLevel() string`
@@ -199,12 +201,14 @@ HasDevices returns a boolean if a field has been set.
 
 `func (o *Session) SetDevicesNil(b bool)`
 
- SetDevicesNil sets the value for Devices to be an explicit nil
+SetDevicesNil sets the value for Devices to be an explicit nil
 
 ### UnsetDevices
+
 `func (o *Session) UnsetDevices()`
 
 UnsetDevices ensures that no value is present for Devices, not even an explicit nil
+
 ### GetExpiresAt
 
 `func (o *Session) GetExpiresAt() time.Time`
@@ -248,7 +252,6 @@ and a boolean to check if the value has been set.
 `func (o *Session) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetIdentity
 
@@ -325,7 +328,4 @@ SetTokenized sets Tokenized field to given value.
 
 HasTokenized returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

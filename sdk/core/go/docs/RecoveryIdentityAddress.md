@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**Id** | **string** |  | 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Value** | **string** |  | 
-**Via** | **string** |  | 
+| Name                          | Type                                  | Description | Notes      |
+| ----------------------------- | ------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}** |             | [optional] |
+| **CreatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Id**                        | **string**                            |             |
+| **UpdatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Value**                     | **string**                            |             |
+| **Via**                       | **string**                            |             |
 
 ## Methods
 
@@ -99,7 +99,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetUpdatedAt
 
 `func (o *RecoveryIdentityAddress) GetUpdatedAt() time.Time`
@@ -144,7 +143,6 @@ and a boolean to check if the value has been set.
 
 SetValue sets Value field to given value.
 
-
 ### GetVia
 
 `func (o *RecoveryIdentityAddress) GetVia() string`
@@ -164,8 +162,4 @@ and a boolean to check if the value has been set.
 
 SetVia sets Via field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

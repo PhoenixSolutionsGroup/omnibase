@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Namespace** | **string** |  | 
-**Object** | **string** |  | 
-**Relation** | **string** |  | 
-**SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |  | 
+| Name           | Type                                          | Description | Notes |
+| -------------- | --------------------------------------------- | ----------- | ----- |
+| **Namespace**  | **string**                                    |             |
+| **Object**     | **string**                                    |             |
+| **Relation**   | **string**                                    |             |
+| **SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |             |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetNamespace sets Namespace field to given value.
 
-
 ### GetObject
 
 `func (o *CheckRequest) GetObject() string`
@@ -66,7 +65,6 @@ and a boolean to check if the value has been set.
 `func (o *CheckRequest) SetObject(v string)`
 
 SetObject sets Object field to given value.
-
 
 ### GetRelation
 
@@ -87,7 +85,6 @@ and a boolean to check if the value has been set.
 
 SetRelation sets Relation field to given value.
 
-
 ### GetSubjectSet
 
 `func (o *CheckRequest) GetSubjectSet() SubjectSetRequest`
@@ -107,8 +104,4 @@ and a boolean to check if the value has been set.
 
 SetSubjectSet sets SubjectSet field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-
