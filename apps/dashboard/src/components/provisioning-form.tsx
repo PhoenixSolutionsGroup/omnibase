@@ -43,7 +43,6 @@ import { RadioChoiceCard } from "./ui/radio-choice-card";
 import { CheckboxCard } from "./ui/checkbox-card";
 import { RadioGroup } from "./ui/radio-group";
 import { ButtonGroup } from "./ui/button-group";
-import { V1PaymentsApi } from "@omnibase/core-js";
 
 type Feature = {
   feature_name: string;
@@ -414,8 +413,6 @@ export function ProvisioningForm({
   projectId,
   projectName,
 }: ProvisioningFormProps) {
-  const client = new V1PaymentsApi(); // TODO: add cookie
-
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
@@ -533,8 +530,6 @@ export function ProvisioningForm({
     e.preventDefault();
     if (!selectedPlan) return;
     setSubmitting(true);
-
-    // TODO: client.createCheckout({createCheckoutRequest: {priceId: "shared_starter_monthly" }})
 
     try {
       if (isBranchMode) {
