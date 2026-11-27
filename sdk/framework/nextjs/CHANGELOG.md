@@ -1,3 +1,15 @@
+# [0.10.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.9.1...nextjs-v0.10.0) (2026-11-27)
+
+
+### Bug Fixes
+
+* **auth:** Logout removes `omnibase_session_token` instead of legacy `ory_*` ([5a1652e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5a1652efef67754aecf976809fe54b57bb850d64))
+
+
+### Features
+
+* proxy PostgREST through the API and remove client-held PostgREST tokens ([49d317f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/49d317f00f94a78ac71e719c08ee8f76622e8553))
+
 ## [0.9.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.9.0...nextjs-v0.9.1) (2026-10-29)
 
 
