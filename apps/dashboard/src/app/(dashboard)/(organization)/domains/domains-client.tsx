@@ -333,8 +333,8 @@ export default function DomainsPage() {
 	};
 
 	return (
-		<div className="max-w-5xl  my-8 mx-auto">
-			<div className="mx-16 space-y-4">
+		<div className="max-w-5xl my-4 md:my-8 mx-auto">
+			<div className="mx-4 md:mx-16 space-y-4">
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-xl font-bold">Domains</h1>

@@ -224,7 +224,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 									className="flex items-start justify-between gap-4 rounded-lg border p-3"
 								>
 									<div className="min-w-0 flex-1">
-										<p className="text-sm font-medium text-muted-foreground">
+										<p className="text-xs font-medium text-muted-foreground">
 											{item.label}
 										</p>
 										<p

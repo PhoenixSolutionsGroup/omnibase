@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { Messages } from "../components/ui/messages";
 import { uiNodeKey } from "./utils";
 
 export type SettingsFormProps = {
 	flow: SettingsFlow;
 	Header?: React.ReactNode;
+	className?: string;
+	sectionClassName?: string;
 };
 
 // Helper function to check if node attributes are input attributes
@@ -23,7 +26,11 @@ function isUiNodeInputAttributes(
 	);
 }
 
-export function SettingsForm({ flow }: SettingsFormProps) {
+export function SettingsForm({
+	flow,
+	className,
+	sectionClassName,
+}: SettingsFormProps) {
 	// Group nodes by their group property
 	const nodesByGroup = flow.ui.nodes.reduce(
 		(groups, node) => {
@@ -60,7 +67,7 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className={cn("space-y-6", className)}>
 			<Messages flow={flow} />
 
 			{/* Render each settings group as its own card with independent form */}
@@ -85,7 +92,10 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 				const textNodes = nodes.filter((node) => node.type === "text");
 
 				return (
-					<Card key={groupName} className="w-full max-w-2xl mx-auto">
+					<Card
+						key={groupName}
+						className={cn("w-full max-w-2xl mx-auto", sectionClassName)}
+					>
 						<CardHeader>
 							<CardTitle>{groupTitles[groupName] || groupName}</CardTitle>
 						</CardHeader>

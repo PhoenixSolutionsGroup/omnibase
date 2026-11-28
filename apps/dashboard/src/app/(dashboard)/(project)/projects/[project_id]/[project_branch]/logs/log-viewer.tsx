@@ -282,15 +282,17 @@ export function LogViewer({
 											</TableCell>
 										)}
 
-										<TableCell className="px-4 py-2 max-w-0">
-											<span>{log.message || "(no message)"}</span>
+										<TableCell className="px-4 py-2 max-w-0 w-full">
+											<span className="block truncate" title={log.message}>
+												{log.message || "(no message)"}
+											</span>
 										</TableCell>
 									</TableRow>
 									{expandedRows.has(index) && (
 										<TableRow className="hover:bg-transparent">
 											<TableCell
 												colSpan={colCount}
-												className="px-4 pb-3 bg-muted/30 whitespace-normal"
+												className="px-4 pb-3 bg-muted/30 whitespace-normal max-w-0"
 											>
 												{/* Raw Log Line */}
 												{Boolean(log.metadata?.raw_line) && (
@@ -309,7 +311,7 @@ export function LogViewer({
 													<div className="text-xs font-semibold text-muted-foreground mb-1">
 														Full Log Entry:
 													</div>
-													<pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
+													<pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border max-w-full">
 														{JSON.stringify(log, null, 2)}
 													</pre>
 												</div>
