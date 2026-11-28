@@ -148,11 +148,6 @@ export default function Studio({ project }: StudioProps) {
 
 	return (
 		<div className="flex h-full flex-col">
-			<div className="border-b p-2 flex items-center justify-between bg-background px-4 h-12">
-				<div className="flex items-center gap-2">
-					<h1 className="font-semibold text-sm">Database Studio</h1>
-				</div>
-			</div>
 			<div className="flex-1 flex overflow-hidden">
 				<div className="w-64 border-r bg-muted/10">
 					<SchemaBrowser

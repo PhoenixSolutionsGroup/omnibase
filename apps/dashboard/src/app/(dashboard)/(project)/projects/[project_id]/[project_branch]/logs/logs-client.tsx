@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { LimitSelector } from "./limit-selector";
 import { LogViewer } from "./log-viewer";
 import { TimeRangeSelector } from "./time-range-selector";
@@ -146,17 +147,18 @@ export function LogsClient({
 				{/* Service Selector */}
 				<div className="flex shrink-0 flex-wrap items-center gap-2">
 					{services.map((service) => (
-						<Link
+						<Button
 							key={service.key}
-							href={`/projects/${projectId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
-							className={`px-4 py-2 rounded border text-xs ${
-								activeService === service.key
-									? "bg-primary text-primary-foreground border-primary"
-									: "bg-background hover:bg-muted border-border"
-							}`}
+							asChild
+							variant={activeService === service.key ? "default" : "outline"}
+							size="sm"
 						>
-							{service.label}
-						</Link>
+							<Link
+								href={`/projects/${projectId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
+							>
+								{service.label}
+							</Link>
+						</Button>
 					))}
 
 					<TimeRangeSelector

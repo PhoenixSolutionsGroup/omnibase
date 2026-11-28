@@ -1,4 +1,4 @@
-import { Filter, Plus, X } from "lucide-react";
+import { Filter, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +58,12 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 		setOpen(false);
 	};
 
+	const handleReset = () => {
+		setFilters([]);
+		onApply([]);
+		setOpen(false);
+	};
+
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
@@ -71,7 +77,7 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 					{filters.length > 0 ? `Filters (${filters.length})` : "Filter"}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-96" align="start">
+			<PopoverContent className="w-96" align="start" collisionPadding={20}>
 				<div className="space-y-4">
 					<h4 className="font-medium leading-none">Filters</h4>
 					<div className="space-y-2">
@@ -81,7 +87,7 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 									value={filter.column}
 									onValueChange={(v) => updateFilter(filter.id, "column", v)}
 								>
-									<SelectTrigger className="w-[120px]">
+									<SelectTrigger className="w-30">
 										<SelectValue placeholder="Column" />
 									</SelectTrigger>
 									<SelectContent>
@@ -97,7 +103,7 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 									onValueChange={(v) => updateFilter(filter.id, "operator", v)}
 								>
 									<SelectTrigger
-										className="w-[80px]"
+										className="w-20"
 										data-testid="filter-operator-select"
 									>
 										<SelectValue placeholder="Op" />
@@ -126,18 +132,10 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 									className="h-8 w-8"
 									onClick={() => removeFilter(filter.id)}
 								>
-									<X className="h-4 w-4" />
+									<Trash />
 								</Button>
 							</div>
 						))}
-					</div>
-					<div
-						className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 p-1 rounded"
-						data-testid="filter-group-toggle"
-					>
-						<span>Match:</span>
-						<span className="font-bold text-primary">AND</span>
-						<span className="text-muted-foreground/50">OR</span>
 					</div>
 					<div className="flex justify-between">
 						<Button
@@ -149,13 +147,23 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 						>
 							<Plus className="h-3 w-3" /> Add Filter
 						</Button>
-						<Button
-							size="sm"
-							onClick={handleApply}
-							data-testid="apply-filters-button"
-						>
-							Apply
-						</Button>
+						<div className="flex gap-2">
+							<Button
+								size="sm"
+								onClick={handleReset}
+								data-testid="reset-filters-button"
+								variant="outline"
+							>
+								Reset
+							</Button>
+							<Button
+								size="sm"
+								onClick={handleApply}
+								data-testid="apply-filters-button"
+							>
+								Apply
+							</Button>
+						</div>
 					</div>
 				</div>
 			</PopoverContent>

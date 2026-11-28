@@ -109,13 +109,9 @@ export default function Logs({
 					>
 						<SelectValue placeholder="all" />
 					</SelectTrigger>
-					<SelectContent className="rounded-xl">
-						<SelectItem value="all" className="rounded-lg">
-							All
-						</SelectItem>
-						<SelectItem value="errors" className="rounded-lg">
-							Errors
-						</SelectItem>
+					<SelectContent>
+						<SelectItem value="all">All</SelectItem>
+						<SelectItem value="errors">Errors</SelectItem>
 					</SelectContent>
 				</Select>
 			</CardHeader>

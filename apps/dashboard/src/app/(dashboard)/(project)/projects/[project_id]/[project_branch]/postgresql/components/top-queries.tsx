@@ -162,21 +162,15 @@ export default function TopQueries({ projectBranchId }: QueriesProps) {
 				</div>
 				<Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
 					<SelectTrigger
-						className="hidden w-44 rounded-lg sm:ml-auto sm:flex"
+						className="hidden w-44 sm:ml-auto sm:flex"
 						aria-label="Sort queries by"
 					>
 						<SelectValue placeholder="Sort by" />
 					</SelectTrigger>
-					<SelectContent className="rounded-xl">
-						<SelectItem value="total_time" className="rounded-lg">
-							Total time
-						</SelectItem>
-						<SelectItem value="mean_time" className="rounded-lg">
-							Mean time
-						</SelectItem>
-						<SelectItem value="calls" className="rounded-lg">
-							Calls
-						</SelectItem>
+					<SelectContent>
+						<SelectItem value="total_time">Total time</SelectItem>
+						<SelectItem value="mean_time">Mean time</SelectItem>
+						<SelectItem value="calls">Calls</SelectItem>
 					</SelectContent>
 				</Select>
 			</CardHeader>

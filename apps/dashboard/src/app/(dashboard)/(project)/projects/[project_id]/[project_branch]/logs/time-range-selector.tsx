@@ -32,7 +32,7 @@ export function TimeRangeSelector({
 					window.location.href = `/projects/${project_id}/${project_branch}/logs?service_name=${activeService}&limit=${limit}&time_range=${value}`;
 				}}
 			>
-				<SelectTrigger className="w-[140px]">
+				<SelectTrigger className="w-35">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
