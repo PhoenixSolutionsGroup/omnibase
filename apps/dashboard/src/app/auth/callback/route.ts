@@ -6,7 +6,6 @@ if (!apiUrl) {
 }
 
 export const GET = createSessionTokenExchangeHandler({
-	api_url: apiUrl,
 	success_path: "/",
 	cookie_domain: process.env.OMNIBASE_COOKIE_DOMAIN,
 });

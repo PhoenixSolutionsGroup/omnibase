@@ -15,6 +15,17 @@ import {
 } from "@/components/ui/table";
 import { formatTimestamp } from "@/lib/date";
 
+function formatRawLine(rawLine: unknown): string {
+	if (typeof rawLine === "string") {
+		try {
+			return JSON.stringify(JSON.parse(rawLine), null, 2);
+		} catch {
+			return rawLine;
+		}
+	}
+	return JSON.stringify(rawLine, null, 2);
+}
+
 interface Log {
 	timestamp: string;
 	message?: string;
@@ -282,29 +293,13 @@ export function LogViewer({
 												className="px-4 pb-3 bg-muted/30 whitespace-normal"
 											>
 												{/* Raw Log Line */}
-												{log.metadata?.raw_line && (
+												{Boolean(log.metadata?.raw_line) && (
 													<div className="mb-3">
 														<div className="text-xs font-semibold text-muted-foreground mb-1">
 															Raw Log:
 														</div>
 														<pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
-															{typeof log.metadata.raw_line === "string"
-																? (() => {
-																		try {
-																			return JSON.stringify(
-																				JSON.parse(log.metadata.raw_line),
-																				null,
-																				2,
-																			);
-																		} catch {
-																			return log.metadata.raw_line;
-																		}
-																	})()
-																: JSON.stringify(
-																		log.metadata.raw_line,
-																		null,
-																		2,
-																	)}
+															{formatRawLine(log.metadata?.raw_line)}
 														</pre>
 													</div>
 												)}

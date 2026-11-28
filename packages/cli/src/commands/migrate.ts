@@ -1,5 +1,3 @@
-// @ts-expect-error - adm-zip doesn't have types
-
 import * as fs from "node:fs";
 import * as path from "node:path";
 import AdmZip from "adm-zip";

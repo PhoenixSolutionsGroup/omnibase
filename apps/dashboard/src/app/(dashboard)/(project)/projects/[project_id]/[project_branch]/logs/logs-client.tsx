@@ -197,7 +197,6 @@ export function LogsClient({
 							initialLogs={logsData.logs}
 							projectId={projectId}
 							serviceType={activeService}
-							totalCount={logsData.count}
 							limit={limit}
 						/>
 					</div>
