@@ -64,6 +64,15 @@
 			"assist": {
 				"enabled": false
 			}
+		},
+		{
+			"includes": ["apps/api/tests/fixtures/keto-namespaces/**"],
+			"linter": {
+				"enabled": false
+			},
+			"assist": {
+				"enabled": false
+			}
 		}
 	]
 }
