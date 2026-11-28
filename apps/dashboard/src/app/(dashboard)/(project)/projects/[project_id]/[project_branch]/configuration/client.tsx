@@ -70,11 +70,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 	const [errors, setErrors] = useState<Map<string, string>>(new Map());
 	const [copyingEnv, setCopyingEnv] = useState(false);
 
-	const handleCopy = (text: string, label: string) => {
-		navigator.clipboard.writeText(text);
-		toast.success(`${label} copied to clipboard`);
-	};
-
 	const copyOmnibaseEnv = async () => {
 		setCopyingEnv(true);
 		try {

@@ -53,11 +53,6 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 	const [isRotating, setIsRotating] = useState(false);
 	const [rotateError, setRotateError] = useState<string | null>(null);
 
-	const handleCopy = (text: string, label: string) => {
-		navigator.clipboard.writeText(text);
-		toast.success(`${label} copied to clipboard`);
-	};
-
 	const toggleReveal = async (key: string, encryptedField?: string) => {
 		const isCurrentlyRevealed = revealedSecrets.has(key);
 
