@@ -81,7 +81,7 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 									value={filter.column}
 									onValueChange={(v) => updateFilter(filter.id, "column", v)}
 								>
-									<SelectTrigger className="w-[120px]">
+									<SelectTrigger className="w-30">
 										<SelectValue placeholder="Column" />
 									</SelectTrigger>
 									<SelectContent>
@@ -97,7 +97,7 @@ export function FilterBuilder({ columns, onApply }: FilterBuilderProps) {
 									onValueChange={(v) => updateFilter(filter.id, "operator", v)}
 								>
 									<SelectTrigger
-										className="w-[80px]"
+										className="w-20"
 										data-testid="filter-operator-select"
 									>
 										<SelectValue placeholder="Op" />

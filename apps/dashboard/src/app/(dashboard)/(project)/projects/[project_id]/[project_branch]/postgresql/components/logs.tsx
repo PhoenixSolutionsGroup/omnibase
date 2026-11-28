@@ -107,18 +107,14 @@ export default function Logs({
 				</div>
 				<Select value={typeFilter} onValueChange={setTypeFilter}>
 					<SelectTrigger
-						className="hidden w-40 rounded-lg sm:ml-auto sm:flex"
+						className="hidden w-40 sm:ml-auto sm:flex"
 						aria-label="Select a value"
 					>
 						<SelectValue placeholder="all" />
 					</SelectTrigger>
-					<SelectContent className="rounded-xl">
-						<SelectItem value="all" className="rounded-lg">
-							All
-						</SelectItem>
-						<SelectItem value="errors" className="rounded-lg">
-							Errors
-						</SelectItem>
+					<SelectContent>
+						<SelectItem value="all">All</SelectItem>
+						<SelectItem value="errors">Errors</SelectItem>
 					</SelectContent>
 				</Select>
 			</CardHeader>
