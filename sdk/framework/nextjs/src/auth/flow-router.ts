@@ -220,7 +220,9 @@ export async function FlowRouter({
 	const { flow } = await params;
 	const flowType = flow[0] as keyof FlowMap;
 
-	const componentFunction = flowMap[flowType];
+	const componentFunction = flowMap[flowType] as
+		| ((flow: unknown) => ReactNode)
+		| undefined;
 
 	if (componentFunction) {
 		// Onboarding and login are self-contained: the components initialize
@@ -243,7 +245,7 @@ export async function FlowRouter({
 
 		if (flowObject) {
 			// Call the component function with the flow object
-			return (componentFunction as (flow: unknown) => ReactNode)(flowObject);
+			return componentFunction(flowObject);
 		}
 	}
 

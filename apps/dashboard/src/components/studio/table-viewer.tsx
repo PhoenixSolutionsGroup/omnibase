@@ -67,7 +67,7 @@ import { RLSViewer } from "./rls-viewer";
 interface ColumnDefinition {
 	name: string;
 	type: string;
-	format: string;
+	format?: string;
 	isPrimaryKey?: boolean;
 }
 

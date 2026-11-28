@@ -1091,7 +1091,7 @@ async function resolveBranchTarget(
 	} else if ((plan.regions ?? []).length > 0) {
 		region = await select({
 			message: "Region:",
-			choices: plan.regions?.map((r) => ({
+			choices: (plan.regions ?? []).map((r) => ({
 				name: `${r.name} (${r.id})`,
 				value: r.id,
 			})),
