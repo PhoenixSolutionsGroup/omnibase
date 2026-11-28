@@ -34,14 +34,24 @@ export function SchemaBrowser({
 		: schemaNames[0] || "";
 	const [selectedSchema, setSelectedSchema] = useState(defaultSchema);
 
-	// Update selected schema when schemas change
 	useEffect(() => {
+		const schemaNames = Object.keys(schemas);
+
 		if (!schemaNames.includes(selectedSchema)) {
-			setSelectedSchema(
-				schemaNames.includes("public") ? "public" : schemaNames[0] || "",
-			);
+			const nextSchema = schemaNames.includes("public")
+				? "public"
+				: schemaNames[0] || "";
+
+			setSelectedSchema(nextSchema);
+			return;
 		}
-	}, [schemaNames, selectedSchema]);
+
+		const tables = schemas[selectedSchema] || [];
+
+		if (tables.length > 0) {
+			onSelectTable(tables[0].name, selectedSchema);
+		}
+	}, [schemas, selectedSchema, onSelectTable]);
 
 	const tables = schemas[selectedSchema] || [];
 
