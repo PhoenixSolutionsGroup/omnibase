@@ -5,15 +5,14 @@ import {
 	Cloud,
 	Copy,
 	Database,
-	Eye,
-	EyeOff,
 	Globe,
 	Loader2,
 	Mail,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/copy-button";
+import { RevealButton } from "@/components/reveal-button";
 import {
 	Card,
 	CardContent,
@@ -491,37 +490,24 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 												</div>
 												<div className="flex shrink-0 gap-2">
 													{item.sensitive && item.value && (
-														<Button
-															onClick={() =>
+														<RevealButton
+															isRevealed={isRevealed}
+															isLoading={isLoading}
+															onToggle={() =>
 																toggleReveal(secretKey, item.encryptedField)
 															}
-															disabled={isLoading}
-															title={isRevealed ? "Hide" : "Reveal"}
-															variant="outline"
-														>
-															{isLoading ? (
-																<Loader2 className="h-4 w-4 animate-spin" />
-															) : isRevealed ? (
-																<EyeOff className="h-4 w-4" />
-															) : (
-																<Eye className="h-4 w-4" />
-															)}
-														</Button>
+														/>
 													)}
-													<Button
-														onClick={() =>
-															handleCopy(
-																item.sensitive && isRevealed && decryptedValue
-																	? decryptedValue
-																	: item.value || "",
-																item.label,
-															)
+													<CopyButton
+														value={
+															item.sensitive && isRevealed && decryptedValue
+																? decryptedValue
+																: item.value
 														}
+														label={item.label}
 														disabled={item.sensitive && !isRevealed}
-														variant="outline"
-													>
-														Copy
-													</Button>
+														showIcon
+													/>
 												</div>
 											</div>
 										);

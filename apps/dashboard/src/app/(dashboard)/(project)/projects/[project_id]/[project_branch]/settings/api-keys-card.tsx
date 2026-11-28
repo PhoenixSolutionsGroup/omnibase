@@ -1,8 +1,10 @@
 "use client";
 
-import { Eye, EyeOff, Loader2, RotateCw } from "lucide-react";
+import { RotateCw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CopyButton } from "@/components/copy-button";
+import { RevealButton } from "@/components/reveal-button";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -237,39 +239,23 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 									</div>
 									<div className="flex shrink-0 gap-2">
 										{item.sensitive && item.value && (
-											<Button
-												onClick={() =>
+											<RevealButton
+												isRevealed={isRevealed}
+												isLoading={isLoading}
+												onToggle={() =>
 													toggleReveal(secretKey, item.encryptedField)
 												}
-												disabled={isLoading}
-												className="disabled:opacity-50 disabled:cursor-not-allowed"
-												title={isRevealed ? "Hide" : "Reveal"}
-												variant="outline"
-											>
-												{isLoading ? (
-													<Loader2 className="h-4 w-4 animate-spin" />
-												) : isRevealed ? (
-													<EyeOff className="h-4 w-4" />
-												) : (
-													<Eye className="h-4 w-4" />
-												)}
-											</Button>
+											/>
 										)}
-										<Button
-											onClick={() =>
-												handleCopy(
-													item.sensitive && isRevealed && decryptedValue
-														? decryptedValue
-														: item.value || "",
-													item.label,
-												)
+										<CopyButton
+											value={
+												item.sensitive && isRevealed && decryptedValue
+													? decryptedValue
+													: item.value
 											}
+											label={item.label}
 											disabled={item.sensitive && !isRevealed}
-											className="disabled:opacity-50 disabled:cursor-not-allowed"
-											variant="outline"
-										>
-											Copy
-										</Button>
+										/>
 									</div>
 								</div>
 							);
