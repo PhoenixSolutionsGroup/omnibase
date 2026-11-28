@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Body** | **string** |  | 
-**Plain** | Pointer to **string** |  | [optional] 
-**Subject** | **string** |  | 
-**To** | **string** |  | 
+| Name        | Type                  | Description | Notes      |
+| ----------- | --------------------- | ----------- | ---------- |
+| **Body**    | **string**            |             |
+| **Plain**   | Pointer to **string** |             | [optional] |
+| **Subject** | **string**            |             |
+| **To**      | **string**            |             |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 `func (o *SendHTMLRequest) SetBody(v string)`
 
 SetBody sets Body field to given value.
-
 
 ### GetPlain
 
@@ -92,7 +91,6 @@ and a boolean to check if the value has been set.
 
 SetSubject sets Subject field to given value.
 
-
 ### GetTo
 
 `func (o *SendHTMLRequest) GetTo() string`
@@ -112,8 +110,4 @@ and a boolean to check if the value has been set.
 
 SetTo sets To field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

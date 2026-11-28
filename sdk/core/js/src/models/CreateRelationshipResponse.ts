@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreateRelationshipResponse
  */
 export interface CreateRelationshipResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRelationshipResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRelationshipResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the CreateRelationshipResponse interface.
  */
-export function instanceOfCreateRelationshipResponse(value: object): value is CreateRelationshipResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfCreateRelationshipResponse(
+	value: object,
+): value is CreateRelationshipResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function CreateRelationshipResponseFromJSON(json: any): CreateRelationshipResponse {
-    return CreateRelationshipResponseFromJSONTyped(json, false);
+export function CreateRelationshipResponseFromJSON(
+	json: any,
+): CreateRelationshipResponse {
+	return CreateRelationshipResponseFromJSONTyped(json, false);
 }
 
-export function CreateRelationshipResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateRelationshipResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function CreateRelationshipResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateRelationshipResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function CreateRelationshipResponseToJSON(json: any): CreateRelationshipResponse {
-    return CreateRelationshipResponseToJSONTyped(json, false);
+export function CreateRelationshipResponseToJSON(
+	json: any,
+): CreateRelationshipResponse {
+	return CreateRelationshipResponseToJSONTyped(json, false);
 }
 
-export function CreateRelationshipResponseToJSONTyped(value?: CreateRelationshipResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateRelationshipResponseToJSONTyped(
+	value?: CreateRelationshipResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

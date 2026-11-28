@@ -12,186 +12,231 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
+import * as runtime from "../runtime";
 import type {
-  CheckRequest,
-  CheckResponse,
-  CreateRelationshipRequest,
-  CreateRelationshipResponse,
-  DeleteRelationshipRequest,
-  DeleteRelationshipResponse,
-  ErrorModel,
-} from '../models/index';
+	CheckRequest,
+	CheckResponse,
+	CreateRelationshipRequest,
+	CreateRelationshipResponse,
+	DeleteRelationshipRequest,
+	DeleteRelationshipResponse,
+	ErrorModel,
+} from "../models/index";
 import {
-    CheckRequestFromJSON,
-    CheckRequestToJSON,
-    CheckResponseFromJSON,
-    CheckResponseToJSON,
-    CreateRelationshipRequestFromJSON,
-    CreateRelationshipRequestToJSON,
-    CreateRelationshipResponseFromJSON,
-    CreateRelationshipResponseToJSON,
-    DeleteRelationshipRequestFromJSON,
-    DeleteRelationshipRequestToJSON,
-    DeleteRelationshipResponseFromJSON,
-    DeleteRelationshipResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-} from '../models/index';
+	CheckRequestFromJSON,
+	CheckRequestToJSON,
+	CheckResponseFromJSON,
+	CheckResponseToJSON,
+	CreateRelationshipRequestFromJSON,
+	CreateRelationshipRequestToJSON,
+	CreateRelationshipResponseFromJSON,
+	CreateRelationshipResponseToJSON,
+	DeleteRelationshipRequestFromJSON,
+	DeleteRelationshipRequestToJSON,
+	DeleteRelationshipResponseFromJSON,
+	DeleteRelationshipResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+} from "../models/index";
 
 export interface CheckPermissionRequest {
-    checkRequest: CheckRequest;
+	checkRequest: CheckRequest;
 }
 
 export interface CreateRelationshipOperationRequest {
-    createRelationshipRequest: CreateRelationshipRequest;
+	createRelationshipRequest: CreateRelationshipRequest;
 }
 
 export interface DeleteRelationshipOperationRequest {
-    deleteRelationshipRequest: DeleteRelationshipRequest;
+	deleteRelationshipRequest: DeleteRelationshipRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1PermissionsApi extends runtime.BaseAPI {
+	/**
+	 * Check permission
+	 */
+	async checkPermissionRaw(
+		requestParameters: CheckPermissionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CheckResponse>> {
+		if (requestParameters["checkRequest"] == null) {
+			throw new runtime.RequiredError(
+				"checkRequest",
+				'Required parameter "checkRequest" was null or undefined when calling checkPermission().',
+			);
+		}
 
-    /**
-     * Check permission
-     */
-    async checkPermissionRaw(requestParameters: CheckPermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckResponse>> {
-        if (requestParameters['checkRequest'] == null) {
-            throw new runtime.RequiredError(
-                'checkRequest',
-                'Required parameter "checkRequest" was null or undefined when calling checkPermission().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		let urlPath = `/api/v1/permissions/check`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CheckRequestToJSON(requestParameters["checkRequest"]),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/permissions/check`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CheckResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CheckRequestToJSON(requestParameters['checkRequest']),
-        }, initOverrides);
+	/**
+	 * Check permission
+	 */
+	async checkPermission(
+		requestParameters: CheckPermissionRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CheckResponse> {
+		const response = await this.checkPermissionRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CheckResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Create relationship
+	 */
+	async createRelationshipRaw(
+		requestParameters: CreateRelationshipOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CreateRelationshipResponse>> {
+		if (requestParameters["createRelationshipRequest"] == null) {
+			throw new runtime.RequiredError(
+				"createRelationshipRequest",
+				'Required parameter "createRelationshipRequest" was null or undefined when calling createRelationship().',
+			);
+		}
 
-    /**
-     * Check permission
-     */
-    async checkPermission(requestParameters: CheckPermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckResponse> {
-        const response = await this.checkPermissionRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Create relationship
-     */
-    async createRelationshipRaw(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRelationshipResponse>> {
-        if (requestParameters['createRelationshipRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createRelationshipRequest',
-                'Required parameter "createRelationshipRequest" was null or undefined when calling createRelationship().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		let urlPath = `/api/v1/permissions/relationships`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CreateRelationshipRequestToJSON(
+					requestParameters["createRelationshipRequest"],
+				),
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CreateRelationshipResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/permissions/relationships`;
+	/**
+	 * Create relationship
+	 */
+	async createRelationship(
+		requestParameters: CreateRelationshipOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CreateRelationshipResponse> {
+		const response = await this.createRelationshipRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateRelationshipRequestToJSON(requestParameters['createRelationshipRequest']),
-        }, initOverrides);
+	/**
+	 * Delete relationship
+	 */
+	async deleteRelationshipRaw(
+		requestParameters: DeleteRelationshipOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<DeleteRelationshipResponse>> {
+		if (requestParameters["deleteRelationshipRequest"] == null) {
+			throw new runtime.RequiredError(
+				"deleteRelationshipRequest",
+				'Required parameter "deleteRelationshipRequest" was null or undefined when calling deleteRelationship().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRelationshipResponseFromJSON(jsonValue));
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Create relationship
-     */
-    async createRelationship(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRelationshipResponse> {
-        const response = await this.createRelationshipRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Delete relationship
-     */
-    async deleteRelationshipRaw(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRelationshipResponse>> {
-        if (requestParameters['deleteRelationshipRequest'] == null) {
-            throw new runtime.RequiredError(
-                'deleteRelationshipRequest',
-                'Required parameter "deleteRelationshipRequest" was null or undefined when calling deleteRelationship().'
-            );
-        }
+		headerParameters["Content-Type"] = "application/json";
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		let urlPath = `/api/v1/permissions/relationships`;
 
-        headerParameters['Content-Type'] = 'application/json';
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+				body: DeleteRelationshipRequestToJSON(
+					requestParameters["deleteRelationshipRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			DeleteRelationshipResponseFromJSON(jsonValue),
+		);
+	}
 
-
-        let urlPath = `/api/v1/permissions/relationships`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DeleteRelationshipRequestToJSON(requestParameters['deleteRelationshipRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteRelationshipResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Delete relationship
-     */
-    async deleteRelationship(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRelationshipResponse> {
-        const response = await this.deleteRelationshipRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Delete relationship
+	 */
+	async deleteRelationship(
+		requestParameters: DeleteRelationshipOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<DeleteRelationshipResponse> {
+		const response = await this.deleteRelationshipRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }

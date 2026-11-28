@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Files** | [**[]File**](File.md) |  | 
-**Namespaces** | [**[]ParsedNamespaceDefinition**](ParsedNamespaceDefinition.md) |  | 
+| Name           | Type                                                            | Description | Notes |
+| -------------- | --------------------------------------------------------------- | ----------- | ----- |
+| **Files**      | [**[]File**](File.md)                                           |             |
+| **Namespaces** | [**[]ParsedNamespaceDefinition**](ParsedNamespaceDefinition.md) |             |
 
 ## Methods
 
@@ -45,17 +45,18 @@ and a boolean to check if the value has been set.
 
 SetFiles sets Files field to given value.
 
-
 ### SetFilesNil
 
 `func (o *Requirements) SetFilesNil(b bool)`
 
- SetFilesNil sets the value for Files to be an explicit nil
+SetFilesNil sets the value for Files to be an explicit nil
 
 ### UnsetFiles
+
 `func (o *Requirements) UnsetFiles()`
 
 UnsetFiles ensures that no value is present for Files, not even an explicit nil
+
 ### GetNamespaces
 
 `func (o *Requirements) GetNamespaces() []ParsedNamespaceDefinition`
@@ -75,18 +76,16 @@ and a boolean to check if the value has been set.
 
 SetNamespaces sets Namespaces field to given value.
 
-
 ### SetNamespacesNil
 
 `func (o *Requirements) SetNamespacesNil(b bool)`
 
- SetNamespacesNil sets the value for Namespaces to be an explicit nil
+SetNamespacesNil sets the value for Namespaces to be an explicit nil
 
 ### UnsetNamespaces
+
 `func (o *Requirements) UnsetNamespaces()`
 
 UnsetNamespaces ensures that no value is present for Namespaces, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

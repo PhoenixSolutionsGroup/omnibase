@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,8 +22,8 @@ var _ MappedNullable = &CreateTenantResponse{}
 
 // CreateTenantResponse struct for CreateTenantResponse
 type CreateTenantResponse struct {
-	Message string `json:"message"`
-	Tenant TenantPayload `json:"tenant"`
+	Message string        `json:"message"`
+	Tenant  TenantPayload `json:"tenant"`
 }
 
 type _CreateTenantResponse CreateTenantResponse
@@ -96,7 +96,7 @@ func (o *CreateTenantResponse) SetTenant(v TenantPayload) {
 }
 
 func (o CreateTenantResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -124,10 +124,10 @@ func (o *CreateTenantResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullableCreateTenantResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

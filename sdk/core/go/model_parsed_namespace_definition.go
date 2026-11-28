@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,12 +22,12 @@ var _ MappedNullable = &ParsedNamespaceDefinition{}
 
 // ParsedNamespaceDefinition struct for ParsedNamespaceDefinition
 type ParsedNamespaceDefinition struct {
-	File string `json:"file"`
-	Namespace string `json:"namespace"`
-	Permits []string `json:"permits"`
-	Relations []string `json:"relations"`
-	RelationsMetadata []RelationMetadata `json:"relations_metadata,omitempty"`
-	SubjectRelations map[string][]string `json:"subject_relations"`
+	File              string              `json:"file"`
+	Namespace         string              `json:"namespace"`
+	Permits           []string            `json:"permits"`
+	Relations         []string            `json:"relations"`
+	RelationsMetadata []RelationMetadata  `json:"relations_metadata,omitempty"`
+	SubjectRelations  map[string][]string `json:"subject_relations"`
 }
 
 type _ParsedNamespaceDefinition ParsedNamespaceDefinition
@@ -212,7 +212,7 @@ func (o *ParsedNamespaceDefinition) SetSubjectRelations(v map[string][]string) {
 }
 
 func (o ParsedNamespaceDefinition) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -253,10 +253,10 @@ func (o *ParsedNamespaceDefinition) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -312,5 +312,3 @@ func (v *NullableParsedNamespaceDefinition) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

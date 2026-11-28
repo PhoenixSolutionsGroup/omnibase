@@ -1,4 +1,5 @@
 ---
+
 title: Multi-Tenancy Overview
 description: Learn how OmniBase handles organizations, team management, and data isolation
 ---
@@ -10,13 +11,13 @@ OmniBase provides a complete multi-tenant architecture with organization managem
 ## Key Features
 
 - **[Tenant Management](/docs/guides/multi-tenancy/tenants)**
-    Create organizations, switch contexts, and manage tenant lifecycle
+  Create organizations, switch contexts, and manage tenant lifecycle
 - **[Team Invitations](/docs/guides/multi-tenancy/invitations)**
-    Invite users, manage memberships, and onboard team members
+  Invite users, manage memberships, and onboard team members
 - **[RBAC](/docs/guides/multi-tenancy/rbac)**
-    Configure roles, permissions, and fine-grained access control
+  Configure roles, permissions, and fine-grained access control
 - **[Data Isolation](/docs/guides/multi-tenancy/isolation)**
-    Row-Level Security, JWT tokens, and tenant-scoped queries
+  Row-Level Security, JWT tokens, and tenant-scoped queries
 
 ## Architecture
 
@@ -78,42 +79,42 @@ bun add @omnibase/core-js
 ### Create a Tenant
 
 ```typescript
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
+	basePath: process.env.OMNIBASE_API_URL,
 });
 
 const tenantsApi = new V1TenantsApi(config);
 
 const { data } = await tenantsApi.createTenant({
-  createTenantRequest: {
-    name: 'Acme Corporation',
-    billingEmail: 'billing@acme.com',
-  },
+	createTenantRequest: {
+		name: "Acme Corporation",
+		billingEmail: "billing@acme.com",
+	},
 });
 
-console.log('Tenant ID:', data.data.tenant.id);
+console.log("Tenant ID:", data.data.tenant.id);
 ```
 
 ### Invite Team Members
 
 ```typescript
 await tenantsApi.createInvite({
-  createTenantUserInviteRequest: {
-    email: 'teammate@example.com',
-    role: 'member',
-    inviteUrl: 'https://app.example.com/auth/onboarding',
-  },
+	createTenantUserInviteRequest: {
+		email: "teammate@example.com",
+		role: "member",
+		inviteUrl: "https://app.example.com/auth/onboarding",
+	},
 });
 ```
 
 ## Tenant Types
 
-| Type | Description | Use Case |
-|------|-------------|----------|
-| `organization` | Multi-user tenant with team features | B2B SaaS, team workspaces |
-| `individual` | Single-user tenant | Personal accounts, solo users |
+| Type           | Description                          | Use Case                      |
+| -------------- | ------------------------------------ | ----------------------------- |
+| `organization` | Multi-user tenant with team features | B2B SaaS, team workspaces     |
+| `individual`   | Single-user tenant                   | Personal accounts, solo users |
 
 ## SDK Options
 
@@ -123,19 +124,19 @@ await tenantsApi.createInvite({
 
 ```tsx
 // Server Action for tenant switching
-'use server';
-import { V1TenantsApi } from '@omnibase/core-js';
-import { revalidatePath } from 'next/cache';
+"use server";
+import { V1TenantsApi } from "@omnibase/core-js";
+import { revalidatePath } from "next/cache";
 
 export async function switchTenant(formData: FormData) {
-  const tenantId = formData.get('tenant_id') as string;
-  const tenantsApi = new V1TenantsApi(config);
+	const tenantId = formData.get("tenant_id") as string;
+	const tenantsApi = new V1TenantsApi(config);
 
-  await tenantsApi.switchActiveTenant({
-    switchTenantRequest: { tenantId },
-  });
+	await tenantsApi.switchActiveTenant({
+		switchTenantRequest: { tenantId },
+	});
 
-  revalidatePath('/');
+	revalidatePath("/");
 }
 ```
 
@@ -144,25 +145,27 @@ export async function switchTenant(formData: FormData) {
 **Best for:** Client-side applications, SPAs
 
 ```tsx
-import { useCallback } from 'react';
-import { V1TenantsApi } from '@omnibase/core-js';
+import { useCallback } from "react";
+import { V1TenantsApi } from "@omnibase/core-js";
 
 function TenantSwitcher({ tenants }) {
-  const switchTenant = useCallback(async (tenantId: string) => {
-    const api = new V1TenantsApi(config);
-    await api.switchActiveTenant({
-      switchTenantRequest: { tenantId },
-    });
-    window.location.reload();
-  }, []);
+	const switchTenant = useCallback(async (tenantId: string) => {
+		const api = new V1TenantsApi(config);
+		await api.switchActiveTenant({
+			switchTenantRequest: { tenantId },
+		});
+		window.location.reload();
+	}, []);
 
-  return (
-    <select onChange={(e) => switchTenant(e.target.value)}>
-      {tenants.map((t) => (
-        <option key={t.id} value={t.id}>{t.name}</option>
-      ))}
-    </select>
-  );
+	return (
+		<select onChange={(e) => switchTenant(e.target.value)}>
+			{tenants.map((t) => (
+				<option key={t.id} value={t.id}>
+					{t.name}
+				</option>
+			))}
+		</select>
+	);
 }
 ```
 
@@ -171,21 +174,21 @@ function TenantSwitcher({ tenants }) {
 **Best for:** Server-to-server, custom implementations
 
 ```typescript
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
-  headers: { 'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY },
+	basePath: process.env.OMNIBASE_API_URL,
+	headers: { "X-Service-Key": process.env.OMNIBASE_SERVICE_KEY },
 });
 
 const tenantsApi = new V1TenantsApi(config);
 
 // Create tenant for a user
 const { data } = await tenantsApi.createTenant(
-  {
-    createTenantRequest: { name: 'New Org' },
-  },
-  { headers: { 'X-User-Id': userId } }
+	{
+		createTenantRequest: { name: "New Org" },
+	},
+	{ headers: { "X-User-Id": userId } },
 );
 ```
 
@@ -207,28 +210,28 @@ Support both individual and team contexts:
 ```typescript
 // Personal workspace
 const personal = await tenantsApi.createTenant({
-  createTenantRequest: {
-    name: 'My Workspace',
-    type: 'individual',
-  },
+	createTenantRequest: {
+		name: "My Workspace",
+		type: "individual",
+	},
 });
 
 // Team workspace
 const team = await tenantsApi.createTenant({
-  createTenantRequest: {
-    name: 'Acme Team',
-    type: 'organization',
-  },
+	createTenantRequest: {
+		name: "Acme Team",
+		type: "organization",
+	},
 });
 ```
 
 ## What's Next?
 
 - **[Tenant Lifecycle](/docs/guides/multi-tenancy/tenants)**
-    Create, switch, and delete tenants
+  Create, switch, and delete tenants
 - **[Team Invitations](/docs/guides/multi-tenancy/invitations)**
-    Invite users and manage memberships
+  Invite users and manage memberships
 - **[RBAC](/docs/guides/multi-tenancy/rbac)**
-    Configure roles, permissions, and access control
+  Configure roles, permissions, and access control
 - **[Data Isolation](/docs/guides/multi-tenancy/isolation)**
-    Understand RLS and tenant scoping
+  Understand RLS and tenant scoping

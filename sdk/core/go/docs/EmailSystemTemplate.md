@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CreatedAt** | **time.Time** |  | 
-**HtmlBody** | **string** |  | 
-**Id** | **string** |  | 
-**Name** | **string** |  | 
-**PlaintextBody** | **string** |  | 
-**Subject** | **string** |  | 
-**UpdatedAt** | **time.Time** |  | 
+| Name              | Type          | Description | Notes |
+| ----------------- | ------------- | ----------- | ----- |
+| **CreatedAt**     | **time.Time** |             |
+| **HtmlBody**      | **string**    |             |
+| **Id**            | **string**    |             |
+| **Name**          | **string**    |             |
+| **PlaintextBody** | **string**    |             |
+| **Subject**       | **string**    |             |
+| **UpdatedAt**     | **time.Time** |             |
 
 ## Methods
 
@@ -50,7 +50,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-
 ### GetHtmlBody
 
 `func (o *EmailSystemTemplate) GetHtmlBody() string`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailSystemTemplate) SetHtmlBody(v string)`
 
 SetHtmlBody sets HtmlBody field to given value.
-
 
 ### GetId
 
@@ -90,7 +88,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetName
 
 `func (o *EmailSystemTemplate) GetName() string`
@@ -109,7 +106,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailSystemTemplate) SetName(v string)`
 
 SetName sets Name field to given value.
-
 
 ### GetPlaintextBody
 
@@ -130,7 +126,6 @@ and a boolean to check if the value has been set.
 
 SetPlaintextBody sets PlaintextBody field to given value.
 
-
 ### GetSubject
 
 `func (o *EmailSystemTemplate) GetSubject() string`
@@ -149,7 +144,6 @@ and a boolean to check if the value has been set.
 `func (o *EmailSystemTemplate) SetSubject(v string)`
 
 SetSubject sets Subject field to given value.
-
 
 ### GetUpdatedAt
 
@@ -170,8 +164,4 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

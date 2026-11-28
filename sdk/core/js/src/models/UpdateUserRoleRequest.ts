@@ -12,64 +12,71 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface UpdateUserRoleRequest
  */
 export interface UpdateUserRoleRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateUserRoleRequest
-     */
-    role: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateUserRoleRequest
-     */
-    userId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpdateUserRoleRequest
+	 */
+	role: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof UpdateUserRoleRequest
+	 */
+	userId: string;
 }
 
 /**
  * Check if a given object implements the UpdateUserRoleRequest interface.
  */
-export function instanceOfUpdateUserRoleRequest(value: object): value is UpdateUserRoleRequest {
-    if (!('role' in value) || value['role'] === undefined) return false;
-    if (!('userId' in value) || value['userId'] === undefined) return false;
-    return true;
+export function instanceOfUpdateUserRoleRequest(
+	value: object,
+): value is UpdateUserRoleRequest {
+	if (!("role" in value) || value["role"] === undefined) return false;
+	if (!("userId" in value) || value["userId"] === undefined) return false;
+	return true;
 }
 
-export function UpdateUserRoleRequestFromJSON(json: any): UpdateUserRoleRequest {
-    return UpdateUserRoleRequestFromJSONTyped(json, false);
+export function UpdateUserRoleRequestFromJSON(
+	json: any,
+): UpdateUserRoleRequest {
+	return UpdateUserRoleRequestFromJSONTyped(json, false);
 }
 
-export function UpdateUserRoleRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpdateUserRoleRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'role': json['role'],
-        'userId': json['user_id'],
-    };
+export function UpdateUserRoleRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UpdateUserRoleRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		role: json["role"],
+		userId: json["user_id"],
+	};
 }
 
 export function UpdateUserRoleRequestToJSON(json: any): UpdateUserRoleRequest {
-    return UpdateUserRoleRequestToJSONTyped(json, false);
+	return UpdateUserRoleRequestToJSONTyped(json, false);
 }
 
-export function UpdateUserRoleRequestToJSONTyped(value?: UpdateUserRoleRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UpdateUserRoleRequestToJSONTyped(
+	value?: UpdateUserRoleRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'role': value['role'],
-        'user_id': value['userId'],
-    };
+	return {
+		role: value["role"],
+		user_id: value["userId"],
+	};
 }
-

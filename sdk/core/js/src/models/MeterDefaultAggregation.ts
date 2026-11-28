@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MeterDefaultAggregation
  */
 export interface MeterDefaultAggregation {
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterDefaultAggregation
-     */
-    formula: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterDefaultAggregation
+	 */
+	formula: string;
 }
 
 /**
  * Check if a given object implements the MeterDefaultAggregation interface.
  */
-export function instanceOfMeterDefaultAggregation(value: object): value is MeterDefaultAggregation {
-    if (!('formula' in value) || value['formula'] === undefined) return false;
-    return true;
+export function instanceOfMeterDefaultAggregation(
+	value: object,
+): value is MeterDefaultAggregation {
+	if (!("formula" in value) || value["formula"] === undefined) return false;
+	return true;
 }
 
-export function MeterDefaultAggregationFromJSON(json: any): MeterDefaultAggregation {
-    return MeterDefaultAggregationFromJSONTyped(json, false);
+export function MeterDefaultAggregationFromJSON(
+	json: any,
+): MeterDefaultAggregation {
+	return MeterDefaultAggregationFromJSONTyped(json, false);
 }
 
-export function MeterDefaultAggregationFromJSONTyped(json: any, ignoreDiscriminator: boolean): MeterDefaultAggregation {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'formula': json['formula'],
-    };
+export function MeterDefaultAggregationFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MeterDefaultAggregation {
+	if (json == null) {
+		return json;
+	}
+	return {
+		formula: json["formula"],
+	};
 }
 
-export function MeterDefaultAggregationToJSON(json: any): MeterDefaultAggregation {
-    return MeterDefaultAggregationToJSONTyped(json, false);
+export function MeterDefaultAggregationToJSON(
+	json: any,
+): MeterDefaultAggregation {
+	return MeterDefaultAggregationToJSONTyped(json, false);
 }
 
-export function MeterDefaultAggregationToJSONTyped(value?: MeterDefaultAggregation | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MeterDefaultAggregationToJSONTyped(
+	value?: MeterDefaultAggregation | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'formula': value['formula'],
-    };
+	return {
+		formula: value["formula"],
+	};
 }
-

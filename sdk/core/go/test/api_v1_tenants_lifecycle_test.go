@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsLifecycleAPIService CreateTenant", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsLifecycleAPI.CreateTenant(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsLifecycleAPIService DeleteTenant", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsLifecycleAPI.DeleteTenant(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsLifecycleAPIService GetTenantByID", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var tenantId string
 
@@ -62,7 +62,7 @@ func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsLifecycleAPIService GetTenantByStripeCustomerID", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var stripeCustomerId string
 
@@ -76,7 +76,7 @@ func Test_omnibase_V1TenantsLifecycleAPIService(t *testing.T) {
 
 	t.Run("Test V1TenantsLifecycleAPIService SwitchActiveTenant", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsLifecycleAPI.SwitchActiveTenant(context.Background()).Execute()
 

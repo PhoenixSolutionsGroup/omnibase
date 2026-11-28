@@ -30,9 +30,11 @@ omnibase db migrate apply
 ## File Naming Convention
 
 Migration files are automatically named with timestamps when using `omnibase db migrate new`:
+
 - `{TIMESTAMP}_{description}.sql` (e.g., `1729507200_create_users_table.sql`)
 
 For manual creation, you can use simple numeric prefixes:
+
 - `001-seed.sql`
 - `002-rls.sql`
 - `003-feature.sql`
@@ -75,7 +77,8 @@ omnibase db migrate push --env prod
 When you run `omnibase db migrate new`, a file is created with this template:
 
 **1729507200_create_users.sql:**
-```sql
+
+````sql
 -- Migration: create users
 -- Created: 2024-10-21T10:00:00.000Z
 
@@ -85,4 +88,5 @@ When you run `omnibase db migrate new`, a file is created with this template:
 --     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 --     email TEXT NOT NULL UNIQUE,
 --     created_at TIMESTAMP DEFAULT NOW()
--- );
+-- );```
+````

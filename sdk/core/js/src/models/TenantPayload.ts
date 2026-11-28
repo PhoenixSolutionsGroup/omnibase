@@ -12,99 +12,105 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface TenantPayload
  */
 export interface TenantPayload {
-    /**
-     * 
-     * @type {Date}
-     * @memberof TenantPayload
-     */
-    createdAt: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof TenantPayload
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TenantPayload
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TenantPayload
-     */
-    stripeCustomerId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TenantPayload
-     */
-    type: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof TenantPayload
-     */
-    updatedAt: Date;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof TenantPayload
+	 */
+	createdAt: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof TenantPayload
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof TenantPayload
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof TenantPayload
+	 */
+	stripeCustomerId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof TenantPayload
+	 */
+	type: string;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof TenantPayload
+	 */
+	updatedAt: Date;
 }
 
 /**
  * Check if a given object implements the TenantPayload interface.
  */
 export function instanceOfTenantPayload(value: object): value is TenantPayload {
-    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('type' in value) || value['type'] === undefined) return false;
-    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
-    return true;
+	if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
+	if (!("updatedAt" in value) || value["updatedAt"] === undefined) return false;
+	return true;
 }
 
 export function TenantPayloadFromJSON(json: any): TenantPayload {
-    return TenantPayloadFromJSONTyped(json, false);
+	return TenantPayloadFromJSONTyped(json, false);
 }
 
-export function TenantPayloadFromJSONTyped(json: any, ignoreDiscriminator: boolean): TenantPayload {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'createdAt': (new Date(json['created_at'])),
-        'id': json['id'],
-        'name': json['name'],
-        'stripeCustomerId': json['stripe_customer_id'] == null ? undefined : json['stripe_customer_id'],
-        'type': json['type'],
-        'updatedAt': (new Date(json['updated_at'])),
-    };
+export function TenantPayloadFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): TenantPayload {
+	if (json == null) {
+		return json;
+	}
+	return {
+		createdAt: new Date(json["created_at"]),
+		id: json["id"],
+		name: json["name"],
+		stripeCustomerId:
+			json["stripe_customer_id"] == null
+				? undefined
+				: json["stripe_customer_id"],
+		type: json["type"],
+		updatedAt: new Date(json["updated_at"]),
+	};
 }
 
 export function TenantPayloadToJSON(json: any): TenantPayload {
-    return TenantPayloadToJSONTyped(json, false);
+	return TenantPayloadToJSONTyped(json, false);
 }
 
-export function TenantPayloadToJSONTyped(value?: TenantPayload | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function TenantPayloadToJSONTyped(
+	value?: TenantPayload | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'created_at': value['createdAt'].toISOString(),
-        'id': value['id'],
-        'name': value['name'],
-        'stripe_customer_id': value['stripeCustomerId'],
-        'type': value['type'],
-        'updated_at': value['updatedAt'].toISOString(),
-    };
+	return {
+		created_at: value["createdAt"].toISOString(),
+		id: value["id"],
+		name: value["name"],
+		stripe_customer_id: value["stripeCustomerId"],
+		type: value["type"],
+		updated_at: value["updatedAt"].toISOString(),
+	};
 }
-

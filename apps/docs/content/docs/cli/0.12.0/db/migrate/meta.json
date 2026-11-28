@@ -1,10 +1,4 @@
 {
-  "title": "Migrate",
-  "pages": [
-    "new",
-    "push",
-    "reset",
-    "generate",
-    "down"
-  ]
+	"title": "Migrate",
+	"pages": ["new", "push", "reset", "generate", "down"]
 }

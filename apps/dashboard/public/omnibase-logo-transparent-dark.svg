@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="100%" height="100%" viewBox="96 96 320 320" preserveAspectRatio="xMidYMid meet" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;" xmlns:c2pa="http://c2pa.org/manifest">
+    <title>Ghost Logo Transparent Dark</title>
     <style>
         .hem { animation: ghost-flow 2s linear infinite; }
         @keyframes ghost-flow { from { transform: translateX(0); } to { transform: translateX(-120px); } }

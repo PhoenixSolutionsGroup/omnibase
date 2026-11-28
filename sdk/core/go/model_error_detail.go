@@ -23,8 +23,8 @@ type ErrorDetail struct {
 	// Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'
 	Location *string `json:"location,omitempty"`
 	// Error message text
-	Message *string `json:"message,omitempty"`
-	Value interface{} `json:"value,omitempty"`
+	Message *string     `json:"message,omitempty"`
+	Value   interface{} `json:"value,omitempty"`
 }
 
 // NewErrorDetail instantiates a new ErrorDetail object
@@ -142,7 +142,7 @@ func (o *ErrorDetail) SetValue(v interface{}) {
 }
 
 func (o ErrorDetail) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,5 +198,3 @@ func (v *NullableErrorDetail) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

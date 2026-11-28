@@ -1,30 +1,28 @@
 # V1ConfigurationApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**archiveAllStripeConfig**](V1ConfigurationApi.md#archiveallstripeconfig) | **POST** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config |
-| [**createOrUpdateEmailTemplate**](V1ConfigurationApi.md#createorupdateemailtemplate) | **POST** /api/v1/email/templates | Create or update email template |
-| [**createOrUpdateSystemEmailTemplate**](V1ConfigurationApi.md#createorupdatesystememailtemplate) | **POST** /api/v1/email/system-templates | Create or update a system email template |
-| [**deleteEmailTemplate**](V1ConfigurationApi.md#deleteemailtemplate) | **DELETE** /api/v1/email/templates/{type} | Delete email template |
-| [**deleteSystemEmailTemplate**](V1ConfigurationApi.md#deletesystememailtemplate) | **DELETE** /api/v1/email/system-templates/{name} | Delete a system email template |
-| [**deployPermissionNamespaces**](V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations |
-| [**getEmailTemplates**](V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates |
-| [**getPermissionRequirements**](V1ConfigurationApi.md#getpermissionrequirements) | **GET** /api/v1/permissions/requirements | Get required permission namespaces |
-| [**getStripeConfigHistory**](V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history |
-| [**getStripeConfigSchema**](V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema |
-| [**getStripeConfigStatus**](V1ConfigurationApi.md#getstripeconfigstatus) | **POST** /api/v1/stripe/admin/config/status | Get Stripe config status |
-| [**getSystemEmailTemplates**](V1ConfigurationApi.md#getsystememailtemplates) | **GET** /api/v1/email/system-templates | Get all system email templates |
-| [**pullStripeConfig**](V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe |
-| [**sendEmail**](V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email using an app template |
-| [**sendEmailHTML**](V1ConfigurationApi.md#sendemailhtml) | **POST** /api/v1/email/send/html | Send a raw HTML email |
-| [**serveEmailTemplate**](V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file |
-| [**serveSystemEmailTemplate**](V1ConfigurationApi.md#servesystememailtemplate) | **GET** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file |
-| [**updateStripeConfig**](V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config |
-| [**validateStripeConfig**](V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config |
-
-
+| Method                                                                                           | HTTP request                                           | Description                              |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ---------------------------------------- |
+| [**archiveAllStripeConfig**](V1ConfigurationApi.md#archiveallstripeconfig)                       | **POST** /api/v1/stripe/admin/config/archive-all       | Archive all Stripe config                |
+| [**createOrUpdateEmailTemplate**](V1ConfigurationApi.md#createorupdateemailtemplate)             | **POST** /api/v1/email/templates                       | Create or update email template          |
+| [**createOrUpdateSystemEmailTemplate**](V1ConfigurationApi.md#createorupdatesystememailtemplate) | **POST** /api/v1/email/system-templates                | Create or update a system email template |
+| [**deleteEmailTemplate**](V1ConfigurationApi.md#deleteemailtemplate)                             | **DELETE** /api/v1/email/templates/{type}              | Delete email template                    |
+| [**deleteSystemEmailTemplate**](V1ConfigurationApi.md#deletesystememailtemplate)                 | **DELETE** /api/v1/email/system-templates/{name}       | Delete a system email template           |
+| [**deployPermissionNamespaces**](V1ConfigurationApi.md#deploypermissionnamespaces)               | **POST** /api/v1/permissions/namespaces                | Deploy Keto namespace configurations     |
+| [**getEmailTemplates**](V1ConfigurationApi.md#getemailtemplates)                                 | **GET** /api/v1/email/templates                        | Get all email templates                  |
+| [**getPermissionRequirements**](V1ConfigurationApi.md#getpermissionrequirements)                 | **GET** /api/v1/permissions/requirements               | Get required permission namespaces       |
+| [**getStripeConfigHistory**](V1ConfigurationApi.md#getstripeconfighistory)                       | **GET** /api/v1/stripe/admin/config/history            | Get config history                       |
+| [**getStripeConfigSchema**](V1ConfigurationApi.md#getstripeconfigschema)                         | **GET** /api/v1/stripe/schema                          | Get Stripe config schema                 |
+| [**getStripeConfigStatus**](V1ConfigurationApi.md#getstripeconfigstatus)                         | **POST** /api/v1/stripe/admin/config/status            | Get Stripe config status                 |
+| [**getSystemEmailTemplates**](V1ConfigurationApi.md#getsystememailtemplates)                     | **GET** /api/v1/email/system-templates                 | Get all system email templates           |
+| [**pullStripeConfig**](V1ConfigurationApi.md#pullstripeconfig)                                   | **GET** /api/v1/stripe/admin/config/pull               | Pull config from Stripe                  |
+| [**sendEmail**](V1ConfigurationApi.md#sendemail)                                                 | **POST** /api/v1/email/send                            | Send an email using an app template      |
+| [**sendEmailHTML**](V1ConfigurationApi.md#sendemailhtml)                                         | **POST** /api/v1/email/send/html                       | Send a raw HTML email                    |
+| [**serveEmailTemplate**](V1ConfigurationApi.md#serveemailtemplate)                               | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file             |
+| [**serveSystemEmailTemplate**](V1ConfigurationApi.md#servesystememailtemplate)                   | **GET** /api/v1/email/system-templates/{name}/{type}   | Serve a system email template file       |
+| [**updateStripeConfig**](V1ConfigurationApi.md#updatestripeconfig)                               | **POST** /api/v1/stripe/admin/config                   | Update Stripe config                     |
+| [**validateStripeConfig**](V1ConfigurationApi.md#validatestripeconfig)                           | **POST** /api/v1/stripe/admin/config/validate          | Validate Stripe config                   |
 
 ## archiveAllStripeConfig
 
@@ -68,10 +66,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **archiveAllInputBody** | [ArchiveAllInputBody](ArchiveAllInputBody.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **archiveAllInputBody** | [ArchiveAllInputBody](ArchiveAllInputBody.md) |             |       |
 
 ### Return type
 
@@ -86,18 +83,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## createOrUpdateEmailTemplate
 
@@ -147,10 +143,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **upsertTemplateRequest** | [UpsertTemplateRequest](UpsertTemplateRequest.md) |  | |
+| Name                      | Type                                              | Description | Notes |
+| ------------------------- | ------------------------------------------------- | ----------- | ----- |
+| **upsertTemplateRequest** | [UpsertTemplateRequest](UpsertTemplateRequest.md) |             |       |
 
 ### Return type
 
@@ -165,18 +160,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## createOrUpdateSystemEmailTemplate
 
@@ -220,10 +214,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **upsertSystemTemplateRequest** | [UpsertSystemTemplateRequest](UpsertSystemTemplateRequest.md) |  | |
+| Name                            | Type                                                          | Description | Notes |
+| ------------------------------- | ------------------------------------------------------------- | ----------- | ----- |
+| **upsertSystemTemplateRequest** | [UpsertSystemTemplateRequest](UpsertSystemTemplateRequest.md) |             |       |
 
 ### Return type
 
@@ -238,18 +231,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## deleteEmailTemplate
 
@@ -260,37 +252,34 @@ Delete email template
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { DeleteEmailTemplateRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { DeleteEmailTemplateRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // string
-    type: type_example,
-  } satisfies DeleteEmailTemplateRequest;
+	const body = {
+		// string
+		type: type_example,
+	} satisfies DeleteEmailTemplateRequest;
 
-  try {
-    const data = await api.deleteEmailTemplate(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.deleteEmailTemplate(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -299,10 +288,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **type** | `string` |  | [Defaults to `undefined`] |
+| Name     | Type     | Description | Notes                     |
+| -------- | -------- | ----------- | ------------------------- |
+| **type** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -317,19 +305,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## deleteSystemEmailTemplate
 
@@ -340,31 +327,28 @@ Delete a system email template
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { DeleteSystemEmailTemplateRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { DeleteSystemEmailTemplateRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // string
-    name: name_example,
-  } satisfies DeleteSystemEmailTemplateRequest;
+	const body = {
+		// string
+		name: name_example,
+	} satisfies DeleteSystemEmailTemplateRequest;
 
-  try {
-    const data = await api.deleteSystemEmailTemplate(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.deleteSystemEmailTemplate(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -373,10 +357,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **name** | `string` |  | [Defaults to `undefined`] |
+| Name     | Type     | Description | Notes                     |
+| -------- | -------- | ----------- | ------------------------- |
+| **name** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -391,19 +374,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## deployPermissionNamespaces
 
@@ -414,31 +396,28 @@ Deploy Keto namespace configurations
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { DeployPermissionNamespacesRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { DeployPermissionNamespacesRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // Blob
-    namespaces: BINARY_DATA_HERE,
-  } satisfies DeployPermissionNamespacesRequest;
+	const body = {
+		// Blob
+		namespaces: BINARY_DATA_HERE,
+	} satisfies DeployPermissionNamespacesRequest;
 
-  try {
-    const data = await api.deployPermissionNamespaces(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.deployPermissionNamespaces(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -447,10 +426,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **namespaces** | `Blob` |  | [Defaults to `undefined`] |
+| Name           | Type   | Description | Notes                     |
+| -------------- | ------ | ----------- | ------------------------- |
+| **namespaces** | `Blob` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -465,18 +443,17 @@ example().catch(console.error);
 - **Content-Type**: `multipart/form-data`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getEmailTemplates
 
@@ -487,32 +464,29 @@ Get all email templates
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetEmailTemplatesRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetEmailTemplatesRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  try {
-    const data = await api.getEmailTemplates();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getEmailTemplates();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -536,17 +510,16 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getPermissionRequirements
 
@@ -557,22 +530,19 @@ Get required permission namespaces
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetPermissionRequirementsRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetPermissionRequirementsRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1ConfigurationApi();
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const api = new V1ConfigurationApi();
 
-  try {
-    const data = await api.getPermissionRequirements();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getPermissionRequirements();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -596,15 +566,14 @@ No authorization required
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getStripeConfigHistory
 
@@ -615,33 +584,30 @@ Get config history
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetStripeConfigHistoryRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetStripeConfigHistoryRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // number (optional)
-    limit: 789,
-    // number (optional)
-    offset: 789,
-  } satisfies GetStripeConfigHistoryRequest;
+	const body = {
+		// number (optional)
+		limit: 789,
+		// number (optional)
+		offset: 789,
+	} satisfies GetStripeConfigHistoryRequest;
 
-  try {
-    const data = await api.getStripeConfigHistory(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getStripeConfigHistory(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -650,11 +616,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **limit** | `number` |  | [Optional] [Defaults to `10`] |
-| **offset** | `number` |  | [Optional] [Defaults to `0`] |
+| Name       | Type     | Description | Notes                         |
+| ---------- | -------- | ----------- | ----------------------------- |
+| **limit**  | `number` |             | [Optional] [Defaults to `10`] |
+| **offset** | `number` |             | [Optional] [Defaults to `0`]  |
 
 ### Return type
 
@@ -669,18 +634,17 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getStripeConfigSchema
 
@@ -691,22 +655,19 @@ Get Stripe config schema
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetStripeConfigSchemaRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetStripeConfigSchemaRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1ConfigurationApi();
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const api = new V1ConfigurationApi();
 
-  try {
-    const data = await api.getStripeConfigSchema();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getStripeConfigSchema();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -730,15 +691,14 @@ No authorization required
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  * Content-Type -  <br>  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers       |
+| ----------- | --------------------- | ---------------------- |
+| **200**     | OK                    | * Content-Type -  <br> |
+| **500**     | Internal Server Error | -                      |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getStripeConfigStatus
 
@@ -749,31 +709,28 @@ Get Stripe config status
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetStripeConfigStatusRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetStripeConfigStatusRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // object
-    body: Object,
-  } satisfies GetStripeConfigStatusRequest;
+	const body = {
+		// object
+		body: Object,
+	} satisfies GetStripeConfigStatusRequest;
 
-  try {
-    const data = await api.getStripeConfigStatus(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getStripeConfigStatus(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -782,10 +739,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **body** | `object` |  | |
+| Name     | Type     | Description | Notes |
+| -------- | -------- | ----------- | ----- |
+| **body** | `object` |             |       |
 
 ### Return type
 
@@ -800,18 +756,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getSystemEmailTemplates
 
@@ -822,26 +777,23 @@ Get all system email templates
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { GetSystemEmailTemplatesRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { GetSystemEmailTemplatesRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  try {
-    const data = await api.getSystemEmailTemplates();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getSystemEmailTemplates();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -865,17 +817,16 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## pullStripeConfig
 
@@ -886,26 +837,23 @@ Pull config from Stripe
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { PullStripeConfigRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { PullStripeConfigRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  try {
-    const data = await api.pullStripeConfig();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.pullStripeConfig();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -929,17 +877,16 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## sendEmail
 
@@ -989,10 +936,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **sendTemplateRequest** | [SendTemplateRequest](SendTemplateRequest.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **sendTemplateRequest** | [SendTemplateRequest](SendTemplateRequest.md) |             |       |
 
 ### Return type
 
@@ -1007,20 +953,19 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## sendEmailHTML
 
@@ -1070,10 +1015,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **sendHTMLRequest** | [SendHTMLRequest](SendHTMLRequest.md) |  | |
+| Name                | Type                                  | Description | Notes |
+| ------------------- | ------------------------------------- | ----------- | ----- |
+| **sendHTMLRequest** | [SendHTMLRequest](SendHTMLRequest.md) |             |       |
 
 ### Return type
 
@@ -1088,19 +1032,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## serveEmailTemplate
 
@@ -1111,39 +1054,36 @@ Serve an email template file
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { ServeEmailTemplateRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { ServeEmailTemplateRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // string
-    templateName: templateName_example,
-    // string
-    type: type_example,
-  } satisfies ServeEmailTemplateRequest;
+	const body = {
+		// string
+		templateName: templateName_example,
+		// string
+		type: type_example,
+	} satisfies ServeEmailTemplateRequest;
 
-  try {
-    const data = await api.serveEmailTemplate(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.serveEmailTemplate(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -1152,11 +1092,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **templateName** | `string` |  | [Defaults to `undefined`] |
-| **type** | `string` |  | [Defaults to `undefined`] |
+| Name             | Type     | Description | Notes                     |
+| ---------------- | -------- | ----------- | ------------------------- |
+| **templateName** | `string` |             | [Defaults to `undefined`] |
+| **type**         | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1171,19 +1110,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  * Cache-Control -  <br>  * Content-Type -  <br>  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers                                |
+| ----------- | --------------------- | ----------------------------------------------- |
+| **200**     | OK                    | * Cache-Control -  <br>  * Content-Type -  <br> |
+| **400**     | Bad Request           | -                                               |
+| **401**     | Unauthorized          | -                                               |
+| **404**     | Not Found             | -                                               |
+| **422**     | Unprocessable Entity  | -                                               |
+| **500**     | Internal Server Error | -                                               |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## serveSystemEmailTemplate
 
@@ -1194,33 +1132,30 @@ Serve a system email template file
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { ServeSystemEmailTemplateRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { ServeSystemEmailTemplateRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // string
-    name: name_example,
-    // string
-    type: type_example,
-  } satisfies ServeSystemEmailTemplateRequest;
+	const body = {
+		// string
+		name: name_example,
+		// string
+		type: type_example,
+	} satisfies ServeSystemEmailTemplateRequest;
 
-  try {
-    const data = await api.serveSystemEmailTemplate(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.serveSystemEmailTemplate(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -1229,11 +1164,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **name** | `string` |  | [Defaults to `undefined`] |
-| **type** | `string` |  | [Defaults to `undefined`] |
+| Name     | Type     | Description | Notes                     |
+| -------- | -------- | ----------- | ------------------------- |
+| **name** | `string` |             | [Defaults to `undefined`] |
+| **type** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1248,19 +1182,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  * Cache-Control -  <br>  * Content-Type -  <br>  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers                                |
+| ----------- | --------------------- | ----------------------------------------------- |
+| **200**     | OK                    | * Cache-Control -  <br>  * Content-Type -  <br> |
+| **400**     | Bad Request           | -                                               |
+| **401**     | Unauthorized          | -                                               |
+| **404**     | Not Found             | -                                               |
+| **422**     | Unprocessable Entity  | -                                               |
+| **500**     | Internal Server Error | -                                               |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## updateStripeConfig
 
@@ -1271,31 +1204,28 @@ Update Stripe config
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { UpdateStripeConfigRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { UpdateStripeConfigRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // object
-    body: Object,
-  } satisfies UpdateStripeConfigRequest;
+	const body = {
+		// object
+		body: Object,
+	} satisfies UpdateStripeConfigRequest;
 
-  try {
-    const data = await api.updateStripeConfig(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.updateStripeConfig(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -1304,10 +1234,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **body** | `object` |  | |
+| Name     | Type     | Description | Notes |
+| -------- | -------- | ----------- | ----- |
+| **body** | `object` |             |       |
 
 ### Return type
 
@@ -1322,18 +1251,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## validateStripeConfig
 
@@ -1344,31 +1272,28 @@ Validate Stripe config
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1ConfigurationApi,
-} from '@omnibase/core-js';
-import type { ValidateStripeConfigRequest } from '@omnibase/core-js';
+import { Configuration, V1ConfigurationApi } from "@omnibase/core-js";
+import type { ValidateStripeConfigRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1ConfigurationApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1ConfigurationApi(config);
 
-  const body = {
-    // object
-    body: Object,
-  } satisfies ValidateStripeConfigRequest;
+	const body = {
+		// object
+		body: Object,
+	} satisfies ValidateStripeConfigRequest;
 
-  try {
-    const data = await api.validateStripeConfig(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.validateStripeConfig(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -1377,10 +1302,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **body** | `object` |  | |
+| Name     | Type     | Description | Notes |
+| -------- | -------- | ----------- | ----- |
+| **body** | `object` |             |       |
 
 ### Return type
 
@@ -1395,15 +1319,14 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

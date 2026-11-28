@@ -21,8 +21,8 @@ var _ MappedNullable = &UserTenantListItem{}
 
 // UserTenantListItem struct for UserTenantListItem
 type UserTenantListItem struct {
-	IsActive bool `json:"is_active"`
-	Tenant AuthTenant `json:"tenant"`
+	IsActive             bool       `json:"is_active"`
+	Tenant               AuthTenant `json:"tenant"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -96,7 +96,7 @@ func (o *UserTenantListItem) SetTenant(v AuthTenant) {
 }
 
 func (o UserTenantListItem) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -129,10 +129,10 @@ func (o *UserTenantListItem) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -194,5 +194,3 @@ func (v *NullableUserTenantListItem) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

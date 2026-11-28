@@ -12,63 +12,66 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface UploadRequest
  */
 export interface UploadRequest {
-    /**
-     * 
-     * @type {object}
-     * @memberof UploadRequest
-     */
-    metadata?: object;
-    /**
-     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
-     * @type {string}
-     * @memberof UploadRequest
-     */
-    path: string;
+	/**
+	 *
+	 * @type {object}
+	 * @memberof UploadRequest
+	 */
+	metadata?: object;
+	/**
+	 * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
+	 * @type {string}
+	 * @memberof UploadRequest
+	 */
+	path: string;
 }
 
 /**
  * Check if a given object implements the UploadRequest interface.
  */
 export function instanceOfUploadRequest(value: object): value is UploadRequest {
-    if (!('path' in value) || value['path'] === undefined) return false;
-    return true;
+	if (!("path" in value) || value["path"] === undefined) return false;
+	return true;
 }
 
 export function UploadRequestFromJSON(json: any): UploadRequest {
-    return UploadRequestFromJSONTyped(json, false);
+	return UploadRequestFromJSONTyped(json, false);
 }
 
-export function UploadRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): UploadRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'path': json['path'],
-    };
+export function UploadRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): UploadRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		path: json["path"],
+	};
 }
 
 export function UploadRequestToJSON(json: any): UploadRequest {
-    return UploadRequestToJSONTyped(json, false);
+	return UploadRequestToJSONTyped(json, false);
 }
 
-export function UploadRequestToJSONTyped(value?: UploadRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function UploadRequestToJSONTyped(
+	value?: UploadRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'metadata': value['metadata'],
-        'path': value['path'],
-    };
+	return {
+		metadata: value["metadata"],
+		path: value["path"],
+	};
 }
-

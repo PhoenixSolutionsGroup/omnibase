@@ -1,4 +1,5 @@
 ---
+
 title: UI Components
 description: Pre-built shadcn components for pricing tables and billing UI
 ---
@@ -20,34 +21,34 @@ The `PricingTable` component displays your Stripe products with pricing, feature
 ### Basic Usage
 
 ```tsx
-import { PricingTable } from '@omnibase/shadcn';
-import { V1StripeApi } from '@omnibase/core-js';
+import { PricingTable } from "@omnibase/shadcn";
+import { V1StripeApi } from "@omnibase/core-js";
 
 export default async function PricingPage() {
-  const stripeApi = new V1StripeApi(config);
-  const { data: stripeConfig } = await stripeApi.getStripeConfig();
+	const stripeApi = new V1StripeApi(config);
+	const { data: stripeConfig } = await stripeApi.getStripeConfig();
 
-  return (
-    <PricingTable
-      products={stripeConfig.products}
-      onPriceSelect={(priceId, productId) => {
-        console.log(`Selected: ${priceId} from ${productId}`);
-      }}
-    />
-  );
+	return (
+		<PricingTable
+			products={stripeConfig.products}
+			onPriceSelect={(priceId, productId) => {
+				console.log(`Selected: ${priceId} from ${productId}`);
+			}}
+		/>
+	);
 }
 ```
 
 ### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `products` | `Product[]` | Required | Array of products from Stripe config |
-| `selectedPriceId` | `string` | — | Currently selected price (shows visual indicator) |
-| `onPriceSelect` | `(priceId: string, productId: string) => void` | — | Callback when a price is selected |
-| `className` | `string` | — | Additional CSS classes |
-| `showPricingToggle` | `boolean` | `false` | Show month/year interval toggle |
-| `defaultInterval` | `"month"` \| `"year"` | `"month"` | Default billing interval |
+| Prop                | Type                                           | Default   | Description                                       |
+| ------------------- | ---------------------------------------------- | --------- | ------------------------------------------------- |
+| `products`          | `Product[]`                                    | Required  | Array of products from Stripe config              |
+| `selectedPriceId`   | `string`                                       | —         | Currently selected price (shows visual indicator) |
+| `onPriceSelect`     | `(priceId: string, productId: string) => void` | —         | Callback when a price is selected                 |
+| `className`         | `string`                                       | —         | Additional CSS classes                            |
+| `showPricingToggle` | `boolean`                                      | `false`   | Show month/year interval toggle                   |
+| `defaultInterval`   | `"month"` \| `"year"`                          | `"month"` | Default billing interval                          |
 
 ### Features
 
@@ -55,11 +56,11 @@ export default async function PricingPage() {
 
 The component automatically adapts to screen size:
 
-| Screen Size | Behavior |
-|-------------|----------|
-| Mobile | Single-card carousel with swipe navigation |
-| Tablet | Single-card carousel |
-| Desktop | 3-card carousel (or grid if ≤3 products) |
+| Screen Size | Behavior                                   |
+| ----------- | ------------------------------------------ |
+| Mobile      | Single-card carousel with swipe navigation |
+| Tablet      | Single-card carousel                       |
+| Desktop     | 3-card carousel (or grid if ≤3 products)   |
 
 #### Billing Period Toggle
 
@@ -67,10 +68,10 @@ When `showPricingToggle={true}`, displays a month/year toggle:
 
 ```tsx
 <PricingTable
-  products={products}
-  showPricingToggle={true}
-  defaultInterval="month"
-/>
+	products={products}
+	showPricingToggle={true}
+	defaultInterval="month"
+/>;
 ```
 
 The toggle only appears if products have prices with different intervals.
@@ -81,10 +82,10 @@ Highlight the current subscription:
 
 ```tsx
 <PricingTable
-  products={products}
-  selectedPriceId="pro_monthly"
-  onPriceSelect={handleSelect}
-/>
+	products={products}
+	selectedPriceId="pro_monthly"
+	onPriceSelect={handleSelect}
+/>;
 ```
 
 The selected product displays with a visual ring indicator.
@@ -95,66 +96,71 @@ Products with `ui.highlighted: true` display a "Most Popular" badge:
 
 ```json
 {
-  "id": "pro",
-  "name": "Pro Plan",
-  "ui": {
-    "highlighted": true,
-    "badge": "Most Popular"
-  }
+	"id": "pro",
+	"name": "Pro Plan",
+	"ui": {
+		"highlighted": true,
+		"badge": "Most Popular"
+	}
 }
 ```
 
 ### Complete Example
 
 ```tsx title="app/(dashboard)/subscriptions/page.tsx"
-import { V1StripeApi, V1TenantsApi, V1PaymentsApi, Product } from '@omnibase/core-js';
-import { PricingTable } from '@omnibase/shadcn';
-import { redirect } from 'next/navigation';
+import {
+	V1StripeApi,
+	V1TenantsApi,
+	V1PaymentsApi,
+	Product,
+} from "@omnibase/core-js";
+import { PricingTable } from "@omnibase/shadcn";
+import { redirect } from "next/navigation";
 
 export default async function SubscriptionsPage() {
-  const stripeApi = new V1StripeApi(config);
-  const tenantsApi = new V1TenantsApi(config);
+	const stripeApi = new V1StripeApi(config);
+	const tenantsApi = new V1TenantsApi(config);
 
-  const [{ data: stripeConfig }, { data: subscriptions }] = await Promise.all([
-    stripeApi.getStripeConfig(),
-    tenantsApi.listTenantSubscriptions(),
-  ]);
+	const [{ data: stripeConfig }, { data: subscriptions }] = await Promise.all([
+		stripeApi.getStripeConfig(),
+		tenantsApi.listTenantSubscriptions(),
+	]);
 
-  const currentPriceId = subscriptions?.[0]?.configPriceId;
+	const currentPriceId = subscriptions?.[0]?.configPriceId;
 
-  async function handleCheckout(priceId: string) {
-    'use server';
-    const paymentsApi = new V1PaymentsApi(config);
-    const { data } = await paymentsApi.createCheckout({
-      createCheckoutRequest: {
-        priceId,
-        successUrl: `${process.env.APP_URL}/subscriptions?success=true`,
-        cancelUrl: `${process.env.APP_URL}/subscriptions`,
-        trialPeriodDays: 14,
-        allowPromotionCodes: true,
-      },
-    });
-    redirect(data.url!);
-  }
+	async function handleCheckout(priceId: string) {
+		"use server";
+		const paymentsApi = new V1PaymentsApi(config);
+		const { data } = await paymentsApi.createCheckout({
+			createCheckoutRequest: {
+				priceId,
+				successUrl: `${process.env.APP_URL}/subscriptions?success=true`,
+				cancelUrl: `${process.env.APP_URL}/subscriptions`,
+				trialPeriodDays: 14,
+				allowPromotionCodes: true,
+			},
+		});
+		redirect(data.url!);
+	}
 
-  return (
-    <div className="container py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
-        <p className="text-muted-foreground">
-          Select the perfect plan for your needs
-        </p>
-      </div>
+	return (
+		<div className="container py-12">
+			<div className="text-center mb-12">
+				<h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
+				<p className="text-muted-foreground">
+					Select the perfect plan for your needs
+				</p>
+			</div>
 
-      <PricingTable
-        products={stripeConfig.products as Product[]}
-        selectedPriceId={currentPriceId}
-        onPriceSelect={handleCheckout}
-        showPricingToggle
-        defaultInterval="month"
-      />
-    </div>
-  );
+			<PricingTable
+				products={stripeConfig.products as Product[]}
+				selectedPriceId={currentPriceId}
+				onPriceSelect={handleCheckout}
+				showPricingToggle
+				defaultInterval="month"
+			/>
+		</div>
+	);
 }
 ```
 
@@ -166,13 +172,13 @@ The PricingTable component uses types from `@omnibase/core-js`:
 
 ```typescript
 interface Product {
-  id: string;                    // Config ID (e.g., "pro")
-  stripeId?: string;             // Stripe product ID
-  name: string;                  // Display name
-  description?: string;          // Product description
-  type?: "service" | "good";     // Product type
-  prices: Price[];               // Array of prices
-  ui?: ProductUI;                // UI customization
+	id: string; // Config ID (e.g., "pro")
+	stripeId?: string; // Stripe product ID
+	name: string; // Display name
+	description?: string; // Product description
+	type?: "service" | "good"; // Product type
+	prices: Price[]; // Array of prices
+	ui?: ProductUI; // UI customization
 }
 ```
 
@@ -180,13 +186,13 @@ interface Product {
 
 ```typescript
 interface ProductUI {
-  displayName?: string;          // Override display name
-  tagline?: string;              // Short tagline (e.g., "Perfect for teams")
-  features?: string[];           // List of features
-  badge?: string;                // Badge text (e.g., "Most Popular")
-  ctaText?: string;              // Button text (e.g., "Upgrade to Pro")
-  highlighted?: boolean;         // Highlight this product
-  sortOrder?: number;            // Display order (lower = first)
+	displayName?: string; // Override display name
+	tagline?: string; // Short tagline (e.g., "Perfect for teams")
+	features?: string[]; // List of features
+	badge?: string; // Badge text (e.g., "Most Popular")
+	ctaText?: string; // Button text (e.g., "Upgrade to Pro")
+	highlighted?: boolean; // Highlight this product
+	sortOrder?: number; // Display order (lower = first)
 }
 ```
 
@@ -194,17 +200,17 @@ interface ProductUI {
 
 ```typescript
 interface Price {
-  id: string;                    // Config ID (e.g., "pro_monthly")
-  stripeId?: string;             // Stripe price ID
-  amount: number;                // Amount in cents (4900 = $49.00)
-  currency: string;              // Currency code (e.g., "usd")
-  interval?: string;             // "month", "year", "week", "day"
-  intervalCount?: number;        // Billing frequency (default: 1)
-  usageType?: string;            // "licensed" or "metered"
-  billingScheme?: string;        // "per_unit" or "tiered"
-  public?: boolean;              // Visible in public API
-  default?: boolean;             // Default price for product
-  ui?: PriceUI;                  // UI customization
+	id: string; // Config ID (e.g., "pro_monthly")
+	stripeId?: string; // Stripe price ID
+	amount: number; // Amount in cents (4900 = $49.00)
+	currency: string; // Currency code (e.g., "usd")
+	interval?: string; // "month", "year", "week", "day"
+	intervalCount?: number; // Billing frequency (default: 1)
+	usageType?: string; // "licensed" or "metered"
+	billingScheme?: string; // "per_unit" or "tiered"
+	public?: boolean; // Visible in public API
+	default?: boolean; // Default price for product
+	ui?: PriceUI; // UI customization
 }
 ```
 
@@ -212,11 +218,11 @@ interface Price {
 
 ```typescript
 interface PriceUI {
-  displayName?: string;          // Override display name
-  billingPeriod?: string;        // Human-readable period (e.g., "per month")
-  priceDisplay?: PriceDisplay;   // Custom price display
-  features?: string[];           // Price-specific features
-  limits?: PriceLimit[];         // Usage limits
+	displayName?: string; // Override display name
+	billingPeriod?: string; // Human-readable period (e.g., "per month")
+	priceDisplay?: PriceDisplay; // Custom price display
+	features?: string[]; // Price-specific features
+	limits?: PriceLimit[]; // Usage limits
 }
 ```
 
@@ -224,9 +230,9 @@ interface PriceUI {
 
 ```typescript
 interface PriceDisplay {
-  customText?: string;           // Custom text (e.g., "Free", "Custom")
-  showCurrency?: boolean;        // Show currency symbol
-  suffix?: string;               // Text after price (e.g., " (Save 17%)")
+	customText?: string; // Custom text (e.g., "Free", "Custom")
+	showCurrency?: boolean; // Show currency symbol
+	suffix?: string; // Text after price (e.g., " (Save 17%)")
 }
 ```
 
@@ -234,9 +240,9 @@ interface PriceDisplay {
 
 ```typescript
 interface PriceLimit {
-  text: string;                  // Limit description
-  value?: number;                // Numeric value
-  unit?: string;                 // Unit (e.g., "instances", "percent")
+	text: string; // Limit description
+	value?: number; // Numeric value
+	unit?: string; // Unit (e.g., "instances", "percent")
 }
 ```
 
@@ -248,16 +254,16 @@ For free tiers or custom pricing:
 
 ```json
 {
-  "id": "free",
-  "amount": 0,
-  "currency": "usd",
-  "interval": "month",
-  "ui": {
-    "priceDisplay": {
-      "customText": "Free",
-      "showCurrency": false
-    }
-  }
+	"id": "free",
+	"amount": 0,
+	"currency": "usd",
+	"interval": "month",
+	"ui": {
+		"priceDisplay": {
+			"customText": "Free",
+			"showCurrency": false
+		}
+	}
 }
 ```
 
@@ -267,14 +273,14 @@ Renders as: **Free** (instead of $0.00)
 
 ```json
 {
-  "id": "enterprise",
-  "amount": 0,
-  "currency": "usd",
-  "ui": {
-    "priceDisplay": {
-      "customText": "Custom"
-    }
-  }
+	"id": "enterprise",
+	"amount": 0,
+	"currency": "usd",
+	"ui": {
+		"priceDisplay": {
+			"customText": "Custom"
+		}
+	}
 }
 ```
 
@@ -282,15 +288,15 @@ Renders as: **Free** (instead of $0.00)
 
 ```json
 {
-  "id": "pro_yearly",
-  "amount": 49000,
-  "currency": "usd",
-  "interval": "year",
-  "ui": {
-    "priceDisplay": {
-      "suffix": " (Save 17%)"
-    }
-  }
+	"id": "pro_yearly",
+	"amount": 49000,
+	"currency": "usd",
+	"interval": "year",
+	"ui": {
+		"priceDisplay": {
+			"suffix": " (Save 17%)"
+		}
+	}
 }
 ```
 
@@ -302,29 +308,22 @@ Define features at the product or price level:
 
 ```json
 {
-  "id": "pro",
-  "name": "Pro Plan",
-  "ui": {
-    "features": [
-      "Unlimited projects",
-      "Priority support",
-      "Advanced analytics"
-    ]
-  },
-  "prices": [
-    {
-      "id": "pro_monthly",
-      "amount": 4900,
-      "currency": "usd",
-      "interval": "month",
-      "ui": {
-        "features": [
-          "Everything in Starter",
-          "API access"
-        ]
-      }
-    }
-  ]
+	"id": "pro",
+	"name": "Pro Plan",
+	"ui": {
+		"features": ["Unlimited projects", "Priority support", "Advanced analytics"]
+	},
+	"prices": [
+		{
+			"id": "pro_monthly",
+			"amount": 4900,
+			"currency": "usd",
+			"interval": "month",
+			"ui": {
+				"features": ["Everything in Starter", "API access"]
+			}
+		}
+	]
 }
 ```
 
@@ -334,15 +333,15 @@ Display limits with values:
 
 ```json
 {
-  "id": "starter_monthly",
-  "amount": 1900,
-  "ui": {
-    "limits": [
-      { "text": "5 projects", "value": 5, "unit": "projects" },
-      { "text": "10 GB storage", "value": 10, "unit": "GB" },
-      { "text": "1.5% transaction fee", "value": 1.5, "unit": "percent" }
-    ]
-  }
+	"id": "starter_monthly",
+	"amount": 1900,
+	"ui": {
+		"limits": [
+			{ "text": "5 projects", "value": 5, "unit": "projects" },
+			{ "text": "10 GB storage", "value": 10, "unit": "GB" },
+			{ "text": "1.5% transaction fee", "value": 1.5, "unit": "percent" }
+		]
+	}
 }
 ```
 
@@ -350,14 +349,14 @@ Display limits with values:
 
 The PricingTable supports these currencies with proper symbol formatting:
 
-| Currency | Symbol | Code |
-|----------|--------|------|
-| US Dollar | $ | `usd` |
-| Euro | € | `eur` |
-| British Pound | £ | `gbp` |
-| Japanese Yen | ¥ | `jpy` |
-| Canadian Dollar | CA$ | `cad` |
-| Australian Dollar | A$ | `aud` |
+| Currency          | Symbol | Code  |
+| ----------------- | ------ | ----- |
+| US Dollar         | $      | `usd` |
+| Euro              | €      | `eur` |
+| British Pound     | £      | `gbp` |
+| Japanese Yen      | ¥      | `jpy` |
+| Canadian Dollar   | CA$    | `cad` |
+| Australian Dollar | A$     | `aud` |
 
 Other currencies display the currency code.
 
@@ -367,10 +366,10 @@ Products are sorted by `ui.sortOrder`:
 
 ```json
 [
-  { "id": "free", "ui": { "sortOrder": 1 } },
-  { "id": "starter", "ui": { "sortOrder": 2 } },
-  { "id": "pro", "ui": { "sortOrder": 3 } },
-  { "id": "enterprise", "ui": { "sortOrder": 4 } }
+	{ "id": "free", "ui": { "sortOrder": 1 } },
+	{ "id": "starter", "ui": { "sortOrder": 2 } },
+	{ "id": "pro", "ui": { "sortOrder": 3 } },
+	{ "id": "enterprise", "ui": { "sortOrder": 4 } }
 ]
 ```
 
@@ -383,38 +382,38 @@ The `TenantCreator` component includes billing-related functionality for initial
 ### Usage
 
 ```tsx
-import { TenantCreator } from '@omnibase/shadcn';
+import { TenantCreator } from "@omnibase/shadcn";
 
 export function OnboardingPage() {
-  return (
-    <TenantCreator
-      config={{
-        defaultMode: 'create',
-        createForm: {
-          organizationName: {
-            label: 'Organization Name',
-            placeholder: 'Acme Corp',
-          },
-          billingEmail: {
-            label: 'Billing Email',
-            placeholder: 'billing@acme.com',
-          },
-        },
-      }}
-      actions={{
-        createOrganizationAction: async (formData) => {
-          'use server';
-          // Create tenant with billing email
-          await tenantsApi.createTenant({
-            createTenantRequest: {
-              name: formData.get('name') as string,
-              billingEmail: formData.get('billing_email') as string,
-            },
-          });
-        },
-      }}
-    />
-  );
+	return (
+		<TenantCreator
+			config={{
+				defaultMode: "create",
+				createForm: {
+					organizationName: {
+						label: "Organization Name",
+						placeholder: "Acme Corp",
+					},
+					billingEmail: {
+						label: "Billing Email",
+						placeholder: "billing@acme.com",
+					},
+				},
+			}}
+			actions={{
+				createOrganizationAction: async (formData) => {
+					"use server";
+					// Create tenant with billing email
+					await tenantsApi.createTenant({
+						createTenantRequest: {
+							name: formData.get("name") as string,
+							billingEmail: formData.get("billing_email") as string,
+						},
+					});
+				},
+			}}
+		/>
+	);
 }
 ```
 
@@ -430,9 +429,9 @@ Override shadcn/ui CSS variables in your global styles:
 
 ```css title="app/globals.css"
 :root {
-  --primary: 222.2 84% 4.9%;
-  --primary-foreground: 210 40% 98%;
-  /* ... other variables */
+	--primary: 222.2 84% 4.9%;
+	--primary-foreground: 210 40% 98%;
+	/* ... other variables */
 }
 ```
 
@@ -441,10 +440,7 @@ Override shadcn/ui CSS variables in your global styles:
 Add custom classes:
 
 ```tsx
-<PricingTable
-  products={products}
-  className="max-w-5xl mx-auto"
-/>
+<PricingTable products={products} className="max-w-5xl mx-auto" />;
 ```
 
 ### Component Customization
@@ -461,6 +457,7 @@ bun run storybook
 ```
 
 Available stories:
+
 - `Default` — Standard pricing table
 - `WithSelectedPrice` — Pre-selected subscription
 - `YearlyDefault` — Annual pricing selected

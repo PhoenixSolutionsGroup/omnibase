@@ -1,22 +1,21 @@
-
 # TenantInvite
 
 Tenant user invitation
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`tenantId` | string
-`email` | string
-`role` | string
-`token` | string
-`inviterId` | string
-`expiresAt` | Date
-`usedAt` | Date
-`createdAt` | Date
-`tenant` | [Tenant](Tenant.md)
+| Name        | Type                |
+| ----------- | ------------------- |
+| `id`        | string              |
+| `tenantId`  | string              |
+| `email`     | string              |
+| `role`      | string              |
+| `token`     | string              |
+| `inviterId` | string              |
+| `expiresAt` | Date                |
+| `usedAt`    | Date                |
+| `createdAt` | Date                |
+| `tenant`    | [Tenant](Tenant.md) |
 
 ## Example
 
@@ -49,5 +48,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

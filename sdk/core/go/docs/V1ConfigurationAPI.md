@@ -1,30 +1,28 @@
 # \V1ConfigurationAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**ArchiveAllStripeConfig**](V1ConfigurationAPI.md#ArchiveAllStripeConfig) | **Post** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
-[**CreateOrUpdateEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateEmailTemplate) | **Post** /api/v1/email/templates | Create or update email template
-[**CreateOrUpdateSystemEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateSystemEmailTemplate) | **Post** /api/v1/email/system-templates | Create or update a system email template
-[**DeleteEmailTemplate**](V1ConfigurationAPI.md#DeleteEmailTemplate) | **Delete** /api/v1/email/templates/{type} | Delete email template
-[**DeleteSystemEmailTemplate**](V1ConfigurationAPI.md#DeleteSystemEmailTemplate) | **Delete** /api/v1/email/system-templates/{name} | Delete a system email template
-[**DeployPermissionNamespaces**](V1ConfigurationAPI.md#DeployPermissionNamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
-[**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates) | **Get** /api/v1/email/templates | Get all email templates
-[**GetPermissionRequirements**](V1ConfigurationAPI.md#GetPermissionRequirements) | **Get** /api/v1/permissions/requirements | Get required permission namespaces
-[**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
-[**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
-[**GetStripeConfigStatus**](V1ConfigurationAPI.md#GetStripeConfigStatus) | **Post** /api/v1/stripe/admin/config/status | Get Stripe config status
-[**GetSystemEmailTemplates**](V1ConfigurationAPI.md#GetSystemEmailTemplates) | **Get** /api/v1/email/system-templates | Get all system email templates
-[**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-[**SendEmail**](V1ConfigurationAPI.md#SendEmail) | **Post** /api/v1/email/send | Send an email using an app template
-[**SendEmailHTML**](V1ConfigurationAPI.md#SendEmailHTML) | **Post** /api/v1/email/send/html | Send a raw HTML email
-[**ServeEmailTemplate**](V1ConfigurationAPI.md#ServeEmailTemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
-[**ServeSystemEmailTemplate**](V1ConfigurationAPI.md#ServeSystemEmailTemplate) | **Get** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file
-[**UpdateStripeConfig**](V1ConfigurationAPI.md#UpdateStripeConfig) | **Post** /api/v1/stripe/admin/config | Update Stripe config
-[**ValidateStripeConfig**](V1ConfigurationAPI.md#ValidateStripeConfig) | **Post** /api/v1/stripe/admin/config/validate | Validate Stripe config
-
-
+| Method                                                                                           | HTTP request                                           | Description                              |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ---------------------------------------- |
+| [**ArchiveAllStripeConfig**](V1ConfigurationAPI.md#ArchiveAllStripeConfig)                       | **Post** /api/v1/stripe/admin/config/archive-all       | Archive all Stripe config                |
+| [**CreateOrUpdateEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateEmailTemplate)             | **Post** /api/v1/email/templates                       | Create or update email template          |
+| [**CreateOrUpdateSystemEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateSystemEmailTemplate) | **Post** /api/v1/email/system-templates                | Create or update a system email template |
+| [**DeleteEmailTemplate**](V1ConfigurationAPI.md#DeleteEmailTemplate)                             | **Delete** /api/v1/email/templates/{type}              | Delete email template                    |
+| [**DeleteSystemEmailTemplate**](V1ConfigurationAPI.md#DeleteSystemEmailTemplate)                 | **Delete** /api/v1/email/system-templates/{name}       | Delete a system email template           |
+| [**DeployPermissionNamespaces**](V1ConfigurationAPI.md#DeployPermissionNamespaces)               | **Post** /api/v1/permissions/namespaces                | Deploy Keto namespace configurations     |
+| [**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates)                                 | **Get** /api/v1/email/templates                        | Get all email templates                  |
+| [**GetPermissionRequirements**](V1ConfigurationAPI.md#GetPermissionRequirements)                 | **Get** /api/v1/permissions/requirements               | Get required permission namespaces       |
+| [**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory)                       | **Get** /api/v1/stripe/admin/config/history            | Get config history                       |
+| [**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema)                         | **Get** /api/v1/stripe/schema                          | Get Stripe config schema                 |
+| [**GetStripeConfigStatus**](V1ConfigurationAPI.md#GetStripeConfigStatus)                         | **Post** /api/v1/stripe/admin/config/status            | Get Stripe config status                 |
+| [**GetSystemEmailTemplates**](V1ConfigurationAPI.md#GetSystemEmailTemplates)                     | **Get** /api/v1/email/system-templates                 | Get all system email templates           |
+| [**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig)                                   | **Get** /api/v1/stripe/admin/config/pull               | Pull config from Stripe                  |
+| [**SendEmail**](V1ConfigurationAPI.md#SendEmail)                                                 | **Post** /api/v1/email/send                            | Send an email using an app template      |
+| [**SendEmailHTML**](V1ConfigurationAPI.md#SendEmailHTML)                                         | **Post** /api/v1/email/send/html                       | Send a raw HTML email                    |
+| [**ServeEmailTemplate**](V1ConfigurationAPI.md#ServeEmailTemplate)                               | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file             |
+| [**ServeSystemEmailTemplate**](V1ConfigurationAPI.md#ServeSystemEmailTemplate)                   | **Get** /api/v1/email/system-templates/{name}/{type}   | Serve a system email template file       |
+| [**UpdateStripeConfig**](V1ConfigurationAPI.md#UpdateStripeConfig)                               | **Post** /api/v1/stripe/admin/config                   | Update Stripe config                     |
+| [**ValidateStripeConfig**](V1ConfigurationAPI.md#ValidateStripeConfig)                           | **Post** /api/v1/stripe/admin/config/validate          | Validate Stripe config                   |
 
 ## ArchiveAllStripeConfig
 
@@ -61,16 +59,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **archiveAllInputBody** | [**ArchiveAllInputBody**](ArchiveAllInputBody.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **archiveAllInputBody** | [**ArchiveAllInputBody**](ArchiveAllInputBody.md) |             |
 
 ### Return type
 
@@ -88,7 +83,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateOrUpdateEmailTemplate
 
@@ -125,16 +119,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateOrUpdateEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **upsertTemplateRequest** | [**UpsertTemplateRequest**](UpsertTemplateRequest.md) |  | 
+| Name                      | Type                                                  | Description | Notes |
+| ------------------------- | ----------------------------------------------------- | ----------- | ----- |
+| **upsertTemplateRequest** | [**UpsertTemplateRequest**](UpsertTemplateRequest.md) |             |
 
 ### Return type
 
@@ -152,7 +143,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## CreateOrUpdateSystemEmailTemplate
 
@@ -189,16 +179,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateOrUpdateSystemEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **upsertSystemTemplateRequest** | [**UpsertSystemTemplateRequest**](UpsertSystemTemplateRequest.md) |  | 
+| Name                            | Type                                                              | Description | Notes |
+| ------------------------------- | ----------------------------------------------------------------- | ----------- | ----- |
+| **upsertSystemTemplateRequest** | [**UpsertSystemTemplateRequest**](UpsertSystemTemplateRequest.md) |             |
 
 ### Return type
 
@@ -216,7 +203,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeleteEmailTemplate
 
@@ -253,20 +239,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**type_** | **string** |  | 
+| Name      | Type                | Description                                                                 | Notes |
+| --------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**   | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **type_** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -284,7 +267,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeleteSystemEmailTemplate
 
@@ -321,20 +303,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**name** | **string** |  | 
+| Name     | Type                | Description                                                                 | Notes |
+| -------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**  | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **name** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteSystemEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -352,7 +331,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeployPermissionNamespaces
 
@@ -389,16 +367,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeployPermissionNamespacesRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **namespaces** | ***os.File** |  | 
+| Name           | Type         | Description | Notes |
+| -------------- | ------------ | ----------- | ----- |
+| **namespaces** | ***os.File** |             |
 
 ### Return type
 
@@ -416,7 +391,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetEmailTemplates
 
@@ -458,7 +432,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetEmailTemplatesRequest struct via the builder pattern
 
-
 ### Return type
 
 [**ListTemplatesResponse**](ListTemplatesResponse.md)
@@ -475,7 +448,6 @@ Other parameters are passed through a pointer to a apiGetEmailTemplatesRequest s
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetPermissionRequirements
 
@@ -517,7 +489,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetPermissionRequirementsRequest struct via the builder pattern
 
-
 ### Return type
 
 [**Requirements**](Requirements.md)
@@ -534,7 +505,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetStripeConfigHistory
 
@@ -572,17 +542,14 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetStripeConfigHistoryRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **limit** | **int64** |  | [default to 10]
- **offset** | **int64** |  | [default to 0]
+| Name       | Type      | Description | Notes           |
+| ---------- | --------- | ----------- | --------------- |
+| **limit**  | **int64** |             | [default to 10] |
+| **offset** | **int64** |             | [default to 0]  |
 
 ### Return type
 
@@ -600,7 +567,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetStripeConfigSchema
 
@@ -642,7 +608,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetStripeConfigSchemaRequest struct via the builder pattern
 
-
 ### Return type
 
 **string**
@@ -659,7 +624,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetStripeConfigStatus
 
@@ -696,16 +660,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetStripeConfigStatusRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **map[string]interface{}** |  | 
+| Name     | Type                       | Description | Notes |
+| -------- | -------------------------- | ----------- | ----- |
+| **body** | **map[string]interface{}** |             |
 
 ### Return type
 
@@ -723,7 +684,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetSystemEmailTemplates
 
@@ -765,7 +725,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetSystemEmailTemplatesRequest struct via the builder pattern
 
-
 ### Return type
 
 [**ListSystemTemplatesResponse**](ListSystemTemplatesResponse.md)
@@ -782,7 +741,6 @@ Other parameters are passed through a pointer to a apiGetSystemEmailTemplatesReq
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## PullStripeConfig
 
@@ -824,7 +782,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiPullStripeConfigRequest struct via the builder pattern
 
-
 ### Return type
 
 [**StripeConfiguration**](StripeConfiguration.md)
@@ -841,7 +798,6 @@ Other parameters are passed through a pointer to a apiPullStripeConfigRequest st
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## SendEmail
 
@@ -878,16 +834,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiSendEmailRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **sendTemplateRequest** | [**SendTemplateRequest**](SendTemplateRequest.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **sendTemplateRequest** | [**SendTemplateRequest**](SendTemplateRequest.md) |             |
 
 ### Return type
 
@@ -905,7 +858,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## SendEmailHTML
 
@@ -942,16 +894,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiSendEmailHTMLRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **sendHTMLRequest** | [**SendHTMLRequest**](SendHTMLRequest.md) |  | 
+| Name                | Type                                      | Description | Notes |
+| ------------------- | ----------------------------------------- | ----------- | ----- |
+| **sendHTMLRequest** | [**SendHTMLRequest**](SendHTMLRequest.md) |             |
 
 ### Return type
 
@@ -969,7 +918,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ServeEmailTemplate
 
@@ -1007,22 +955,18 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**templateName** | **string** |  | 
-**type_** | **string** |  | 
+| Name             | Type                | Description                                                                 | Notes |
+| ---------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**          | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **templateName** | **string**          |                                                                             |
+| **type_**        | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiServeEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -1040,7 +984,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ServeSystemEmailTemplate
 
@@ -1078,22 +1021,18 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**name** | **string** |  | 
-**type_** | **string** |  | 
+| Name      | Type                | Description                                                                 | Notes |
+| --------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**   | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **name**  | **string**          |                                                                             |
+| **type_** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiServeSystemEmailTemplateRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -1111,7 +1050,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## UpdateStripeConfig
 
@@ -1148,16 +1086,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiUpdateStripeConfigRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **map[string]interface{}** |  | 
+| Name     | Type                       | Description | Notes |
+| -------- | -------------------------- | ----------- | ----- |
+| **body** | **map[string]interface{}** |             |
 
 ### Return type
 
@@ -1175,7 +1110,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ValidateStripeConfig
 
@@ -1212,16 +1146,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiValidateStripeConfigRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **map[string]interface{}** |  | 
+| Name     | Type                       | Description | Notes |
+| -------- | -------------------------- | ----------- | ----- |
+| **body** | **map[string]interface{}** |             |
 
 ### Return type
 
@@ -1239,4 +1170,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

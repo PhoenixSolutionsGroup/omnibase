@@ -12,107 +12,122 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface GetStorageCredentialsResponse
  */
 export interface GetStorageCredentialsResponse {
-    /**
-     * S3 access key ID.
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    accessKey: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    bucketName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    endpoint: string;
-    /**
-     * Credential expiration time.
-     * @type {Date}
-     * @memberof GetStorageCredentialsResponse
-     */
-    expiration?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    region: string;
-    /**
-     * S3 secret access key.
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    secretKey: string;
-    /**
-     * Session token required with temporary credentials.
-     * @type {string}
-     * @memberof GetStorageCredentialsResponse
-     */
-    sessionToken?: string;
+	/**
+	 * S3 access key ID.
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	accessKey: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	bucketName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	endpoint: string;
+	/**
+	 * Credential expiration time.
+	 * @type {Date}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	expiration?: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	region: string;
+	/**
+	 * S3 secret access key.
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	secretKey: string;
+	/**
+	 * Session token required with temporary credentials.
+	 * @type {string}
+	 * @memberof GetStorageCredentialsResponse
+	 */
+	sessionToken?: string;
 }
 
 /**
  * Check if a given object implements the GetStorageCredentialsResponse interface.
  */
-export function instanceOfGetStorageCredentialsResponse(value: object): value is GetStorageCredentialsResponse {
-    if (!('accessKey' in value) || value['accessKey'] === undefined) return false;
-    if (!('bucketName' in value) || value['bucketName'] === undefined) return false;
-    if (!('endpoint' in value) || value['endpoint'] === undefined) return false;
-    if (!('region' in value) || value['region'] === undefined) return false;
-    if (!('secretKey' in value) || value['secretKey'] === undefined) return false;
-    return true;
+export function instanceOfGetStorageCredentialsResponse(
+	value: object,
+): value is GetStorageCredentialsResponse {
+	if (!("accessKey" in value) || value["accessKey"] === undefined) return false;
+	if (!("bucketName" in value) || value["bucketName"] === undefined)
+		return false;
+	if (!("endpoint" in value) || value["endpoint"] === undefined) return false;
+	if (!("region" in value) || value["region"] === undefined) return false;
+	if (!("secretKey" in value) || value["secretKey"] === undefined) return false;
+	return true;
 }
 
-export function GetStorageCredentialsResponseFromJSON(json: any): GetStorageCredentialsResponse {
-    return GetStorageCredentialsResponseFromJSONTyped(json, false);
+export function GetStorageCredentialsResponseFromJSON(
+	json: any,
+): GetStorageCredentialsResponse {
+	return GetStorageCredentialsResponseFromJSONTyped(json, false);
 }
 
-export function GetStorageCredentialsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetStorageCredentialsResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'accessKey': json['access_key'],
-        'bucketName': json['bucket_name'],
-        'endpoint': json['endpoint'],
-        'expiration': json['expiration'] == null ? undefined : (new Date(json['expiration'])),
-        'region': json['region'],
-        'secretKey': json['secret_key'],
-        'sessionToken': json['session_token'] == null ? undefined : json['session_token'],
-    };
+export function GetStorageCredentialsResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): GetStorageCredentialsResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		accessKey: json["access_key"],
+		bucketName: json["bucket_name"],
+		endpoint: json["endpoint"],
+		expiration:
+			json["expiration"] == null ? undefined : new Date(json["expiration"]),
+		region: json["region"],
+		secretKey: json["secret_key"],
+		sessionToken:
+			json["session_token"] == null ? undefined : json["session_token"],
+	};
 }
 
-export function GetStorageCredentialsResponseToJSON(json: any): GetStorageCredentialsResponse {
-    return GetStorageCredentialsResponseToJSONTyped(json, false);
+export function GetStorageCredentialsResponseToJSON(
+	json: any,
+): GetStorageCredentialsResponse {
+	return GetStorageCredentialsResponseToJSONTyped(json, false);
 }
 
-export function GetStorageCredentialsResponseToJSONTyped(value?: GetStorageCredentialsResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function GetStorageCredentialsResponseToJSONTyped(
+	value?: GetStorageCredentialsResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'access_key': value['accessKey'],
-        'bucket_name': value['bucketName'],
-        'endpoint': value['endpoint'],
-        'expiration': value['expiration'] == null ? value['expiration'] : value['expiration'].toISOString(),
-        'region': value['region'],
-        'secret_key': value['secretKey'],
-        'session_token': value['sessionToken'],
-    };
+	return {
+		access_key: value["accessKey"],
+		bucket_name: value["bucketName"],
+		endpoint: value["endpoint"],
+		expiration:
+			value["expiration"] == null
+				? value["expiration"]
+				: value["expiration"].toISOString(),
+		region: value["region"],
+		secret_key: value["secretKey"],
+		session_token: value["sessionToken"],
+	};
 }
-

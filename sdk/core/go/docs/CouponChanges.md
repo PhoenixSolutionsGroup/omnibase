@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Archived** | Pointer to [**[]CouponChange**](CouponChange.md) |  | [optional] 
-**Created** | Pointer to [**[]CouponChange**](CouponChange.md) |  | [optional] 
-**Updated** | Pointer to [**[]CouponChange**](CouponChange.md) |  | [optional] 
+| Name         | Type                                             | Description | Notes      |
+| ------------ | ------------------------------------------------ | ----------- | ---------- |
+| **Archived** | Pointer to [**[]CouponChange**](CouponChange.md) |             | [optional] |
+| **Created**  | Pointer to [**[]CouponChange**](CouponChange.md) |             | [optional] |
+| **Updated**  | Pointer to [**[]CouponChange**](CouponChange.md) |             | [optional] |
 
 ## Methods
 
@@ -56,12 +56,14 @@ HasArchived returns a boolean if a field has been set.
 
 `func (o *CouponChanges) SetArchivedNil(b bool)`
 
- SetArchivedNil sets the value for Archived to be an explicit nil
+SetArchivedNil sets the value for Archived to be an explicit nil
 
 ### UnsetArchived
+
 `func (o *CouponChanges) UnsetArchived()`
 
 UnsetArchived ensures that no value is present for Archived, not even an explicit nil
+
 ### GetCreated
 
 `func (o *CouponChanges) GetCreated() []CouponChange`
@@ -91,12 +93,14 @@ HasCreated returns a boolean if a field has been set.
 
 `func (o *CouponChanges) SetCreatedNil(b bool)`
 
- SetCreatedNil sets the value for Created to be an explicit nil
+SetCreatedNil sets the value for Created to be an explicit nil
 
 ### UnsetCreated
+
 `func (o *CouponChanges) UnsetCreated()`
 
 UnsetCreated ensures that no value is present for Created, not even an explicit nil
+
 ### GetUpdated
 
 `func (o *CouponChanges) GetUpdated() []CouponChange`
@@ -126,13 +130,12 @@ HasUpdated returns a boolean if a field has been set.
 
 `func (o *CouponChanges) SetUpdatedNil(b bool)`
 
- SetUpdatedNil sets the value for Updated to be an explicit nil
+SetUpdatedNil sets the value for Updated to be an explicit nil
 
 ### UnsetUpdated
+
 `func (o *CouponChanges) UnsetUpdated()`
 
 UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

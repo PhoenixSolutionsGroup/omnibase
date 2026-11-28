@@ -12,80 +12,83 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface WebhookChange
  */
 export interface WebhookChange {
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookChange
-     */
-    action: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookChange
-     */
-    stripeId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookChange
-     */
-    url: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookChange
-     */
-    webhookId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookChange
+	 */
+	action: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookChange
+	 */
+	stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookChange
+	 */
+	url: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookChange
+	 */
+	webhookId?: string;
 }
 
 /**
  * Check if a given object implements the WebhookChange interface.
  */
 export function instanceOfWebhookChange(value: object): value is WebhookChange {
-    if (!('action' in value) || value['action'] === undefined) return false;
-    if (!('url' in value) || value['url'] === undefined) return false;
-    return true;
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("url" in value) || value["url"] === undefined) return false;
+	return true;
 }
 
 export function WebhookChangeFromJSON(json: any): WebhookChange {
-    return WebhookChangeFromJSONTyped(json, false);
+	return WebhookChangeFromJSONTyped(json, false);
 }
 
-export function WebhookChangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): WebhookChange {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'action': json['action'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-        'url': json['url'],
-        'webhookId': json['webhook_id'] == null ? undefined : json['webhook_id'],
-    };
+export function WebhookChangeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): WebhookChange {
+	if (json == null) {
+		return json;
+	}
+	return {
+		action: json["action"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+		url: json["url"],
+		webhookId: json["webhook_id"] == null ? undefined : json["webhook_id"],
+	};
 }
 
 export function WebhookChangeToJSON(json: any): WebhookChange {
-    return WebhookChangeToJSONTyped(json, false);
+	return WebhookChangeToJSONTyped(json, false);
 }
 
-export function WebhookChangeToJSONTyped(value?: WebhookChange | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function WebhookChangeToJSONTyped(
+	value?: WebhookChange | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'action': value['action'],
-        'stripe_id': value['stripeId'],
-        'url': value['url'],
-        'webhook_id': value['webhookId'],
-    };
+	return {
+		action: value["action"],
+		stripe_id: value["stripeId"],
+		url: value["url"],
+		webhook_id: value["webhookId"],
+	};
 }
-

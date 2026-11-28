@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Invite** | [**AuthTenantInvite**](AuthTenantInvite.md) |  | 
-**Message** | **string** |  | 
+| Name        | Type                                        | Description | Notes |
+| ----------- | ------------------------------------------- | ----------- | ----- |
+| **Invite**  | [**AuthTenantInvite**](AuthTenantInvite.md) |             |
+| **Message** | **string**                                  |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetInvite sets Invite field to given value.
 
-
 ### GetMessage
 
 `func (o *CreateResponse) GetMessage() string`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1AuthAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService CreateUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.CreateUser(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService GetActiveTenant", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService GetIdentity", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.GetIdentity(context.Background()).Execute()
 
@@ -60,7 +60,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService GetSession", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.GetSession(context.Background()).Execute()
 
@@ -72,7 +72,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService ListTenants", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.ListTenants(context.Background()).Execute()
 
@@ -84,7 +84,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService Logout", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.Logout(context.Background()).Execute()
 
@@ -96,7 +96,7 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	t.Run("Test V1AuthAPIService WhoAmI", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1AuthAPI.WhoAmI(context.Background()).Execute()
 

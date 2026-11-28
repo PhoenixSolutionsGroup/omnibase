@@ -1,6 +1,6 @@
 ---
-title: "Flow Retrieval"
----
+
+## title: "Flow Retrieval"
 
 # Flow Retrieval
 
@@ -11,9 +11,9 @@ These functions handle the flow lifecycle and return typed flow objects.
 
 ```ts
 type GetErrorFlowProps = {
-  searchParams: Promise<{
-   [key: string]: string | string[] | undefined;
-  }>;
+	searchParams: Promise<{
+		[key: string]: string | string[] | undefined;
+	}>;
 };
 ```
 
@@ -31,7 +31,7 @@ Properties required for retrieving error flow details
 
 ```ts
 searchParams: Promise<{
-[key: string]: string | string[] | undefined;
+	[key: string]: string | string[] | undefined;
 }>;
 ```
 
@@ -39,16 +39,16 @@ Defined in: [sdk/framework/nextjs/src/auth/get-flow.ts:370](https://github.com/P
 
 Promise resolving to search parameters containing the error ID
 
-***
+---
 
 ### GetFlowProps
 
 ```ts
 type GetFlowProps = {
-  searchParams: Promise<{
-   [key: string]: string | string[] | undefined;
-  }>;
-  url: string;
+	searchParams: Promise<{
+		[key: string]: string | string[] | undefined;
+	}>;
+	url: string;
 };
 ```
 
@@ -64,8 +64,8 @@ and pass along search parameters that contain flow state.
 
 ```typescript
 const props: GetFlowProps = {
-  url: '/auth/login',
-  searchParams: Promise.resolve({ flow: 'abc123' })
+	url: "/auth/login",
+	searchParams: Promise.resolve({ flow: "abc123" }),
 };
 ```
 
@@ -79,7 +79,7 @@ const props: GetFlowProps = {
 
 ```ts
 searchParams: Promise<{
-[key: string]: string | string[] | undefined;
+	[key: string]: string | string[] | undefined;
 }>;
 ```
 
@@ -97,14 +97,14 @@ Defined in: [sdk/framework/nextjs/src/auth/get-flow.ts:45](https://github.com/Ph
 
 The UI URL for the specific authentication flow (e.g., '/auth/login')
 
-***
+---
 
 ### LogoutFlowReturnType
 
 ```ts
 type LogoutFlowReturnType = {
-  action: () => Promise<void>;
-  flow: LogoutFlow;
+	action: () => Promise<void>;
+	flow: LogoutFlow;
 };
 ```
 
@@ -145,7 +145,7 @@ Defined in: [sdk/framework/nextjs/src/auth/get-flow.ts:287](https://github.com/P
 
 Logout flow object from Ory Kratos containing logout URL and token
 
-***
+---
 
 ### getErrorFlow()
 
@@ -163,9 +163,9 @@ This function fetches the error details using that ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetErrorFlowProps`](#geterrorflowprops) | Configuration object containing search parameters |
+| Parameter | Type                                      | Description                                       |
+| --------- | ----------------------------------------- | ------------------------------------------------- |
+| `props`   | [`GetErrorFlowProps`](#geterrorflowprops) | Configuration object containing search parameters |
 
 #### Returns
 
@@ -192,7 +192,7 @@ if (error) {
 
 0.7.0
 
-***
+---
 
 ### getLoginFlow()
 
@@ -210,9 +210,9 @@ in Next.js App Router components.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter | Type                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `props`   | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
 
 #### Returns
 
@@ -240,7 +240,7 @@ if (flow) {
 
 0.5.1
 
-***
+---
 
 ### getLogoutFlow()
 
@@ -261,10 +261,10 @@ and redirect the user to the specified return URL.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | \{ `returnTo`: `string`; \} | Configuration object containing the return URL after logout |
-| `props.returnTo` | `string` | URL to redirect to after successful logout |
+| Parameter        | Type                        | Description                                                 |
+| ---------------- | --------------------------- | ----------------------------------------------------------- |
+| `props`          | \{ `returnTo`: `string`; \} | Configuration object containing the return URL after logout |
+| `props.returnTo` | `string`                    | URL to redirect to after successful logout                  |
 
 #### Returns
 
@@ -301,7 +301,7 @@ export default async function LogoutButton() {
 
 0.5.1
 
-***
+---
 
 ### getRecoveryFlow()
 
@@ -319,9 +319,9 @@ request password reset links via email.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter | Type                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `props`   | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
 
 #### Returns
 
@@ -349,7 +349,7 @@ if (flow) {
 
 0.5.1
 
-***
+---
 
 ### getRegistrationFlow()
 
@@ -367,9 +367,9 @@ custom traits defined in your Ory Kratos identity schema.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter | Type                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `props`   | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
 
 #### Returns
 
@@ -397,7 +397,7 @@ if (flow) {
 
 0.5.1
 
-***
+---
 
 ### getSettingsFlow()
 
@@ -415,9 +415,9 @@ and other account settings. This requires an active user session.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter | Type                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `props`   | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
 
 #### Returns
 
@@ -445,7 +445,7 @@ if (flow) {
 
 0.5.1
 
-***
+---
 
 ### getVerificationFlow()
 
@@ -463,9 +463,9 @@ the flow ID in the URL parameters.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter | Type                            | Description                                               |
+| --------- | ------------------------------- | --------------------------------------------------------- |
+| `props`   | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
 
 #### Returns
 

@@ -12,94 +12,111 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface SessionAuthenticationMethod
  */
 export interface SessionAuthenticationMethod {
-    /**
-     * 
-     * @type {object}
-     * @memberof SessionAuthenticationMethod
-     */
-    additionalProperties?: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionAuthenticationMethod
-     */
-    aal?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof SessionAuthenticationMethod
-     */
-    completedAt?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionAuthenticationMethod
-     */
-    method?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionAuthenticationMethod
-     */
-    organization?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionAuthenticationMethod
-     */
-    provider?: string;
+	/**
+	 *
+	 * @type {object}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	additionalProperties?: object;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	aal?: string;
+	/**
+	 *
+	 * @type {Date}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	completedAt?: Date;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	method?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	organization?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionAuthenticationMethod
+	 */
+	provider?: string;
 }
 
 /**
  * Check if a given object implements the SessionAuthenticationMethod interface.
  */
-export function instanceOfSessionAuthenticationMethod(value: object): value is SessionAuthenticationMethod {
-    return true;
+export function instanceOfSessionAuthenticationMethod(
+	value: object,
+): value is SessionAuthenticationMethod {
+	return true;
 }
 
-export function SessionAuthenticationMethodFromJSON(json: any): SessionAuthenticationMethod {
-    return SessionAuthenticationMethodFromJSONTyped(json, false);
+export function SessionAuthenticationMethodFromJSON(
+	json: any,
+): SessionAuthenticationMethod {
+	return SessionAuthenticationMethodFromJSONTyped(json, false);
 }
 
-export function SessionAuthenticationMethodFromJSONTyped(json: any, ignoreDiscriminator: boolean): SessionAuthenticationMethod {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'additionalProperties': json['AdditionalProperties'] == null ? undefined : json['AdditionalProperties'],
-        'aal': json['aal'] == null ? undefined : json['aal'],
-        'completedAt': json['completed_at'] == null ? undefined : (new Date(json['completed_at'])),
-        'method': json['method'] == null ? undefined : json['method'],
-        'organization': json['organization'] == null ? undefined : json['organization'],
-        'provider': json['provider'] == null ? undefined : json['provider'],
-    };
+export function SessionAuthenticationMethodFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SessionAuthenticationMethod {
+	if (json == null) {
+		return json;
+	}
+	return {
+		additionalProperties:
+			json["AdditionalProperties"] == null
+				? undefined
+				: json["AdditionalProperties"],
+		aal: json["aal"] == null ? undefined : json["aal"],
+		completedAt:
+			json["completed_at"] == null ? undefined : new Date(json["completed_at"]),
+		method: json["method"] == null ? undefined : json["method"],
+		organization:
+			json["organization"] == null ? undefined : json["organization"],
+		provider: json["provider"] == null ? undefined : json["provider"],
+	};
 }
 
-export function SessionAuthenticationMethodToJSON(json: any): SessionAuthenticationMethod {
-    return SessionAuthenticationMethodToJSONTyped(json, false);
+export function SessionAuthenticationMethodToJSON(
+	json: any,
+): SessionAuthenticationMethod {
+	return SessionAuthenticationMethodToJSONTyped(json, false);
 }
 
-export function SessionAuthenticationMethodToJSONTyped(value?: SessionAuthenticationMethod | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SessionAuthenticationMethodToJSONTyped(
+	value?: SessionAuthenticationMethod | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'AdditionalProperties': value['additionalProperties'],
-        'aal': value['aal'],
-        'completed_at': value['completedAt'] == null ? value['completedAt'] : value['completedAt'].toISOString(),
-        'method': value['method'],
-        'organization': value['organization'],
-        'provider': value['provider'],
-    };
+	return {
+		AdditionalProperties: value["additionalProperties"],
+		aal: value["aal"],
+		completed_at:
+			value["completedAt"] == null
+				? value["completedAt"]
+				: value["completedAt"].toISOString(),
+		method: value["method"],
+		organization: value["organization"],
+		provider: value["provider"],
+	};
 }
-

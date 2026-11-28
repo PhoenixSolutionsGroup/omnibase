@@ -1,6 +1,6 @@
 ---
-title: "CLI Reference"
----
+
+## title: "CLI Reference"
 
 # OmniBase CLI
 

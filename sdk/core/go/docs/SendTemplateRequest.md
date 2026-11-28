@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Data** | Pointer to **map[string]interface{}** |  | [optional] 
-**TemplateType** | **string** |  | 
-**To** | **string** |  | 
+| Name             | Type                                  | Description | Notes      |
+| ---------------- | ------------------------------------- | ----------- | ---------- |
+| **Data**         | Pointer to **map[string]interface{}** |             | [optional] |
+| **TemplateType** | **string**                            |             |
+| **To**           | **string**                            |             |
 
 ## Methods
 
@@ -71,7 +71,6 @@ and a boolean to check if the value has been set.
 
 SetTemplateType sets TemplateType field to given value.
 
-
 ### GetTo
 
 `func (o *SendTemplateRequest) GetTo() string`
@@ -91,8 +90,4 @@ and a boolean to check if the value has been set.
 
 SetTo sets To field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

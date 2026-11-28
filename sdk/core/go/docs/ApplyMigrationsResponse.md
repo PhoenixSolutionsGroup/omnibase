@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Message** | **string** |  | 
-**Status** | **int64** |  | 
+| Name        | Type       | Description | Notes |
+| ----------- | ---------- | ----------- | ----- |
+| **Message** | **string** |             |
+| **Status**  | **int64**  |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
 ### GetStatus
 
 `func (o *ApplyMigrationsResponse) GetStatus() int64`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

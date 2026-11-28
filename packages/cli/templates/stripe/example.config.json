@@ -1,40 +1,40 @@
 {
-  "version": "1.0.0",
-  "webhooks": [
-    {
-      "id": "default-webhook",
-      "url": "https://your-app.com/webhook/stripe",
-      "connect": false,
-      "events": [
-        "customer.subscription.created",
-        "customer.subscription.updated",
-        "customer.subscription.deleted",
-        "invoice.paid",
-        "invoice.payment_failed"
-      ]
-    }
-  ],
-  "products": [
-    {
-      "id": "prod_test_basic",
-      "name": "Test Basic Plan",
-      "description": "Basic test product",
-      "type": "service",
-      "metadata": {
-        "tier": "basic"
-      },
-      "prices": [
-        {
-          "id": "price_test_basic_monthly",
-          "amount": 999,
-          "currency": "usd",
-          "interval": "month",
-          "interval_count": 1,
-          "metadata": {
-            "billing": "monthly"
-          }
-        }
-      ]
-    }
-  ]
+	"version": "1.0.0",
+	"webhooks": [
+		{
+			"id": "default-webhook",
+			"url": "https://your-app.com/webhook/stripe",
+			"connect": false,
+			"events": [
+				"customer.subscription.created",
+				"customer.subscription.updated",
+				"customer.subscription.deleted",
+				"invoice.paid",
+				"invoice.payment_failed"
+			]
+		}
+	],
+	"products": [
+		{
+			"id": "prod_test_basic",
+			"name": "Test Basic Plan",
+			"description": "Basic test product",
+			"type": "service",
+			"metadata": {
+				"tier": "basic"
+			},
+			"prices": [
+				{
+					"id": "price_test_basic_monthly",
+					"amount": 999,
+					"currency": "usd",
+					"interval": "month",
+					"interval_count": 1,
+					"metadata": {
+						"billing": "monthly"
+					}
+				}
+			]
+		}
+	]
 }

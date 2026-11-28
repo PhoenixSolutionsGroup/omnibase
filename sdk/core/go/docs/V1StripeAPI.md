@@ -1,18 +1,16 @@
 # \V1StripeAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CalculatePriceCost**](V1StripeAPI.md#CalculatePriceCost) | **Post** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
-[**GetMeterByID**](V1StripeAPI.md#GetMeterByID) | **Get** /api/v1/stripe/config/meters/{meter_id} | Get meter by ID
-[**GetPriceByID**](V1StripeAPI.md#GetPriceByID) | **Get** /api/v1/stripe/config/prices/{price_id} | Get price by ID
-[**GetProductByID**](V1StripeAPI.md#GetProductByID) | **Get** /api/v1/stripe/config/products/{product_id} | Get product by ID
-[**GetStripeConfig**](V1StripeAPI.md#GetStripeConfig) | **Get** /api/v1/stripe/config | Get public Stripe config
-[**GetStripeConfigAdmin**](V1StripeAPI.md#GetStripeConfigAdmin) | **Get** /api/v1/stripe/admin/config | Get full Stripe config (admin)
-[**ListWebhooks**](V1StripeAPI.md#ListWebhooks) | **Get** /api/v1/stripe/admin/webhooks | List all webhooks
-
-
+| Method                                                          | HTTP request                                               | Description                    |
+| --------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------ |
+| [**CalculatePriceCost**](V1StripeAPI.md#CalculatePriceCost)     | **Post** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price     |
+| [**GetMeterByID**](V1StripeAPI.md#GetMeterByID)                 | **Get** /api/v1/stripe/config/meters/{meter_id}            | Get meter by ID                |
+| [**GetPriceByID**](V1StripeAPI.md#GetPriceByID)                 | **Get** /api/v1/stripe/config/prices/{price_id}            | Get price by ID                |
+| [**GetProductByID**](V1StripeAPI.md#GetProductByID)             | **Get** /api/v1/stripe/config/products/{product_id}        | Get product by ID              |
+| [**GetStripeConfig**](V1StripeAPI.md#GetStripeConfig)           | **Get** /api/v1/stripe/config                              | Get public Stripe config       |
+| [**GetStripeConfigAdmin**](V1StripeAPI.md#GetStripeConfigAdmin) | **Get** /api/v1/stripe/admin/config                        | Get full Stripe config (admin) |
+| [**ListWebhooks**](V1StripeAPI.md#ListWebhooks)                 | **Get** /api/v1/stripe/admin/webhooks                      | List all webhooks              |
 
 ## CalculatePriceCost
 
@@ -50,21 +48,19 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**priceId** | **string** |  | 
+| Name        | Type                | Description                                                                 | Notes |
+| ----------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**     | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **priceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCalculatePriceCostRequest struct via the builder pattern
 
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **calculatePriceCostRequest** | [**CalculatePriceCostRequest**](CalculatePriceCostRequest.md) |  | 
+**calculatePriceCostRequest** | [**CalculatePriceCostRequest**](CalculatePriceCostRequest.md) | |
 
 ### Return type
 
@@ -82,7 +78,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetMeterByID
 
@@ -119,20 +114,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**meterId** | **string** |  | 
+| Name        | Type                | Description                                                                 | Notes |
+| ----------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**     | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **meterId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetMeterByIDRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -150,7 +142,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetPriceByID
 
@@ -187,20 +178,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**priceId** | **string** |  | 
+| Name        | Type                | Description                                                                 | Notes |
+| ----------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**     | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **priceId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetPriceByIDRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -218,7 +206,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetProductByID
 
@@ -255,20 +242,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**productId** | **string** |  | 
+| Name          | Type                | Description                                                                 | Notes |
+| ------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**       | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **productId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetProductByIDRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -286,7 +270,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetStripeConfig
 
@@ -328,7 +311,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetStripeConfigRequest struct via the builder pattern
 
-
 ### Return type
 
 [**StripeConfigResponse**](StripeConfigResponse.md)
@@ -345,7 +327,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetStripeConfigAdmin
 
@@ -387,7 +368,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiGetStripeConfigAdminRequest struct via the builder pattern
 
-
 ### Return type
 
 [**StripeConfigResponse**](StripeConfigResponse.md)
@@ -404,7 +384,6 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## ListWebhooks
 
@@ -446,7 +425,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiListWebhooksRequest struct via the builder pattern
 
-
 ### Return type
 
 [**ListWebhooksResponse**](ListWebhooksResponse.md)
@@ -463,4 +441,3 @@ Other parameters are passed through a pointer to a apiListWebhooksRequest struct
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

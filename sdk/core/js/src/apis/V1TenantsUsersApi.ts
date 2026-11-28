@@ -12,186 +12,226 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
+import * as runtime from "../runtime";
 import type {
-  DeleteRequest,
-  ErrorModel,
-  UpdateUserRoleRequest,
-  UpdateUserRoleResponse,
-  UserResponse,
-} from '../models/index';
+	DeleteRequest,
+	ErrorModel,
+	UpdateUserRoleRequest,
+	UpdateUserRoleResponse,
+	UserResponse,
+} from "../models/index";
 import {
-    DeleteRequestFromJSON,
-    DeleteRequestToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    UpdateUserRoleRequestFromJSON,
-    UpdateUserRoleRequestToJSON,
-    UpdateUserRoleResponseFromJSON,
-    UpdateUserRoleResponseToJSON,
-    UserResponseFromJSON,
-    UserResponseToJSON,
-} from '../models/index';
+	DeleteRequestFromJSON,
+	DeleteRequestToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	UpdateUserRoleRequestFromJSON,
+	UpdateUserRoleRequestToJSON,
+	UpdateUserRoleResponseFromJSON,
+	UpdateUserRoleResponseToJSON,
+	UserResponseFromJSON,
+	UserResponseToJSON,
+} from "../models/index";
 
 export interface RemoveTenantUserRequest {
-    deleteRequest: DeleteRequest;
+	deleteRequest: DeleteRequest;
 }
 
 export interface UpdateTenantUserRoleRequest {
-    updateUserRoleRequest: UpdateUserRoleRequest;
+	updateUserRoleRequest: UpdateUserRoleRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1TenantsUsersApi extends runtime.BaseAPI {
+	/**
+	 * List users in the tenant
+	 */
+	async listTenantUsersRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Array<UserResponse>>> {
+		const queryParameters: any = {};
 
-    /**
-     * List users in the tenant
-     */
-    async listTenantUsersRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserResponse>>> {
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		let urlPath = `/api/v1/tenants/users`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/tenants/users`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			jsonValue.map(UserResponseFromJSON),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * List users in the tenant
+	 */
+	async listTenantUsers(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Array<UserResponse>> {
+		const response = await this.listTenantUsersRaw(initOverrides);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserResponseFromJSON));
-    }
+	/**
+	 * Remove a user from the tenant
+	 */
+	async removeTenantUserRaw(
+		requestParameters: RemoveTenantUserRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<any>> {
+		if (requestParameters["deleteRequest"] == null) {
+			throw new runtime.RequiredError(
+				"deleteRequest",
+				'Required parameter "deleteRequest" was null or undefined when calling removeTenantUser().',
+			);
+		}
 
-    /**
-     * List users in the tenant
-     */
-    async listTenantUsers(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserResponse>> {
-        const response = await this.listTenantUsersRaw(initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Remove a user from the tenant
-     */
-    async removeTenantUserRaw(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        if (requestParameters['deleteRequest'] == null) {
-            throw new runtime.RequiredError(
-                'deleteRequest',
-                'Required parameter "deleteRequest" was null or undefined when calling removeTenantUser().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		let urlPath = `/api/v1/tenants/users`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+				body: DeleteRequestToJSON(requestParameters["deleteRequest"]),
+			},
+			initOverrides,
+		);
 
+		if (this.isJsonMime(response.headers.get("content-type"))) {
+			return new runtime.JSONApiResponse<any>(response);
+		} else {
+			return new runtime.TextApiResponse(response) as any;
+		}
+	}
 
-        let urlPath = `/api/v1/tenants/users`;
+	/**
+	 * Remove a user from the tenant
+	 */
+	async removeTenantUser(
+		requestParameters: RemoveTenantUserRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<any> {
+		const response = await this.removeTenantUserRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DeleteRequestToJSON(requestParameters['deleteRequest']),
-        }, initOverrides);
+	/**
+	 * Update a tenant user\'s role
+	 */
+	async updateTenantUserRoleRaw(
+		requestParameters: UpdateTenantUserRoleRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<UpdateUserRoleResponse>> {
+		if (requestParameters["updateUserRoleRequest"] == null) {
+			throw new runtime.RequiredError(
+				"updateUserRoleRequest",
+				'Required parameter "updateUserRoleRequest" was null or undefined when calling updateTenantUserRole().',
+			);
+		}
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<any>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Remove a user from the tenant
-     */
-    async removeTenantUser(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
-        const response = await this.removeTenantUserRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Update a tenant user\'s role
-     */
-    async updateTenantUserRoleRaw(requestParameters: UpdateTenantUserRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateUserRoleResponse>> {
-        if (requestParameters['updateUserRoleRequest'] == null) {
-            throw new runtime.RequiredError(
-                'updateUserRoleRequest',
-                'Required parameter "updateUserRoleRequest" was null or undefined when calling updateTenantUserRole().'
-            );
-        }
+		headerParameters["Content-Type"] = "application/json";
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		let urlPath = `/api/v1/tenants/users`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "PUT",
+				headers: headerParameters,
+				query: queryParameters,
+				body: UpdateUserRoleRequestToJSON(
+					requestParameters["updateUserRoleRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			UpdateUserRoleResponseFromJSON(jsonValue),
+		);
+	}
 
-
-        let urlPath = `/api/v1/tenants/users`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UpdateUserRoleRequestToJSON(requestParameters['updateUserRoleRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateUserRoleResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Update a tenant user\'s role
-     */
-    async updateTenantUserRole(requestParameters: UpdateTenantUserRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateUserRoleResponse> {
-        const response = await this.updateTenantUserRoleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Update a tenant user\'s role
+	 */
+	async updateTenantUserRole(
+		requestParameters: UpdateTenantUserRoleRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<UpdateUserRoleResponse> {
+		const response = await this.updateTenantUserRoleRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }

@@ -19,101 +19,101 @@ const HEIGHT = ROWS * PITCH - GAP;
 
 // Small deterministic PRNG so server and client render identical output
 function mulberry32(seed: number) {
-  let a = seed;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+	let a = seed;
+	return () => {
+		a |= 0;
+		a = (a + 0x6d2b79f5) | 0;
+		let t = Math.imul(a ^ (a >>> 15), 1 | a);
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+	};
 }
 
 function smoothstep(edge0: number, edge1: number, x: number) {
-  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
-  return t * t * (3 - 2 * t);
+	const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+	return t * t * (3 - 2 * t);
 }
 
 // Classic implicit heart curve: (x² + y² − 1)³ − x²y³ ≤ 0 is inside
 function inHeart(col: number, row: number) {
-  const x = (col + 0.5 - COLS / 2) / HEART_SCALE;
-  const y = -(row + 0.5 - ROWS / 2) / (HEART_SCALE * HEART_HEIGHT) + 0.12;
-  const a = x * x + y * y - 1;
-  return a * a * a - x * x * y * y * y <= 0;
+	const x = (col + 0.5 - COLS / 2) / HEART_SCALE;
+	const y = -(row + 0.5 - ROWS / 2) / (HEART_SCALE * HEART_HEIGHT) + 0.12;
+	const a = x * x + y * y - 1;
+	return a * a * a - x * x * y * y * y <= 0;
 }
 
 function isHeartOutline(col: number, row: number) {
-  if (!inHeart(col, row)) return false;
-  return !(
-    inHeart(col - 1, row) &&
-    inHeart(col + 1, row) &&
-    inHeart(col, row - 1) &&
-    inHeart(col, row + 1)
-  );
+	if (!inHeart(col, row)) return false;
+	return !(
+		inHeart(col - 1, row) &&
+		inHeart(col + 1, row) &&
+		inHeart(col, row - 1) &&
+		inHeart(col, row + 1)
+	);
 }
 
 // Shade of the primary color: mixes currentColor with white or black
 function shade(rand: () => number) {
-  const toward = rand() < 0.65 ? "white" : "black";
-  const amount = toward === "white" ? rand() * 55 : rand() * 30;
-  return `color-mix(in srgb, currentColor ${(100 - amount).toFixed(0)}%, ${toward})`;
+	const toward = rand() < 0.65 ? "white" : "black";
+	const amount = toward === "white" ? rand() * 55 : rand() * 30;
+	return `color-mix(in srgb, currentColor ${(100 - amount).toFixed(0)}%, ${toward})`;
 }
 
 type Cell = { x: number; y: number; fill: string; opacity: number };
 
 export function HeartDotGrid({ className }: { className?: string }) {
-  const cells = useMemo<Cell[]>(() => {
-    const rand = mulberry32(SEED);
-    const out: Cell[] = [];
+	const cells = useMemo<Cell[]>(() => {
+		const rand = mulberry32(SEED);
+		const out: Cell[] = [];
 
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        // Always consume the same random numbers so the pattern is stable
-        const fill = shade(rand);
-        const jitter = 0.7 + rand() * 0.3;
+		for (let row = 0; row < ROWS; row++) {
+			for (let col = 0; col < COLS; col++) {
+				// Always consume the same random numbers so the pattern is stable
+				const fill = shade(rand);
+				const jitter = 0.7 + rand() * 0.3;
 
-        const outline = isHeartOutline(col, row);
+				const outline = isHeartOutline(col, row);
 
-        // Elliptical distance from center: 0 at center, 1 at the edges
-        const nx = (col + 0.5 - COLS / 2) / (COLS / 2);
-        const ny = (row + 0.5 - ROWS / 2) / (ROWS / 2);
-        const d = Math.sqrt(nx * nx + ny * ny);
-        const fade = 1 - smoothstep(FADE_START, 1, d);
+				// Elliptical distance from center: 0 at center, 1 at the edges
+				const nx = (col + 0.5 - COLS / 2) / (COLS / 2);
+				const ny = (row + 0.5 - ROWS / 2) / (ROWS / 2);
+				const d = Math.sqrt(nx * nx + ny * ny);
+				const fade = 1 - smoothstep(FADE_START, 1, d);
 
-        const opacity = outline ? 1 : BG_OPACITY * jitter * fade;
-        if (opacity < 0.02) continue;
+				const opacity = outline ? 1 : BG_OPACITY * jitter * fade;
+				if (opacity < 0.02) continue;
 
-        out.push({
-          x: col * PITCH,
-          y: row * PITCH,
-          fill,
-          opacity: Number(opacity.toFixed(3)),
-        });
-      }
-    }
-    return out;
-  }, []);
+				out.push({
+					x: col * PITCH,
+					y: row * PITCH,
+					fill,
+					opacity: Number(opacity.toFixed(3)),
+				});
+			}
+		}
+		return out;
+	}, []);
 
-  return (
-    <svg
-      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-      className={`text-primary ${className ?? ""}`}
-      role="img"
-      aria-label="Heart made of dots"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {cells.map((c, i) => (
-        <rect
-          key={i}
-          x={c.x}
-          y={c.y}
-          width={CELL}
-          height={CELL}
-          rx={RADIUS}
-          fill={c.fill}
-          fillOpacity={c.opacity}
-        />
-      ))}
-    </svg>
-  );
+	return (
+		<svg
+			viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+			className={`text-primary ${className ?? ""}`}
+			role="img"
+			aria-label="Heart made of dots"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			{cells.map((c) => (
+				<rect
+					key={`${c.x}-${c.y}`}
+					x={c.x}
+					y={c.y}
+					width={CELL}
+					height={CELL}
+					rx={RADIUS}
+					fill={c.fill}
+					fillOpacity={c.opacity}
+				/>
+			))}
+		</svg>
+	);
 }

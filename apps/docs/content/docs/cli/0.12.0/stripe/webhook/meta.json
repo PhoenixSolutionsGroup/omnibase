@@ -1,6 +1,4 @@
 {
-  "title": "Webhook",
-  "pages": [
-    "secret"
-  ]
+	"title": "Webhook",
+	"pages": ["secret"]
 }

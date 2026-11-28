@@ -1,6 +1,6 @@
 ---
-title: "Auth"
----
+
+## title: "Auth"
 
 # Auth
 
@@ -30,6 +30,7 @@ and server-side session retrieval optimized for the Next.js 13+ App Router.
 ## Example
 
 Complete authentication setup in a Next.js app:
+
 ```tsx
 // app/auth/[...flow]/page.tsx - Authentication flow router
 import { FlowRouter } from '@omnibase/nextjs/auth';

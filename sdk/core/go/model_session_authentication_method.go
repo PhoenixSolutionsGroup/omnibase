@@ -22,12 +22,12 @@ var _ MappedNullable = &SessionAuthenticationMethod{}
 // SessionAuthenticationMethod struct for SessionAuthenticationMethod
 type SessionAuthenticationMethod struct {
 	AdditionalPropertiesField map[string]interface{} `json:"AdditionalProperties,omitempty"`
-	Aal *string `json:"aal,omitempty"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"`
-	Method *string `json:"method,omitempty"`
-	Organization *string `json:"organization,omitempty"`
-	Provider *string `json:"provider,omitempty"`
-	AdditionalProperties map[string]interface{}
+	Aal                       *string                `json:"aal,omitempty"`
+	CompletedAt               *time.Time             `json:"completed_at,omitempty"`
+	Method                    *string                `json:"method,omitempty"`
+	Organization              *string                `json:"organization,omitempty"`
+	Provider                  *string                `json:"provider,omitempty"`
+	AdditionalProperties      map[string]interface{}
 }
 
 type _SessionAuthenticationMethod SessionAuthenticationMethod
@@ -242,7 +242,7 @@ func (o *SessionAuthenticationMethod) SetProvider(v string) {
 }
 
 func (o SessionAuthenticationMethod) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -338,5 +338,3 @@ func (v *NullableSessionAuthenticationMethod) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

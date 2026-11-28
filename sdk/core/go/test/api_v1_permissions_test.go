@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1PermissionsAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1PermissionsAPIService(t *testing.T) {
 
 	t.Run("Test V1PermissionsAPIService CheckPermission", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1PermissionsAPIService(t *testing.T) {
 
 	t.Run("Test V1PermissionsAPIService CreateRelationship", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1PermissionsAPI.CreateRelationship(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1PermissionsAPIService(t *testing.T) {
 
 	t.Run("Test V1PermissionsAPIService DeleteRelationship", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1PermissionsAPI.DeleteRelationship(context.Background()).Execute()
 

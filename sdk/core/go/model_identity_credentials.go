@@ -22,13 +22,13 @@ var _ MappedNullable = &IdentityCredentials{}
 // IdentityCredentials struct for IdentityCredentials
 type IdentityCredentials struct {
 	AdditionalPropertiesField map[string]interface{} `json:"AdditionalProperties,omitempty"`
-	Config map[string]interface{} `json:"config,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	Identifiers []string `json:"identifiers,omitempty"`
-	Type *string `json:"type,omitempty"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty"`
-	Version *int64 `json:"version,omitempty"`
-	AdditionalProperties map[string]interface{}
+	Config                    map[string]interface{} `json:"config,omitempty"`
+	CreatedAt                 *time.Time             `json:"created_at,omitempty"`
+	Identifiers               []string               `json:"identifiers,omitempty"`
+	Type                      *string                `json:"type,omitempty"`
+	UpdatedAt                 *time.Time             `json:"updated_at,omitempty"`
+	Version                   *int64                 `json:"version,omitempty"`
+	AdditionalProperties      map[string]interface{}
 }
 
 type _IdentityCredentials IdentityCredentials
@@ -276,7 +276,7 @@ func (o *IdentityCredentials) SetVersion(v int64) {
 }
 
 func (o IdentityCredentials) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -376,5 +376,3 @@ func (v *NullableIdentityCredentials) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

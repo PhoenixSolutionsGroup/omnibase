@@ -12,278 +12,356 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
+import * as runtime from "../runtime";
 import type {
-  AuthTenant,
-  CreateTenantRequest,
-  CreateTenantResponse,
-  DeleteTenantResponse,
-  ErrorModel,
-  SwitchActiveRequest,
-  SwitchActiveResponse,
-} from '../models/index';
+	AuthTenant,
+	CreateTenantRequest,
+	CreateTenantResponse,
+	DeleteTenantResponse,
+	ErrorModel,
+	SwitchActiveRequest,
+	SwitchActiveResponse,
+} from "../models/index";
 import {
-    AuthTenantFromJSON,
-    AuthTenantToJSON,
-    CreateTenantRequestFromJSON,
-    CreateTenantRequestToJSON,
-    CreateTenantResponseFromJSON,
-    CreateTenantResponseToJSON,
-    DeleteTenantResponseFromJSON,
-    DeleteTenantResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    SwitchActiveRequestFromJSON,
-    SwitchActiveRequestToJSON,
-    SwitchActiveResponseFromJSON,
-    SwitchActiveResponseToJSON,
-} from '../models/index';
+	AuthTenantFromJSON,
+	AuthTenantToJSON,
+	CreateTenantRequestFromJSON,
+	CreateTenantRequestToJSON,
+	CreateTenantResponseFromJSON,
+	CreateTenantResponseToJSON,
+	DeleteTenantResponseFromJSON,
+	DeleteTenantResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	SwitchActiveRequestFromJSON,
+	SwitchActiveRequestToJSON,
+	SwitchActiveResponseFromJSON,
+	SwitchActiveResponseToJSON,
+} from "../models/index";
 
 export interface CreateTenantOperationRequest {
-    createTenantRequest: CreateTenantRequest;
+	createTenantRequest: CreateTenantRequest;
 }
 
 export interface GetTenantByIDRequest {
-    tenantId: string;
+	tenantId: string;
 }
 
 export interface GetTenantByStripeCustomerIDRequest {
-    stripeCustomerId: string;
+	stripeCustomerId: string;
 }
 
 export interface SwitchActiveTenantRequest {
-    switchActiveRequest: SwitchActiveRequest;
+	switchActiveRequest: SwitchActiveRequest;
 }
 
 /**
- * 
+ *
  */
 export class V1TenantsLifecycleApi extends runtime.BaseAPI {
+	/**
+	 * Create a tenant
+	 */
+	async createTenantRaw(
+		requestParameters: CreateTenantOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CreateTenantResponse>> {
+		if (requestParameters["createTenantRequest"] == null) {
+			throw new runtime.RequiredError(
+				"createTenantRequest",
+				'Required parameter "createTenantRequest" was null or undefined when calling createTenant().',
+			);
+		}
 
-    /**
-     * Create a tenant
-     */
-    async createTenantRaw(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateTenantResponse>> {
-        if (requestParameters['createTenantRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createTenantRequest',
-                'Required parameter "createTenantRequest" was null or undefined when calling createTenant().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		let urlPath = `/api/v1/tenants`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CreateTenantRequestToJSON(
+					requestParameters["createTenantRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/tenants`;
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CreateTenantResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateTenantRequestToJSON(requestParameters['createTenantRequest']),
-        }, initOverrides);
+	/**
+	 * Create a tenant
+	 */
+	async createTenant(
+		requestParameters: CreateTenantOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CreateTenantResponse> {
+		const response = await this.createTenantRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateTenantResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Delete the current tenant
+	 */
+	async deleteTenantRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<DeleteTenantResponse>> {
+		const queryParameters: any = {};
 
-    /**
-     * Create a tenant
-     */
-    async createTenant(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateTenantResponse> {
-        const response = await this.createTenantRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Delete the current tenant
-     */
-    async deleteTenantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTenantResponse>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
+		let urlPath = `/api/v1/tenants`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "DELETE",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			DeleteTenantResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/tenants`;
+	/**
+	 * Delete the current tenant
+	 */
+	async deleteTenant(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<DeleteTenantResponse> {
+		const response = await this.deleteTenantRaw(initOverrides);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * Get tenant by ID
+	 */
+	async getTenantByIDRaw(
+		requestParameters: GetTenantByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<AuthTenant>> {
+		if (requestParameters["tenantId"] == null) {
+			throw new runtime.RequiredError(
+				"tenantId",
+				'Required parameter "tenantId" was null or undefined when calling getTenantByID().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteTenantResponseFromJSON(jsonValue));
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Delete the current tenant
-     */
-    async deleteTenant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTenantResponse> {
-        const response = await this.deleteTenantRaw(initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get tenant by ID
-     */
-    async getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>> {
-        if (requestParameters['tenantId'] == null) {
-            throw new runtime.RequiredError(
-                'tenantId',
-                'Required parameter "tenantId" was null or undefined when calling getTenantByID().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		let urlPath = `/api/v1/tenants/by-id/{tenant_id}`;
+		urlPath = urlPath.replace(
+			`{${"tenant_id"}}`,
+			encodeURIComponent(String(requestParameters["tenantId"])),
+		);
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			AuthTenantFromJSON(jsonValue),
+		);
+	}
 
+	/**
+	 * Get tenant by ID
+	 */
+	async getTenantByID(
+		requestParameters: GetTenantByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<AuthTenant> {
+		const response = await this.getTenantByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/tenants/by-id/{tenant_id}`;
-        urlPath = urlPath.replace(`{${"tenant_id"}}`, encodeURIComponent(String(requestParameters['tenantId'])));
+	/**
+	 * Get tenant by Stripe customer ID
+	 */
+	async getTenantByStripeCustomerIDRaw(
+		requestParameters: GetTenantByStripeCustomerIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<AuthTenant>> {
+		if (requestParameters["stripeCustomerId"] == null) {
+			throw new runtime.RequiredError(
+				"stripeCustomerId",
+				'Required parameter "stripeCustomerId" was null or undefined when calling getTenantByStripeCustomerID().',
+			);
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AuthTenantFromJSON(jsonValue));
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get tenant by ID
-     */
-    async getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant> {
-        const response = await this.getTenantByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * Get tenant by Stripe customer ID
-     */
-    async getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthTenant>> {
-        if (requestParameters['stripeCustomerId'] == null) {
-            throw new runtime.RequiredError(
-                'stripeCustomerId',
-                'Required parameter "stripeCustomerId" was null or undefined when calling getTenantByStripeCustomerID().'
-            );
-        }
+		let urlPath = `/api/v1/tenants/by-stripe-customer/{stripe_customer_id}`;
+		urlPath = urlPath.replace(
+			`{${"stripe_customer_id"}}`,
+			encodeURIComponent(String(requestParameters["stripeCustomerId"])),
+		);
 
-        const queryParameters: any = {};
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			AuthTenantFromJSON(jsonValue),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+	/**
+	 * Get tenant by Stripe customer ID
+	 */
+	async getTenantByStripeCustomerID(
+		requestParameters: GetTenantByStripeCustomerIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<AuthTenant> {
+		const response = await this.getTenantByStripeCustomerIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
+	/**
+	 * Switch the active tenant
+	 */
+	async switchActiveTenantRaw(
+		requestParameters: SwitchActiveTenantRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<SwitchActiveResponse>> {
+		if (requestParameters["switchActiveRequest"] == null) {
+			throw new runtime.RequiredError(
+				"switchActiveRequest",
+				'Required parameter "switchActiveRequest" was null or undefined when calling switchActiveTenant().',
+			);
+		}
 
-        let urlPath = `/api/v1/tenants/by-stripe-customer/{stripe_customer_id}`;
-        urlPath = urlPath.replace(`{${"stripe_customer_id"}}`, encodeURIComponent(String(requestParameters['stripeCustomerId'])));
+		const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AuthTenantFromJSON(jsonValue));
-    }
+		headerParameters["Content-Type"] = "application/json";
 
-    /**
-     * Get tenant by Stripe customer ID
-     */
-    async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthTenant> {
-        const response = await this.getTenantByStripeCustomerIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * Switch the active tenant
-     */
-    async switchActiveTenantRaw(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SwitchActiveResponse>> {
-        if (requestParameters['switchActiveRequest'] == null) {
-            throw new runtime.RequiredError(
-                'switchActiveRequest',
-                'Required parameter "switchActiveRequest" was null or undefined when calling switchActiveTenant().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-App-Key"] =
+				await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Session-Token"] =
+				await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		let urlPath = `/api/v1/tenants/switch-active`;
 
-        headerParameters['Content-Type'] = 'application/json';
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "PUT",
+				headers: headerParameters,
+				query: queryParameters,
+				body: SwitchActiveRequestToJSON(
+					requestParameters["switchActiveRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			SwitchActiveResponseFromJSON(jsonValue),
+		);
+	}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/switch-active`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: SwitchActiveRequestToJSON(requestParameters['switchActiveRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SwitchActiveResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Switch the active tenant
-     */
-    async switchActiveTenant(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwitchActiveResponse> {
-        const response = await this.switchActiveTenantRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Switch the active tenant
+	 */
+	async switchActiveTenant(
+		requestParameters: SwitchActiveTenantRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<SwitchActiveResponse> {
+		const response = await this.switchActiveTenantRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }

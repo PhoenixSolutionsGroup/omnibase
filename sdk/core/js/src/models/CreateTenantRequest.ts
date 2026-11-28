@@ -12,73 +12,79 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreateTenantRequest
  */
 export interface CreateTenantRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTenantRequest
-     */
-    billingEmail: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTenantRequest
-     */
-    name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTenantRequest
-     */
-    type: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateTenantRequest
+	 */
+	billingEmail: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateTenantRequest
+	 */
+	name: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateTenantRequest
+	 */
+	type: string;
 }
 
 /**
  * Check if a given object implements the CreateTenantRequest interface.
  */
-export function instanceOfCreateTenantRequest(value: object): value is CreateTenantRequest {
-    if (!('billingEmail' in value) || value['billingEmail'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('type' in value) || value['type'] === undefined) return false;
-    return true;
+export function instanceOfCreateTenantRequest(
+	value: object,
+): value is CreateTenantRequest {
+	if (!("billingEmail" in value) || value["billingEmail"] === undefined)
+		return false;
+	if (!("name" in value) || value["name"] === undefined) return false;
+	if (!("type" in value) || value["type"] === undefined) return false;
+	return true;
 }
 
 export function CreateTenantRequestFromJSON(json: any): CreateTenantRequest {
-    return CreateTenantRequestFromJSONTyped(json, false);
+	return CreateTenantRequestFromJSONTyped(json, false);
 }
 
-export function CreateTenantRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateTenantRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'billingEmail': json['billing_email'],
-        'name': json['name'],
-        'type': json['type'],
-    };
+export function CreateTenantRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateTenantRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		billingEmail: json["billing_email"],
+		name: json["name"],
+		type: json["type"],
+	};
 }
 
 export function CreateTenantRequestToJSON(json: any): CreateTenantRequest {
-    return CreateTenantRequestToJSONTyped(json, false);
+	return CreateTenantRequestToJSONTyped(json, false);
 }
 
-export function CreateTenantRequestToJSONTyped(value?: CreateTenantRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateTenantRequestToJSONTyped(
+	value?: CreateTenantRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'billing_email': value['billingEmail'],
-        'name': value['name'],
-        'type': value['type'],
-    };
+	return {
+		billing_email: value["billingEmail"],
+		name: value["name"],
+		type: value["type"],
+	};
 }
-

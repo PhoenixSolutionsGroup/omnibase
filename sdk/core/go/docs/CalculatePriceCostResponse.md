@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**BillingScheme** | **string** |  | 
-**CostCents** | **int64** |  | 
-**Currency** | **string** |  | 
-**EffectiveUnitCostCents** | **float64** |  | 
-**PriceId** | **string** |  | 
-**Quantity** | **int64** |  | 
-**TiersMode** | Pointer to **string** |  | [optional] 
+| Name                       | Type                  | Description | Notes      |
+| -------------------------- | --------------------- | ----------- | ---------- |
+| **BillingScheme**          | **string**            |             |
+| **CostCents**              | **int64**             |             |
+| **Currency**               | **string**            |             |
+| **EffectiveUnitCostCents** | **float64**           |             |
+| **PriceId**                | **string**            |             |
+| **Quantity**               | **int64**             |             |
+| **TiersMode**              | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -50,7 +50,6 @@ and a boolean to check if the value has been set.
 
 SetBillingScheme sets BillingScheme field to given value.
 
-
 ### GetCostCents
 
 `func (o *CalculatePriceCostResponse) GetCostCents() int64`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 `func (o *CalculatePriceCostResponse) SetCostCents(v int64)`
 
 SetCostCents sets CostCents field to given value.
-
 
 ### GetCurrency
 
@@ -90,7 +88,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-
 ### GetEffectiveUnitCostCents
 
 `func (o *CalculatePriceCostResponse) GetEffectiveUnitCostCents() float64`
@@ -109,7 +106,6 @@ and a boolean to check if the value has been set.
 `func (o *CalculatePriceCostResponse) SetEffectiveUnitCostCents(v float64)`
 
 SetEffectiveUnitCostCents sets EffectiveUnitCostCents field to given value.
-
 
 ### GetPriceId
 
@@ -130,7 +126,6 @@ and a boolean to check if the value has been set.
 
 SetPriceId sets PriceId field to given value.
 
-
 ### GetQuantity
 
 `func (o *CalculatePriceCostResponse) GetQuantity() int64`
@@ -149,7 +144,6 @@ and a boolean to check if the value has been set.
 `func (o *CalculatePriceCostResponse) SetQuantity(v int64)`
 
 SetQuantity sets Quantity field to given value.
-
 
 ### GetTiersMode
 
@@ -176,7 +170,4 @@ SetTiersMode sets TiersMode field to given value.
 
 HasTiersMode returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

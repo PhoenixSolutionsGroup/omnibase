@@ -12,10 +12,10 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the GetStorageCredentialsResponse type satisfies the MappedNullable interface at compile time
@@ -24,12 +24,12 @@ var _ MappedNullable = &GetStorageCredentialsResponse{}
 // GetStorageCredentialsResponse struct for GetStorageCredentialsResponse
 type GetStorageCredentialsResponse struct {
 	// S3 access key ID.
-	AccessKey string `json:"access_key"`
+	AccessKey  string `json:"access_key"`
 	BucketName string `json:"bucket_name"`
-	Endpoint string `json:"endpoint"`
+	Endpoint   string `json:"endpoint"`
 	// Credential expiration time.
 	Expiration *time.Time `json:"expiration,omitempty"`
-	Region string `json:"region"`
+	Region     string     `json:"region"`
 	// S3 secret access key.
 	SecretKey string `json:"secret_key"`
 	// Session token required with temporary credentials.
@@ -245,7 +245,7 @@ func (o *GetStorageCredentialsResponse) SetSessionToken(v string) {
 }
 
 func (o GetStorageCredentialsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -285,10 +285,10 @@ func (o *GetStorageCredentialsResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -344,5 +344,3 @@ func (v *NullableGetStorageCredentialsResponse) UnmarshalJSON(src []byte) error 
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

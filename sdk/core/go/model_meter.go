@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,13 +22,13 @@ var _ MappedNullable = &Meter{}
 
 // Meter struct for Meter
 type Meter struct {
-	CustomerMapping *MeterCustomerMapping `json:"customer_mapping,omitempty"`
+	CustomerMapping    *MeterCustomerMapping   `json:"customer_mapping,omitempty"`
 	DefaultAggregation MeterDefaultAggregation `json:"default_aggregation"`
-	DisplayName string `json:"display_name"`
-	EventName string `json:"event_name"`
-	Id string `json:"id"`
-	StripeId *string `json:"stripe_id,omitempty"`
-	ValueSettings *MeterValueSettings `json:"value_settings,omitempty"`
+	DisplayName        string                  `json:"display_name"`
+	EventName          string                  `json:"event_name"`
+	Id                 string                  `json:"id"`
+	StripeId           *string                 `json:"stripe_id,omitempty"`
+	ValueSettings      *MeterValueSettings     `json:"value_settings,omitempty"`
 }
 
 type _Meter Meter
@@ -247,7 +247,7 @@ func (o *Meter) SetValueSettings(v MeterValueSettings) {
 }
 
 func (o Meter) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -288,10 +288,10 @@ func (o *Meter) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -347,5 +347,3 @@ func (v *NullableMeter) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -1,4 +1,5 @@
 ---
+
 title: Permissions
 description: Fine-grained permissions with JSDoc metadata
 ---
@@ -15,11 +16,11 @@ The OmniBase permission system is an **object-relationship graph**. Every namesp
 
 Each namespace in your permission files is an object type:
 
-| Object | Purpose |
-|--------|---------|
-| `User` | Human user — acts as a subject in permission checks |
-| `Tenant` | Organizational container — has members, owners, and permissions |
-| `StorageObject` | A file in object storage |
+| Object          | Purpose                                                         |
+| --------------- | --------------------------------------------------------------- |
+| `User`          | Human user — acts as a subject in permission checks             |
+| `Tenant`        | Organizational container — has members, owners, and permissions |
+| `StorageObject` | A file in object storage                                        |
 
 You define your own objects by creating namespace classes (e.g., `Agent`, `Codebase`, `Document`).
 
@@ -42,7 +43,7 @@ Agent──can_push─────────▶ Codebase
 Codebase ──tenant──────▶ Tenant
 ```
 
-The **subject** is the object at the start — the "who" that wants to do something. `User` is the primary built-in subject type. Every permission check asks: *"Does subject S have relation R on object O?"*
+The **subject** is the object at the start — the "who" that wants to do something. `User` is the primary built-in subject type. Every permission check asks: _"Does subject S have relation R on object O?"_
 
 ## Simple Relations: Direct Permission
 
@@ -62,7 +63,7 @@ No indirection — the subject acts directly on the object. This works the same 
 
 ## Chained Relations: Traversal
 
-Objects can relate to **other** objects, creating a chain. You check permissions by *traversing* from one object to another along these relations.
+Objects can relate to **other** objects, creating a chain. You check permissions by _traversing_ from one object to another along these relations.
 
 ### The `traverse()` Method
 
@@ -70,20 +71,20 @@ When you define an object, you can specify relations to other objects (like `ten
 
 ```typescript
 export class Project implements Namespace {
-  related: {
-    /** @hidden */
-    tenant: Tenant[];
+	related: {
+		/** @hidden */
+		tenant: Tenant[];
 
-    can_view_database_password: (User | ApiKey)[];
-  };
+		can_view_database_password: (User | ApiKey)[];
+	};
 
-  permits = {
-    view_database_password: (ctx: Context): boolean =>
-      this.related.can_view_database_password.includes(ctx.subject) ||
-      this.related.tenant.traverse((t) =>
-        t.related.can_view_database_password.includes(ctx.subject)
-      ),
-  };
+	permits = {
+		view_database_password: (ctx: Context): boolean =>
+			this.related.can_view_database_password.includes(ctx.subject) ||
+			this.related.tenant.traverse((t) =>
+				t.related.can_view_database_password.includes(ctx.subject),
+			),
+	};
 }
 ```
 
@@ -98,18 +99,21 @@ Subject ──view_database_password──▶ Project
 ### Common Traversal Patterns
 
 **Tenant → Resource** — Resources belong to a tenant; permissions cascade down:
+
 ```
 User ──can_edit──▶ Codebase
                     └──tenant──▶ Tenant → can_edit (fallback)
 ```
 
 **Owner → Resource** — The owner of a resource implicitly has permissions on it:
+
 ```
 User ──can_delete──▶ Document
                       └──owner──▶ User → can_delete (resolved through creator)
 ```
 
 **Parent → Child** — Nested resources inherit from parents:
+
 ```
 User ──can_write──▶ SubProject
                      └──parent_project──▶ Project → can_write (fallback)
@@ -153,13 +157,13 @@ Each permission can have JSDoc annotations that provide metadata:
 can_update_user_role: User[];
 ```
 
-| Annotation | Purpose |
-|------------|---------|
-| `@group` | Primary grouping for UI tree display |
-| `@subGroup` | Secondary grouping within a group |
-| `@displayName` | Human-readable name (e.g., "Update User Roles") |
-| `@role` | Suggested default role(s) for this permission |
-| `@hidden` | Hide from UI (for internal relations like `tenant`, `parent_project`) |
+| Annotation     | Purpose                                                               |
+| -------------- | --------------------------------------------------------------------- |
+| `@group`       | Primary grouping for UI tree display                                  |
+| `@subGroup`    | Secondary grouping within a group                                     |
+| `@displayName` | Human-readable name (e.g., "Update User Roles")                       |
+| `@role`        | Suggested default role(s) for this permission                         |
+| `@hidden`      | Hide from UI (for internal relations like `tenant`, `parent_project`) |
 
 ## Roles Group Permissions
 
@@ -168,14 +172,14 @@ Roles are collections of permissions created per-tenant. Each tenant manages the
 ```typescript
 // Create a role for a tenant
 await tenantsApi.createRole({
-  createRoleRequest: {
-    roleName: 'admin',
-    permissions: [
-      'tenant#can_invite_user',
-      'tenant#can_remove_user',
-      'tenant#can_view_users',
-    ],
-  },
+	createRoleRequest: {
+		roleName: "admin",
+		permissions: [
+			"tenant#can_invite_user",
+			"tenant#can_remove_user",
+			"tenant#can_view_users",
+		],
+	},
 });
 ```
 
@@ -218,112 +222,117 @@ export class Agent implements Namespace {}
 
 // omnibase/permissions/codebases.ts
 export class Codebase implements Namespace {
-  related: {
-    /** @hidden */
-    tenant: Tenant[];
+	related: {
+		/** @hidden */
+		tenant: Tenant[];
 
-    /** @hidden */
-    owner: User[];
+		/** @hidden */
+		owner: User[];
 
-    /**
-     * @group Codebase Access
-     * @displayName Edit Code
-     * @role owner
-     * @role developer
-     */
-    can_edit: (User | Agent)[];
+		/**
+		 * @group Codebase Access
+		 * @displayName Edit Code
+		 * @role owner
+		 * @role developer
+		 */
+		can_edit: (User | Agent)[];
 
-    /**
-     * @group Codebase Access
-     * @displayName Push Changes
-     * @role owner
-     * @role developer
-     */
-    can_push: (User | Agent)[];
+		/**
+		 * @group Codebase Access
+		 * @displayName Push Changes
+		 * @role owner
+		 * @role developer
+		 */
+		can_push: (User | Agent)[];
 
-    /**
-     * @group Codebase Access
-     * @displayName View Code
-     * @role owner
-     * @role developer
-     * @role viewer
-     */
-    can_view: (User | Agent)[];
-  };
+		/**
+		 * @group Codebase Access
+		 * @displayName View Code
+		 * @role owner
+		 * @role developer
+		 * @role viewer
+		 */
+		can_view: (User | Agent)[];
+	};
 
-  permits = {
-    edit: (ctx: Context): boolean =>
-      this.related.can_edit.includes(ctx.subject) ||
-      this.related.owner.includes(ctx.subject) ||
-      this.related.tenant.traverse((t) =>
-        t.related.can_edit.includes(ctx.subject)
-      ),
+	permits = {
+		edit: (ctx: Context): boolean =>
+			this.related.can_edit.includes(ctx.subject) ||
+			this.related.owner.includes(ctx.subject) ||
+			this.related.tenant.traverse((t) =>
+				t.related.can_edit.includes(ctx.subject),
+			),
 
-    push: (ctx: Context): boolean =>
-      this.related.can_push.includes(ctx.subject) ||
-      this.related.owner.includes(ctx.subject) ||
-      this.related.tenant.traverse((t) =>
-        t.related.can_push.includes(ctx.subject)
-      ),
+		push: (ctx: Context): boolean =>
+			this.related.can_push.includes(ctx.subject) ||
+			this.related.owner.includes(ctx.subject) ||
+			this.related.tenant.traverse((t) =>
+				t.related.can_push.includes(ctx.subject),
+			),
 
-    view: (ctx: Context): boolean =>
-      this.related.can_view.includes(ctx.subject) ||
-      this.related.owner.includes(ctx.subject) ||
-      this.related.tenant.traverse((t) =>
-        t.related.can_view.includes(ctx.subject)
-      ),
-  };
+		view: (ctx: Context): boolean =>
+			this.related.can_view.includes(ctx.subject) ||
+			this.related.owner.includes(ctx.subject) ||
+			this.related.tenant.traverse((t) =>
+				t.related.can_view.includes(ctx.subject),
+			),
+	};
 }
 ```
 
 ### Granting Access
 
 **Direct grant** — give an agent push access to a specific codebase:
+
 ```typescript
 await permissionsApi.createRelationship({
-  createRelationshipRequest: {
-    namespace: 'Codebase',
-    object: 'cb-123',
-    relation: 'can_push',
-    subjectId: 'agent-456',
-    subjectNamespace: 'Agent',
-  },
+	createRelationshipRequest: {
+		namespace: "Codebase",
+		object: "cb-123",
+		relation: "can_push",
+		subjectId: "agent-456",
+		subjectNamespace: "Agent",
+	},
 });
 ```
 
 **Tenant-level grant** — give a user push access to all codebases in a tenant (traversal handles the rest):
+
 ```typescript
 await permissionsApi.createRelationship({
-  createRelationshipRequest: {
-    namespace: 'Tenant',
-    object: 'tenant-789',
-    relation: 'can_push',
-    subjectId: 'user-abc',
-    subjectNamespace: 'User',
-  },
+	createRelationshipRequest: {
+		namespace: "Tenant",
+		object: "tenant-789",
+		relation: "can_push",
+		subjectId: "user-abc",
+		subjectNamespace: "User",
+	},
 });
 ```
 
 ### Checking Access
 
 Check if an agent can push to a codebase:
+
 ```typescript
 const { data } = await permissionsApi.checkPermission({
-  checkPermissionRequest: {
-    namespace: 'Codebase',
-    object: 'cb-123',
-    relation: 'push',
-    subjectId: 'agent-456',
-    subjectNamespace: 'Agent',
-  },
+	checkPermissionRequest: {
+		namespace: "Codebase",
+		object: "cb-123",
+		relation: "push",
+		subjectId: "agent-456",
+		subjectNamespace: "Agent",
+	},
 });
 // data.allowed → true
 ```
 
 The engine evaluates `permits.push`:
+
 1. Is `agent-456` in `can_push` of `Codebase#cb-123`? → **Yes** (direct grant) → ALLOWED
 
 If only the tenant-level grant exists:
+
 1. Is `user-abc` in `can_push` of `Codebase#cb-123`? → No
 2. Follow `owner` relation → no match
 3. Follow `tenant` relation → is `user-abc` in `can_push` of `Tenant#tenant-789`? → **Yes** → ALLOWED
@@ -425,16 +434,16 @@ case "api_key":
 The JSDoc metadata is returned by the API and used by UI components:
 
 ```typescript
-const { data } = await tenantsApi.getRoleDefinitions({ subject: 'User' });
+const { data } = await tenantsApi.getRoleDefinitions({ subject: "User" });
 
 for (const namespace of data.data.namespaces) {
-  for (const relation of namespace.relations) {
-    console.log(`${relation.name}`);
-    console.log(`  Display: ${relation.displayName}`);
-    console.log(`  Group: ${relation.group}`);
-    console.log(`  SubGroup: ${relation.subGroup}`);
-    console.log(`  Roles: ${relation.roles?.join(', ')}`);
-  }
+	for (const relation of namespace.relations) {
+		console.log(`${relation.name}`);
+		console.log(`  Display: ${relation.displayName}`);
+		console.log(`  Group: ${relation.group}`);
+		console.log(`  SubGroup: ${relation.subGroup}`);
+		console.log(`  Roles: ${relation.roles?.join(", ")}`);
+	}
 }
 ```
 

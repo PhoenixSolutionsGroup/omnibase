@@ -1,5 +1,5 @@
 import { createOryMiddleware } from "@ory/nextjs/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { getServerSession } from "../auth";
 import { tenantCheckMiddleware } from "./tenant_check";
 
@@ -25,30 +25,30 @@ import { tenantCheckMiddleware } from "./tenant_check";
  * @group Middleware
  */
 export type OmnibaseMiddlewareConfig = {
-  /**
-   * Enable or disable tenant membership checking
-   * @defaultValue true
-   */
-  tenant_check: boolean;
+	/**
+	 * Enable or disable tenant membership checking
+	 * @defaultValue true
+	 */
+	tenant_check: boolean;
 
-  /**
-   * Array of path patterns that require tenant membership
-   * Supports exact matches and wildcard patterns (e.g., '/dashboard/*')
-   * @defaultValue ['/']
-   */
-  tenant_check_paths: string[];
+	/**
+	 * Array of path patterns that require tenant membership
+	 * Supports exact matches and wildcard patterns (e.g., '/dashboard/*')
+	 * @defaultValue ['/']
+	 */
+	tenant_check_paths: string[];
 
-  /**
-   * URL to redirect users who are not part of a tenant
-   * @defaultValue '/auth/onboarding'
-   */
-  tenant_check_redirect_url: string;
+	/**
+	 * URL to redirect users who are not part of a tenant
+	 * @defaultValue '/auth/onboarding'
+	 */
+	tenant_check_redirect_url: string;
 };
 
 const defaultConfig: OmnibaseMiddlewareConfig = {
-  tenant_check: true,
-  tenant_check_paths: ["/"],
-  tenant_check_redirect_url: "/auth/onboarding",
+	tenant_check: true,
+	tenant_check_paths: ["/"],
+	tenant_check_redirect_url: "/auth/onboarding",
 };
 
 /**
@@ -92,15 +92,15 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
  * @group Middleware
  */
 export const createOmniBaseMiddleware = (
-  config: OmnibaseMiddlewareConfig = defaultConfig
+	config: OmnibaseMiddlewareConfig = defaultConfig,
 ) => {
-  const oryMiddleware = createOryMiddleware({});
-  return async (req: NextRequest) => {
-    const session = await getServerSession();
+	const oryMiddleware = createOryMiddleware({});
+	return async (req: NextRequest) => {
+		const session = await getServerSession();
 
-    const tenantResponse = tenantCheckMiddleware(req, session, config);
-    if (tenantResponse.status !== 200) return tenantResponse;
+		const tenantResponse = tenantCheckMiddleware(req, session, config);
+		if (tenantResponse.status !== 200) return tenantResponse;
 
-    return oryMiddleware(req);
-  };
+		return oryMiddleware(req);
+	};
 };

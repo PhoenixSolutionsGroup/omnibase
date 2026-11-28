@@ -1,565 +1,474 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://omnibase.dev/schemas/stripe-config.json",
-  "title": "Stripe Configuration Schema",
-  "description": "Schema for Stripe product and pricing configuration",
-  "type": "object",
-  "required": [
-    "version",
-    "products"
-  ],
-  "properties": {
-    "coupons": {
-      "items": {
-        "$ref": "#/definitions/Coupon"
-      },
-      "type": [
-        "array",
-        "null"
-      ]
-    },
-    "meters": {
-      "items": {
-        "$ref": "#/definitions/Meter"
-      },
-      "type": [
-        "array",
-        "null"
-      ]
-    },
-    "products": {
-      "items": {
-        "$ref": "#/definitions/Product"
-      },
-      "type": [
-        "array",
-        "null"
-      ]
-    },
-    "promotion_codes": {
-      "items": {
-        "$ref": "#/definitions/PromotionCode"
-      },
-      "type": [
-        "array",
-        "null"
-      ]
-    },
-    "version": {
-      "type": "string"
-    },
-    "webhooks": {
-      "items": {
-        "$ref": "#/definitions/WebhookEndpointConfig"
-      },
-      "type": [
-        "array",
-        "null"
-      ]
-    }
-  },
-  "definitions": {
-    "StripeConfiguration": {
-      "additionalProperties": false,
-      "properties": {
-        "coupons": {
-          "items": {
-            "$ref": "#/definitions/Coupon"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "meters": {
-          "items": {
-            "$ref": "#/definitions/Meter"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "products": {
-          "items": {
-            "$ref": "#/definitions/Product"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "promotion_codes": {
-          "items": {
-            "$ref": "#/definitions/PromotionCode"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "version": {
-          "type": "string"
-        },
-        "webhooks": {
-          "items": {
-            "$ref": "#/definitions/WebhookEndpointConfig"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        }
-      },
-      "required": [
-        "version",
-        "products"
-      ],
-      "type": "object"
-    },
-    "Coupon": {
-      "additionalProperties": false,
-      "properties": {
-        "amount_off": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "applies_to": {
-          "items": {
-            "type": "string"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "currency": {
-          "type": "string"
-        },
-        "duration": {
-          "type": "string"
-        },
-        "duration_in_months": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "id": {
-          "type": "string"
-        },
-        "max_redemptions": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "name": {
-          "type": "string"
-        },
-        "percent_off": {
-          "format": "double",
-          "type": "number"
-        },
-        "redeem_by": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "stripe_id": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "duration"
-      ],
-      "type": "object"
-    },
-    "Meter": {
-      "additionalProperties": false,
-      "properties": {
-        "customer_mapping": {
-          "$ref": "#/definitions/MeterCustomerMapping"
-        },
-        "default_aggregation": {
-          "$ref": "#/definitions/MeterDefaultAggregation"
-        },
-        "display_name": {
-          "type": "string"
-        },
-        "event_name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "stripe_id": {
-          "type": "string"
-        },
-        "value_settings": {
-          "$ref": "#/definitions/MeterValueSettings"
-        }
-      },
-      "required": [
-        "id",
-        "display_name",
-        "event_name",
-        "default_aggregation"
-      ],
-      "type": "object"
-    },
-    "MeterCustomerMapping": {
-      "additionalProperties": false,
-      "properties": {
-        "event_payload_key": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "event_payload_key",
-        "type"
-      ],
-      "type": "object"
-    },
-    "MeterDefaultAggregation": {
-      "additionalProperties": false,
-      "properties": {
-        "formula": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "formula"
-      ],
-      "type": "object"
-    },
-    "MeterValueSettings": {
-      "additionalProperties": false,
-      "properties": {
-        "event_payload_key": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "event_payload_key"
-      ],
-      "type": "object"
-    },
-    "Product": {
-      "additionalProperties": false,
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "name": {
-          "type": "string"
-        },
-        "prices": {
-          "items": {
-            "$ref": "#/definitions/Price"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "stripe_id": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "ui": {
-          "$ref": "#/definitions/ProductUI"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "prices"
-      ],
-      "type": "object"
-    },
-    "Price": {
-      "additionalProperties": false,
-      "properties": {
-        "amount": {
-          "format": "double",
-          "type": "number"
-        },
-        "billing_scheme": {
-          "type": "string"
-        },
-        "currency": {
-          "type": "string"
-        },
-        "default": {
-          "type": "boolean"
-        },
-        "id": {
-          "type": "string"
-        },
-        "interval": {
-          "type": "string"
-        },
-        "interval_count": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "meter": {
-          "type": "string"
-        },
-        "public": {
-          "type": "boolean"
-        },
-        "stripe_id": {
-          "type": "string"
-        },
-        "tax_included_in_price": {
-          "type": "boolean"
-        },
-        "tiers": {
-          "items": {
-            "$ref": "#/definitions/Tier"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "tiers_mode": {
-          "type": "string"
-        },
-        "ui": {
-          "$ref": "#/definitions/PriceUI"
-        },
-        "usage_type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "currency"
-      ],
-      "type": "object"
-    },
-    "Tier": {
-      "additionalProperties": false,
-      "properties": {
-        "flat_amount": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "unit_amount": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "up_to": {}
-      },
-      "required": [
-        "up_to"
-      ],
-      "type": "object"
-    },
-    "PriceUI": {
-      "additionalProperties": false,
-      "properties": {
-        "billing_period": {
-          "type": "string"
-        },
-        "display_name": {
-          "type": "string"
-        },
-        "features": {
-          "items": {
-            "type": "string"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "limits": {
-          "items": {
-            "$ref": "#/definitions/PriceLimit"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "price_display": {
-          "$ref": "#/definitions/PriceDisplay"
-        }
-      },
-      "type": "object"
-    },
-    "PriceLimit": {
-      "additionalProperties": false,
-      "properties": {
-        "text": {
-          "type": "string"
-        },
-        "unit": {
-          "type": "string"
-        },
-        "value": {
-          "format": "double",
-          "type": "number"
-        }
-      },
-      "required": [
-        "text"
-      ],
-      "type": "object"
-    },
-    "PriceDisplay": {
-      "additionalProperties": false,
-      "properties": {
-        "custom_text": {
-          "type": "string"
-        },
-        "show_currency": {
-          "type": "boolean"
-        },
-        "suffix": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "ProductUI": {
-      "additionalProperties": false,
-      "properties": {
-        "badge": {
-          "type": "string"
-        },
-        "cta_text": {
-          "type": "string"
-        },
-        "display_name": {
-          "type": "string"
-        },
-        "features": {
-          "items": {
-            "type": "string"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "highlighted": {
-          "type": "boolean"
-        },
-        "sort_order": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "tagline": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "PromotionCode": {
-      "additionalProperties": false,
-      "properties": {
-        "active": {
-          "type": "boolean"
-        },
-        "code": {
-          "type": "string"
-        },
-        "coupon": {
-          "type": "string"
-        },
-        "expires_at": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "first_time_transaction": {
-          "type": "boolean"
-        },
-        "id": {
-          "type": "string"
-        },
-        "max_redemptions": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "minimum_amount": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "minimum_amount_currency": {
-          "type": "string"
-        },
-        "stripe_id": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "code",
-        "coupon"
-      ],
-      "type": "object"
-    },
-    "WebhookEndpointConfig": {
-      "additionalProperties": false,
-      "properties": {
-        "connect": {
-          "type": "boolean"
-        },
-        "events": {
-          "items": {
-            "type": "string"
-          },
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "id": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "url",
-        "events"
-      ],
-      "type": "object"
-    }
-  }
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://omnibase.dev/schemas/stripe-config.json",
+	"title": "Stripe Configuration Schema",
+	"description": "Schema for Stripe product and pricing configuration",
+	"type": "object",
+	"required": ["version", "products"],
+	"properties": {
+		"coupons": {
+			"items": {
+				"$ref": "#/definitions/Coupon"
+			},
+			"type": ["array", "null"]
+		},
+		"meters": {
+			"items": {
+				"$ref": "#/definitions/Meter"
+			},
+			"type": ["array", "null"]
+		},
+		"products": {
+			"items": {
+				"$ref": "#/definitions/Product"
+			},
+			"type": ["array", "null"]
+		},
+		"promotion_codes": {
+			"items": {
+				"$ref": "#/definitions/PromotionCode"
+			},
+			"type": ["array", "null"]
+		},
+		"version": {
+			"type": "string"
+		},
+		"webhooks": {
+			"items": {
+				"$ref": "#/definitions/WebhookEndpointConfig"
+			},
+			"type": ["array", "null"]
+		}
+	},
+	"definitions": {
+		"StripeConfiguration": {
+			"additionalProperties": false,
+			"properties": {
+				"coupons": {
+					"items": {
+						"$ref": "#/definitions/Coupon"
+					},
+					"type": ["array", "null"]
+				},
+				"meters": {
+					"items": {
+						"$ref": "#/definitions/Meter"
+					},
+					"type": ["array", "null"]
+				},
+				"products": {
+					"items": {
+						"$ref": "#/definitions/Product"
+					},
+					"type": ["array", "null"]
+				},
+				"promotion_codes": {
+					"items": {
+						"$ref": "#/definitions/PromotionCode"
+					},
+					"type": ["array", "null"]
+				},
+				"version": {
+					"type": "string"
+				},
+				"webhooks": {
+					"items": {
+						"$ref": "#/definitions/WebhookEndpointConfig"
+					},
+					"type": ["array", "null"]
+				}
+			},
+			"required": ["version", "products"],
+			"type": "object"
+		},
+		"Coupon": {
+			"additionalProperties": false,
+			"properties": {
+				"amount_off": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"applies_to": {
+					"items": {
+						"type": "string"
+					},
+					"type": ["array", "null"]
+				},
+				"currency": {
+					"type": "string"
+				},
+				"duration": {
+					"type": "string"
+				},
+				"duration_in_months": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"id": {
+					"type": "string"
+				},
+				"max_redemptions": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"metadata": {
+					"additionalProperties": {
+						"type": "string"
+					},
+					"type": "object"
+				},
+				"name": {
+					"type": "string"
+				},
+				"percent_off": {
+					"format": "double",
+					"type": "number"
+				},
+				"redeem_by": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"stripe_id": {
+					"type": "string"
+				}
+			},
+			"required": ["id", "duration"],
+			"type": "object"
+		},
+		"Meter": {
+			"additionalProperties": false,
+			"properties": {
+				"customer_mapping": {
+					"$ref": "#/definitions/MeterCustomerMapping"
+				},
+				"default_aggregation": {
+					"$ref": "#/definitions/MeterDefaultAggregation"
+				},
+				"display_name": {
+					"type": "string"
+				},
+				"event_name": {
+					"type": "string"
+				},
+				"id": {
+					"type": "string"
+				},
+				"stripe_id": {
+					"type": "string"
+				},
+				"value_settings": {
+					"$ref": "#/definitions/MeterValueSettings"
+				}
+			},
+			"required": ["id", "display_name", "event_name", "default_aggregation"],
+			"type": "object"
+		},
+		"MeterCustomerMapping": {
+			"additionalProperties": false,
+			"properties": {
+				"event_payload_key": {
+					"type": "string"
+				},
+				"type": {
+					"type": "string"
+				}
+			},
+			"required": ["event_payload_key", "type"],
+			"type": "object"
+		},
+		"MeterDefaultAggregation": {
+			"additionalProperties": false,
+			"properties": {
+				"formula": {
+					"type": "string"
+				}
+			},
+			"required": ["formula"],
+			"type": "object"
+		},
+		"MeterValueSettings": {
+			"additionalProperties": false,
+			"properties": {
+				"event_payload_key": {
+					"type": "string"
+				}
+			},
+			"required": ["event_payload_key"],
+			"type": "object"
+		},
+		"Product": {
+			"additionalProperties": false,
+			"properties": {
+				"description": {
+					"type": "string"
+				},
+				"id": {
+					"type": "string"
+				},
+				"metadata": {
+					"additionalProperties": {
+						"type": "string"
+					},
+					"type": "object"
+				},
+				"name": {
+					"type": "string"
+				},
+				"prices": {
+					"items": {
+						"$ref": "#/definitions/Price"
+					},
+					"type": ["array", "null"]
+				},
+				"stripe_id": {
+					"type": "string"
+				},
+				"type": {
+					"type": "string"
+				},
+				"ui": {
+					"$ref": "#/definitions/ProductUI"
+				}
+			},
+			"required": ["id", "name", "prices"],
+			"type": "object"
+		},
+		"Price": {
+			"additionalProperties": false,
+			"properties": {
+				"amount": {
+					"format": "double",
+					"type": "number"
+				},
+				"billing_scheme": {
+					"type": "string"
+				},
+				"currency": {
+					"type": "string"
+				},
+				"default": {
+					"type": "boolean"
+				},
+				"id": {
+					"type": "string"
+				},
+				"interval": {
+					"type": "string"
+				},
+				"interval_count": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"metadata": {
+					"additionalProperties": {
+						"type": "string"
+					},
+					"type": "object"
+				},
+				"meter": {
+					"type": "string"
+				},
+				"public": {
+					"type": "boolean"
+				},
+				"stripe_id": {
+					"type": "string"
+				},
+				"tax_included_in_price": {
+					"type": "boolean"
+				},
+				"tiers": {
+					"items": {
+						"$ref": "#/definitions/Tier"
+					},
+					"type": ["array", "null"]
+				},
+				"tiers_mode": {
+					"type": "string"
+				},
+				"ui": {
+					"$ref": "#/definitions/PriceUI"
+				},
+				"usage_type": {
+					"type": "string"
+				}
+			},
+			"required": ["id", "currency"],
+			"type": "object"
+		},
+		"Tier": {
+			"additionalProperties": false,
+			"properties": {
+				"flat_amount": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"unit_amount": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"up_to": {}
+			},
+			"required": ["up_to"],
+			"type": "object"
+		},
+		"PriceUI": {
+			"additionalProperties": false,
+			"properties": {
+				"billing_period": {
+					"type": "string"
+				},
+				"display_name": {
+					"type": "string"
+				},
+				"features": {
+					"items": {
+						"type": "string"
+					},
+					"type": ["array", "null"]
+				},
+				"limits": {
+					"items": {
+						"$ref": "#/definitions/PriceLimit"
+					},
+					"type": ["array", "null"]
+				},
+				"price_display": {
+					"$ref": "#/definitions/PriceDisplay"
+				}
+			},
+			"type": "object"
+		},
+		"PriceLimit": {
+			"additionalProperties": false,
+			"properties": {
+				"text": {
+					"type": "string"
+				},
+				"unit": {
+					"type": "string"
+				},
+				"value": {
+					"format": "double",
+					"type": "number"
+				}
+			},
+			"required": ["text"],
+			"type": "object"
+		},
+		"PriceDisplay": {
+			"additionalProperties": false,
+			"properties": {
+				"custom_text": {
+					"type": "string"
+				},
+				"show_currency": {
+					"type": "boolean"
+				},
+				"suffix": {
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"ProductUI": {
+			"additionalProperties": false,
+			"properties": {
+				"badge": {
+					"type": "string"
+				},
+				"cta_text": {
+					"type": "string"
+				},
+				"display_name": {
+					"type": "string"
+				},
+				"features": {
+					"items": {
+						"type": "string"
+					},
+					"type": ["array", "null"]
+				},
+				"highlighted": {
+					"type": "boolean"
+				},
+				"sort_order": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"tagline": {
+					"type": "string"
+				}
+			},
+			"type": "object"
+		},
+		"PromotionCode": {
+			"additionalProperties": false,
+			"properties": {
+				"active": {
+					"type": "boolean"
+				},
+				"code": {
+					"type": "string"
+				},
+				"coupon": {
+					"type": "string"
+				},
+				"expires_at": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"first_time_transaction": {
+					"type": "boolean"
+				},
+				"id": {
+					"type": "string"
+				},
+				"max_redemptions": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"metadata": {
+					"additionalProperties": {
+						"type": "string"
+					},
+					"type": "object"
+				},
+				"minimum_amount": {
+					"format": "int64",
+					"type": "integer"
+				},
+				"minimum_amount_currency": {
+					"type": "string"
+				},
+				"stripe_id": {
+					"type": "string"
+				}
+			},
+			"required": ["id", "code", "coupon"],
+			"type": "object"
+		},
+		"WebhookEndpointConfig": {
+			"additionalProperties": false,
+			"properties": {
+				"connect": {
+					"type": "boolean"
+				},
+				"events": {
+					"items": {
+						"type": "string"
+					},
+					"type": ["array", "null"]
+				},
+				"id": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string"
+				}
+			},
+			"required": ["id", "url", "events"],
+			"type": "object"
+		}
+	}
 }

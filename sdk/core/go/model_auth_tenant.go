@@ -12,10 +12,10 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the AuthTenant type satisfies the MappedNullable interface at compile time
@@ -23,12 +23,12 @@ var _ MappedNullable = &AuthTenant{}
 
 // AuthTenant struct for AuthTenant
 type AuthTenant struct {
-	CreatedAt time.Time `json:"created_at"`
-	Id string `json:"id"`
-	Name string `json:"name"`
+	CreatedAt        time.Time      `json:"created_at"`
+	Id               string         `json:"id"`
+	Name             string         `json:"name"`
 	StripeCustomerId NullableString `json:"stripe_customer_id"`
-	Type string `json:"type"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Type             string         `json:"type"`
+	UpdatedAt        time.Time      `json:"updated_at"`
 }
 
 type _AuthTenant AuthTenant
@@ -203,7 +203,7 @@ func (o *AuthTenant) SetUpdatedAt(v time.Time) {
 }
 
 func (o AuthTenant) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -239,10 +239,10 @@ func (o *AuthTenant) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -298,5 +298,3 @@ func (v *NullableAuthTenant) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

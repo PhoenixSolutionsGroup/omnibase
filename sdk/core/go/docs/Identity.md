@@ -2,23 +2,23 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**Credentials** | Pointer to [**map[string]IdentityCredentials**](IdentityCredentials.md) |  | [optional] 
-**Id** | **string** |  | 
-**MetadataAdmin** | Pointer to **interface{}** |  | [optional] 
-**MetadataPublic** | Pointer to **interface{}** |  | [optional] 
-**OrganizationId** | Pointer to **map[string]interface{}** |  | [optional] 
-**RecoveryAddresses** | Pointer to [**[]RecoveryIdentityAddress**](RecoveryIdentityAddress.md) |  | [optional] 
-**SchemaId** | **string** |  | 
-**SchemaUrl** | **string** |  | 
-**State** | Pointer to **string** |  | [optional] 
-**StateChangedAt** | Pointer to **time.Time** |  | [optional] 
-**Traits** | **interface{}** |  | 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**VerifiableAddresses** | Pointer to [**[]VerifiableIdentityAddress**](VerifiableIdentityAddress.md) |  | [optional] 
+| Name                          | Type                                                                       | Description | Notes      |
+| ----------------------------- | -------------------------------------------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}**                                      |             | [optional] |
+| **CreatedAt**                 | Pointer to **time.Time**                                                   |             | [optional] |
+| **Credentials**               | Pointer to [**map[string]IdentityCredentials**](IdentityCredentials.md)    |             | [optional] |
+| **Id**                        | **string**                                                                 |             |
+| **MetadataAdmin**             | Pointer to **interface{}**                                                 |             | [optional] |
+| **MetadataPublic**            | Pointer to **interface{}**                                                 |             | [optional] |
+| **OrganizationId**            | Pointer to **map[string]interface{}**                                      |             | [optional] |
+| **RecoveryAddresses**         | Pointer to [**[]RecoveryIdentityAddress**](RecoveryIdentityAddress.md)     |             | [optional] |
+| **SchemaId**                  | **string**                                                                 |             |
+| **SchemaUrl**                 | **string**                                                                 |             |
+| **State**                     | Pointer to **string**                                                      |             | [optional] |
+| **StateChangedAt**            | Pointer to **time.Time**                                                   |             | [optional] |
+| **Traits**                    | **interface{}**                                                            |             |
+| **UpdatedAt**                 | Pointer to **time.Time**                                                   |             | [optional] |
+| **VerifiableAddresses**       | Pointer to [**[]VerifiableIdentityAddress**](VerifiableIdentityAddress.md) |             | [optional] |
 
 ## Methods
 
@@ -133,7 +133,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetMetadataAdmin
 
 `func (o *Identity) GetMetadataAdmin() interface{}`
@@ -163,12 +162,14 @@ HasMetadataAdmin returns a boolean if a field has been set.
 
 `func (o *Identity) SetMetadataAdminNil(b bool)`
 
- SetMetadataAdminNil sets the value for MetadataAdmin to be an explicit nil
+SetMetadataAdminNil sets the value for MetadataAdmin to be an explicit nil
 
 ### UnsetMetadataAdmin
+
 `func (o *Identity) UnsetMetadataAdmin()`
 
 UnsetMetadataAdmin ensures that no value is present for MetadataAdmin, not even an explicit nil
+
 ### GetMetadataPublic
 
 `func (o *Identity) GetMetadataPublic() interface{}`
@@ -198,12 +199,14 @@ HasMetadataPublic returns a boolean if a field has been set.
 
 `func (o *Identity) SetMetadataPublicNil(b bool)`
 
- SetMetadataPublicNil sets the value for MetadataPublic to be an explicit nil
+SetMetadataPublicNil sets the value for MetadataPublic to be an explicit nil
 
 ### UnsetMetadataPublic
+
 `func (o *Identity) UnsetMetadataPublic()`
 
 UnsetMetadataPublic ensures that no value is present for MetadataPublic, not even an explicit nil
+
 ### GetOrganizationId
 
 `func (o *Identity) GetOrganizationId() map[string]interface{}`
@@ -258,12 +261,14 @@ HasRecoveryAddresses returns a boolean if a field has been set.
 
 `func (o *Identity) SetRecoveryAddressesNil(b bool)`
 
- SetRecoveryAddressesNil sets the value for RecoveryAddresses to be an explicit nil
+SetRecoveryAddressesNil sets the value for RecoveryAddresses to be an explicit nil
 
 ### UnsetRecoveryAddresses
+
 `func (o *Identity) UnsetRecoveryAddresses()`
 
 UnsetRecoveryAddresses ensures that no value is present for RecoveryAddresses, not even an explicit nil
+
 ### GetSchemaId
 
 `func (o *Identity) GetSchemaId() string`
@@ -283,7 +288,6 @@ and a boolean to check if the value has been set.
 
 SetSchemaId sets SchemaId field to given value.
 
-
 ### GetSchemaUrl
 
 `func (o *Identity) GetSchemaUrl() string`
@@ -302,7 +306,6 @@ and a boolean to check if the value has been set.
 `func (o *Identity) SetSchemaUrl(v string)`
 
 SetSchemaUrl sets SchemaUrl field to given value.
-
 
 ### GetState
 
@@ -373,17 +376,18 @@ and a boolean to check if the value has been set.
 
 SetTraits sets Traits field to given value.
 
-
 ### SetTraitsNil
 
 `func (o *Identity) SetTraitsNil(b bool)`
 
- SetTraitsNil sets the value for Traits to be an explicit nil
+SetTraitsNil sets the value for Traits to be an explicit nil
 
 ### UnsetTraits
+
 `func (o *Identity) UnsetTraits()`
 
 UnsetTraits ensures that no value is present for Traits, not even an explicit nil
+
 ### GetUpdatedAt
 
 `func (o *Identity) GetUpdatedAt() time.Time`
@@ -438,13 +442,12 @@ HasVerifiableAddresses returns a boolean if a field has been set.
 
 `func (o *Identity) SetVerifiableAddressesNil(b bool)`
 
- SetVerifiableAddressesNil sets the value for VerifiableAddresses to be an explicit nil
+SetVerifiableAddressesNil sets the value for VerifiableAddresses to be an explicit nil
 
 ### UnsetVerifiableAddresses
+
 `func (o *Identity) UnsetVerifiableAddresses()`
 
 UnsetVerifiableAddresses ensures that no value is present for VerifiableAddresses, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

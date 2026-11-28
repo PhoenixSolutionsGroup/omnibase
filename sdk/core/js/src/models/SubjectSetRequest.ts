@@ -12,72 +12,77 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface SubjectSetRequest
  */
 export interface SubjectSetRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof SubjectSetRequest
-     */
-    namespace: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubjectSetRequest
-     */
-    object: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubjectSetRequest
-     */
-    relation?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SubjectSetRequest
+	 */
+	namespace: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SubjectSetRequest
+	 */
+	object: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SubjectSetRequest
+	 */
+	relation?: string;
 }
 
 /**
  * Check if a given object implements the SubjectSetRequest interface.
  */
-export function instanceOfSubjectSetRequest(value: object): value is SubjectSetRequest {
-    if (!('namespace' in value) || value['namespace'] === undefined) return false;
-    if (!('object' in value) || value['object'] === undefined) return false;
-    return true;
+export function instanceOfSubjectSetRequest(
+	value: object,
+): value is SubjectSetRequest {
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("object" in value) || value["object"] === undefined) return false;
+	return true;
 }
 
 export function SubjectSetRequestFromJSON(json: any): SubjectSetRequest {
-    return SubjectSetRequestFromJSONTyped(json, false);
+	return SubjectSetRequestFromJSONTyped(json, false);
 }
 
-export function SubjectSetRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SubjectSetRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'namespace': json['namespace'],
-        'object': json['object'],
-        'relation': json['relation'] == null ? undefined : json['relation'],
-    };
+export function SubjectSetRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SubjectSetRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		namespace: json["namespace"],
+		object: json["object"],
+		relation: json["relation"] == null ? undefined : json["relation"],
+	};
 }
 
 export function SubjectSetRequestToJSON(json: any): SubjectSetRequest {
-    return SubjectSetRequestToJSONTyped(json, false);
+	return SubjectSetRequestToJSONTyped(json, false);
 }
 
-export function SubjectSetRequestToJSONTyped(value?: SubjectSetRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SubjectSetRequestToJSONTyped(
+	value?: SubjectSetRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'namespace': value['namespace'],
-        'object': value['object'],
-        'relation': value['relation'],
-    };
+	return {
+		namespace: value["namespace"],
+		object: value["object"],
+		relation: value["relation"],
+	};
 }
-

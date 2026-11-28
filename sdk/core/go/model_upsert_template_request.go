@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -23,8 +23,8 @@ var _ MappedNullable = &UpsertTemplateRequest{}
 // UpsertTemplateRequest struct for UpsertTemplateRequest
 type UpsertTemplateRequest struct {
 	HtmlBody string `json:"html_body"`
-	Subject string `json:"subject"`
-	Type string `json:"type"`
+	Subject  string `json:"subject"`
+	Type     string `json:"type"`
 }
 
 type _UpsertTemplateRequest UpsertTemplateRequest
@@ -122,7 +122,7 @@ func (o *UpsertTemplateRequest) SetType(v string) {
 }
 
 func (o UpsertTemplateRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -152,10 +152,10 @@ func (o *UpsertTemplateRequest) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -211,5 +211,3 @@ func (v *NullableUpsertTemplateRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

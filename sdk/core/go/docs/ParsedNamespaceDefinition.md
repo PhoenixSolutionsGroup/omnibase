@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**File** | **string** |  | 
-**Namespace** | **string** |  | 
-**Permits** | **[]string** |  | 
-**Relations** | **[]string** |  | 
-**RelationsMetadata** | Pointer to [**[]RelationMetadata**](RelationMetadata.md) |  | [optional] 
-**SubjectRelations** | **map[string][]string** |  | 
+| Name                  | Type                                                     | Description | Notes      |
+| --------------------- | -------------------------------------------------------- | ----------- | ---------- |
+| **File**              | **string**                                               |             |
+| **Namespace**         | **string**                                               |             |
+| **Permits**           | **[]string**                                             |             |
+| **Relations**         | **[]string**                                             |             |
+| **RelationsMetadata** | Pointer to [**[]RelationMetadata**](RelationMetadata.md) |             | [optional] |
+| **SubjectRelations**  | **map[string][]string**                                  |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetFile sets File field to given value.
 
-
 ### GetNamespace
 
 `func (o *ParsedNamespaceDefinition) GetNamespace() string`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *ParsedNamespaceDefinition) SetNamespace(v string)`
 
 SetNamespace sets Namespace field to given value.
-
 
 ### GetPermits
 
@@ -89,17 +87,18 @@ and a boolean to check if the value has been set.
 
 SetPermits sets Permits field to given value.
 
-
 ### SetPermitsNil
 
 `func (o *ParsedNamespaceDefinition) SetPermitsNil(b bool)`
 
- SetPermitsNil sets the value for Permits to be an explicit nil
+SetPermitsNil sets the value for Permits to be an explicit nil
 
 ### UnsetPermits
+
 `func (o *ParsedNamespaceDefinition) UnsetPermits()`
 
 UnsetPermits ensures that no value is present for Permits, not even an explicit nil
+
 ### GetRelations
 
 `func (o *ParsedNamespaceDefinition) GetRelations() []string`
@@ -119,17 +118,18 @@ and a boolean to check if the value has been set.
 
 SetRelations sets Relations field to given value.
 
-
 ### SetRelationsNil
 
 `func (o *ParsedNamespaceDefinition) SetRelationsNil(b bool)`
 
- SetRelationsNil sets the value for Relations to be an explicit nil
+SetRelationsNil sets the value for Relations to be an explicit nil
 
 ### UnsetRelations
+
 `func (o *ParsedNamespaceDefinition) UnsetRelations()`
 
 UnsetRelations ensures that no value is present for Relations, not even an explicit nil
+
 ### GetRelationsMetadata
 
 `func (o *ParsedNamespaceDefinition) GetRelationsMetadata() []RelationMetadata`
@@ -159,12 +159,14 @@ HasRelationsMetadata returns a boolean if a field has been set.
 
 `func (o *ParsedNamespaceDefinition) SetRelationsMetadataNil(b bool)`
 
- SetRelationsMetadataNil sets the value for RelationsMetadata to be an explicit nil
+SetRelationsMetadataNil sets the value for RelationsMetadata to be an explicit nil
 
 ### UnsetRelationsMetadata
+
 `func (o *ParsedNamespaceDefinition) UnsetRelationsMetadata()`
 
 UnsetRelationsMetadata ensures that no value is present for RelationsMetadata, not even an explicit nil
+
 ### GetSubjectRelations
 
 `func (o *ParsedNamespaceDefinition) GetSubjectRelations() map[string][]string`
@@ -184,8 +186,4 @@ and a boolean to check if the value has been set.
 
 SetSubjectRelations sets SubjectRelations field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

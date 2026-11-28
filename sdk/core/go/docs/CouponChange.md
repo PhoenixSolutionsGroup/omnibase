@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Action** | **string** |  | 
-**CouponId** | **string** |  | 
-**Name** | **string** |  | 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name         | Type                  | Description | Notes      |
+| ------------ | --------------------- | ----------- | ---------- |
+| **Action**   | **string**            |             |
+| **CouponId** | **string**            |             |
+| **Name**     | **string**            |             |
+| **StripeId** | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -47,7 +47,6 @@ and a boolean to check if the value has been set.
 
 SetAction sets Action field to given value.
 
-
 ### GetCouponId
 
 `func (o *CouponChange) GetCouponId() string`
@@ -67,7 +66,6 @@ and a boolean to check if the value has been set.
 
 SetCouponId sets CouponId field to given value.
 
-
 ### GetName
 
 `func (o *CouponChange) GetName() string`
@@ -86,7 +84,6 @@ and a boolean to check if the value has been set.
 `func (o *CouponChange) SetName(v string)`
 
 SetName sets Name field to given value.
-
 
 ### GetStripeId
 
@@ -113,7 +110,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

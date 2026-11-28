@@ -1,18 +1,17 @@
-
 # AddInvoiceLineItemWithPriceIDRequest
 
 Add a line item using either a config price_id or raw stripe_price_id
 
 ## Properties
 
-Name | Type
------------- | -------------
-`priceId` | string
-`quantity` | number
-`description` | string
-`currency` | [CurrencyCode](CurrencyCode.md)
-`metadata` | { [key: string]: string; }
-`stripePriceId` | string
+| Name            | Type                            |
+| --------------- | ------------------------------- |
+| `priceId`       | string                          |
+| `quantity`      | number                          |
+| `description`   | string                          |
+| `currency`      | [CurrencyCode](CurrencyCode.md) |
+| `metadata`      | { [key: string]: string; }      |
+| `stripePriceId` | string                          |
 
 ## Example
 
@@ -41,5 +40,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

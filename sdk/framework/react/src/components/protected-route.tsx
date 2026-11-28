@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { useSession } from "@/hooks";
-import React, { type ReactNode } from "react";
 
 /**
  * Client-side route protection component for React applications
@@ -49,16 +49,16 @@ import React, { type ReactNode } from "react";
  * @group Components
  */
 export default function ProtectedRoute({
-  children,
-  onInvalidSession,
+	children,
+	onInvalidSession,
 }: {
-  children: ReactNode | ReactNode[];
-  onInvalidSession?: () => any;
+	children: ReactNode | ReactNode[];
+	onInvalidSession?: () => ReactNode;
 }) {
-  const { session, loading } = useSession();
+	const { session, loading } = useSession();
 
-  if (loading) return null;
-  if (!session || !session.active) return onInvalidSession?.() ?? null;
+	if (loading) return null;
+	if (!session?.active) return onInvalidSession?.() ?? null;
 
-  return <>{children}</>;
+	return <>{children}</>;
 }

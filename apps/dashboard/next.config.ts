@@ -1,18 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["localhost", "127.0.0.1"],
-  serverExternalPackages: ["pg"],
-  outputFileTracingIncludes: {
-    "*": [
-      "./node_modules/pg-cloudflare/dist/index.js",
-      "./node_modules/pg-cloudflare/dist/index.d.ts",
-      "./node_modules/pg-cloudflare/esm/index.mjs",
-      "../../node_modules/pg-cloudflare/dist/index.js",
-      "../../node_modules/pg-cloudflare/dist/index.d.ts",
-      "../../node_modules/pg-cloudflare/esm/index.mjs",
-    ],
-  },
+	allowedDevOrigins: ["localhost", "127.0.0.1"],
+	serverExternalPackages: ["pg"],
+	outputFileTracingIncludes: {
+		"*": [
+			"./node_modules/pg-cloudflare/dist/index.js",
+			"./node_modules/pg-cloudflare/dist/index.d.ts",
+			"./node_modules/pg-cloudflare/esm/index.mjs",
+			"../../node_modules/pg-cloudflare/dist/index.js",
+			"../../node_modules/pg-cloudflare/dist/index.d.ts",
+			"../../node_modules/pg-cloudflare/esm/index.mjs",
+		],
+	},
 };
 
 export default nextConfig;

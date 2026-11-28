@@ -13,8 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the Session type satisfies the MappedNullable interface at compile time
@@ -22,18 +22,18 @@ var _ MappedNullable = &Session{}
 
 // Session struct for Session
 type Session struct {
-	AdditionalPropertiesField map[string]interface{} `json:"AdditionalProperties,omitempty"`
-	Active *bool `json:"active,omitempty"`
-	AuthenticatedAt *time.Time `json:"authenticated_at,omitempty"`
-	AuthenticationMethods []SessionAuthenticationMethod `json:"authentication_methods,omitempty"`
-	AuthenticatorAssuranceLevel *string `json:"authenticator_assurance_level,omitempty"`
-	Devices []SessionDevice `json:"devices,omitempty"`
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	Id string `json:"id"`
-	Identity *Identity `json:"identity,omitempty"`
-	IssuedAt *time.Time `json:"issued_at,omitempty"`
-	Tokenized *string `json:"tokenized,omitempty"`
-	AdditionalProperties map[string]interface{}
+	AdditionalPropertiesField   map[string]interface{}        `json:"AdditionalProperties,omitempty"`
+	Active                      *bool                         `json:"active,omitempty"`
+	AuthenticatedAt             *time.Time                    `json:"authenticated_at,omitempty"`
+	AuthenticationMethods       []SessionAuthenticationMethod `json:"authentication_methods,omitempty"`
+	AuthenticatorAssuranceLevel *string                       `json:"authenticator_assurance_level,omitempty"`
+	Devices                     []SessionDevice               `json:"devices,omitempty"`
+	ExpiresAt                   *time.Time                    `json:"expires_at,omitempty"`
+	Id                          string                        `json:"id"`
+	Identity                    *Identity                     `json:"identity,omitempty"`
+	IssuedAt                    *time.Time                    `json:"issued_at,omitempty"`
+	Tokenized                   *string                       `json:"tokenized,omitempty"`
+	AdditionalProperties        map[string]interface{}
 }
 
 type _Session Session
@@ -403,7 +403,7 @@ func (o *Session) SetTokenized(v string) {
 }
 
 func (o Session) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -464,10 +464,10 @@ func (o *Session) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -538,5 +538,3 @@ func (v *NullableSession) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

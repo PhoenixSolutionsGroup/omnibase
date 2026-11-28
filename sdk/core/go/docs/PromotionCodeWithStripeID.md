@@ -2,19 +2,19 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Active** | Pointer to **bool** |  | [optional] 
-**Code** | **string** |  | 
-**Coupon** | **string** |  | 
-**ExpiresAt** | Pointer to **int64** |  | [optional] 
-**FirstTimeTransaction** | Pointer to **bool** |  | [optional] 
-**Id** | **string** |  | 
-**MaxRedemptions** | Pointer to **int64** |  | [optional] 
-**Metadata** | Pointer to **map[string]string** |  | [optional] 
-**MinimumAmount** | Pointer to **int64** |  | [optional] 
-**MinimumAmountCurrency** | Pointer to **string** |  | [optional] 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name                      | Type                             | Description | Notes      |
+| ------------------------- | -------------------------------- | ----------- | ---------- |
+| **Active**                | Pointer to **bool**              |             | [optional] |
+| **Code**                  | **string**                       |             |
+| **Coupon**                | **string**                       |             |
+| **ExpiresAt**             | Pointer to **int64**             |             | [optional] |
+| **FirstTimeTransaction**  | Pointer to **bool**              |             | [optional] |
+| **Id**                    | **string**                       |             |
+| **MaxRedemptions**        | Pointer to **int64**             |             | [optional] |
+| **Metadata**              | Pointer to **map[string]string** |             | [optional] |
+| **MinimumAmount**         | Pointer to **int64**             |             | [optional] |
+| **MinimumAmountCurrency** | Pointer to **string**            |             | [optional] |
+| **StripeId**              | Pointer to **string**            |             | [optional] |
 
 ## Methods
 
@@ -79,7 +79,6 @@ and a boolean to check if the value has been set.
 
 SetCode sets Code field to given value.
 
-
 ### GetCoupon
 
 `func (o *PromotionCodeWithStripeID) GetCoupon() string`
@@ -98,7 +97,6 @@ and a boolean to check if the value has been set.
 `func (o *PromotionCodeWithStripeID) SetCoupon(v string)`
 
 SetCoupon sets Coupon field to given value.
-
 
 ### GetExpiresAt
 
@@ -168,7 +166,6 @@ and a boolean to check if the value has been set.
 `func (o *PromotionCodeWithStripeID) SetId(v string)`
 
 SetId sets Id field to given value.
-
 
 ### GetMaxRedemptions
 
@@ -295,7 +292,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -1,16 +1,14 @@
-
 # AddInvoiceLineItemWithConfigPriceRequest
-
 
 ## Properties
 
-Name | Type
------------- | -------------
-`priceId` | string
-`quantity` | number
-`description` | string
-`currency` | [CurrencyCode](CurrencyCode.md)
-`metadata` | { [key: string]: string; }
+| Name          | Type                            |
+| ------------- | ------------------------------- |
+| `priceId`     | string                          |
+| `quantity`    | number                          |
+| `description` | string                          |
+| `currency`    | [CurrencyCode](CurrencyCode.md) |
+| `metadata`    | { [key: string]: string; }      |
 
 ## Example
 
@@ -38,5 +36,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

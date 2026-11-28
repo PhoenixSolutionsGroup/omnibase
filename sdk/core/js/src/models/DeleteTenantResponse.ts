@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface DeleteTenantResponse
  */
 export interface DeleteTenantResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteTenantResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteTenantResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the DeleteTenantResponse interface.
  */
-export function instanceOfDeleteTenantResponse(value: object): value is DeleteTenantResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfDeleteTenantResponse(
+	value: object,
+): value is DeleteTenantResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
 export function DeleteTenantResponseFromJSON(json: any): DeleteTenantResponse {
-    return DeleteTenantResponseFromJSONTyped(json, false);
+	return DeleteTenantResponseFromJSONTyped(json, false);
 }
 
-export function DeleteTenantResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteTenantResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function DeleteTenantResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteTenantResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
 export function DeleteTenantResponseToJSON(json: any): DeleteTenantResponse {
-    return DeleteTenantResponseToJSONTyped(json, false);
+	return DeleteTenantResponseToJSONTyped(json, false);
 }
 
-export function DeleteTenantResponseToJSONTyped(value?: DeleteTenantResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteTenantResponseToJSONTyped(
+	value?: DeleteTenantResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

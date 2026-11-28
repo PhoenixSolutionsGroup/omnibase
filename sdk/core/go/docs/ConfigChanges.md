@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Coupons** | Pointer to [**CouponChanges**](CouponChanges.md) |  | [optional] 
-**Meters** | Pointer to [**MeterChanges**](MeterChanges.md) |  | [optional] 
-**Prices** | Pointer to [**PriceChanges**](PriceChanges.md) |  | [optional] 
-**Products** | Pointer to [**ProductChanges**](ProductChanges.md) |  | [optional] 
-**PromotionCodes** | Pointer to [**PromotionCodeChanges**](PromotionCodeChanges.md) |  | [optional] 
-**Webhooks** | Pointer to [**WebhookChanges**](WebhookChanges.md) |  | [optional] 
+| Name               | Type                                                           | Description | Notes      |
+| ------------------ | -------------------------------------------------------------- | ----------- | ---------- |
+| **Coupons**        | Pointer to [**CouponChanges**](CouponChanges.md)               |             | [optional] |
+| **Meters**         | Pointer to [**MeterChanges**](MeterChanges.md)                 |             | [optional] |
+| **Prices**         | Pointer to [**PriceChanges**](PriceChanges.md)                 |             | [optional] |
+| **Products**       | Pointer to [**ProductChanges**](ProductChanges.md)             |             | [optional] |
+| **PromotionCodes** | Pointer to [**PromotionCodeChanges**](PromotionCodeChanges.md) |             | [optional] |
+| **Webhooks**       | Pointer to [**WebhookChanges**](WebhookChanges.md)             |             | [optional] |
 
 ## Methods
 
@@ -180,7 +180,4 @@ SetWebhooks sets Webhooks field to given value.
 
 HasWebhooks returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

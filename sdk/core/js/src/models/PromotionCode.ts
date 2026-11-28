@@ -12,137 +12,148 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface PromotionCode
  */
 export interface PromotionCode {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PromotionCode
-     */
-    active?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCode
-     */
-    code: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCode
-     */
-    coupon: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PromotionCode
-     */
-    expiresAt?: number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PromotionCode
-     */
-    firstTimeTransaction?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCode
-     */
-    id: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PromotionCode
-     */
-    maxRedemptions?: number;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof PromotionCode
-     */
-    metadata?: { [key: string]: string; };
-    /**
-     * 
-     * @type {number}
-     * @memberof PromotionCode
-     */
-    minimumAmount?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCode
-     */
-    minimumAmountCurrency?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PromotionCode
-     */
-    stripeId?: string;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof PromotionCode
+	 */
+	active?: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCode
+	 */
+	code: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCode
+	 */
+	coupon: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof PromotionCode
+	 */
+	expiresAt?: number;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof PromotionCode
+	 */
+	firstTimeTransaction?: boolean;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCode
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof PromotionCode
+	 */
+	maxRedemptions?: number;
+	/**
+	 *
+	 * @type {{ [key: string]: string; }}
+	 * @memberof PromotionCode
+	 */
+	metadata?: { [key: string]: string };
+	/**
+	 *
+	 * @type {number}
+	 * @memberof PromotionCode
+	 */
+	minimumAmount?: number;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCode
+	 */
+	minimumAmountCurrency?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PromotionCode
+	 */
+	stripeId?: string;
 }
 
 /**
  * Check if a given object implements the PromotionCode interface.
  */
 export function instanceOfPromotionCode(value: object): value is PromotionCode {
-    if (!('code' in value) || value['code'] === undefined) return false;
-    if (!('coupon' in value) || value['coupon'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    return true;
+	if (!("code" in value) || value["code"] === undefined) return false;
+	if (!("coupon" in value) || value["coupon"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	return true;
 }
 
 export function PromotionCodeFromJSON(json: any): PromotionCode {
-    return PromotionCodeFromJSONTyped(json, false);
+	return PromotionCodeFromJSONTyped(json, false);
 }
 
-export function PromotionCodeFromJSONTyped(json: any, ignoreDiscriminator: boolean): PromotionCode {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'active': json['active'] == null ? undefined : json['active'],
-        'code': json['code'],
-        'coupon': json['coupon'],
-        'expiresAt': json['expires_at'] == null ? undefined : json['expires_at'],
-        'firstTimeTransaction': json['first_time_transaction'] == null ? undefined : json['first_time_transaction'],
-        'id': json['id'],
-        'maxRedemptions': json['max_redemptions'] == null ? undefined : json['max_redemptions'],
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-        'minimumAmount': json['minimum_amount'] == null ? undefined : json['minimum_amount'],
-        'minimumAmountCurrency': json['minimum_amount_currency'] == null ? undefined : json['minimum_amount_currency'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-    };
+export function PromotionCodeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PromotionCode {
+	if (json == null) {
+		return json;
+	}
+	return {
+		active: json["active"] == null ? undefined : json["active"],
+		code: json["code"],
+		coupon: json["coupon"],
+		expiresAt: json["expires_at"] == null ? undefined : json["expires_at"],
+		firstTimeTransaction:
+			json["first_time_transaction"] == null
+				? undefined
+				: json["first_time_transaction"],
+		id: json["id"],
+		maxRedemptions:
+			json["max_redemptions"] == null ? undefined : json["max_redemptions"],
+		metadata: json["metadata"] == null ? undefined : json["metadata"],
+		minimumAmount:
+			json["minimum_amount"] == null ? undefined : json["minimum_amount"],
+		minimumAmountCurrency:
+			json["minimum_amount_currency"] == null
+				? undefined
+				: json["minimum_amount_currency"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+	};
 }
 
 export function PromotionCodeToJSON(json: any): PromotionCode {
-    return PromotionCodeToJSONTyped(json, false);
+	return PromotionCodeToJSONTyped(json, false);
 }
 
-export function PromotionCodeToJSONTyped(value?: PromotionCode | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PromotionCodeToJSONTyped(
+	value?: PromotionCode | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'active': value['active'],
-        'code': value['code'],
-        'coupon': value['coupon'],
-        'expires_at': value['expiresAt'],
-        'first_time_transaction': value['firstTimeTransaction'],
-        'id': value['id'],
-        'max_redemptions': value['maxRedemptions'],
-        'metadata': value['metadata'],
-        'minimum_amount': value['minimumAmount'],
-        'minimum_amount_currency': value['minimumAmountCurrency'],
-        'stripe_id': value['stripeId'],
-    };
+	return {
+		active: value["active"],
+		code: value["code"],
+		coupon: value["coupon"],
+		expires_at: value["expiresAt"],
+		first_time_transaction: value["firstTimeTransaction"],
+		id: value["id"],
+		max_redemptions: value["maxRedemptions"],
+		metadata: value["metadata"],
+		minimum_amount: value["minimumAmount"],
+		minimum_amount_currency: value["minimumAmountCurrency"],
+		stripe_id: value["stripeId"],
+	};
 }
-

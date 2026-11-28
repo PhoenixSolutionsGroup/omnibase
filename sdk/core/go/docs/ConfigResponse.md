@@ -2,12 +2,12 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Changes** | Pointer to [**ConfigChanges**](ConfigChanges.md) |  | [optional] 
-**Config** | Pointer to [**StripeConfiguration**](StripeConfiguration.md) |  | [optional] 
-**Errors** | Pointer to **[]string** |  | [optional] 
-**Message** | **string** |  | 
+| Name        | Type                                                         | Description | Notes      |
+| ----------- | ------------------------------------------------------------ | ----------- | ---------- |
+| **Changes** | Pointer to [**ConfigChanges**](ConfigChanges.md)             |             | [optional] |
+| **Config**  | Pointer to [**StripeConfiguration**](StripeConfiguration.md) |             | [optional] |
+| **Errors**  | Pointer to **[]string**                                      |             | [optional] |
+| **Message** | **string**                                                   |             |
 
 ## Methods
 
@@ -107,12 +107,14 @@ HasErrors returns a boolean if a field has been set.
 
 `func (o *ConfigResponse) SetErrorsNil(b bool)`
 
- SetErrorsNil sets the value for Errors to be an explicit nil
+SetErrorsNil sets the value for Errors to be an explicit nil
 
 ### UnsetErrors
+
 `func (o *ConfigResponse) UnsetErrors()`
 
 UnsetErrors ensures that no value is present for Errors, not even an explicit nil
+
 ### GetMessage
 
 `func (o *ConfigResponse) GetMessage() string`
@@ -132,8 +134,4 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

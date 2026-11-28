@@ -67,6 +67,7 @@ When modifying handlers, routes, or models, update the corresponding OpenAPI doc
 **NEVER modify the `version` field in `info.yaml`.**
 
 Validate after changes:
+
 ```bash
 npm run openapi:lint
 npm run openapi:bundle
@@ -90,6 +91,7 @@ tests/integration/v1/
 ```
 
 Test pattern:
+
 ```go
 func TestYourEndpoint(t *testing.T) {
     env := testenv.Start(t)
@@ -235,38 +237,40 @@ MyRequestWithFieldA:
 
 MyRequest:
   oneOf:
-    - $ref: '#/components/schemas/MyRequestWithFieldA'
+    - $ref: "#/components/schemas/MyRequestWithFieldA"
 ```
 
 ### Response Wrapping
 
 All success responses use the common wrapper:
+
 ```yaml
 responses:
-  '200':
+  "200":
     content:
       application/json:
         schema:
           allOf:
-            - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+            - $ref: "../schemas/common.yaml#/components/schemas/SuccessResponse"
             - type: object
               properties:
                 data:
-                  $ref: '../schemas/{module}.yaml#/components/schemas/YourData'
+                  $ref: "../schemas/{module}.yaml#/components/schemas/YourData"
 ```
 
 ### Path References in info.yaml
 
 Use URL-encoded paths (`~1` = `/`):
+
 ```yaml
 /api/v1/your-module/endpoint:
-  $ref: './paths/your-module.yaml#/paths/~1api~1v1~1your-module~1endpoint'
+  $ref: "./paths/your-module.yaml#/paths/~1api~1v1~1your-module~1endpoint"
 ```
-
 
 ## Logging
 
 Use structured logging with context values instead of code comments:
+
 ```go
 logger.Logger.Info("Creating tenant", "user_id", userId, "tenant_name", name)
 logger.Logger.Error("Stripe API failed", "error", err, "customer_id", custId)

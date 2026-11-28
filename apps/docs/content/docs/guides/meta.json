@@ -1,19 +1,19 @@
 {
-  "title": "Guides",
-  "description": "Getting started and tutorials",
-  "root": true,
-  "icon": "Book",
-  "pages": [
-    "quickstart",
-    "configuration",
-    "authentication",
-    "multi-tenancy",
-    "rbac",
-    "stripe",
-    "postgresql",
-    "deployments",
-    "workers",
-    "storage",
-    "mcp-server"
-  ]
+	"title": "Guides",
+	"description": "Getting started and tutorials",
+	"root": true,
+	"icon": "Book",
+	"pages": [
+		"quickstart",
+		"configuration",
+		"authentication",
+		"multi-tenancy",
+		"rbac",
+		"stripe",
+		"postgresql",
+		"deployments",
+		"workers",
+		"storage",
+		"mcp-server"
+	]
 }

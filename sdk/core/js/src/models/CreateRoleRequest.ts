@@ -12,64 +12,70 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CreateRoleRequest
  */
 export interface CreateRoleRequest {
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof CreateRoleRequest
-     */
-    permissions: Array<string> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRoleRequest
-     */
-    roleName: string;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof CreateRoleRequest
+	 */
+	permissions: Array<string> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRoleRequest
+	 */
+	roleName: string;
 }
 
 /**
  * Check if a given object implements the CreateRoleRequest interface.
  */
-export function instanceOfCreateRoleRequest(value: object): value is CreateRoleRequest {
-    if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    if (!('roleName' in value) || value['roleName'] === undefined) return false;
-    return true;
+export function instanceOfCreateRoleRequest(
+	value: object,
+): value is CreateRoleRequest {
+	if (!("permissions" in value) || value["permissions"] === undefined)
+		return false;
+	if (!("roleName" in value) || value["roleName"] === undefined) return false;
+	return true;
 }
 
 export function CreateRoleRequestFromJSON(json: any): CreateRoleRequest {
-    return CreateRoleRequestFromJSONTyped(json, false);
+	return CreateRoleRequestFromJSONTyped(json, false);
 }
 
-export function CreateRoleRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateRoleRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'permissions': json['permissions'] == null ? null : json['permissions'],
-        'roleName': json['role_name'],
-    };
+export function CreateRoleRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateRoleRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		permissions: json["permissions"] == null ? null : json["permissions"],
+		roleName: json["role_name"],
+	};
 }
 
 export function CreateRoleRequestToJSON(json: any): CreateRoleRequest {
-    return CreateRoleRequestToJSONTyped(json, false);
+	return CreateRoleRequestToJSONTyped(json, false);
 }
 
-export function CreateRoleRequestToJSONTyped(value?: CreateRoleRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateRoleRequestToJSONTyped(
+	value?: CreateRoleRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'permissions': value['permissions'],
-        'role_name': value['roleName'],
-    };
+	return {
+		permissions: value["permissions"],
+		role_name: value["roleName"],
+	};
 }
-

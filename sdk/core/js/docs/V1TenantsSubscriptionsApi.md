@@ -1,16 +1,14 @@
 # V1TenantsSubscriptionsApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**addSubscription**](V1TenantsSubscriptionsApi.md#addsubscription) | **POST** /api/v1/tenants/subscriptions | Add a subscription to the tenant |
-| [**getTenantBillingStatus**](V1TenantsSubscriptionsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get tenant billing status |
-| [**getTenantSubscription**](V1TenantsSubscriptionsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription |
-| [**listTenantSubscriptions**](V1TenantsSubscriptionsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | List subscriptions for the tenant |
-| [**removeSubscription**](V1TenantsSubscriptionsApi.md#removesubscription) | **DELETE** /api/v1/tenants/subscriptions | Remove a subscription from the tenant |
-
-
+| Method                                                                              | HTTP request                                            | Description                           |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------- |
+| [**addSubscription**](V1TenantsSubscriptionsApi.md#addsubscription)                 | **POST** /api/v1/tenants/subscriptions                  | Add a subscription to the tenant      |
+| [**getTenantBillingStatus**](V1TenantsSubscriptionsApi.md#gettenantbillingstatus)   | **GET** /api/v1/tenants/billing-status                  | Get tenant billing status             |
+| [**getTenantSubscription**](V1TenantsSubscriptionsApi.md#gettenantsubscription)     | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription      |
+| [**listTenantSubscriptions**](V1TenantsSubscriptionsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions                   | List subscriptions for the tenant     |
+| [**removeSubscription**](V1TenantsSubscriptionsApi.md#removesubscription)           | **DELETE** /api/v1/tenants/subscriptions                | Remove a subscription from the tenant |
 
 ## addSubscription
 
@@ -60,10 +58,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **addRequest** | [AddRequest](AddRequest.md) |  | |
+| Name           | Type                        | Description | Notes |
+| -------------- | --------------------------- | ----------- | ----- |
+| **addRequest** | [AddRequest](AddRequest.md) |             |       |
 
 ### Return type
 
@@ -78,22 +75,21 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **403** | Forbidden |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **403**     | Forbidden             | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getTenantBillingStatus
 
@@ -104,32 +100,29 @@ Get tenant billing status
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsSubscriptionsApi,
-} from '@omnibase/core-js';
-import type { GetTenantBillingStatusRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsSubscriptionsApi } from "@omnibase/core-js";
+import type { GetTenantBillingStatusRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsSubscriptionsApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsSubscriptionsApi(config);
 
-  try {
-    const data = await api.getTenantBillingStatus();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getTenantBillingStatus();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -153,18 +146,17 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getTenantSubscription
 
@@ -175,37 +167,34 @@ Get a single tenant subscription
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsSubscriptionsApi,
-} from '@omnibase/core-js';
-import type { GetTenantSubscriptionRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsSubscriptionsApi } from "@omnibase/core-js";
+import type { GetTenantSubscriptionRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsSubscriptionsApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsSubscriptionsApi(config);
 
-  const body = {
-    // string
-    configPriceId: configPriceId_example,
-  } satisfies GetTenantSubscriptionRequest;
+	const body = {
+		// string
+		configPriceId: configPriceId_example,
+	} satisfies GetTenantSubscriptionRequest;
 
-  try {
-    const data = await api.getTenantSubscription(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getTenantSubscription(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -214,10 +203,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **configPriceId** | `string` |  | [Defaults to `undefined`] |
+| Name              | Type     | Description | Notes                     |
+| ----------------- | -------- | ----------- | ------------------------- |
+| **configPriceId** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -232,19 +220,18 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## listTenantSubscriptions
 
@@ -255,32 +242,29 @@ List subscriptions for the tenant
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1TenantsSubscriptionsApi,
-} from '@omnibase/core-js';
-import type { ListTenantSubscriptionsRequest } from '@omnibase/core-js';
+import { Configuration, V1TenantsSubscriptionsApi } from "@omnibase/core-js";
+import type { ListTenantSubscriptionsRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsSubscriptionsApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: CookieAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: AppKeyAuth
+		apiKey: "YOUR API KEY",
+		// To configure API key authorization: SessionTokenAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1TenantsSubscriptionsApi(config);
 
-  try {
-    const data = await api.listTenantSubscriptions();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.listTenantSubscriptions();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -304,18 +288,17 @@ This endpoint does not need any parameter.
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## removeSubscription
 
@@ -365,10 +348,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **removeRequest** | [RemoveRequest](RemoveRequest.md) |  | |
+| Name              | Type                              | Description | Notes |
+| ----------------- | --------------------------------- | ----------- | ----- |
+| **removeRequest** | [RemoveRequest](RemoveRequest.md) |             |       |
 
 ### Return type
 
@@ -383,19 +365,18 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **403** | Forbidden |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **403**     | Forbidden             | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

@@ -12,94 +12,100 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { AuthTenant } from './AuthTenant';
+import { mapValues } from "../runtime";
+import type { AuthTenant } from "./AuthTenant";
 import {
-    AuthTenantFromJSON,
-    AuthTenantFromJSONTyped,
-    AuthTenantToJSON,
-    AuthTenantToJSONTyped,
-} from './AuthTenant';
-import type { Identity } from './Identity';
+	AuthTenantFromJSON,
+	AuthTenantFromJSONTyped,
+	AuthTenantToJSON,
+	AuthTenantToJSONTyped,
+} from "./AuthTenant";
+import type { Identity } from "./Identity";
 import {
-    IdentityFromJSON,
-    IdentityFromJSONTyped,
-    IdentityToJSON,
-    IdentityToJSONTyped,
-} from './Identity';
-import type { Session } from './Session';
+	IdentityFromJSON,
+	IdentityFromJSONTyped,
+	IdentityToJSON,
+	IdentityToJSONTyped,
+} from "./Identity";
+import type { Session } from "./Session";
 import {
-    SessionFromJSON,
-    SessionFromJSONTyped,
-    SessionToJSON,
-    SessionToJSONTyped,
-} from './Session';
+	SessionFromJSON,
+	SessionFromJSONTyped,
+	SessionToJSON,
+	SessionToJSONTyped,
+} from "./Session";
 
 /**
- * 
+ *
  * @export
  * @interface SessionResponse
  */
 export interface SessionResponse {
-    /**
-     * 
-     * @type {Identity}
-     * @memberof SessionResponse
-     */
-    identity: Identity;
-    /**
-     * 
-     * @type {Session}
-     * @memberof SessionResponse
-     */
-    session: Session;
-    /**
-     * 
-     * @type {AuthTenant}
-     * @memberof SessionResponse
-     */
-    tenant?: AuthTenant;
+	/**
+	 *
+	 * @type {Identity}
+	 * @memberof SessionResponse
+	 */
+	identity: Identity;
+	/**
+	 *
+	 * @type {Session}
+	 * @memberof SessionResponse
+	 */
+	session: Session;
+	/**
+	 *
+	 * @type {AuthTenant}
+	 * @memberof SessionResponse
+	 */
+	tenant?: AuthTenant;
 }
 
 /**
  * Check if a given object implements the SessionResponse interface.
  */
-export function instanceOfSessionResponse(value: object): value is SessionResponse {
-    if (!('identity' in value) || value['identity'] === undefined) return false;
-    if (!('session' in value) || value['session'] === undefined) return false;
-    return true;
+export function instanceOfSessionResponse(
+	value: object,
+): value is SessionResponse {
+	if (!("identity" in value) || value["identity"] === undefined) return false;
+	if (!("session" in value) || value["session"] === undefined) return false;
+	return true;
 }
 
 export function SessionResponseFromJSON(json: any): SessionResponse {
-    return SessionResponseFromJSONTyped(json, false);
+	return SessionResponseFromJSONTyped(json, false);
 }
 
-export function SessionResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SessionResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'identity': IdentityFromJSON(json['identity']),
-        'session': SessionFromJSON(json['session']),
-        'tenant': json['tenant'] == null ? undefined : AuthTenantFromJSON(json['tenant']),
-    };
+export function SessionResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SessionResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		identity: IdentityFromJSON(json["identity"]),
+		session: SessionFromJSON(json["session"]),
+		tenant:
+			json["tenant"] == null ? undefined : AuthTenantFromJSON(json["tenant"]),
+	};
 }
 
 export function SessionResponseToJSON(json: any): SessionResponse {
-    return SessionResponseToJSONTyped(json, false);
+	return SessionResponseToJSONTyped(json, false);
 }
 
-export function SessionResponseToJSONTyped(value?: SessionResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SessionResponseToJSONTyped(
+	value?: SessionResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'identity': IdentityToJSON(value['identity']),
-        'session': SessionToJSON(value['session']),
-        'tenant': AuthTenantToJSON(value['tenant']),
-    };
+	return {
+		identity: IdentityToJSON(value["identity"]),
+		session: SessionToJSON(value["session"]),
+		tenant: AuthTenantToJSON(value["tenant"]),
+	};
 }
-

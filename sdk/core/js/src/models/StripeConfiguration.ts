@@ -12,132 +12,167 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { Coupon } from './Coupon';
+import { mapValues } from "../runtime";
+import type { Coupon } from "./Coupon";
 import {
-    CouponFromJSON,
-    CouponFromJSONTyped,
-    CouponToJSON,
-    CouponToJSONTyped,
-} from './Coupon';
-import type { Meter } from './Meter';
+	CouponFromJSON,
+	CouponFromJSONTyped,
+	CouponToJSON,
+	CouponToJSONTyped,
+} from "./Coupon";
+import type { Meter } from "./Meter";
 import {
-    MeterFromJSON,
-    MeterFromJSONTyped,
-    MeterToJSON,
-    MeterToJSONTyped,
-} from './Meter';
-import type { PromotionCode } from './PromotionCode';
+	MeterFromJSON,
+	MeterFromJSONTyped,
+	MeterToJSON,
+	MeterToJSONTyped,
+} from "./Meter";
+import type { PromotionCode } from "./PromotionCode";
 import {
-    PromotionCodeFromJSON,
-    PromotionCodeFromJSONTyped,
-    PromotionCodeToJSON,
-    PromotionCodeToJSONTyped,
-} from './PromotionCode';
-import type { Product } from './Product';
+	PromotionCodeFromJSON,
+	PromotionCodeFromJSONTyped,
+	PromotionCodeToJSON,
+	PromotionCodeToJSONTyped,
+} from "./PromotionCode";
+import type { Product } from "./Product";
 import {
-    ProductFromJSON,
-    ProductFromJSONTyped,
-    ProductToJSON,
-    ProductToJSONTyped,
-} from './Product';
-import type { WebhookEndpointConfig } from './WebhookEndpointConfig';
+	ProductFromJSON,
+	ProductFromJSONTyped,
+	ProductToJSON,
+	ProductToJSONTyped,
+} from "./Product";
+import type { WebhookEndpointConfig } from "./WebhookEndpointConfig";
 import {
-    WebhookEndpointConfigFromJSON,
-    WebhookEndpointConfigFromJSONTyped,
-    WebhookEndpointConfigToJSON,
-    WebhookEndpointConfigToJSONTyped,
-} from './WebhookEndpointConfig';
+	WebhookEndpointConfigFromJSON,
+	WebhookEndpointConfigFromJSONTyped,
+	WebhookEndpointConfigToJSON,
+	WebhookEndpointConfigToJSONTyped,
+} from "./WebhookEndpointConfig";
 
 /**
- * 
+ *
  * @export
  * @interface StripeConfiguration
  */
 export interface StripeConfiguration {
-    /**
-     * 
-     * @type {Array<Coupon>}
-     * @memberof StripeConfiguration
-     */
-    coupons?: Array<Coupon> | null;
-    /**
-     * 
-     * @type {Array<Meter>}
-     * @memberof StripeConfiguration
-     */
-    meters?: Array<Meter> | null;
-    /**
-     * 
-     * @type {Array<Product>}
-     * @memberof StripeConfiguration
-     */
-    products: Array<Product> | null;
-    /**
-     * 
-     * @type {Array<PromotionCode>}
-     * @memberof StripeConfiguration
-     */
-    promotionCodes?: Array<PromotionCode> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof StripeConfiguration
-     */
-    version: string;
-    /**
-     * 
-     * @type {Array<WebhookEndpointConfig>}
-     * @memberof StripeConfiguration
-     */
-    webhooks?: Array<WebhookEndpointConfig> | null;
+	/**
+	 *
+	 * @type {Array<Coupon>}
+	 * @memberof StripeConfiguration
+	 */
+	coupons?: Array<Coupon> | null;
+	/**
+	 *
+	 * @type {Array<Meter>}
+	 * @memberof StripeConfiguration
+	 */
+	meters?: Array<Meter> | null;
+	/**
+	 *
+	 * @type {Array<Product>}
+	 * @memberof StripeConfiguration
+	 */
+	products: Array<Product> | null;
+	/**
+	 *
+	 * @type {Array<PromotionCode>}
+	 * @memberof StripeConfiguration
+	 */
+	promotionCodes?: Array<PromotionCode> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof StripeConfiguration
+	 */
+	version: string;
+	/**
+	 *
+	 * @type {Array<WebhookEndpointConfig>}
+	 * @memberof StripeConfiguration
+	 */
+	webhooks?: Array<WebhookEndpointConfig> | null;
 }
 
 /**
  * Check if a given object implements the StripeConfiguration interface.
  */
-export function instanceOfStripeConfiguration(value: object): value is StripeConfiguration {
-    if (!('products' in value) || value['products'] === undefined) return false;
-    if (!('version' in value) || value['version'] === undefined) return false;
-    return true;
+export function instanceOfStripeConfiguration(
+	value: object,
+): value is StripeConfiguration {
+	if (!("products" in value) || value["products"] === undefined) return false;
+	if (!("version" in value) || value["version"] === undefined) return false;
+	return true;
 }
 
 export function StripeConfigurationFromJSON(json: any): StripeConfiguration {
-    return StripeConfigurationFromJSONTyped(json, false);
+	return StripeConfigurationFromJSONTyped(json, false);
 }
 
-export function StripeConfigurationFromJSONTyped(json: any, ignoreDiscriminator: boolean): StripeConfiguration {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'coupons': json['coupons'] == null ? undefined : ((json['coupons'] as Array<any>).map(CouponFromJSON)),
-        'meters': json['meters'] == null ? undefined : ((json['meters'] as Array<any>).map(MeterFromJSON)),
-        'products': (json['products'] == null ? null : (json['products'] as Array<any>).map(ProductFromJSON)),
-        'promotionCodes': json['promotion_codes'] == null ? undefined : ((json['promotion_codes'] as Array<any>).map(PromotionCodeFromJSON)),
-        'version': json['version'],
-        'webhooks': json['webhooks'] == null ? undefined : ((json['webhooks'] as Array<any>).map(WebhookEndpointConfigFromJSON)),
-    };
+export function StripeConfigurationFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): StripeConfiguration {
+	if (json == null) {
+		return json;
+	}
+	return {
+		coupons:
+			json["coupons"] == null
+				? undefined
+				: (json["coupons"] as Array<any>).map(CouponFromJSON),
+		meters:
+			json["meters"] == null
+				? undefined
+				: (json["meters"] as Array<any>).map(MeterFromJSON),
+		products:
+			json["products"] == null
+				? null
+				: (json["products"] as Array<any>).map(ProductFromJSON),
+		promotionCodes:
+			json["promotion_codes"] == null
+				? undefined
+				: (json["promotion_codes"] as Array<any>).map(PromotionCodeFromJSON),
+		version: json["version"],
+		webhooks:
+			json["webhooks"] == null
+				? undefined
+				: (json["webhooks"] as Array<any>).map(WebhookEndpointConfigFromJSON),
+	};
 }
 
 export function StripeConfigurationToJSON(json: any): StripeConfiguration {
-    return StripeConfigurationToJSONTyped(json, false);
+	return StripeConfigurationToJSONTyped(json, false);
 }
 
-export function StripeConfigurationToJSONTyped(value?: StripeConfiguration | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function StripeConfigurationToJSONTyped(
+	value?: StripeConfiguration | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'coupons': value['coupons'] == null ? undefined : ((value['coupons'] as Array<any>).map(CouponToJSON)),
-        'meters': value['meters'] == null ? undefined : ((value['meters'] as Array<any>).map(MeterToJSON)),
-        'products': (value['products'] == null ? null : (value['products'] as Array<any>).map(ProductToJSON)),
-        'promotion_codes': value['promotionCodes'] == null ? undefined : ((value['promotionCodes'] as Array<any>).map(PromotionCodeToJSON)),
-        'version': value['version'],
-        'webhooks': value['webhooks'] == null ? undefined : ((value['webhooks'] as Array<any>).map(WebhookEndpointConfigToJSON)),
-    };
+	return {
+		coupons:
+			value["coupons"] == null
+				? undefined
+				: (value["coupons"] as Array<any>).map(CouponToJSON),
+		meters:
+			value["meters"] == null
+				? undefined
+				: (value["meters"] as Array<any>).map(MeterToJSON),
+		products:
+			value["products"] == null
+				? null
+				: (value["products"] as Array<any>).map(ProductToJSON),
+		promotion_codes:
+			value["promotionCodes"] == null
+				? undefined
+				: (value["promotionCodes"] as Array<any>).map(PromotionCodeToJSON),
+		version: value["version"],
+		webhooks:
+			value["webhooks"] == null
+				? undefined
+				: (value["webhooks"] as Array<any>).map(WebhookEndpointConfigToJSON),
+	};
 }
-

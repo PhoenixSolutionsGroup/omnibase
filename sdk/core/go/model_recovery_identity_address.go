@@ -13,8 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the RecoveryIdentityAddress type satisfies the MappedNullable interface at compile time
@@ -23,12 +23,12 @@ var _ MappedNullable = &RecoveryIdentityAddress{}
 // RecoveryIdentityAddress struct for RecoveryIdentityAddress
 type RecoveryIdentityAddress struct {
 	AdditionalPropertiesField map[string]interface{} `json:"AdditionalProperties,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	Id string `json:"id"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty"`
-	Value string `json:"value"`
-	Via string `json:"via"`
-	AdditionalProperties map[string]interface{}
+	CreatedAt                 *time.Time             `json:"created_at,omitempty"`
+	Id                        string                 `json:"id"`
+	UpdatedAt                 *time.Time             `json:"updated_at,omitempty"`
+	Value                     string                 `json:"value"`
+	Via                       string                 `json:"via"`
+	AdditionalProperties      map[string]interface{}
 }
 
 type _RecoveryIdentityAddress RecoveryIdentityAddress
@@ -222,7 +222,7 @@ func (o *RecoveryIdentityAddress) SetVia(v string) {
 }
 
 func (o RecoveryIdentityAddress) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -266,10 +266,10 @@ func (o *RecoveryIdentityAddress) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -335,5 +335,3 @@ func (v *NullableRecoveryIdentityAddress) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

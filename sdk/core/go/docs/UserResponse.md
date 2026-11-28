@@ -2,13 +2,13 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Email** | **string** |  | 
-**FirstName** | **string** |  | 
-**LastName** | **string** |  | 
-**Role** | **string** |  | 
-**UserId** | **string** |  | 
+| Name          | Type       | Description | Notes |
+| ------------- | ---------- | ----------- | ----- |
+| **Email**     | **string** |             |
+| **FirstName** | **string** |             |
+| **LastName**  | **string** |             |
+| **Role**      | **string** |             |
+| **UserId**    | **string** |             |
 
 ## Methods
 
@@ -48,7 +48,6 @@ and a boolean to check if the value has been set.
 
 SetEmail sets Email field to given value.
 
-
 ### GetFirstName
 
 `func (o *UserResponse) GetFirstName() string`
@@ -67,7 +66,6 @@ and a boolean to check if the value has been set.
 `func (o *UserResponse) SetFirstName(v string)`
 
 SetFirstName sets FirstName field to given value.
-
 
 ### GetLastName
 
@@ -88,7 +86,6 @@ and a boolean to check if the value has been set.
 
 SetLastName sets LastName field to given value.
 
-
 ### GetRole
 
 `func (o *UserResponse) GetRole() string`
@@ -107,7 +104,6 @@ and a boolean to check if the value has been set.
 `func (o *UserResponse) SetRole(v string)`
 
 SetRole sets Role field to given value.
-
 
 ### GetUserId
 
@@ -128,8 +124,4 @@ and a boolean to check if the value has been set.
 
 SetUserId sets UserId field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

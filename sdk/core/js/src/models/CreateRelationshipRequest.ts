@@ -12,90 +12,100 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { SubjectSetRequest } from './SubjectSetRequest';
+import { mapValues } from "../runtime";
+import type { SubjectSetRequest } from "./SubjectSetRequest";
 import {
-    SubjectSetRequestFromJSON,
-    SubjectSetRequestFromJSONTyped,
-    SubjectSetRequestToJSON,
-    SubjectSetRequestToJSONTyped,
-} from './SubjectSetRequest';
+	SubjectSetRequestFromJSON,
+	SubjectSetRequestFromJSONTyped,
+	SubjectSetRequestToJSON,
+	SubjectSetRequestToJSONTyped,
+} from "./SubjectSetRequest";
 
 /**
- * 
+ *
  * @export
  * @interface CreateRelationshipRequest
  */
 export interface CreateRelationshipRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRelationshipRequest
-     */
-    namespace: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRelationshipRequest
-     */
-    object: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateRelationshipRequest
-     */
-    relation: string;
-    /**
-     * 
-     * @type {SubjectSetRequest}
-     * @memberof CreateRelationshipRequest
-     */
-    subjectSet: SubjectSetRequest;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRelationshipRequest
+	 */
+	namespace: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRelationshipRequest
+	 */
+	object: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof CreateRelationshipRequest
+	 */
+	relation: string;
+	/**
+	 *
+	 * @type {SubjectSetRequest}
+	 * @memberof CreateRelationshipRequest
+	 */
+	subjectSet: SubjectSetRequest;
 }
 
 /**
  * Check if a given object implements the CreateRelationshipRequest interface.
  */
-export function instanceOfCreateRelationshipRequest(value: object): value is CreateRelationshipRequest {
-    if (!('namespace' in value) || value['namespace'] === undefined) return false;
-    if (!('object' in value) || value['object'] === undefined) return false;
-    if (!('relation' in value) || value['relation'] === undefined) return false;
-    if (!('subjectSet' in value) || value['subjectSet'] === undefined) return false;
-    return true;
+export function instanceOfCreateRelationshipRequest(
+	value: object,
+): value is CreateRelationshipRequest {
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("relation" in value) || value["relation"] === undefined) return false;
+	if (!("subjectSet" in value) || value["subjectSet"] === undefined)
+		return false;
+	return true;
 }
 
-export function CreateRelationshipRequestFromJSON(json: any): CreateRelationshipRequest {
-    return CreateRelationshipRequestFromJSONTyped(json, false);
+export function CreateRelationshipRequestFromJSON(
+	json: any,
+): CreateRelationshipRequest {
+	return CreateRelationshipRequestFromJSONTyped(json, false);
 }
 
-export function CreateRelationshipRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateRelationshipRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'namespace': json['namespace'],
-        'object': json['object'],
-        'relation': json['relation'],
-        'subjectSet': SubjectSetRequestFromJSON(json['subject_set']),
-    };
+export function CreateRelationshipRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CreateRelationshipRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		namespace: json["namespace"],
+		object: json["object"],
+		relation: json["relation"],
+		subjectSet: SubjectSetRequestFromJSON(json["subject_set"]),
+	};
 }
 
-export function CreateRelationshipRequestToJSON(json: any): CreateRelationshipRequest {
-    return CreateRelationshipRequestToJSONTyped(json, false);
+export function CreateRelationshipRequestToJSON(
+	json: any,
+): CreateRelationshipRequest {
+	return CreateRelationshipRequestToJSONTyped(json, false);
 }
 
-export function CreateRelationshipRequestToJSONTyped(value?: CreateRelationshipRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CreateRelationshipRequestToJSONTyped(
+	value?: CreateRelationshipRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'namespace': value['namespace'],
-        'object': value['object'],
-        'relation': value['relation'],
-        'subject_set': SubjectSetRequestToJSON(value['subjectSet']),
-    };
+	return {
+		namespace: value["namespace"],
+		object: value["object"],
+		relation: value["relation"],
+		subject_set: SubjectSetRequestToJSON(value["subjectSet"]),
+	};
 }
-

@@ -2,17 +2,17 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AdditionalPropertiesField** | Pointer to **map[string]interface{}** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**Id** | Pointer to **string** |  | [optional] 
-**Status** | **string** |  | 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Value** | **string** |  | 
-**Verified** | **bool** |  | 
-**VerifiedAt** | Pointer to **time.Time** |  | [optional] 
-**Via** | **string** |  | 
+| Name                          | Type                                  | Description | Notes      |
+| ----------------------------- | ------------------------------------- | ----------- | ---------- |
+| **AdditionalPropertiesField** | Pointer to **map[string]interface{}** |             | [optional] |
+| **CreatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Id**                        | Pointer to **string**                 |             | [optional] |
+| **Status**                    | **string**                            |             |
+| **UpdatedAt**                 | Pointer to **time.Time**              |             | [optional] |
+| **Value**                     | **string**                            |             |
+| **Verified**                  | **bool**                              |             |
+| **VerifiedAt**                | Pointer to **time.Time**              |             | [optional] |
+| **Via**                       | **string**                            |             |
 
 ## Methods
 
@@ -127,7 +127,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-
 ### GetUpdatedAt
 
 `func (o *VerifiableIdentityAddress) GetUpdatedAt() time.Time`
@@ -172,7 +171,6 @@ and a boolean to check if the value has been set.
 
 SetValue sets Value field to given value.
 
-
 ### GetVerified
 
 `func (o *VerifiableIdentityAddress) GetVerified() bool`
@@ -191,7 +189,6 @@ and a boolean to check if the value has been set.
 `func (o *VerifiableIdentityAddress) SetVerified(v bool)`
 
 SetVerified sets Verified field to given value.
-
 
 ### GetVerifiedAt
 
@@ -237,8 +234,4 @@ and a boolean to check if the value has been set.
 
 SetVia sets Via field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -24,10 +24,10 @@ var _ MappedNullable = &ArchiveAllResponse{}
 type ArchiveAllResponse struct {
 	ArchiveErrors []string `json:"archive_errors"`
 	ArchivedItems []string `json:"archived_items"`
-	Message string `json:"message"`
-	TotalArchived int64 `json:"total_archived"`
-	TotalErrors int64 `json:"total_errors"`
-	Warning *string `json:"warning,omitempty"`
+	Message       string   `json:"message"`
+	TotalArchived int64    `json:"total_archived"`
+	TotalErrors   int64    `json:"total_errors"`
+	Warning       *string  `json:"warning,omitempty"`
 }
 
 type _ArchiveAllResponse ArchiveAllResponse
@@ -211,7 +211,7 @@ func (o *ArchiveAllResponse) SetWarning(v string) {
 }
 
 func (o ArchiveAllResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -252,10 +252,10 @@ func (o *ArchiveAllResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -311,5 +311,3 @@ func (v *NullableArchiveAllResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

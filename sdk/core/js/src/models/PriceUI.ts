@@ -12,101 +12,115 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { PriceLimit } from './PriceLimit';
+import { mapValues } from "../runtime";
+import type { PriceLimit } from "./PriceLimit";
 import {
-    PriceLimitFromJSON,
-    PriceLimitFromJSONTyped,
-    PriceLimitToJSON,
-    PriceLimitToJSONTyped,
-} from './PriceLimit';
-import type { PriceDisplay } from './PriceDisplay';
+	PriceLimitFromJSON,
+	PriceLimitFromJSONTyped,
+	PriceLimitToJSON,
+	PriceLimitToJSONTyped,
+} from "./PriceLimit";
+import type { PriceDisplay } from "./PriceDisplay";
 import {
-    PriceDisplayFromJSON,
-    PriceDisplayFromJSONTyped,
-    PriceDisplayToJSON,
-    PriceDisplayToJSONTyped,
-} from './PriceDisplay';
+	PriceDisplayFromJSON,
+	PriceDisplayFromJSONTyped,
+	PriceDisplayToJSON,
+	PriceDisplayToJSONTyped,
+} from "./PriceDisplay";
 
 /**
- * 
+ *
  * @export
  * @interface PriceUI
  */
 export interface PriceUI {
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceUI
-     */
-    billingPeriod?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PriceUI
-     */
-    displayName?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PriceUI
-     */
-    features?: Array<string> | null;
-    /**
-     * 
-     * @type {Array<PriceLimit>}
-     * @memberof PriceUI
-     */
-    limits?: Array<PriceLimit> | null;
-    /**
-     * 
-     * @type {PriceDisplay}
-     * @memberof PriceUI
-     */
-    priceDisplay?: PriceDisplay;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceUI
+	 */
+	billingPeriod?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof PriceUI
+	 */
+	displayName?: string;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof PriceUI
+	 */
+	features?: Array<string> | null;
+	/**
+	 *
+	 * @type {Array<PriceLimit>}
+	 * @memberof PriceUI
+	 */
+	limits?: Array<PriceLimit> | null;
+	/**
+	 *
+	 * @type {PriceDisplay}
+	 * @memberof PriceUI
+	 */
+	priceDisplay?: PriceDisplay;
 }
 
 /**
  * Check if a given object implements the PriceUI interface.
  */
 export function instanceOfPriceUI(value: object): value is PriceUI {
-    return true;
+	return true;
 }
 
 export function PriceUIFromJSON(json: any): PriceUI {
-    return PriceUIFromJSONTyped(json, false);
+	return PriceUIFromJSONTyped(json, false);
 }
 
-export function PriceUIFromJSONTyped(json: any, ignoreDiscriminator: boolean): PriceUI {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'billingPeriod': json['billing_period'] == null ? undefined : json['billing_period'],
-        'displayName': json['display_name'] == null ? undefined : json['display_name'],
-        'features': json['features'] == null ? undefined : json['features'],
-        'limits': json['limits'] == null ? undefined : ((json['limits'] as Array<any>).map(PriceLimitFromJSON)),
-        'priceDisplay': json['price_display'] == null ? undefined : PriceDisplayFromJSON(json['price_display']),
-    };
+export function PriceUIFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): PriceUI {
+	if (json == null) {
+		return json;
+	}
+	return {
+		billingPeriod:
+			json["billing_period"] == null ? undefined : json["billing_period"],
+		displayName:
+			json["display_name"] == null ? undefined : json["display_name"],
+		features: json["features"] == null ? undefined : json["features"],
+		limits:
+			json["limits"] == null
+				? undefined
+				: (json["limits"] as Array<any>).map(PriceLimitFromJSON),
+		priceDisplay:
+			json["price_display"] == null
+				? undefined
+				: PriceDisplayFromJSON(json["price_display"]),
+	};
 }
 
 export function PriceUIToJSON(json: any): PriceUI {
-    return PriceUIToJSONTyped(json, false);
+	return PriceUIToJSONTyped(json, false);
 }
 
-export function PriceUIToJSONTyped(value?: PriceUI | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function PriceUIToJSONTyped(
+	value?: PriceUI | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'billing_period': value['billingPeriod'],
-        'display_name': value['displayName'],
-        'features': value['features'],
-        'limits': value['limits'] == null ? undefined : ((value['limits'] as Array<any>).map(PriceLimitToJSON)),
-        'price_display': PriceDisplayToJSON(value['priceDisplay']),
-    };
+	return {
+		billing_period: value["billingPeriod"],
+		display_name: value["displayName"],
+		features: value["features"],
+		limits:
+			value["limits"] == null
+				? undefined
+				: (value["limits"] as Array<any>).map(PriceLimitToJSON),
+		price_display: PriceDisplayToJSON(value["priceDisplay"]),
+	};
 }
-

@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Badge** | Pointer to **string** |  | [optional] 
-**CtaText** | Pointer to **string** |  | [optional] 
-**DisplayName** | Pointer to **string** |  | [optional] 
-**Features** | Pointer to **[]string** |  | [optional] 
-**Highlighted** | Pointer to **bool** |  | [optional] 
-**SortOrder** | Pointer to **int64** |  | [optional] 
-**Tagline** | Pointer to **string** |  | [optional] 
+| Name            | Type                    | Description | Notes      |
+| --------------- | ----------------------- | ----------- | ---------- |
+| **Badge**       | Pointer to **string**   |             | [optional] |
+| **CtaText**     | Pointer to **string**   |             | [optional] |
+| **DisplayName** | Pointer to **string**   |             | [optional] |
+| **Features**    | Pointer to **[]string** |             | [optional] |
+| **Highlighted** | Pointer to **bool**     |             | [optional] |
+| **SortOrder**   | Pointer to **int64**    |             | [optional] |
+| **Tagline**     | Pointer to **string**   |             | [optional] |
 
 ## Methods
 
@@ -135,12 +135,14 @@ HasFeatures returns a boolean if a field has been set.
 
 `func (o *ProductUI) SetFeaturesNil(b bool)`
 
- SetFeaturesNil sets the value for Features to be an explicit nil
+SetFeaturesNil sets the value for Features to be an explicit nil
 
 ### UnsetFeatures
+
 `func (o *ProductUI) UnsetFeatures()`
 
 UnsetFeatures ensures that no value is present for Features, not even an explicit nil
+
 ### GetHighlighted
 
 `func (o *ProductUI) GetHighlighted() bool`
@@ -216,7 +218,4 @@ SetTagline sets Tagline field to given value.
 
 HasTagline returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

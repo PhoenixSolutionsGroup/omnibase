@@ -1,10 +1,6 @@
 {
-  "title": "Multi-Tenancy",
-  "description": "Organization management, team invitations, and data isolation",
-  "icon": "Building2",
-  "pages": [
-    "tenants",
-    "invitations",
-    "isolation"
-  ]
+	"title": "Multi-Tenancy",
+	"description": "Organization management, team invitations, and data isolation",
+	"icon": "Building2",
+	"pages": ["tenants", "invitations", "isolation"]
 }

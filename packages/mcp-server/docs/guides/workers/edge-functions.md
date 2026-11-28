@@ -1,4 +1,5 @@
 ---
+
 title: Edge Functions
 description: Deploy serverless functions at the edge with Cloudflare Workers and Hono
 ---
@@ -40,7 +41,7 @@ Open `omnibase/workers/src/index.ts`:
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-type EnvVars = any;
+type EnvVars = Record<string, unknown>;
 
 const app = new Hono<{ Bindings: EnvVars }>();
 
@@ -49,24 +50,24 @@ app.use("/*", cors());
 
 // Hello world endpoint
 app.get("/", (c) => {
-  return c.json({
-    message: "Hello from the edge!",
-    timestamp: new Date().toISOString(),
-  });
+	return c.json({
+		message: "Hello from the edge!",
+		timestamp: new Date().toISOString(),
+	});
 });
 
 // Example API endpoint
 app.get("/api/users/:id", (c) => {
-  const userId = c.req.param("id");
-  return c.json({
-    id: userId,
-    name: "John Doe",
-    email: "john@example.com",
-  });
+	const userId = c.req.param("id");
+	return c.json({
+		id: userId,
+		name: "John Doe",
+		email: "john@example.com",
+	});
 });
 
 export default {
-  fetch: app.fetch,
+	fetch: app.fetch,
 };
 ```
 
@@ -109,37 +110,37 @@ Hono provides intuitive routing with automatic parameter parsing:
 ```typescript
 // GET /api/posts
 app.get("/api/posts", async (c) => {
-  const posts = await fetchPosts();
-  return c.json(posts);
+	const posts = await fetchPosts();
+	return c.json(posts);
 });
 
 // GET /api/posts/:id
 app.get("/api/posts/:id", async (c) => {
-  const id = c.req.param("id");
-  const post = await fetchPost(id);
-  return c.json(post);
+	const id = c.req.param("id");
+	const post = await fetchPost(id);
+	return c.json(post);
 });
 
 // POST /api/posts
 app.post("/api/posts", async (c) => {
-  const body = await c.req.json();
-  const newPost = await createPost(body);
-  return c.json(newPost, 201);
+	const body = await c.req.json();
+	const newPost = await createPost(body);
+	return c.json(newPost, 201);
 });
 
 // PUT /api/posts/:id
 app.put("/api/posts/:id", async (c) => {
-  const id = c.req.param("id");
-  const body = await c.req.json();
-  const updated = await updatePost(id, body);
-  return c.json(updated);
+	const id = c.req.param("id");
+	const body = await c.req.json();
+	const updated = await updatePost(id, body);
+	return c.json(updated);
 });
 
 // DELETE /api/posts/:id
 app.delete("/api/posts/:id", async (c) => {
-  const id = c.req.param("id");
-  await deletePost(id);
-  return c.json({ success: true });
+	const id = c.req.param("id");
+	await deletePost(id);
+	return c.json({ success: true });
 });
 ```
 
@@ -175,14 +176,14 @@ Access them in your worker code via `c.env`:
 
 ```typescript
 app.get("/api/data", async (c) => {
-  const apiKey = c.env.API_KEY;
-  const dbUrl = c.env.DATABASE_URL;
+	const apiKey = c.env.API_KEY;
+	const dbUrl = c.env.DATABASE_URL;
 
-  if (!apiKey) {
-    return c.json({ error: "Missing API key" }, 401);
-  }
+	if (!apiKey) {
+		return c.json({ error: "Missing API key" }, 401);
+	}
 
-  return c.json({ data: "secure data" });
+	return c.json({ data: "secure data" });
 });
 ```
 
@@ -192,25 +193,25 @@ Define your environment variables for type safety:
 
 ```typescript
 type EnvVars = {
-  OMNIBASE_API_URL: string;
-  DATABASE_URL: string;
-  API_KEY: string;
-  STRIPE_SECRET_KEY: string;
+	OMNIBASE_API_URL: string;
+	DATABASE_URL: string;
+	API_KEY: string;
+	STRIPE_SECRET_KEY: string;
 };
 
 const app = new Hono<{ Bindings: EnvVars }>();
 
 app.get("/api/secure", async (c) => {
-  // Now c.env is fully typed with autocomplete
-  const apiUrl = c.env.OMNIBASE_API_URL;
-  const apiKey = c.env.API_KEY;
+	// Now c.env is fully typed with autocomplete
+	const apiUrl = c.env.OMNIBASE_API_URL;
+	const apiKey = c.env.API_KEY;
 
-  return c.json({ connected: true });
+	return c.json({ connected: true });
 });
 ```
 
 > **Note:**
-When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically reads from `omnibase/environments/.env.production` and injects those variables into your worker.
+> When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically reads from `omnibase/environments/.env.production` and injects those variables into your worker.
 
 ---
 
@@ -230,7 +231,7 @@ const app = new Hono();
 app.use("*", logger());
 
 app.get("/", (c) => {
-  return c.json({ message: "Logged!" });
+	return c.json({ message: "Logged!" });
 });
 ```
 
@@ -243,15 +244,18 @@ import { cors } from "hono/cors";
 const app = new Hono();
 
 // Enable CORS for all routes
-app.use("/*", cors({
-  origin: ["https://yourdomain.com"],
-  allowMethods: ["GET", "POST", "PUT", "DELETE"],
-  allowHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+app.use(
+	"/*",
+	cors({
+		origin: ["https://yourdomain.com"],
+		allowMethods: ["GET", "POST", "PUT", "DELETE"],
+		allowHeaders: ["Content-Type", "Authorization"],
+		credentials: true,
+	}),
+);
 
 app.get("/api/data", (c) => {
-  return c.json({ data: "accessible cross-origin" });
+	return c.json({ data: "accessible cross-origin" });
 });
 ```
 
@@ -264,28 +268,28 @@ app.get("/api/data", (c) => {
 ```typescript
 // Query parameters
 app.get("/search", (c) => {
-  const query = c.req.query("q");
-  const page = c.req.query("page") || "1";
-  return c.json({ query, page });
+	const query = c.req.query("q");
+	const page = c.req.query("page") || "1";
+	return c.json({ query, page });
 });
 
 // Request body (JSON)
 app.post("/api/data", async (c) => {
-  const body = await c.req.json();
-  return c.json({ received: body });
+	const body = await c.req.json();
+	return c.json({ received: body });
 });
 
 // Headers
 app.get("/info", (c) => {
-  const userAgent = c.req.header("user-agent");
-  const auth = c.req.header("authorization");
-  return c.json({ userAgent, auth });
+	const userAgent = c.req.header("user-agent");
+	const auth = c.req.header("authorization");
+	return c.json({ userAgent, auth });
 });
 
 // Route parameters
 app.get("/users/:id", (c) => {
-  const id = c.req.param("id");
-  return c.json({ userId: id });
+	const id = c.req.param("id");
+	return c.json({ userId: id });
 });
 ```
 
@@ -294,35 +298,35 @@ app.get("/users/:id", (c) => {
 ```typescript
 // JSON response
 app.get("/json", (c) => {
-  return c.json({ status: "ok" });
+	return c.json({ status: "ok" });
 });
 
 // Text response
 app.get("/text", (c) => {
-  return c.text("Plain text response");
+	return c.text("Plain text response");
 });
 
 // HTML response
 app.get("/html", (c) => {
-  return c.html("<h1>Hello World</h1>");
+	return c.html("<h1>Hello World</h1>");
 });
 
 // Custom status code
 app.get("/not-found", (c) => {
-  return c.json({ error: "Not found" }, 404);
+	return c.json({ error: "Not found" }, 404);
 });
 
 // Redirect
 app.get("/redirect", (c) => {
-  return c.redirect("/new-location");
+	return c.redirect("/new-location");
 });
 
 // Custom headers
 app.get("/custom", (c) => {
-  return c.json({ data: "value" }, 200, {
-    "X-Custom-Header": "custom-value",
-    "Cache-Control": "max-age=3600",
-  });
+	return c.json({ data: "value" }, 200, {
+		"X-Custom-Header": "custom-value",
+		"Cache-Control": "max-age=3600",
+	});
 });
 ```
 
@@ -337,30 +341,36 @@ const app = new Hono();
 
 // Global error handler
 app.onError((err, c) => {
-  console.error(`Error: ${err.message}`);
+	console.error(`Error: ${err.message}`);
 
-  return c.json({
-    error: "Internal server error",
-    message: err.message,
-  }, 500);
+	return c.json(
+		{
+			error: "Internal server error",
+			message: err.message,
+		},
+		500,
+	);
 });
 
 // Not found handler
 app.notFound((c) => {
-  return c.json({
-    error: "Not found",
-    path: c.req.path,
-  }, 404);
+	return c.json(
+		{
+			error: "Not found",
+			path: c.req.path,
+		},
+		404,
+	);
 });
 
 // Route-level error handling
 app.get("/api/risky", async (c) => {
-  try {
-    const data = await riskyOperation();
-    return c.json(data);
-  } catch (error) {
-    return c.json({ error: error.message }, 500);
-  }
+	try {
+		const data = await riskyOperation();
+		return c.json(data);
+	} catch (error) {
+		return c.json({ error: error.message }, 500);
+	}
 });
 ```
 
@@ -372,14 +382,14 @@ app.get("/api/risky", async (c) => {
 
 ```typescript
 app.get("/api/users", async (c) => {
-  const response = await fetch(`${c.env.OMNIBASE_API_URL}/v1/users`, {
-    headers: {
-      "X-Service-Key": c.env.OMNIBASE_SERVICE_KEY,
-    },
-  });
+	const response = await fetch(`${c.env.OMNIBASE_API_URL}/v1/users`, {
+		headers: {
+			"X-Service-Key": c.env.OMNIBASE_SERVICE_KEY,
+		},
+	});
 
-  const data = await response.json();
-  return c.json(data);
+	const data = await response.json();
+	return c.json(data);
 });
 ```
 
@@ -387,25 +397,29 @@ app.get("/api/users", async (c) => {
 
 ```typescript
 app.post("/webhooks/stripe", async (c) => {
-  const signature = c.req.header("stripe-signature");
-  const body = await c.req.text();
+	const signature = c.req.header("stripe-signature");
+	const body = await c.req.text();
 
-  // Verify webhook signature
-  const event = verifyStripeWebhook(body, signature, c.env.STRIPE_WEBHOOK_SECRET);
+	// Verify webhook signature
+	const event = verifyStripeWebhook(
+		body,
+		signature,
+		c.env.STRIPE_WEBHOOK_SECRET,
+	);
 
-  // Handle the event
-  switch (event.type) {
-    case "payment_intent.succeeded":
-      await handlePaymentSuccess(event.data);
-      break;
-    case "customer.subscription.updated":
-      await handleSubscriptionUpdate(event.data);
-      break;
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
-  }
+	// Handle the event
+	switch (event.type) {
+		case "payment_intent.succeeded":
+			await handlePaymentSuccess(event.data);
+			break;
+		case "customer.subscription.updated":
+			await handleSubscriptionUpdate(event.data);
+			break;
+		default:
+			console.log(`Unhandled event type: ${event.type}`);
+	}
 
-  return c.json({ received: true });
+	return c.json({ received: true });
 });
 ```
 
@@ -413,11 +427,11 @@ app.post("/webhooks/stripe", async (c) => {
 
 ```typescript
 app.get("/health", (c) => {
-  return c.json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    environment: c.env.ENVIRONMENT || "unknown",
-  });
+	return c.json({
+		status: "healthy",
+		timestamp: new Date().toISOString(),
+		environment: c.env.ENVIRONMENT || "unknown",
+	});
 });
 ```
 
@@ -432,16 +446,16 @@ Workers are optimized for quick responses. Avoid long-running operations:
 ```typescript
 // ✅ Good: Quick response
 app.post("/api/process", async (c) => {
-  const data = await c.req.json();
-  // Return immediately
-  return c.json({ queued: true });
+	const data = await c.req.json();
+	// Return immediately
+	return c.json({ queued: true });
 });
 
 // ❌ Bad: Slow operation blocks the worker
 app.post("/api/process", async (c) => {
-  const data = await c.req.json();
-  await slowProcessing(data); // Takes 10+ seconds
-  return c.json({ done: true });
+	const data = await c.req.json();
+	await slowProcessing(data); // Takes 10+ seconds
+	return c.json({ done: true });
 });
 ```
 
@@ -451,16 +465,16 @@ Get full type safety and better developer experience:
 
 ```typescript
 type EnvVars = {
-  DATABASE_URL: string;
-  API_KEY: string;
+	DATABASE_URL: string;
+	API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: EnvVars }>();
 
 // c.env is now fully typed
 app.get("/", (c) => {
-  const dbUrl = c.env.DATABASE_URL; // ✅ Autocomplete works
-  return c.json({ connected: true });
+	const dbUrl = c.env.DATABASE_URL; // ✅ Autocomplete works
+	return c.json({ connected: true });
 });
 ```
 
@@ -470,12 +484,12 @@ Always implement error handling:
 
 ```typescript
 app.onError((err, c) => {
-  console.error(`Error: ${err.message}`);
-  return c.json({ error: "Something went wrong" }, 500);
+	console.error(`Error: ${err.message}`);
+	return c.json({ error: "Something went wrong" }, 500);
 });
 
 app.notFound((c) => {
-  return c.json({ error: "Not found" }, 404);
+	return c.json({ error: "Not found" }, 404);
 });
 ```
 
@@ -487,4 +501,4 @@ app.notFound((c) => {
 - [Cloudflare Workers](https://developers.cloudflare.com/workers/) — Explore Workers platform features
 
 > **Note:**
-Need scheduled jobs or background processing? Check out the [Cron Jobs](/docs/guides/workers/cron) and [Queues](/docs/guides/workers/queues) guides (coming soon).
+> Need scheduled jobs or background processing? Check out the [Cron Jobs](/docs/guides/workers/cron) and [Queues](/docs/guides/workers/queues) guides (coming soon).

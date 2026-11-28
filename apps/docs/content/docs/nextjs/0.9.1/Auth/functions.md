@@ -1,6 +1,6 @@
 ---
-title: "Functions"
----
+
+## title: "Functions"
 
 # Functions
 
@@ -16,12 +16,14 @@ Defined in: [sdk/framework/nextjs/src/auth/session.ts:40](https://github.com/Pho
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### createSessionTokenExchangeHandler()
 
 ```ts
-function createSessionTokenExchangeHandler(__namedParameters): (req) => Promise<Response>;
+function createSessionTokenExchangeHandler(
+	__namedParameters,
+): (req) => Promise<Response>;
 ```
 
 Defined in: [sdk/framework/nextjs/src/auth/session.ts:114](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L114)
@@ -33,13 +35,13 @@ the resulting session token in the first-party cookie.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `__namedParameters` | \{ `api_url`: `string`; `cookie_domain?`: `string`; `login_path?`: `string`; `success_path?`: `string`; \} |
-| `__namedParameters.api_url` | `string` |
-| `__namedParameters.cookie_domain?` | `string` |
-| `__namedParameters.login_path?` | `string` |
-| `__namedParameters.success_path?` | `string` |
+| Parameter                          | Type                                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `__namedParameters`                | \{ `api_url`: `string`; `cookie_domain?`: `string`; `login_path?`: `string`; `success_path?`: `string`; \} |
+| `__namedParameters.api_url`        | `string`                                                                                                   |
+| `__namedParameters.cookie_domain?` | `string`                                                                                                   |
+| `__namedParameters.login_path?`    | `string`                                                                                                   |
+| `__namedParameters.success_path?`  | `string`                                                                                                   |
 
 #### Returns
 
@@ -49,15 +51,15 @@ the resulting session token in the first-party cookie.
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `req` | `Request` |
+| Parameter | Type      |
+| --------- | --------- |
+| `req`     | `Request` |
 
 ##### Returns
 
 `Promise`\<`Response`\>
 
-***
+---
 
 ### exchangeSessionToken()
 
@@ -72,16 +74,16 @@ initialization, one from the `return_to` redirect) for a session token.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `initCode` | `string` |
+| Parameter      | Type     |
+| -------------- | -------- |
+| `initCode`     | `string` |
 | `returnToCode` | `string` |
 
 #### Returns
 
 `Promise`\<`string` \| `null`\>
 
-***
+---
 
 ### getSessionConfiguration()
 
@@ -98,7 +100,7 @@ Configuration that authenticates API calls with the session token
 
 `Promise`\<`Configuration`\>
 
-***
+---
 
 ### getSessionToken()
 
@@ -112,7 +114,7 @@ Defined in: [sdk/framework/nextjs/src/auth/session.ts:24](https://github.com/Pho
 
 `Promise`\<`string` \| `undefined`\>
 
-***
+---
 
 ### getTokenSession()
 
@@ -129,7 +131,7 @@ underlying Kratos session, or null when there is no token or it is invalid.
 
 `Promise`\<`Session` \| `null`\>
 
-***
+---
 
 ### setSessionToken()
 
@@ -141,9 +143,9 @@ Defined in: [sdk/framework/nextjs/src/auth/session.ts:29](https://github.com/Pho
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `token` | `string` |
+| Parameter       | Type     |
+| --------------- | -------- |
+| `token`         | `string` |
 | `cookieDomain?` | `string` |
 
 #### Returns

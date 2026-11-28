@@ -1,403 +1,362 @@
 # [0.23.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.2...api-v0.23.0) (2026-11-27)
 
-
 ### Bug Fixes
 
-* **api:** rewrite proxied auth redirects and forward session token cookie ([b0ab2b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b0ab2b41fbf7b9dfdf8eed48c931970cfc585327))
-* **stripe:** recreate price on parent product changes ([#207](https://github.com/PhoenixSolutionsGroup/omnibase/issues/207)) ([bc65581](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bc655817c3b6326baac306e81a6759bba53d608d))
-* **stripe:** Return 422 when config_id not found instead of 404 ([c880b99](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c880b99ebab26ffc5176b0d89b825e2ee31eaed3))
-* Update middleware to resolve `omnibase_session_token` cookie ([dbafb9e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/dbafb9e468547ef5ab3f28f57418f1098ea55308))
-
+- **api:** rewrite proxied auth redirects and forward session token cookie ([b0ab2b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b0ab2b41fbf7b9dfdf8eed48c931970cfc585327))
+- **stripe:** recreate price on parent product changes ([#207](https://github.com/PhoenixSolutionsGroup/omnibase/issues/207)) ([bc65581](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bc655817c3b6326baac306e81a6759bba53d608d))
+- **stripe:** Return 422 when config_id not found instead of 404 ([c880b99](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c880b99ebab26ffc5176b0d89b825e2ee31eaed3))
+- Update middleware to resolve `omnibase_session_token` cookie ([dbafb9e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/dbafb9e468547ef5ab3f28f57418f1098ea55308))
 
 ### Features
 
-* **storage:** fetch short-lived tokens for storage from managed-hosting for non self-hosted apps ([b587328](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b5873287723eb132066f243ce4e721acb550a19a))
-* **stripe:** accept custom metadata and client_reference_id on create checkout ([#206](https://github.com/PhoenixSolutionsGroup/omnibase/issues/206)) ([3e571a6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3e571a6b44208da26165b9af4b0a6bf027e5564c))
-* **stripe:** depricate stripe endpoints for new stripe proxy  ([#210](https://github.com/PhoenixSolutionsGroup/omnibase/issues/210)) ([2d6d400](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2d6d400564bdc6e00ea3a8d4d4cfa0de79621bc9))
-* **stripe:** for managed apps proxy stripe requests through managed hosting api ([9d969b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d969b4304a954a33095b05019376d0d3ca60ce5))
-* **stripe:** Use LineItems for Stripe Checkout instead of single PriceID ([7b6052d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b6052d02fb24690b2bb3c00fad0e40ccd8b52a7))
+- **storage:** fetch short-lived tokens for storage from managed-hosting for non self-hosted apps ([b587328](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b5873287723eb132066f243ce4e721acb550a19a))
+- **stripe:** accept custom metadata and client_reference_id on create checkout ([#206](https://github.com/PhoenixSolutionsGroup/omnibase/issues/206)) ([3e571a6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3e571a6b44208da26165b9af4b0a6bf027e5564c))
+- **stripe:** depricate stripe endpoints for new stripe proxy ([#210](https://github.com/PhoenixSolutionsGroup/omnibase/issues/210)) ([2d6d400](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2d6d400564bdc6e00ea3a8d4d4cfa0de79621bc9))
+- **stripe:** for managed apps proxy stripe requests through managed hosting api ([9d969b4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d969b4304a954a33095b05019376d0d3ca60ce5))
+- **stripe:** Use LineItems for Stripe Checkout instead of single PriceID ([7b6052d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b6052d02fb24690b2bb3c00fad0e40ccd8b52a7))
 
 ## [0.22.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.1...api-v0.22.2) (2026-11-19)
 
-
 ### Bug Fixes
 
-* **docs:** correct services directory in docs ([7f83b9a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7f83b9a2dc971060d937936c3b51b6a781c39e01))
+- **docs:** correct services directory in docs ([7f83b9a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7f83b9a2dc971060d937936c3b51b6a781c39e01))
 
 ## [0.22.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.0...api-v0.22.1) (2026-11-19)
 
-
 ### Bug Fixes
 
-* **api:** correct required go version in readme ([62c66e6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/62c66e64b303888b32545b6b27d8032fda4268e5))
+- **api:** correct required go version in readme ([62c66e6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/62c66e64b303888b32545b6b27d8032fda4268e5))
 
 # [0.22.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.21.0...api-v0.22.0) (2026-11-19)
 
-
 ### Bug Fixes
 
-* **api:** add idempotency key to meter usage events ([04a095f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/04a095fe1624992f8956735d180b9fd031516e52))
-* **api:** cancel subscriptions when deleting a tenant ([d1bc853](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d1bc8531cb5f8e7e9f8388e0436eda00a44a690f))
-* **api:** correct platform fee amounts and invoice fee errors ([3522f2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3522f2d2d8816871088fa187d79522da2d3b1332))
-* **api:** count all payment method types in billing status ([d3f679f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d3f679f81f2bd65c43f8b0ae6555f1392708fc05))
-* **api:** pass Connect account and remove only the matching subscription item ([c5a817d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c5a817da72c529937778551b2e880567003cde1c))
-* **api:** require idempotency key and block duplicate subscriptions ([7bd793c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7bd793c7219d9d8c51c775ad0eeed1c0a3e04bab))
-* **api:** restrict checkout to accessible price configs ([ea61665](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ea61665ced33596be5b3e9043b73a176db58ebbf))
-* **api:** set checkout customer creation only in payment mode ([4d16d0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4d16d0e8e4a98cd61d94a33710243e19c379f428))
-* **api:** use meter payload keys for usage events ([9d594fd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d594fde78f3f8df9cb9755e0b133979fe14d55d))
-* **billing:** verify Stripe price lookup matches config ID ([4cdc723](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4cdc723b1c967ca701653fcf580f12a88f661b30))
-* **docs:** harden versioning and document API error responses ([43957a0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/43957a00915cb71566b42aa6e3a0992fb84b53ff))
-* **payments:** resolve stripe customer id from middleware ([742b807](https://github.com/PhoenixSolutionsGroup/omnibase/commit/742b8072252c75e343be75aa1809330ba75df3b9))
-* reconcile managed stripe webhooks atomically and prune stale endpoints ([a7bfd34](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a7bfd34758131cbf86df74fadf796ff2204d2c99))
-* restrict invite roles and URLs to prevent owner escalation ([e74d7e5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e74d7e5db0ccb7af4fd725747fc01522cf064864))
-* send branch id when registering managed webhooks ([cebd9b2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cebd9b2dbba86f92650573bb4906927385cb9cd4))
-* **stripe-config:** clear default price before archiving ([3669187](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3669187058df070337791487e5010ca9f634a182))
-* **stripe-config:** compare status against complete Stripe state ([ffbbe8f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ffbbe8f3ab054eba35d0cb0ff56a895696dc44bb))
-* **stripe-config:** expand coupon applies_to and list inactive promos ([7aec907](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7aec90730538c2b6df5bd4c8410a8abc85474b7d))
-* **stripe-config:** only reactivate archived prices that match desired config ([31e7934](https://github.com/PhoenixSolutionsGroup/omnibase/commit/31e79344c8e62f51cfe81a5cb0e3e4a9f3104b3b))
-* **stripe-config:** only reactivate archived prices that match desired config ([#127](https://github.com/PhoenixSolutionsGroup/omnibase/issues/127)) ([8fd3383](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8fd338338b9e5e5af5cbef2e6bf5feff85147a08))
-* **stripe-config:** prefer active promotion code when config IDs collide ([3d25fd0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3d25fd0d1b977c724b3eb6a83bb604fe5eae562d))
-* **stripe-config:** preserve decimal amounts when pulling ([1220c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1220c3e06c3d4eea59fb3ace14dcee65732bfab4))
-* **stripe-config:** reconcile against active Stripe state ([bb0240a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb0240a195add2fdc71334f60648c7c160c484fe))
-* **stripe-config:** recreate metered prices when their meter is recreated ([bb8bff0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb8bff0447983c637e70c6c9f88b778b92a32a98))
-* **stripe:** require backend key for convert endpoint and scope to connected account ([2ffe550](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ffe55067007c7387a98051c9af0ae929957fb88))
-* **stripe:** require backend key for convert endpoint and scope to connected account ([#128](https://github.com/PhoenixSolutionsGroup/omnibase/issues/128)) ([fab00e9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fab00e9aab3e602e7ffed645ef42cca55c8e0568))
-
+- **api:** add idempotency key to meter usage events ([04a095f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/04a095fe1624992f8956735d180b9fd031516e52))
+- **api:** cancel subscriptions when deleting a tenant ([d1bc853](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d1bc8531cb5f8e7e9f8388e0436eda00a44a690f))
+- **api:** correct platform fee amounts and invoice fee errors ([3522f2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3522f2d2d8816871088fa187d79522da2d3b1332))
+- **api:** count all payment method types in billing status ([d3f679f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d3f679f81f2bd65c43f8b0ae6555f1392708fc05))
+- **api:** pass Connect account and remove only the matching subscription item ([c5a817d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c5a817da72c529937778551b2e880567003cde1c))
+- **api:** require idempotency key and block duplicate subscriptions ([7bd793c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7bd793c7219d9d8c51c775ad0eeed1c0a3e04bab))
+- **api:** restrict checkout to accessible price configs ([ea61665](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ea61665ced33596be5b3e9043b73a176db58ebbf))
+- **api:** set checkout customer creation only in payment mode ([4d16d0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4d16d0e8e4a98cd61d94a33710243e19c379f428))
+- **api:** use meter payload keys for usage events ([9d594fd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9d594fde78f3f8df9cb9755e0b133979fe14d55d))
+- **billing:** verify Stripe price lookup matches config ID ([4cdc723](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4cdc723b1c967ca701653fcf580f12a88f661b30))
+- **docs:** harden versioning and document API error responses ([43957a0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/43957a00915cb71566b42aa6e3a0992fb84b53ff))
+- **payments:** resolve stripe customer id from middleware ([742b807](https://github.com/PhoenixSolutionsGroup/omnibase/commit/742b8072252c75e343be75aa1809330ba75df3b9))
+- reconcile managed stripe webhooks atomically and prune stale endpoints ([a7bfd34](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a7bfd34758131cbf86df74fadf796ff2204d2c99))
+- restrict invite roles and URLs to prevent owner escalation ([e74d7e5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e74d7e5db0ccb7af4fd725747fc01522cf064864))
+- send branch id when registering managed webhooks ([cebd9b2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cebd9b2dbba86f92650573bb4906927385cb9cd4))
+- **stripe-config:** clear default price before archiving ([3669187](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3669187058df070337791487e5010ca9f634a182))
+- **stripe-config:** compare status against complete Stripe state ([ffbbe8f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ffbbe8f3ab054eba35d0cb0ff56a895696dc44bb))
+- **stripe-config:** expand coupon applies_to and list inactive promos ([7aec907](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7aec90730538c2b6df5bd4c8410a8abc85474b7d))
+- **stripe-config:** only reactivate archived prices that match desired config ([31e7934](https://github.com/PhoenixSolutionsGroup/omnibase/commit/31e79344c8e62f51cfe81a5cb0e3e4a9f3104b3b))
+- **stripe-config:** only reactivate archived prices that match desired config ([#127](https://github.com/PhoenixSolutionsGroup/omnibase/issues/127)) ([8fd3383](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8fd338338b9e5e5af5cbef2e6bf5feff85147a08))
+- **stripe-config:** prefer active promotion code when config IDs collide ([3d25fd0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3d25fd0d1b977c724b3eb6a83bb604fe5eae562d))
+- **stripe-config:** preserve decimal amounts when pulling ([1220c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1220c3e06c3d4eea59fb3ace14dcee65732bfab4))
+- **stripe-config:** reconcile against active Stripe state ([bb0240a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb0240a195add2fdc71334f60648c7c160c484fe))
+- **stripe-config:** recreate metered prices when their meter is recreated ([bb8bff0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb8bff0447983c637e70c6c9f88b778b92a32a98))
+- **stripe:** require backend key for convert endpoint and scope to connected account ([2ffe550](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ffe55067007c7387a98051c9af0ae929957fb88))
+- **stripe:** require backend key for convert endpoint and scope to connected account ([#128](https://github.com/PhoenixSolutionsGroup/omnibase/issues/128)) ([fab00e9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fab00e9aab3e602e7ffed645ef42cca55c8e0568))
 
 ### Features
 
-* **api:** add tenant, system, and email history schema ([b3bab23](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b3bab239bab383d697a39c07fcccb7e86d1a7c09))
-* **api:** validate required config at startup ([cfcd89f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cfcd89f55ca8a8a4aae978980138608e3655b90f))
-* **cli:** pin service versions in omnibase init and drop docker-compose sync ([985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906)), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
-* **email:** record delivery history and rate limit sends per tenant ([e894528](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e894528e1404d8d6451861943787865f4130b221))
-* **email:** scope templates to tenants and split system/send endpoints ([ca5c762](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ca5c7622b721af6a2932bdcfc2c6a97900488429))
-* **permissions:** add email send and template management permissions ([2f2cd52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2f2cd528291ed4e61f0cd71a10230e40ec65e962))
-* **permissions:** API owns required namespaces and validates projects ([1e94d44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1e94d44e4c1837ffb2e1043594e65df1f05fd192))
-* proxy PostgREST through the API and remove client-held PostgREST tokens ([49d317f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/49d317f00f94a78ac71e719c08ee8f76622e8553))
-* **stripe-config:** add drift status endpoint ([8469a31](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8469a31ef4aa6c6d4779942d357c5e35cef2755e))
-* **stripe-config:** pull config identities from Stripe tags ([419d89e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/419d89e79dc8cdbcdfd8d17b0dd21b9daee836fa))
-* **stripe-config:** reconcile managed resources against live Stripe ([8cfcc16](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8cfcc16d4d86968c8c69393af40a65789d97ba73))
-* **stripe-config:** scope archive-all to managed resources ([1367403](https://github.com/PhoenixSolutionsGroup/omnibase/commit/136740362813e551bfdc90902db2671951f84541))
-* **stripe-config:** tag managed Stripe objects with config identity ([f41d24c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f41d24c778e4446dc34add9ed3ed4e76200aab69))
-* support metadata on stripe products and prices ([f4cf420](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f4cf420869cdb78411fe384d9c9bc473a22880d1))
+- **api:** add tenant, system, and email history schema ([b3bab23](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b3bab239bab383d697a39c07fcccb7e86d1a7c09))
+- **api:** validate required config at startup ([cfcd89f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cfcd89f55ca8a8a4aae978980138608e3655b90f))
+- **cli:** pin service versions in omnibase init and drop docker-compose sync ([985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906)), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
+- **email:** record delivery history and rate limit sends per tenant ([e894528](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e894528e1404d8d6451861943787865f4130b221))
+- **email:** scope templates to tenants and split system/send endpoints ([ca5c762](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ca5c7622b721af6a2932bdcfc2c6a97900488429))
+- **permissions:** add email send and template management permissions ([2f2cd52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2f2cd528291ed4e61f0cd71a10230e40ec65e962))
+- **permissions:** API owns required namespaces and validates projects ([1e94d44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1e94d44e4c1837ffb2e1043594e65df1f05fd192))
+- proxy PostgREST through the API and remove client-held PostgREST tokens ([49d317f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/49d317f00f94a78ac71e719c08ee8f76622e8553))
+- **stripe-config:** add drift status endpoint ([8469a31](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8469a31ef4aa6c6d4779942d357c5e35cef2755e))
+- **stripe-config:** pull config identities from Stripe tags ([419d89e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/419d89e79dc8cdbcdfd8d17b0dd21b9daee836fa))
+- **stripe-config:** reconcile managed resources against live Stripe ([8cfcc16](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8cfcc16d4d86968c8c69393af40a65789d97ba73))
+- **stripe-config:** scope archive-all to managed resources ([1367403](https://github.com/PhoenixSolutionsGroup/omnibase/commit/136740362813e551bfdc90902db2671951f84541))
+- **stripe-config:** tag managed Stripe objects with config identity ([f41d24c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f41d24c778e4446dc34add9ed3ed4e76200aab69))
+- support metadata on stripe products and prices ([f4cf420](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f4cf420869cdb78411fe384d9c9bc473a22880d1))
 
 # [0.21.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.5...api-v0.21.0) (2026-10-29)
 
-
 ### Bug Fixes
 
-* **api:** require service key for meter usage recording ([e012f4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e012f4adf23a2944c2c5e73ef6a26a9c2b6f8ecf))
-* **api:** require service key for permission relationship writes ([e369c15](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e369c155d0e6aaa5897f5d28852e8a98affc98a4))
-* **auth:** avoid a null SES tenant header ([013974b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/013974b6b2ca8c1f5c7d43e5a5a78252b35ca7f6))
-* **db:** make RLS helpers SECURITY DEFINER and narrow anon_user grants ([471ae36](https://github.com/PhoenixSolutionsGroup/omnibase/commit/471ae36a6419a7d2280fc2f6655d01ad1bbcf79d))
-
+- **api:** require service key for meter usage recording ([e012f4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e012f4adf23a2944c2c5e73ef6a26a9c2b6f8ecf))
+- **api:** require service key for permission relationship writes ([e369c15](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e369c155d0e6aaa5897f5d28852e8a98affc98a4))
+- **auth:** avoid a null SES tenant header ([013974b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/013974b6b2ca8c1f5c7d43e5a5a78252b35ca7f6))
+- **db:** make RLS helpers SECURITY DEFINER and narrow anon_user grants ([471ae36](https://github.com/PhoenixSolutionsGroup/omnibase/commit/471ae36a6419a7d2280fc2f6655d01ad1bbcf79d))
 
 ### Features
 
-* **api:** add app-key user mode ([4f39053](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4f390532f6ecbe84b86745ed1fac690abf6a43c1))
-* **api:** add tenant permission middleware ([7ad856c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7ad856c26b7aa8b7be1cd85aefe8f22e7de8b3be))
+- **api:** add app-key user mode ([4f39053](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4f390532f6ecbe84b86745ed1fac690abf6a43c1))
+- **api:** add tenant permission middleware ([7ad856c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7ad856c26b7aa8b7be1cd85aefe8f22e7de8b3be))
 
 ## [0.20.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.4...api-v0.20.5) (2026-10-11)
 
-
 ### Bug Fixes
 
-* remove set-cookie header rewrite ([32f62f1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/32f62f1989b21b51f82d07f26faa5ec3dc2bb5f6))
-* skip Origin header ([0aac259](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0aac25923a5c5ee5de3f301b4f6fd3506ca00a72))
+- remove set-cookie header rewrite ([32f62f1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/32f62f1989b21b51f82d07f26faa5ec3dc2bb5f6))
+- skip Origin header ([0aac259](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0aac25923a5c5ee5de3f301b4f6fd3506ca00a72))
 
 ## [0.20.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.3...api-v0.20.4) (2026-09-16)
 
-
 ### Bug Fixes
 
-* **api:** trim whitespace on session token header ([17f2c44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/17f2c44c87ecca1a30b0d53d5deff201081a3582))
+- **api:** trim whitespace on session token header ([17f2c44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/17f2c44c87ecca1a30b0d53d5deff201081a3582))
 
 ## [0.20.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.2...api-v0.20.3) (2026-07-24)
 
-
 ### Bug Fixes
 
-* retry migrations on connection failures (for scale-to-zero) ([4b4e80b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4b4e80bed67a3fef233616f57c5260932315b67b))
+- retry migrations on connection failures (for scale-to-zero) ([4b4e80b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4b4e80bed67a3fef233616f57c5260932315b67b))
 
 ## [0.20.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.1...api-v0.20.2) (2026-07-24)
 
-
 ### Bug Fixes
 
-* ensure /tmp dir in Dockerfile ([926434f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/926434f9a78630bde5317a3ca16b9c2d7e991860))
+- ensure /tmp dir in Dockerfile ([926434f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/926434f9a78630bde5317a3ca16b9c2d7e991860))
 
 ## [0.20.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.0...api-v0.20.1) (2026-07-24)
 
-
 ### Bug Fixes
 
-* add ApiServiceKey environment variable ([9e0d81a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9e0d81a25f85365978ab54801c4ef11f82410d42))
-* Add Service Key to docker-compose and tests ([f98fdd5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f98fdd5e5b6242c4c4041cb29ea890785ad8259c))
-* Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
+- add ApiServiceKey environment variable ([9e0d81a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9e0d81a25f85365978ab54801c4ef11f82410d42))
+- Add Service Key to docker-compose and tests ([f98fdd5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f98fdd5e5b6242c4c4041cb29ea890785ad8259c))
+- Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
 
 # [0.20.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.1...api-v0.20.0) (2026-07-07)
 
-
 ### Bug Fixes
 
-* **api:** parse_permission caser data race under concurrent load ([daa5c10](https://github.com/PhoenixSolutionsGroup/omnibase/commit/daa5c101b9e1806dc203e3b90924efe5d0a352e9))
-* **api:** perf tests missing required tenant type field ([6aa8f13](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6aa8f1329a9bb29b7a723d64fff9e3e882e07982))
-* **release:** pass API_VERSION through prepare + drop deleted spec asset refs ([88c4426](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88c44261bae76095616304651fe6798c6c386b39))
-
+- **api:** parse_permission caser data race under concurrent load ([daa5c10](https://github.com/PhoenixSolutionsGroup/omnibase/commit/daa5c101b9e1806dc203e3b90924efe5d0a352e9))
+- **api:** perf tests missing required tenant type field ([6aa8f13](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6aa8f1329a9bb29b7a723d64fff9e3e882e07982))
+- **release:** pass API_VERSION through prepare + drop deleted spec asset refs ([88c4426](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88c44261bae76095616304651fe6798c6c386b39))
 
 ### Features
 
-* **api:** add handlers/ctx helpers and slim responses ([4128c98](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4128c98fdf7e0db7fc7fd5255a8757b71d61db75))
-* **api:** add services/auth (kratos identity + metadata) ([003bea5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/003bea578dfa62346126cfb25320c8ec02896246))
-* **api:** add services/email (SMTP send with template) ([88a8a87](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88a8a877423e81e8bb1b02f8bdda9932815616c1))
-* **api:** add services/permissions and rbac ([ac05573](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ac055734ee209fba8cc27b5cdbbe37c9d1fc81e6))
-* **api:** add services/tenants (JWT, active tenant, cleanup) ([ec74e4e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ec74e4e01bf8dc28d9b064baeefe4afdca689c56))
-* **api:** add sqlc queries and generated repository ([b2ac570](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b2ac570f169e60dc3ed16d334f37365d2f31b52d))
-* **api:** collapse stripe_config pyramid into services/stripe_config ([641c888](https://github.com/PhoenixSolutionsGroup/omnibase/commit/641c888ef1287d95638dfaf745c26b7b385f2b10))
-* **api:** port db/payments/permissions/stripe sub-packages to huma ([c75fbf3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c75fbf3e8cc4d53956ac510d34ac23f5c084eb08))
-* **api:** port email + storage sub-packages to huma ([3a4a2e7](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3a4a2e79a428d12fe8d047a0ad960823c0d8563a))
-* **api:** port full auth sub-package to huma ([a139cb5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a139cb52bd2b341e63942a2b376dd5f72655b909))
-* **api:** port tenants/ sub-package to huma ([121ea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/121ea9de25d960da7682eb67d3938be9439060f6))
-* **api:** port whoami to huma + introduce AuthCtx resolver ([8dcf4bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8dcf4bf27cfbab8a8cab0b5e7a0c144c14b1a130))
-* **api:** wire SDK gen from huma spec + split tenants tag + API_VERSION env ([bd7fcdc](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bd7fcdc0e5eb7e7591aff834950ea383490063d2))
-* Prisma Schema + Down Migrations + definePolicy RLS Compiler ([2120c4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2120c4a1842bdf50efc17e741a5f638c3b633903))
+- **api:** add handlers/ctx helpers and slim responses ([4128c98](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4128c98fdf7e0db7fc7fd5255a8757b71d61db75))
+- **api:** add services/auth (kratos identity + metadata) ([003bea5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/003bea578dfa62346126cfb25320c8ec02896246))
+- **api:** add services/email (SMTP send with template) ([88a8a87](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88a8a877423e81e8bb1b02f8bdda9932815616c1))
+- **api:** add services/permissions and rbac ([ac05573](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ac055734ee209fba8cc27b5cdbbe37c9d1fc81e6))
+- **api:** add services/tenants (JWT, active tenant, cleanup) ([ec74e4e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ec74e4e01bf8dc28d9b064baeefe4afdca689c56))
+- **api:** add sqlc queries and generated repository ([b2ac570](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b2ac570f169e60dc3ed16d334f37365d2f31b52d))
+- **api:** collapse stripe_config pyramid into services/stripe_config ([641c888](https://github.com/PhoenixSolutionsGroup/omnibase/commit/641c888ef1287d95638dfaf745c26b7b385f2b10))
+- **api:** port db/payments/permissions/stripe sub-packages to huma ([c75fbf3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c75fbf3e8cc4d53956ac510d34ac23f5c084eb08))
+- **api:** port email + storage sub-packages to huma ([3a4a2e7](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3a4a2e79a428d12fe8d047a0ad960823c0d8563a))
+- **api:** port full auth sub-package to huma ([a139cb5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a139cb52bd2b341e63942a2b376dd5f72655b909))
+- **api:** port tenants/ sub-package to huma ([121ea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/121ea9de25d960da7682eb67d3938be9439060f6))
+- **api:** port whoami to huma + introduce AuthCtx resolver ([8dcf4bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8dcf4bf27cfbab8a8cab0b5e7a0c144c14b1a130))
+- **api:** wire SDK gen from huma spec + split tenants tag + API_VERSION env ([bd7fcdc](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bd7fcdc0e5eb7e7591aff834950ea383490063d2))
+- Prisma Schema + Down Migrations + definePolicy RLS Compiler ([2120c4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2120c4a1842bdf50efc17e741a5f638c3b633903))
 
 ## [0.19.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.0...api-v0.19.1) (2026-06-03)
 
-
 ### Bug Fixes
 
-* make /health/ready checks accurate and concurrent ([0973b2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0973b2db81f6c01ab23d6fdd3ff214d101464c8e))
+- make /health/ready checks accurate and concurrent ([0973b2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0973b2db81f6c01ab23d6fdd3ff214d101464c8e))
 
 # [0.19.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.1...api-v0.19.0) (2026-05-30)
 
-
 ### Bug Fixes
 
-* **api:** add CORS_ALLOWED_ORIGINS to compose and drop typegen from readiness ([2357c97](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2357c978237430b545eb116e23eab9c9989a67a0))
-* **api:** handle FK violations, SELinux mounts, and contract test gaps ([7686e20](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7686e2052d7cd275076a18844d3df88c52da39e6))
-* **api:** require explicit CORS origin whitelist ([9cecce6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9cecce6a4c1065a560689e6e272ab30ece121d94))
-* **api:** restrict X-Stripe-Customer-Id header to service key auth ([64a46bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64a46bfeb5802ef541b2e88aad8e2221085ad00f))
-* **api:** return 400 for Stripe client errors in RecordUsage ([2b500c5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b500c578a461750cdd72e7c4de90326ec488733))
-* **api:** use constant-time comparison for service key validation ([ad7e949](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ad7e949c1daf6ba06d9f3610fb2e38f8645bd331))
-* retry db connections ([5bbfbcf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5bbfbcfe88f85daa9f8d24e19256998557edb7c4))
-
+- **api:** add CORS_ALLOWED_ORIGINS to compose and drop typegen from readiness ([2357c97](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2357c978237430b545eb116e23eab9c9989a67a0))
+- **api:** handle FK violations, SELinux mounts, and contract test gaps ([7686e20](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7686e2052d7cd275076a18844d3df88c52da39e6))
+- **api:** require explicit CORS origin whitelist ([9cecce6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9cecce6a4c1065a560689e6e272ab30ece121d94))
+- **api:** restrict X-Stripe-Customer-Id header to service key auth ([64a46bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64a46bfeb5802ef541b2e88aad8e2221085ad00f))
+- **api:** return 400 for Stripe client errors in RecordUsage ([2b500c5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b500c578a461750cdd72e7c4de90326ec488733))
+- **api:** use constant-time comparison for service key validation ([ad7e949](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ad7e949c1daf6ba06d9f3610fb2e38f8645bd331))
+- retry db connections ([5bbfbcf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5bbfbcfe88f85daa9f8d24e19256998557edb7c4))
 
 ### Features
 
-* **api:** add make-public endpoint and object ID to OpenAPI spec ([ba95243](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ba9524319ac03062a16770db8db1c7494c0b67a6))
-* **api:** replace PostgREST storage with Keto per-object permissions ([25f3b90](https://github.com/PhoenixSolutionsGroup/omnibase/commit/25f3b90fb832b06a0d1bd0968b771396d2b25a6b))
-* mcp server ([52f2a74](https://github.com/PhoenixSolutionsGroup/omnibase/commit/52f2a741476cefaf6f00be9ed892020056fb8216))
+- **api:** add make-public endpoint and object ID to OpenAPI spec ([ba95243](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ba9524319ac03062a16770db8db1c7494c0b67a6))
+- **api:** replace PostgREST storage with Keto per-object permissions ([25f3b90](https://github.com/PhoenixSolutionsGroup/omnibase/commit/25f3b90fb832b06a0d1bd0968b771396d2b25a6b))
+- mcp server ([52f2a74](https://github.com/PhoenixSolutionsGroup/omnibase/commit/52f2a741476cefaf6f00be9ed892020056fb8216))
 
 ## [0.18.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.0...api-v0.18.1) (2026-02-07)
 
-
 ### Bug Fixes
 
-* **api:** update webhook registration to use managed hosting registration ID ([d6f29d1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d6f29d1ba33a05bccb7a637267c12a51a7391c7d))
+- **api:** update webhook registration to use managed hosting registration ID ([d6f29d1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d6f29d1ba33a05bccb7a637267c12a51a7391c7d))
 
 # [0.18.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.17.0...api-v0.18.0) (2026-02-06)
 
-
 ### Bug Fixes
 
-* **api:** ensure roles array is never null in API response ([f359f0c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f359f0cd90eae9de5f46303581b93e8a467ee2da))
-* **api:** use JSDoc [@role](https://github.com/role) annotations for role template creation ([8c06504](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8c065041a6f75f73eb235fa5e490be0deaff9610))
-
+- **api:** ensure roles array is never null in API response ([f359f0c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f359f0cd90eae9de5f46303581b93e8a467ee2da))
+- **api:** use JSDoc [@role](https://github.com/role) annotations for role template creation ([8c06504](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8c065041a6f75f73eb235fa5e490be0deaff9610))
 
 ### Features
 
-* **api:** add JSDoc metadata parsing for permission relations ([6ad5a80](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ad5a8083f21672a02f76c9091c0b82f2f585921))
+- **api:** add JSDoc metadata parsing for permission relations ([6ad5a80](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ad5a8083f21672a02f76c9091c0b82f2f585921))
 
 # [0.17.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.16.0...api-v0.17.0) (2026-01-22)
 
-
 ### Features
 
-* **release:** auto-sync docker image versions to CLI on release ([505ed28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/505ed28851e452b70f6a698d331e11134d05dd08))
+- **release:** auto-sync docker image versions to CLI on release ([505ed28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/505ed28851e452b70f6a698d331e11134d05dd08))
 
 # [0.16.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.15.0...api-v0.16.0) (2026-01-22)
 
-
 ### Bug Fixes
 
-* **api:** use Kratos API for tenant users instead of direct DB join ([e11b2af](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e11b2af9be69e0f58c01786bad50f0ccebe47152))
-
+- **api:** use Kratos API for tenant users instead of direct DB join ([e11b2af](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e11b2af9be69e0f58c01786bad50f0ccebe47152))
 
 ### Features
 
-* **api:** add storage service to health check ([47e7047](https://github.com/PhoenixSolutionsGroup/omnibase/commit/47e704748188ca112867afbcf8825cccf8d4f116))
+- **api:** add storage service to health check ([47e7047](https://github.com/PhoenixSolutionsGroup/omnibase/commit/47e704748188ca112867afbcf8825cccf8d4f116))
 
 # [0.15.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.14.0...api-v0.15.0) (2026-01-18)
 
-
 ### Features
 
-* **api:** add tenant type support (organization/individual) ([9ba2615](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9ba261518275a382a13afc8baf0c231e4395f6e2))
+- **api:** add tenant type support (organization/individual) ([9ba2615](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9ba261518275a382a13afc8baf0c231e4395f6e2))
 
 # [0.14.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.13.0...api-v0.14.0) (2026-01-14)
 
-
 ### Features
 
-* **api:** add Cloud Run identity token auth for Ory services ([5daaf2e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5daaf2e13e2aab1731f3f9137b75272301c8ce69))
-* **api:** add price calculation endpoint for usage cost estimation ([c63b46f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c63b46ffac54424815e963585f8bfaf4d43d331e))
-* **api:** add price cost calculation endpoint ([2831d6c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2831d6c223629dfc06a18a11a6be37783f915d6d))
+- **api:** add Cloud Run identity token auth for Ory services ([5daaf2e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5daaf2e13e2aab1731f3f9137b75272301c8ce69))
+- **api:** add price calculation endpoint for usage cost estimation ([c63b46f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c63b46ffac54424815e963585f8bfaf4d43d331e))
+- **api:** add price cost calculation endpoint ([2831d6c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2831d6c223629dfc06a18a11a6be37783f915d6d))
 
 # [0.13.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.6...api-v0.13.0) (2026-01-13)
 
-
 ### Bug Fixes
 
-* **api:** add pattern validation to typegen schemas parameter ([378418b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/378418ba1aad76fbf63e5f1608ff20b95d12f5bd))
-* **api:** handle missing products gracefully in archive operation ([d2cb08b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2cb08bf008140e0b6e7934692fbc24b79bd81f3))
-* **api:** include all stripe IDs in config response ([20fdf21](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20fdf213968d187b24b4e0b01edaf3aef7b3bc4e))
-* **api:** rewrite Location and Set-Cookie headers in auth proxy ([6f81cdf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6f81cdf773a2f25b23aaedc832958da83e9f3217))
-
+- **api:** add pattern validation to typegen schemas parameter ([378418b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/378418ba1aad76fbf63e5f1608ff20b95d12f5bd))
+- **api:** handle missing products gracefully in archive operation ([d2cb08b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2cb08bf008140e0b6e7934692fbc24b79bd81f3))
+- **api:** include all stripe IDs in config response ([20fdf21](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20fdf213968d187b24b4e0b01edaf3aef7b3bc4e))
+- **api:** rewrite Location and Set-Cookie headers in auth proxy ([6f81cdf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6f81cdf773a2f25b23aaedc832958da83e9f3217))
 
 ### Features
 
-* **api:** add comprehensive health ready endpoint ([c01cf28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c01cf282b74d6ddfc8ad9d211a6489d1c320c7d9))
-* **api:** add database typegen endpoint ([4346e04](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4346e04bcc16a3a9543275081e9b54bb2fc98c57))
-* **api:** add enterprise pricing support ([839ef19](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839ef19056587801c47de72501c52888879967d1))
-* **api:** add postgrest and typegen to health ready check ([2540408](https://github.com/PhoenixSolutionsGroup/omnibase/commit/254040818387ee71516421efa4c304a7247194da))
-* **api:** add stripe coupons and promotion codes support ([9876ddf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9876ddfe15f7eff02a1ca68e5b797b39a0c4242b))
+- **api:** add comprehensive health ready endpoint ([c01cf28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c01cf282b74d6ddfc8ad9d211a6489d1c320c7d9))
+- **api:** add database typegen endpoint ([4346e04](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4346e04bcc16a3a9543275081e9b54bb2fc98c57))
+- **api:** add enterprise pricing support ([839ef19](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839ef19056587801c47de72501c52888879967d1))
+- **api:** add postgrest and typegen to health ready check ([2540408](https://github.com/PhoenixSolutionsGroup/omnibase/commit/254040818387ee71516421efa4c304a7247194da))
+- **api:** add stripe coupons and promotion codes support ([9876ddf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9876ddfe15f7eff02a1ca68e5b797b39a0c4242b))
 
 ## [0.12.6](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.5...api-v0.12.6) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **ci:** update git-user-id to phoenixsolutionsgroup from PhoenixSolutionsGroup for go package ([a2f7c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a2f7c3e148f91b16ffa8cf15b703137af8f9fb1f))
+- **ci:** update git-user-id to phoenixsolutionsgroup from PhoenixSolutionsGroup for go package ([a2f7c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a2f7c3e148f91b16ffa8cf15b703137af8f9fb1f))
 
 ## [0.12.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.4...api-v0.12.5) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **release:** stage SDK files explicitly in prepare script ([c7cdc4d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c7cdc4d2475b8f255c592ed0826ba3108304a1b2))
+- **release:** stage SDK files explicitly in prepare script ([c7cdc4d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c7cdc4d2475b8f255c592ed0826ba3108304a1b2))
 
 ## [0.12.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.3...api-v0.12.4) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **ci:** api redeploy ([add8bee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/add8bee2728d92a6669d9fd416acdd5b3f785cc5))
+- **ci:** api redeploy ([add8bee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/add8bee2728d92a6669d9fd416acdd5b3f785cc5))
 
 ## [0.12.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.2...api-v0.12.3) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **cli:** add test mode and refactor docker compose to base + override pattern ([713b302](https://github.com/PhoenixSolutionsGroup/omnibase/commit/713b3021f0f60d3b589afc38c12f0bc154674cdd))
+- **cli:** add test mode and refactor docker compose to base + override pattern ([713b302](https://github.com/PhoenixSolutionsGroup/omnibase/commit/713b3021f0f60d3b589afc38c12f0bc154674cdd))
 
 ## [0.12.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.1...api-v0.12.2) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **release:** include generated SDK files in release commit ([41e87f5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/41e87f570c313eb674054da73e57a0273020ed05))
+- **release:** include generated SDK files in release commit ([41e87f5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/41e87f570c313eb674054da73e57a0273020ed05))
 
 ## [0.12.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.0...api-v0.12.1) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **release:** add package.json for Go projects ([829ab1c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/829ab1c26705b28cf970dce475ed942aa152c83d))
-* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+- **release:** add package.json for Go projects ([829ab1c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/829ab1c26705b28cf970dce475ed942aa152c83d))
+- **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
 
 ## [0.12.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.0...api-v0.12.1) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **release:** add package.json for Go projects ([829ab1c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/829ab1c26705b28cf970dce475ed942aa152c83d))
-* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+- **release:** add package.json for Go projects ([829ab1c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/829ab1c26705b28cf970dce475ed942aa152c83d))
+- **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
 
 # [0.12.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.11.0...api-v0.12.0) (2026-01-07)
 
-
 ### Bug Fixes
 
-* **release:** add repository field for npm provenance ([d042f55](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d042f55a39e996e6dbc172ffe102de200b81db0d))
-* **release:** remove --provenance flag and use npm token auth ([5309948](https://github.com/PhoenixSolutionsGroup/omnibase/commit/53099480197916568874da3a982b55ce0c752a45))
-* **release:** use bun publish to resolve workspace dependencies ([4885ee1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4885ee132f9f8735feba5e2d0c55cd8e9773631a))
-* **release:** use npm publish with OIDC provenance for trusted publishing ([f837221](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8372211e9d77ee1d7f2059cf1fbe76733b76104))
-
+- **release:** add repository field for npm provenance ([d042f55](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d042f55a39e996e6dbc172ffe102de200b81db0d))
+- **release:** remove --provenance flag and use npm token auth ([5309948](https://github.com/PhoenixSolutionsGroup/omnibase/commit/53099480197916568874da3a982b55ce0c752a45))
+- **release:** use bun publish to resolve workspace dependencies ([4885ee1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4885ee132f9f8735feba5e2d0c55cd8e9773631a))
+- **release:** use npm publish with OIDC provenance for trusted publishing ([f837221](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8372211e9d77ee1d7f2059cf1fbe76733b76104))
 
 ### Features
 
-* **api:** add tenant lookup endpoints ([64d9850](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64d98500ba1a583d7bd40d8509d00c88ac50bbe6))
+- **api:** add tenant lookup endpoints ([64d9850](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64d98500ba1a583d7bd40d8509d00c88ac50bbe6))
 
 # [0.11.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.10.2...api-v0.11.0) (2026-01-05)
 
-
 ### Bug Fixes
 
-* **api:** add missing return after error in UpdateConfig handler ([57a6e29](https://github.com/PhoenixSolutionsGroup/omnibase/commit/57a6e29d860e1ee3649e30ce0b61b747e6ed0b00))
-* **api:** add webhook duplicate URL and empty event validation ([6ec19ee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ec19ee921f1895f908cf85f2bff815a554eafd9))
-* **api:** change price amount type to float64 for decimal support ([7b072e4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b072e48f5611311ea169d8188e7cd4b352d97fa))
-* **api:** improve Stripe error handling and invoice ID validation ([4785ec3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4785ec3fc1a5450bd6f12f43c88c37be47575dac))
-* **api:** resolve contract test failures for Stripe endpoints ([6faea3a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6faea3af2116fb86ce6f4e54bc9293e65008bfb3))
-* **api:** return empty array instead of null for tenant users ([091058f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/091058f5f5ee8dc9a9a96ffd383bc54cd8227918))
-* **api:** treat Keto 400 as 404 for relationship deletion ([79df0c9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/79df0c99012ca8d9868550dce4c4374ad312bf26))
-* **ci:** also show logs on workflow cancellation ([19a56b5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/19a56b505e409f7e299df6efa9cdbe648113feb0))
-* **ci:** call scripts directly in release-api-prepare ([da13938](https://github.com/PhoenixSolutionsGroup/omnibase/commit/da13938eb460eeeff6aa164ee1a5796d98a3d7e2))
-* **ci:** improve Auth readiness checks and add failure logging ([2b35ae8](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b35ae8ffd52c80a7af67c78d39d31bfbd692ba8))
-* **ci:** improve caching in release workflow ([c48ce58](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c48ce58d5bd47c9eb317e392fc748a83c9eaa154))
-* **ci:** improve Keto readiness checks to prevent test failures ([965d700](https://github.com/PhoenixSolutionsGroup/omnibase/commit/965d700659255806bb31987c8e77a4273e72471c))
-* **ci:** serialize release jobs to prevent race conditions ([ed2e043](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ed2e04324b832c84874d7544ecd6f3845ba4fdf8))
-* **ci:** update node version and fix ES module errors in release workflow ([bf97a60](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bf97a60828da514a5b575ab94ca25033abfabc61))
-* **ci:** upgrade to Node 24 for npm trusted publishing ([cf5dc10](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cf5dc10128c887b0e439888aa5ad4ec46c754393))
-* **ci:** use jq instead of npm for SDK version update ([20dde0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20dde0e7894893c492ce141156e01f03456b14f6))
-* **cli:** add default values for required Kratos environment variables ([40e99aa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/40e99aae14111d3733bdf34b6a6a5da4e6635417))
-* **cli:** add missing adm-zip dependency ([145df41](https://github.com/PhoenixSolutionsGroup/omnibase/commit/145df41ded35c64a80b3da57face700efaba270c))
-* **payments:** return proper HTTP status codes for Stripe errors ([3f46cad](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3f46cad9fd61120ee9d376b131e398911f93370c))
-* **tests:** increase schemathesis workers and rate limit ([1d0f0b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1d0f0b6ce6be46f4b4232af809e69393302d3dfb))
-
+- **api:** add missing return after error in UpdateConfig handler ([57a6e29](https://github.com/PhoenixSolutionsGroup/omnibase/commit/57a6e29d860e1ee3649e30ce0b61b747e6ed0b00))
+- **api:** add webhook duplicate URL and empty event validation ([6ec19ee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ec19ee921f1895f908cf85f2bff815a554eafd9))
+- **api:** change price amount type to float64 for decimal support ([7b072e4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b072e48f5611311ea169d8188e7cd4b352d97fa))
+- **api:** improve Stripe error handling and invoice ID validation ([4785ec3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4785ec3fc1a5450bd6f12f43c88c37be47575dac))
+- **api:** resolve contract test failures for Stripe endpoints ([6faea3a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6faea3af2116fb86ce6f4e54bc9293e65008bfb3))
+- **api:** return empty array instead of null for tenant users ([091058f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/091058f5f5ee8dc9a9a96ffd383bc54cd8227918))
+- **api:** treat Keto 400 as 404 for relationship deletion ([79df0c9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/79df0c99012ca8d9868550dce4c4374ad312bf26))
+- **ci:** also show logs on workflow cancellation ([19a56b5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/19a56b505e409f7e299df6efa9cdbe648113feb0))
+- **ci:** call scripts directly in release-api-prepare ([da13938](https://github.com/PhoenixSolutionsGroup/omnibase/commit/da13938eb460eeeff6aa164ee1a5796d98a3d7e2))
+- **ci:** improve Auth readiness checks and add failure logging ([2b35ae8](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b35ae8ffd52c80a7af67c78d39d31bfbd692ba8))
+- **ci:** improve caching in release workflow ([c48ce58](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c48ce58d5bd47c9eb317e392fc748a83c9eaa154))
+- **ci:** improve Keto readiness checks to prevent test failures ([965d700](https://github.com/PhoenixSolutionsGroup/omnibase/commit/965d700659255806bb31987c8e77a4273e72471c))
+- **ci:** serialize release jobs to prevent race conditions ([ed2e043](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ed2e04324b832c84874d7544ecd6f3845ba4fdf8))
+- **ci:** update node version and fix ES module errors in release workflow ([bf97a60](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bf97a60828da514a5b575ab94ca25033abfabc61))
+- **ci:** upgrade to Node 24 for npm trusted publishing ([cf5dc10](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cf5dc10128c887b0e439888aa5ad4ec46c754393))
+- **ci:** use jq instead of npm for SDK version update ([20dde0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20dde0e7894893c492ce141156e01f03456b14f6))
+- **cli:** add default values for required Kratos environment variables ([40e99aa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/40e99aae14111d3733bdf34b6a6a5da4e6635417))
+- **cli:** add missing adm-zip dependency ([145df41](https://github.com/PhoenixSolutionsGroup/omnibase/commit/145df41ded35c64a80b3da57face700efaba270c))
+- **payments:** return proper HTTP status codes for Stripe errors ([3f46cad](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3f46cad9fd61120ee9d376b131e398911f93370c))
+- **tests:** increase schemathesis workers and rate limit ([1d0f0b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1d0f0b6ce6be46f4b4232af809e69393302d3dfb))
 
 ### Features
 
-* **api:** add config lookup endpoints for price/product/meter ([b11b30e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b11b30e33a5da23a7e45c5cefa4749685daa41db))
-* **api:** add get single tenant subscription endpoint ([2ce8193](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ce8193f660a9bd7c6fdbebb9ce0461fc17be024))
-* **api:** add invoice line item with price ID endpoint ([abfea49](https://github.com/PhoenixSolutionsGroup/omnibase/commit/abfea49e4fbacb5b13a2fa5e3d6919ae4b890208))
-* **cli:** add environment variable expansion for webhook URLs ([c62dedd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c62dedd58f0bb99bd3dbd8b290a485b8dc19186f))
-* **dashboard:** add subscription pricing configuration ([260feb3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/260feb3832bb172435690b736b9ebf135604817c))
-* **dashboard:** rewrite provisioning form for new deployment options API ([839d225](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839d225cfe7d3f426a6dec79786dc2036fa53486))
-* **payments:** consolidate provider pricing configs and add deployment tracking ([d2b45c4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2b45c461189d14d109040ff3391b8e129193e14))
-* **permissions:** add tenant owner role management permissions ([46fa406](https://github.com/PhoenixSolutionsGroup/omnibase/commit/46fa40642988a1329029d6890ab534f24b98a852))
-* **stripe:** support multiple webhooks with pull and cleanup ([f8dea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8dea9d31909be9541203a873a0aa9a92f737b99))
+- **api:** add config lookup endpoints for price/product/meter ([b11b30e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b11b30e33a5da23a7e45c5cefa4749685daa41db))
+- **api:** add get single tenant subscription endpoint ([2ce8193](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ce8193f660a9bd7c6fdbebb9ce0461fc17be024))
+- **api:** add invoice line item with price ID endpoint ([abfea49](https://github.com/PhoenixSolutionsGroup/omnibase/commit/abfea49e4fbacb5b13a2fa5e3d6919ae4b890208))
+- **cli:** add environment variable expansion for webhook URLs ([c62dedd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c62dedd58f0bb99bd3dbd8b290a485b8dc19186f))
+- **dashboard:** add subscription pricing configuration ([260feb3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/260feb3832bb172435690b736b9ebf135604817c))
+- **dashboard:** rewrite provisioning form for new deployment options API ([839d225](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839d225cfe7d3f426a6dec79786dc2036fa53486))
+- **payments:** consolidate provider pricing configs and add deployment tracking ([d2b45c4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2b45c461189d14d109040ff3391b8e129193e14))
+- **permissions:** add tenant owner role management permissions ([46fa406](https://github.com/PhoenixSolutionsGroup/omnibase/commit/46fa40642988a1329029d6890ab534f24b98a852))
+- **stripe:** support multiple webhooks with pull and cleanup ([f8dea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8dea9d31909be9541203a873a0aa9a92f737b99))
 
 # [0.11.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.10.2...api-v0.11.0) (2026-01-05)
 
-
 ### Bug Fixes
 
-* **api:** add webhook duplicate URL and empty event validation ([6ec19ee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ec19ee921f1895f908cf85f2bff815a554eafd9))
-* **api:** change price amount type to float64 for decimal support ([7b072e4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b072e48f5611311ea169d8188e7cd4b352d97fa))
-* **api:** improve Stripe error handling and invoice ID validation ([4785ec3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4785ec3fc1a5450bd6f12f43c88c37be47575dac))
-* **api:** return empty array instead of null for tenant users ([091058f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/091058f5f5ee8dc9a9a96ffd383bc54cd8227918))
-* **api:** treat Keto 400 as 404 for relationship deletion ([79df0c9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/79df0c99012ca8d9868550dce4c4374ad312bf26))
-* **ci:** also show logs on workflow cancellation ([19a56b5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/19a56b505e409f7e299df6efa9cdbe648113feb0))
-* **ci:** call scripts directly in release-api-prepare ([da13938](https://github.com/PhoenixSolutionsGroup/omnibase/commit/da13938eb460eeeff6aa164ee1a5796d98a3d7e2))
-* **ci:** improve Auth readiness checks and add failure logging ([2b35ae8](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b35ae8ffd52c80a7af67c78d39d31bfbd692ba8))
-* **ci:** improve caching in release workflow ([c48ce58](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c48ce58d5bd47c9eb317e392fc748a83c9eaa154))
-* **ci:** improve Keto readiness checks to prevent test failures ([965d700](https://github.com/PhoenixSolutionsGroup/omnibase/commit/965d700659255806bb31987c8e77a4273e72471c))
-* **ci:** serialize release jobs to prevent race conditions ([ed2e043](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ed2e04324b832c84874d7544ecd6f3845ba4fdf8))
-* **ci:** update node version and fix ES module errors in release workflow ([bf97a60](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bf97a60828da514a5b575ab94ca25033abfabc61))
-* **ci:** use jq instead of npm for SDK version update ([20dde0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20dde0e7894893c492ce141156e01f03456b14f6))
-* **cli:** add default values for required Kratos environment variables ([40e99aa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/40e99aae14111d3733bdf34b6a6a5da4e6635417))
-* **cli:** add missing adm-zip dependency ([145df41](https://github.com/PhoenixSolutionsGroup/omnibase/commit/145df41ded35c64a80b3da57face700efaba270c))
-* **payments:** return proper HTTP status codes for Stripe errors ([3f46cad](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3f46cad9fd61120ee9d376b131e398911f93370c))
-* **tests:** increase schemathesis workers and rate limit ([1d0f0b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1d0f0b6ce6be46f4b4232af809e69393302d3dfb))
-
+- **api:** add webhook duplicate URL and empty event validation ([6ec19ee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ec19ee921f1895f908cf85f2bff815a554eafd9))
+- **api:** change price amount type to float64 for decimal support ([7b072e4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7b072e48f5611311ea169d8188e7cd4b352d97fa))
+- **api:** improve Stripe error handling and invoice ID validation ([4785ec3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4785ec3fc1a5450bd6f12f43c88c37be47575dac))
+- **api:** return empty array instead of null for tenant users ([091058f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/091058f5f5ee8dc9a9a96ffd383bc54cd8227918))
+- **api:** treat Keto 400 as 404 for relationship deletion ([79df0c9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/79df0c99012ca8d9868550dce4c4374ad312bf26))
+- **ci:** also show logs on workflow cancellation ([19a56b5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/19a56b505e409f7e299df6efa9cdbe648113feb0))
+- **ci:** call scripts directly in release-api-prepare ([da13938](https://github.com/PhoenixSolutionsGroup/omnibase/commit/da13938eb460eeeff6aa164ee1a5796d98a3d7e2))
+- **ci:** improve Auth readiness checks and add failure logging ([2b35ae8](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b35ae8ffd52c80a7af67c78d39d31bfbd692ba8))
+- **ci:** improve caching in release workflow ([c48ce58](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c48ce58d5bd47c9eb317e392fc748a83c9eaa154))
+- **ci:** improve Keto readiness checks to prevent test failures ([965d700](https://github.com/PhoenixSolutionsGroup/omnibase/commit/965d700659255806bb31987c8e77a4273e72471c))
+- **ci:** serialize release jobs to prevent race conditions ([ed2e043](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ed2e04324b832c84874d7544ecd6f3845ba4fdf8))
+- **ci:** update node version and fix ES module errors in release workflow ([bf97a60](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bf97a60828da514a5b575ab94ca25033abfabc61))
+- **ci:** use jq instead of npm for SDK version update ([20dde0e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20dde0e7894893c492ce141156e01f03456b14f6))
+- **cli:** add default values for required Kratos environment variables ([40e99aa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/40e99aae14111d3733bdf34b6a6a5da4e6635417))
+- **cli:** add missing adm-zip dependency ([145df41](https://github.com/PhoenixSolutionsGroup/omnibase/commit/145df41ded35c64a80b3da57face700efaba270c))
+- **payments:** return proper HTTP status codes for Stripe errors ([3f46cad](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3f46cad9fd61120ee9d376b131e398911f93370c))
+- **tests:** increase schemathesis workers and rate limit ([1d0f0b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1d0f0b6ce6be46f4b4232af809e69393302d3dfb))
 
 ### Features
 
-* **api:** add config lookup endpoints for price/product/meter ([b11b30e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b11b30e33a5da23a7e45c5cefa4749685daa41db))
-* **api:** add get single tenant subscription endpoint ([2ce8193](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ce8193f660a9bd7c6fdbebb9ce0461fc17be024))
-* **api:** add invoice line item with price ID endpoint ([abfea49](https://github.com/PhoenixSolutionsGroup/omnibase/commit/abfea49e4fbacb5b13a2fa5e3d6919ae4b890208))
-* **dashboard:** rewrite provisioning form for new deployment options API ([839d225](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839d225cfe7d3f426a6dec79786dc2036fa53486))
-* **payments:** consolidate provider pricing configs and add deployment tracking ([d2b45c4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2b45c461189d14d109040ff3391b8e129193e14))
-* **permissions:** add tenant owner role management permissions ([46fa406](https://github.com/PhoenixSolutionsGroup/omnibase/commit/46fa40642988a1329029d6890ab534f24b98a852))
-* **stripe:** support multiple webhooks with pull and cleanup ([f8dea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8dea9d31909be9541203a873a0aa9a92f737b99))
+- **api:** add config lookup endpoints for price/product/meter ([b11b30e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b11b30e33a5da23a7e45c5cefa4749685daa41db))
+- **api:** add get single tenant subscription endpoint ([2ce8193](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2ce8193f660a9bd7c6fdbebb9ce0461fc17be024))
+- **api:** add invoice line item with price ID endpoint ([abfea49](https://github.com/PhoenixSolutionsGroup/omnibase/commit/abfea49e4fbacb5b13a2fa5e3d6919ae4b890208))
+- **dashboard:** rewrite provisioning form for new deployment options API ([839d225](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839d225cfe7d3f426a6dec79786dc2036fa53486))
+- **payments:** consolidate provider pricing configs and add deployment tracking ([d2b45c4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2b45c461189d14d109040ff3391b8e129193e14))
+- **permissions:** add tenant owner role management permissions ([46fa406](https://github.com/PhoenixSolutionsGroup/omnibase/commit/46fa40642988a1329029d6890ab534f24b98a852))
+- **stripe:** support multiple webhooks with pull and cleanup ([f8dea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8dea9d31909be9541203a873a0aa9a92f737b99))

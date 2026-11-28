@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**HasNext** | **bool** |  | 
-**HasPrev** | **bool** |  | 
-**Page** | **int64** |  | 
-**PerPage** | **int64** |  | 
-**Total** | **int64** |  | 
-**TotalPages** | **int64** |  | 
+| Name           | Type      | Description | Notes |
+| -------------- | --------- | ----------- | ----- |
+| **HasNext**    | **bool**  |             |
+| **HasPrev**    | **bool**  |             |
+| **Page**       | **int64** |             |
+| **PerPage**    | **int64** |             |
+| **Total**      | **int64** |             |
+| **TotalPages** | **int64** |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetHasNext sets HasNext field to given value.
 
-
 ### GetHasPrev
 
 `func (o *ConfigHistoryPagination) GetHasPrev() bool`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigHistoryPagination) SetHasPrev(v bool)`
 
 SetHasPrev sets HasPrev field to given value.
-
 
 ### GetPage
 
@@ -89,7 +87,6 @@ and a boolean to check if the value has been set.
 
 SetPage sets Page field to given value.
 
-
 ### GetPerPage
 
 `func (o *ConfigHistoryPagination) GetPerPage() int64`
@@ -108,7 +105,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigHistoryPagination) SetPerPage(v int64)`
 
 SetPerPage sets PerPage field to given value.
-
 
 ### GetTotal
 
@@ -129,7 +125,6 @@ and a boolean to check if the value has been set.
 
 SetTotal sets Total field to given value.
 
-
 ### GetTotalPages
 
 `func (o *ConfigHistoryPagination) GetTotalPages() int64`
@@ -149,8 +144,4 @@ and a boolean to check if the value has been set.
 
 SetTotalPages sets TotalPages field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

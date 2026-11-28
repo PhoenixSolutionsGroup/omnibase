@@ -11,10 +11,10 @@ package omnibase
 
 import (
 	"context"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1DatabaseAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_omnibase_V1DatabaseAPIService(t *testing.T) {
 
 	t.Run("Test V1DatabaseAPIService GenerateDatabaseTypes", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1DatabaseAPI.GenerateDatabaseTypes(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_omnibase_V1DatabaseAPIService(t *testing.T) {
 
 	t.Run("Test V1DatabaseAPIService GetDatabaseMigrationStatus", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1DatabaseAPI.GetDatabaseMigrationStatus(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_omnibase_V1DatabaseAPIService(t *testing.T) {
 
 	t.Run("Test V1DatabaseAPIService RollbackDatabaseMigrations", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1DatabaseAPI.RollbackDatabaseMigrations(context.Background()).Execute()
 
@@ -60,7 +60,7 @@ func Test_omnibase_V1DatabaseAPIService(t *testing.T) {
 
 	t.Run("Test V1DatabaseAPIService UploadDatabaseMigrations", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.V1DatabaseAPI.UploadDatabaseMigrations(context.Background()).Execute()
 

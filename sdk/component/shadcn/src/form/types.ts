@@ -1,35 +1,35 @@
 import type {
-  LoginFlow,
-  RegistrationFlow,
-  RecoveryFlow,
-  UiNodeInputAttributes,
-  VerificationFlow,
-  SettingsFlow,
-  UiNode,
+	LoginFlow,
+	RecoveryFlow,
+	RegistrationFlow,
+	SettingsFlow,
+	UiNode,
+	UiNodeInputAttributes,
+	VerificationFlow,
 } from "@ory/client-fetch";
 
 export type FlowType =
-  | LoginFlow
-  | RegistrationFlow
-  | RecoveryFlow
-  | VerificationFlow
-  | SettingsFlow;
+	| LoginFlow
+	| RegistrationFlow
+	| RecoveryFlow
+	| VerificationFlow
+	| SettingsFlow;
 
 export type CustomFormProps = {
-  flow: FlowType;
-  Header?: React.ReactNode;
+	flow: FlowType;
+	Header?: React.ReactNode;
 };
 
 export type NodesByGroup = Record<string, UiNode[]>;
 
 // Helper function to check if node attributes are input attributes
 export function isUiNodeInputAttributes(
-  attributes: any
+	attributes: unknown,
 ): attributes is UiNodeInputAttributes {
-  return (
-    attributes &&
-    typeof attributes === "object" &&
-    "name" in attributes &&
-    "type" in attributes
-  );
+	return (
+		typeof attributes === "object" &&
+		attributes !== null &&
+		"name" in attributes &&
+		"type" in attributes
+	);
 }

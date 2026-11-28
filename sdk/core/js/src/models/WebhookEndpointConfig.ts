@@ -12,81 +12,88 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface WebhookEndpointConfig
  */
 export interface WebhookEndpointConfig {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof WebhookEndpointConfig
-     */
-    connect?: boolean;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof WebhookEndpointConfig
-     */
-    events: Array<string> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookEndpointConfig
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WebhookEndpointConfig
-     */
-    url: string;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof WebhookEndpointConfig
+	 */
+	connect?: boolean;
+	/**
+	 *
+	 * @type {Array<string>}
+	 * @memberof WebhookEndpointConfig
+	 */
+	events: Array<string> | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookEndpointConfig
+	 */
+	id: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof WebhookEndpointConfig
+	 */
+	url: string;
 }
 
 /**
  * Check if a given object implements the WebhookEndpointConfig interface.
  */
-export function instanceOfWebhookEndpointConfig(value: object): value is WebhookEndpointConfig {
-    if (!('events' in value) || value['events'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('url' in value) || value['url'] === undefined) return false;
-    return true;
+export function instanceOfWebhookEndpointConfig(
+	value: object,
+): value is WebhookEndpointConfig {
+	if (!("events" in value) || value["events"] === undefined) return false;
+	if (!("id" in value) || value["id"] === undefined) return false;
+	if (!("url" in value) || value["url"] === undefined) return false;
+	return true;
 }
 
-export function WebhookEndpointConfigFromJSON(json: any): WebhookEndpointConfig {
-    return WebhookEndpointConfigFromJSONTyped(json, false);
+export function WebhookEndpointConfigFromJSON(
+	json: any,
+): WebhookEndpointConfig {
+	return WebhookEndpointConfigFromJSONTyped(json, false);
 }
 
-export function WebhookEndpointConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean): WebhookEndpointConfig {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'connect': json['connect'] == null ? undefined : json['connect'],
-        'events': json['events'] == null ? null : json['events'],
-        'id': json['id'],
-        'url': json['url'],
-    };
+export function WebhookEndpointConfigFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): WebhookEndpointConfig {
+	if (json == null) {
+		return json;
+	}
+	return {
+		connect: json["connect"] == null ? undefined : json["connect"],
+		events: json["events"] == null ? null : json["events"],
+		id: json["id"],
+		url: json["url"],
+	};
 }
 
 export function WebhookEndpointConfigToJSON(json: any): WebhookEndpointConfig {
-    return WebhookEndpointConfigToJSONTyped(json, false);
+	return WebhookEndpointConfigToJSONTyped(json, false);
 }
 
-export function WebhookEndpointConfigToJSONTyped(value?: WebhookEndpointConfig | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function WebhookEndpointConfigToJSONTyped(
+	value?: WebhookEndpointConfig | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'connect': value['connect'],
-        'events': value['events'],
-        'id': value['id'],
-        'url': value['url'],
-    };
+	return {
+		connect: value["connect"],
+		events: value["events"],
+		id: value["id"],
+		url: value["url"],
+	};
 }
-

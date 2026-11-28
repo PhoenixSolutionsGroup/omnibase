@@ -1,20 +1,18 @@
 # V1PaymentsApi
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-| Method | HTTP request | Description |
-|------------- | ------------- | -------------|
-| [**addInvoiceLineItem**](V1PaymentsApi.md#addinvoicelineitem) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice |
+| Method                                                                              | HTTP request                                                | Description                                          |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
+| [**addInvoiceLineItem**](V1PaymentsApi.md#addinvoicelineitem)                       | **POST** /api/v1/payments/invoices/{invoice_id}/items       | Add a line item to a Stripe invoice                  |
 | [**addInvoiceLineItemWithPriceId**](V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID |
-| [**createCheckout**](V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create a Stripe checkout session |
-| [**createCustomerPortal**](V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create a Stripe customer portal session |
-| [**createInvoice**](V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create a Stripe invoice |
-| [**finalizeInvoice**](V1PaymentsApi.md#finalizeinvoice) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice |
-| [**getInvoice**](V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice |
-| [**recordUsage**](V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record a Stripe meter usage event |
-| [**updateInvoice**](V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice |
-
-
+| [**createCheckout**](V1PaymentsApi.md#createcheckoutoperation)                      | **POST** /api/v1/payments/checkout                          | Create a Stripe checkout session                     |
+| [**createCustomerPortal**](V1PaymentsApi.md#createcustomerportal)                   | **POST** /api/v1/payments/portal                            | Create a Stripe customer portal session              |
+| [**createInvoice**](V1PaymentsApi.md#createinvoiceoperation)                        | **POST** /api/v1/payments/invoices                          | Create a Stripe invoice                              |
+| [**finalizeInvoice**](V1PaymentsApi.md#finalizeinvoice)                             | **POST** /api/v1/payments/invoices/{invoice_id}/finalize    | Finalize a Stripe invoice                            |
+| [**getInvoice**](V1PaymentsApi.md#getinvoice)                                       | **GET** /api/v1/payments/invoices/{invoice_id}              | Get a Stripe invoice                                 |
+| [**recordUsage**](V1PaymentsApi.md#recordusageoperation)                            | **POST** /api/v1/payments/usage                             | Record a Stripe meter usage event                    |
+| [**updateInvoice**](V1PaymentsApi.md#updateinvoiceoperation)                        | **PATCH** /api/v1/payments/invoices/{invoice_id}            | Update a Stripe invoice                              |
 
 ## addInvoiceLineItem
 
@@ -60,11 +58,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **invoiceId** | `string` |  | [Defaults to `undefined`] |
-| **addLineItemRequest** | [AddLineItemRequest](AddLineItemRequest.md) |  | |
+| Name                   | Type                                        | Description | Notes                     |
+| ---------------------- | ------------------------------------------- | ----------- | ------------------------- |
+| **invoiceId**          | `string`                                    |             | [Defaults to `undefined`] |
+| **addLineItemRequest** | [AddLineItemRequest](AddLineItemRequest.md) |             |                           |
 
 ### Return type
 
@@ -79,21 +76,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## addInvoiceLineItemWithPriceId
 
@@ -139,11 +135,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **invoiceId** | `string` |  | [Defaults to `undefined`] |
-| **addLineItemByPriceRequest** | [AddLineItemByPriceRequest](AddLineItemByPriceRequest.md) |  | |
+| Name                          | Type                                                      | Description | Notes                     |
+| ----------------------------- | --------------------------------------------------------- | ----------- | ------------------------- |
+| **invoiceId**                 | `string`                                                  |             | [Defaults to `undefined`] |
+| **addLineItemByPriceRequest** | [AddLineItemByPriceRequest](AddLineItemByPriceRequest.md) |             |                           |
 
 ### Return type
 
@@ -158,21 +153,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## createCheckout
 
@@ -222,10 +216,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **createCheckoutRequest** | [CreateCheckoutRequest](CreateCheckoutRequest.md) |  | |
+| Name                      | Type                                              | Description | Notes |
+| ------------------------- | ------------------------------------------------- | ----------- | ----- |
+| **createCheckoutRequest** | [CreateCheckoutRequest](CreateCheckoutRequest.md) |             |       |
 
 ### Return type
 
@@ -240,22 +233,21 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **403** | Forbidden |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **403**     | Forbidden             | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## createCustomerPortal
 
@@ -305,10 +297,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **createPortalRequest** | [CreatePortalRequest](CreatePortalRequest.md) |  | |
+| Name                    | Type                                          | Description | Notes |
+| ----------------------- | --------------------------------------------- | ----------- | ----- |
+| **createPortalRequest** | [CreatePortalRequest](CreatePortalRequest.md) |             |       |
 
 ### Return type
 
@@ -323,18 +314,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## createInvoice
 
@@ -378,10 +368,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **createInvoiceRequest** | [CreateInvoiceRequest](CreateInvoiceRequest.md) |  | |
+| Name                     | Type                                            | Description | Notes |
+| ------------------------ | ----------------------------------------------- | ----------- | ----- |
+| **createInvoiceRequest** | [CreateInvoiceRequest](CreateInvoiceRequest.md) |             |       |
 
 ### Return type
 
@@ -396,21 +385,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## finalizeInvoice
 
@@ -456,11 +444,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **invoiceId** | `string` |  | [Defaults to `undefined`] |
-| **finalizeRequest** | [FinalizeRequest](FinalizeRequest.md) |  | |
+| Name                | Type                                  | Description | Notes                     |
+| ------------------- | ------------------------------------- | ----------- | ------------------------- |
+| **invoiceId**       | `string`                              |             | [Defaults to `undefined`] |
+| **finalizeRequest** | [FinalizeRequest](FinalizeRequest.md) |             |                           |
 
 ### Return type
 
@@ -475,21 +462,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## getInvoice
 
@@ -500,31 +486,28 @@ Get a Stripe invoice
 ### Example
 
 ```ts
-import {
-  Configuration,
-  V1PaymentsApi,
-} from '@omnibase/core-js';
-import type { GetInvoiceRequest } from '@omnibase/core-js';
+import { Configuration, V1PaymentsApi } from "@omnibase/core-js";
+import type { GetInvoiceRequest } from "@omnibase/core-js";
 
 async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1PaymentsApi(config);
+	console.log("🚀 Testing @omnibase/core-js SDK...");
+	const config = new Configuration({
+		// To configure API key authorization: ServiceKeyAuth
+		apiKey: "YOUR API KEY",
+	});
+	const api = new V1PaymentsApi(config);
 
-  const body = {
-    // string
-    invoiceId: invoiceId_example,
-  } satisfies GetInvoiceRequest;
+	const body = {
+		// string
+		invoiceId: invoiceId_example,
+	} satisfies GetInvoiceRequest;
 
-  try {
-    const data = await api.getInvoice(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const data = await api.getInvoice(body);
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Run the test
@@ -533,10 +516,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **invoiceId** | `string` |  | [Defaults to `undefined`] |
+| Name          | Type     | Description | Notes                     |
+| ------------- | -------- | ----------- | ------------------------- |
+| **invoiceId** | `string` |             | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -551,21 +533,20 @@ example().catch(console.error);
 - **Content-Type**: Not defined
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## recordUsage
 
@@ -609,10 +590,9 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **recordUsageRequest** | [RecordUsageRequest](RecordUsageRequest.md) |  | |
+| Name                   | Type                                        | Description | Notes |
+| ---------------------- | ------------------------------------------- | ----------- | ----- |
+| **recordUsageRequest** | [RecordUsageRequest](RecordUsageRequest.md) |             |       |
 
 ### Return type
 
@@ -627,21 +607,20 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 
 ## updateInvoice
 
@@ -687,11 +666,10 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **invoiceId** | `string` |  | [Defaults to `undefined`] |
-| **updateInvoiceRequest** | [UpdateInvoiceRequest](UpdateInvoiceRequest.md) |  | |
+| Name                     | Type                                            | Description | Notes                     |
+| ------------------------ | ----------------------------------------------- | ----------- | ------------------------- |
+| **invoiceId**            | `string`                                        |             | [Defaults to `undefined`] |
+| **updateInvoiceRequest** | [UpdateInvoiceRequest](UpdateInvoiceRequest.md) |             |                           |
 
 ### Return type
 
@@ -706,18 +684,17 @@ example().catch(console.error);
 - **Content-Type**: `application/json`
 - **Accept**: `application/json`, `application/problem+json`
 
-
 ### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Not Found |  -  |
-| **409** | Conflict |  -  |
-| **422** | Unprocessable Entity |  -  |
-| **429** | Too Many Requests |  -  |
-| **500** | Internal Server Error |  -  |
+
+| Status code | Description           | Response headers |
+| ----------- | --------------------- | ---------------- |
+| **200**     | OK                    | -                |
+| **400**     | Bad Request           | -                |
+| **401**     | Unauthorized          | -                |
+| **404**     | Not Found             | -                |
+| **409**     | Conflict              | -                |
+| **422**     | Unprocessable Entity  | -                |
+| **429**     | Too Many Requests     | -                |
+| **500**     | Internal Server Error | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

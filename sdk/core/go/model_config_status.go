@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &ConfigStatus{}
 
 // ConfigStatus struct for ConfigStatus
 type ConfigStatus struct {
-	Drift []ConfigStatusEntry `json:"drift"`
-	Pending []ConfigStatusEntry `json:"pending"`
-	Summary ConfigStatusSummary `json:"summary"`
+	Drift     []ConfigStatusEntry `json:"drift"`
+	Pending   []ConfigStatusEntry `json:"pending"`
+	Summary   ConfigStatusSummary `json:"summary"`
 	Untracked []ConfigStatusEntry `json:"untracked"`
 }
 
@@ -154,7 +154,7 @@ func (o *ConfigStatus) SetUntracked(v []ConfigStatusEntry) {
 }
 
 func (o ConfigStatus) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -192,10 +192,10 @@ func (o *ConfigStatus) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -251,5 +251,3 @@ func (v *NullableConfigStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

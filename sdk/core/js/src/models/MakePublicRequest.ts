@@ -12,55 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MakePublicRequest
  */
 export interface MakePublicRequest {
-    /**
-     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
-     * @type {string}
-     * @memberof MakePublicRequest
-     */
-    path: string;
+	/**
+	 * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
+	 * @type {string}
+	 * @memberof MakePublicRequest
+	 */
+	path: string;
 }
 
 /**
  * Check if a given object implements the MakePublicRequest interface.
  */
-export function instanceOfMakePublicRequest(value: object): value is MakePublicRequest {
-    if (!('path' in value) || value['path'] === undefined) return false;
-    return true;
+export function instanceOfMakePublicRequest(
+	value: object,
+): value is MakePublicRequest {
+	if (!("path" in value) || value["path"] === undefined) return false;
+	return true;
 }
 
 export function MakePublicRequestFromJSON(json: any): MakePublicRequest {
-    return MakePublicRequestFromJSONTyped(json, false);
+	return MakePublicRequestFromJSONTyped(json, false);
 }
 
-export function MakePublicRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): MakePublicRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'path': json['path'],
-    };
+export function MakePublicRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MakePublicRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		path: json["path"],
+	};
 }
 
 export function MakePublicRequestToJSON(json: any): MakePublicRequest {
-    return MakePublicRequestToJSONTyped(json, false);
+	return MakePublicRequestToJSONTyped(json, false);
 }
 
-export function MakePublicRequestToJSONTyped(value?: MakePublicRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MakePublicRequestToJSONTyped(
+	value?: MakePublicRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'path': value['path'],
-    };
+	return {
+		path: value["path"],
+	};
 }
-

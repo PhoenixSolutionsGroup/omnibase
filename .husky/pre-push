@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 set -e
+
+echo "Checking formatting and lint with Biome..."
+# --colors=off: git hooks are not a TTY, and Biome's color codes hide the text.
+# --diagnostic-level=error: warnings stay in `bun run lint`; a failed push prints the error.
+bunx biome ci --changed --no-errors-on-unmatched --colors=off --diagnostic-level=error
+
 echo "Regenerating SDK from huma spec..."
 bun run generate:sdk
+
 echo "Pre-push checks passed"

@@ -12,64 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AcceptResponse
  */
 export interface AcceptResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof AcceptResponse
-     */
-    message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AcceptResponse
-     */
-    tenantId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AcceptResponse
+	 */
+	message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof AcceptResponse
+	 */
+	tenantId: string;
 }
 
 /**
  * Check if a given object implements the AcceptResponse interface.
  */
-export function instanceOfAcceptResponse(value: object): value is AcceptResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
-    return true;
+export function instanceOfAcceptResponse(
+	value: object,
+): value is AcceptResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	if (!("tenantId" in value) || value["tenantId"] === undefined) return false;
+	return true;
 }
 
 export function AcceptResponseFromJSON(json: any): AcceptResponse {
-    return AcceptResponseFromJSONTyped(json, false);
+	return AcceptResponseFromJSONTyped(json, false);
 }
 
-export function AcceptResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): AcceptResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-        'tenantId': json['tenant_id'],
-    };
+export function AcceptResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AcceptResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+		tenantId: json["tenant_id"],
+	};
 }
 
 export function AcceptResponseToJSON(json: any): AcceptResponse {
-    return AcceptResponseToJSONTyped(json, false);
+	return AcceptResponseToJSONTyped(json, false);
 }
 
-export function AcceptResponseToJSONTyped(value?: AcceptResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AcceptResponseToJSONTyped(
+	value?: AcceptResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-        'tenant_id': value['tenantId'],
-    };
+	return {
+		message: value["message"],
+		tenant_id: value["tenantId"],
+	};
 }
-

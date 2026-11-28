@@ -2,15 +2,15 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**AccessKey** | **string** | S3 access key ID. | 
-**BucketName** | **string** |  | 
-**Endpoint** | **string** |  | 
-**Expiration** | Pointer to **time.Time** | Credential expiration time. | [optional] 
-**Region** | **string** |  | 
-**SecretKey** | **string** | S3 secret access key. | 
-**SessionToken** | Pointer to **string** | Session token required with temporary credentials. | [optional] 
+| Name             | Type                     | Description                                        | Notes      |
+| ---------------- | ------------------------ | -------------------------------------------------- | ---------- |
+| **AccessKey**    | **string**               | S3 access key ID.                                  |
+| **BucketName**   | **string**               |                                                    |
+| **Endpoint**     | **string**               |                                                    |
+| **Expiration**   | Pointer to **time.Time** | Credential expiration time.                        | [optional] |
+| **Region**       | **string**               |                                                    |
+| **SecretKey**    | **string**               | S3 secret access key.                              |
+| **SessionToken** | Pointer to **string**    | Session token required with temporary credentials. | [optional] |
 
 ## Methods
 
@@ -50,7 +50,6 @@ and a boolean to check if the value has been set.
 
 SetAccessKey sets AccessKey field to given value.
 
-
 ### GetBucketName
 
 `func (o *GetStorageCredentialsResponse) GetBucketName() string`
@@ -70,7 +69,6 @@ and a boolean to check if the value has been set.
 
 SetBucketName sets BucketName field to given value.
 
-
 ### GetEndpoint
 
 `func (o *GetStorageCredentialsResponse) GetEndpoint() string`
@@ -89,7 +87,6 @@ and a boolean to check if the value has been set.
 `func (o *GetStorageCredentialsResponse) SetEndpoint(v string)`
 
 SetEndpoint sets Endpoint field to given value.
-
 
 ### GetExpiration
 
@@ -135,7 +132,6 @@ and a boolean to check if the value has been set.
 
 SetRegion sets Region field to given value.
 
-
 ### GetSecretKey
 
 `func (o *GetStorageCredentialsResponse) GetSecretKey() string`
@@ -154,7 +150,6 @@ and a boolean to check if the value has been set.
 `func (o *GetStorageCredentialsResponse) SetSecretKey(v string)`
 
 SetSecretKey sets SecretKey field to given value.
-
 
 ### GetSessionToken
 
@@ -181,7 +176,4 @@ SetSessionToken sets SessionToken field to given value.
 
 HasSessionToken returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

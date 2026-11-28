@@ -1,27 +1,32 @@
-import * as path from "path";
-import * as fs from "fs";
-import * as os from "os";
-import { spawn, spawnSync, execSync, ChildProcess, StdioOptions } from "child_process";
-import { config as dotenvConfig } from "dotenv";
 import {
-  findOmnibaseRoot,
-  getProjectName,
-  EnvironmentConfig,
-} from "./environment";
+	type ChildProcess,
+	execSync,
+	type StdioOptions,
+	spawn,
+	spawnSync,
+} from "node:child_process";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import {
-  loadConfig,
-  loadSecretsMap,
-  interpolateValue,
-  localEnvFromConfig,
-  assertValidVersions,
-  OmnibaseConfig,
+	assertValidVersions,
+	interpolateValue,
+	loadConfig,
+	loadSecretsMap,
+	localEnvFromConfig,
+	type OmnibaseConfig,
 } from "./config";
+import {
+	type EnvironmentConfig,
+	findOmnibaseRoot,
+	getProjectName,
+} from "./environment";
 import { VERSION_REPOS } from "./versions";
 
 const VERSION_COMPOSE_SERVICES: Record<string, string[]> = {
-  auth: ["auth", "auth-migrate"],
-  api: ["rest-api"],
-  perm: ["permissions", "permissions-migrate"],
+	auth: ["auth", "auth-migrate"],
+	api: ["rest-api"],
+	perm: ["permissions", "permissions-migrate"],
 };
 
 /**
@@ -32,21 +37,21 @@ const VERSION_COMPOSE_SERVICES: Record<string, string[]> = {
  * compose pull will surface the real failure.
  */
 function verifyVersionsExist(versions: Record<string, string>): void {
-  const missing: string[] = [];
-  for (const [svc, ver] of Object.entries(versions)) {
-    const repo = VERSION_REPOS[svc];
-    if (!repo) continue;
-    try {
-      execSync(`docker manifest inspect ${repo}:${ver}`, { stdio: "ignore" });
-    } catch {
-      missing.push(`${svc}=${ver}`);
-    }
-  }
-  if (missing.length > 0) {
-    throw new Error(
-      `[versions] tag(s) not found on Docker Hub: ${missing.join(", ")}`,
-    );
-  }
+	const missing: string[] = [];
+	for (const [svc, ver] of Object.entries(versions)) {
+		const repo = VERSION_REPOS[svc];
+		if (!repo) continue;
+		try {
+			execSync(`docker manifest inspect ${repo}:${ver}`, { stdio: "ignore" });
+		} catch {
+			missing.push(`${svc}=${ver}`);
+		}
+	}
+	if (missing.length > 0) {
+		throw new Error(
+			`[versions] tag(s) not found on Docker Hub: ${missing.join(", ")}`,
+		);
+	}
 }
 
 /**
@@ -55,76 +60,76 @@ function verifyVersionsExist(versions: Record<string, string>): void {
  * list so later files win. Returns null when there is nothing to override.
  */
 export function buildVersionsOverrideCompose(
-  projectRoot: string,
-  versions: Record<string, string>,
+	projectRoot: string,
+	versions: Record<string, string>,
 ): string | null {
-  const entries: string[] = [];
-  for (const svc of Object.keys(versions)) {
-    const repo = VERSION_REPOS[svc];
-    const composeServices = VERSION_COMPOSE_SERVICES[svc] ?? [];
-    if (!repo || composeServices.length === 0) continue;
-    for (const name of composeServices) {
-      entries.push(`  ${name}:`, `    image: ${repo}:${versions[svc]}`);
-    }
-  }
-  if (entries.length === 0) return null;
+	const entries: string[] = [];
+	for (const svc of Object.keys(versions)) {
+		const repo = VERSION_REPOS[svc];
+		const composeServices = VERSION_COMPOSE_SERVICES[svc] ?? [];
+		if (!repo || composeServices.length === 0) continue;
+		for (const name of composeServices) {
+			entries.push(`  ${name}:`, `    image: ${repo}:${versions[svc]}`);
+		}
+	}
+	if (entries.length === 0) return null;
 
-  const body = ["services:", ...entries, ""].join("\n");
-  const overridePath = path.join(
-    os.tmpdir(),
-    `omnibase-${path.basename(projectRoot)}-versions.yaml`,
-  );
-  fs.writeFileSync(overridePath, body);
-  return overridePath;
+	const body = ["services:", ...entries, ""].join("\n");
+	const overridePath = path.join(
+		os.tmpdir(),
+		`omnibase-${path.basename(projectRoot)}-versions.yaml`,
+	);
+	fs.writeFileSync(overridePath, body);
+	return overridePath;
 }
 
 /**
  * Get the path to the CLI's docker directory
  */
 export function getDockerDir(): string {
-  return path.join(__dirname, "..", "..", "docker");
+	return path.join(__dirname, "..", "..", "docker");
 }
 
 /**
  * Get the list of compose files for a given mode
  */
 export function getComposeFiles(mode?: string): string[] {
-  const dockerDir = getDockerDir();
-  const baseFile = path.join(dockerDir, "docker-compose.base.yml");
+	const dockerDir = getDockerDir();
+	const baseFile = path.join(dockerDir, "docker-compose.base.yml");
 
-  const files = [baseFile];
+	const files = [baseFile];
 
-  if (mode === "dev") {
-    files.push(path.join(dockerDir, "docker-compose.dev.yml"));
-  } else if (mode === "test") {
-    files.push(path.join(dockerDir, "docker-compose.test.yml"));
-  } else if (mode === "perf-test") {
-    files.push(path.join(dockerDir, "docker-compose.perf-test.yml"));
-  } else {
-    // No mode specified - use local compose with persistent volumes
-    files.push(path.join(dockerDir, "docker-compose.local.yml"));
-  }
+	if (mode === "dev") {
+		files.push(path.join(dockerDir, "docker-compose.dev.yml"));
+	} else if (mode === "test") {
+		files.push(path.join(dockerDir, "docker-compose.test.yml"));
+	} else if (mode === "perf-test") {
+		files.push(path.join(dockerDir, "docker-compose.perf-test.yml"));
+	} else {
+		// No mode specified - use local compose with persistent volumes
+		files.push(path.join(dockerDir, "docker-compose.local.yml"));
+	}
 
-  return files;
+	return files;
 }
 
 /**
  * Validate that all compose files exist
  */
 export function validateComposeFiles(files: string[]): void {
-  for (const file of files) {
-    if (!fs.existsSync(file)) {
-      throw new Error(
-        `Compose file not found at: ${file}\nMake sure you're in a valid omnibase project directory.`,
-      );
-    }
-  }
+	for (const file of files) {
+		if (!fs.existsSync(file)) {
+			throw new Error(
+				`Compose file not found at: ${file}\nMake sure you're in a valid omnibase project directory.`,
+			);
+		}
+	}
 }
 
 export interface DockerComposeOptions {
-  mode?: string;
-  envConfig: EnvironmentConfig;
-  stdio?: StdioOptions;
+	mode?: string;
+	envConfig: EnvironmentConfig;
+	stdio?: StdioOptions;
 }
 
 /**
@@ -144,48 +149,48 @@ export interface DockerComposeOptions {
  * so projects without a toml behave as before.
  */
 export function buildEffectiveEnvFile(envName: string): string {
-  const root = findOmnibaseRoot();
-  const config = loadConfig(root);
-  const branchEnvPath = path.join(root, "omnibase", `.env.${envName}`);
-  const envPath =
-    envName && envName !== "local" && fs.existsSync(branchEnvPath)
-      ? branchEnvPath
-      : path.join(root, "omnibase", ".env.local");
+	const root = findOmnibaseRoot();
+	const config = loadConfig(root);
+	const branchEnvPath = path.join(root, "omnibase", `.env.${envName}`);
+	const envPath =
+		envName && envName !== "local" && fs.existsSync(branchEnvPath)
+			? branchEnvPath
+			: path.join(root, "omnibase", ".env.local");
 
-  const fileText = fs.existsSync(envPath)
-    ? fs.readFileSync(envPath, "utf-8")
-    : "";
+	const fileText = fs.existsSync(envPath)
+		? fs.readFileSync(envPath, "utf-8")
+		: "";
 
-  const secrets = loadSecretsMap(root, envName);
-  const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
-  const derived = localEnvFromConfig(resolved);
+	const secrets = loadSecretsMap(root, envName);
+	const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
+	const derived = localEnvFromConfig(resolved);
 
-  if (Object.keys(derived).length === 0) {
-    return envPath;
-  }
+	if (Object.keys(derived).length === 0) {
+		return envPath;
+	}
 
-  const appended = Object.entries(derived)
-    .map(([k, v]) => `${k}=${v}`)
-    .join("\n");
-  const body =
-    (fileText.endsWith("\n") || fileText === "" ? fileText : fileText + "\n") +
-    "\n# --- derived from omnibase.toml (overrides the above) ---\n" +
-    appended +
-    "\n";
+	const appended = Object.entries(derived)
+		.map(([k, v]) => `${k}=${v}`)
+		.join("\n");
+	const body =
+		(fileText.endsWith("\n") || fileText === "" ? fileText : `${fileText}\n`) +
+		"\n# --- derived from omnibase.toml (overrides the above) ---\n" +
+		appended +
+		"\n";
 
-  const effectivePath = path.join(
-    os.tmpdir(),
-    `omnibase-${getProjectName()}-${envName}.env`
-  );
-  fs.writeFileSync(effectivePath, body, { mode: 0o600 });
+	const effectivePath = path.join(
+		os.tmpdir(),
+		`omnibase-${getProjectName()}-${envName}.env`,
+	);
+	fs.writeFileSync(effectivePath, body, { mode: 0o600 });
 
-  return effectivePath;
+	return effectivePath;
 }
 
 interface DockerComposeInvocation {
-  args: string[];
-  cwd: string;
-  env: NodeJS.ProcessEnv;
+	args: string[];
+	cwd: string;
+	env: NodeJS.ProcessEnv;
 }
 
 /**
@@ -193,74 +198,82 @@ interface DockerComposeInvocation {
  * correct compose files and environment
  */
 function buildDockerComposeInvocation(
-  command: string,
-  services: string[],
-  options: DockerComposeOptions,
+	command: string,
+	services: string[],
+	options: DockerComposeOptions,
 ): DockerComposeInvocation {
-  const projectRoot = findOmnibaseRoot();
-  const projectName = getProjectName();
-  const composeFiles = getComposeFiles(options.mode);
+	const projectRoot = findOmnibaseRoot();
+	const projectName = getProjectName();
+	const composeFiles = getComposeFiles(options.mode);
 
-  validateComposeFiles(composeFiles);
+	validateComposeFiles(composeFiles);
 
-  const config = loadConfig(projectRoot);
-  if (config.versions && Object.keys(config.versions).length > 0 && options.mode !== "dev") {
-    assertValidVersions(config.versions);
-    verifyVersionsExist(config.versions);
-    const override = buildVersionsOverrideCompose(projectRoot, config.versions);
-    if (override) composeFiles.push(override);
-  }
+	const config = loadConfig(projectRoot);
+	if (
+		config.versions &&
+		Object.keys(config.versions).length > 0 &&
+		options.mode !== "dev"
+	) {
+		assertValidVersions(config.versions);
+		verifyVersionsExist(config.versions);
+		const override = buildVersionsOverrideCompose(projectRoot, config.versions);
+		if (override) composeFiles.push(override);
+	}
 
-  const envPath = buildEffectiveEnvFile(options.envConfig.name);
+	const envPath = buildEffectiveEnvFile(options.envConfig.name);
 
-  const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
-  const serviceArgs = services.length > 0 ? services : [];
+	const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
+	const serviceArgs = services.length > 0 ? services : [];
 
-  const commandParts = command.split(/\s+/);
-  return {
-    args: [
-      "compose",
-      "--project-name",
-      projectName,
-      ...composeArgs,
-      "--env-file",
-      envPath,
-      ...commandParts,
-      ...serviceArgs,
-    ],
-    cwd: projectRoot,
-    env: {
-      ...process.env,
-      OMNIBASE_PROJECT_DIR: projectRoot,
-      OMNIBASE_ENV_FILE: envPath,
-    },
-  };
+	const commandParts = command.split(/\s+/);
+	return {
+		args: [
+			"compose",
+			"--project-name",
+			projectName,
+			...composeArgs,
+			"--env-file",
+			envPath,
+			...commandParts,
+			...serviceArgs,
+		],
+		cwd: projectRoot,
+		env: {
+			...process.env,
+			OMNIBASE_PROJECT_DIR: projectRoot,
+			OMNIBASE_ENV_FILE: envPath,
+		},
+	};
 }
 
 /**
  * Run a docker compose command with the correct compose files and environment
  */
 export function runDockerComposeCommand(
-  command: string,
-  services: string[],
-  options: DockerComposeOptions,
+	command: string,
+	services: string[],
+	options: DockerComposeOptions,
 ): void {
-  const { args, cwd, env } = buildDockerComposeInvocation(command, services, options);
+	const { args, cwd, env } = buildDockerComposeInvocation(
+		command,
+		services,
+		options,
+	);
 
-  const result = spawnSync("docker", args, {
-    stdio: options.stdio || "inherit",
-    cwd,
-    env,
-  });
+	const result = spawnSync("docker", args, {
+		stdio: options.stdio || "inherit",
+		cwd,
+		env,
+	});
 
-  if (result.status !== 0) {
-    const stderr = result.stderr?.toString().trim();
-    throw new Error(
-      stderr
-        ? `Command failed: docker ${args.join(" ")}\n${stderr}`
-        : `Command failed: docker ${args.join(" ")}`,
-    );
-  }
+	if (result.status !== 0) {
+		const stderr = result.stderr?.toString().trim();
+		throw new Error(
+			stderr
+				? `Command failed: docker ${args.join(" ")}\n${stderr}`
+				: `Command failed: docker ${args.join(" ")}`,
+		);
+	}
 }
 
 /**
@@ -268,74 +281,78 @@ export function runDockerComposeCommand(
  * `up` that run until interrupted. The caller owns the returned process.
  */
 export function spawnDockerComposeCommand(
-  command: string,
-  services: string[],
-  options: DockerComposeOptions,
+	command: string,
+	services: string[],
+	options: DockerComposeOptions,
 ): ChildProcess {
-  const { args, cwd, env } = buildDockerComposeInvocation(command, services, options);
+	const { args, cwd, env } = buildDockerComposeInvocation(
+		command,
+		services,
+		options,
+	);
 
-  return spawn("docker", args, {
-    stdio: options.stdio || "inherit",
-    cwd,
-    env,
-  });
+	return spawn("docker", args, {
+		stdio: options.stdio || "inherit",
+		cwd,
+		env,
+	});
 }
 
 /**
  * Run a command inside a running docker compose service
  */
 export function composeExec(
-  service: string,
-  cmd: string[],
-  options: DockerComposeOptions,
+	service: string,
+	cmd: string[],
+	options: DockerComposeOptions,
 ): void {
-  const projectRoot = findOmnibaseRoot();
-  const projectName = getProjectName();
-  const composeFiles = getComposeFiles(options.mode);
+	const projectRoot = findOmnibaseRoot();
+	const projectName = getProjectName();
+	const composeFiles = getComposeFiles(options.mode);
 
-  validateComposeFiles(composeFiles);
+	validateComposeFiles(composeFiles);
 
-  const envPath = buildEffectiveEnvFile(options.envConfig.name);
-  const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
-  const cmdArgs = [
-    "compose",
-    "--project-name",
-    projectName,
-    ...composeArgs,
-    "--env-file",
-    envPath,
-    "exec",
-    "-T",
-    service,
-    ...cmd,
-  ];
+	const envPath = buildEffectiveEnvFile(options.envConfig.name);
+	const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
+	const cmdArgs = [
+		"compose",
+		"--project-name",
+		projectName,
+		...composeArgs,
+		"--env-file",
+		envPath,
+		"exec",
+		"-T",
+		service,
+		...cmd,
+	];
 
-  const result = spawnSync("docker", cmdArgs, {
-    stdio: options.stdio || "inherit",
-    cwd: projectRoot,
-    env: {
-      ...process.env,
-      OMNIBASE_PROJECT_DIR: projectRoot,
-      OMNIBASE_ENV_FILE: envPath,
-    },
-  });
+	const result = spawnSync("docker", cmdArgs, {
+		stdio: options.stdio || "inherit",
+		cwd: projectRoot,
+		env: {
+			...process.env,
+			OMNIBASE_PROJECT_DIR: projectRoot,
+			OMNIBASE_ENV_FILE: envPath,
+		},
+	});
 
-  if (result.status !== 0) {
-    throw new Error(`Command failed: docker ${cmdArgs.join(" ")}`);
-  }
+	if (result.status !== 0) {
+		throw new Error(`Command failed: docker ${cmdArgs.join(" ")}`);
+	}
 }
 
 /**
  * Restart a docker service
  */
 export async function restartDockerService(
-  service: string,
-  options: DockerComposeOptions,
+	service: string,
+	options: DockerComposeOptions,
 ): Promise<boolean> {
-  try {
-    runDockerComposeCommand("restart", [service], options);
-    return true;
-  } catch (error: any) {
-    return false;
-  }
+	try {
+		runDockerComposeCommand("restart", [service], options);
+		return true;
+	} catch {
+		return false;
+	}
 }

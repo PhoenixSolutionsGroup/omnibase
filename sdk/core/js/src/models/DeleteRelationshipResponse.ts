@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface DeleteRelationshipResponse
  */
 export interface DeleteRelationshipResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteRelationshipResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteRelationshipResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the DeleteRelationshipResponse interface.
  */
-export function instanceOfDeleteRelationshipResponse(value: object): value is DeleteRelationshipResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfDeleteRelationshipResponse(
+	value: object,
+): value is DeleteRelationshipResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function DeleteRelationshipResponseFromJSON(json: any): DeleteRelationshipResponse {
-    return DeleteRelationshipResponseFromJSONTyped(json, false);
+export function DeleteRelationshipResponseFromJSON(
+	json: any,
+): DeleteRelationshipResponse {
+	return DeleteRelationshipResponseFromJSONTyped(json, false);
 }
 
-export function DeleteRelationshipResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteRelationshipResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function DeleteRelationshipResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteRelationshipResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function DeleteRelationshipResponseToJSON(json: any): DeleteRelationshipResponse {
-    return DeleteRelationshipResponseToJSONTyped(json, false);
+export function DeleteRelationshipResponseToJSON(
+	json: any,
+): DeleteRelationshipResponse {
+	return DeleteRelationshipResponseToJSONTyped(json, false);
 }
 
-export function DeleteRelationshipResponseToJSONTyped(value?: DeleteRelationshipResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteRelationshipResponseToJSONTyped(
+	value?: DeleteRelationshipResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

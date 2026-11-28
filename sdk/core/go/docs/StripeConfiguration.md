@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Coupons** | Pointer to [**[]Coupon**](Coupon.md) |  | [optional] 
-**Meters** | Pointer to [**[]Meter**](Meter.md) |  | [optional] 
-**Products** | [**[]Product**](Product.md) |  | 
-**PromotionCodes** | Pointer to [**[]PromotionCode**](PromotionCode.md) |  | [optional] 
-**Version** | **string** |  | 
-**Webhooks** | Pointer to [**[]WebhookEndpointConfig**](WebhookEndpointConfig.md) |  | [optional] 
+| Name               | Type                                                               | Description | Notes      |
+| ------------------ | ------------------------------------------------------------------ | ----------- | ---------- |
+| **Coupons**        | Pointer to [**[]Coupon**](Coupon.md)                               |             | [optional] |
+| **Meters**         | Pointer to [**[]Meter**](Meter.md)                                 |             | [optional] |
+| **Products**       | [**[]Product**](Product.md)                                        |             |
+| **PromotionCodes** | Pointer to [**[]PromotionCode**](PromotionCode.md)                 |             | [optional] |
+| **Version**        | **string**                                                         |             |
+| **Webhooks**       | Pointer to [**[]WebhookEndpointConfig**](WebhookEndpointConfig.md) |             | [optional] |
 
 ## Methods
 
@@ -59,12 +59,14 @@ HasCoupons returns a boolean if a field has been set.
 
 `func (o *StripeConfiguration) SetCouponsNil(b bool)`
 
- SetCouponsNil sets the value for Coupons to be an explicit nil
+SetCouponsNil sets the value for Coupons to be an explicit nil
 
 ### UnsetCoupons
+
 `func (o *StripeConfiguration) UnsetCoupons()`
 
 UnsetCoupons ensures that no value is present for Coupons, not even an explicit nil
+
 ### GetMeters
 
 `func (o *StripeConfiguration) GetMeters() []Meter`
@@ -94,12 +96,14 @@ HasMeters returns a boolean if a field has been set.
 
 `func (o *StripeConfiguration) SetMetersNil(b bool)`
 
- SetMetersNil sets the value for Meters to be an explicit nil
+SetMetersNil sets the value for Meters to be an explicit nil
 
 ### UnsetMeters
+
 `func (o *StripeConfiguration) UnsetMeters()`
 
 UnsetMeters ensures that no value is present for Meters, not even an explicit nil
+
 ### GetProducts
 
 `func (o *StripeConfiguration) GetProducts() []Product`
@@ -119,17 +123,18 @@ and a boolean to check if the value has been set.
 
 SetProducts sets Products field to given value.
 
-
 ### SetProductsNil
 
 `func (o *StripeConfiguration) SetProductsNil(b bool)`
 
- SetProductsNil sets the value for Products to be an explicit nil
+SetProductsNil sets the value for Products to be an explicit nil
 
 ### UnsetProducts
+
 `func (o *StripeConfiguration) UnsetProducts()`
 
 UnsetProducts ensures that no value is present for Products, not even an explicit nil
+
 ### GetPromotionCodes
 
 `func (o *StripeConfiguration) GetPromotionCodes() []PromotionCode`
@@ -159,12 +164,14 @@ HasPromotionCodes returns a boolean if a field has been set.
 
 `func (o *StripeConfiguration) SetPromotionCodesNil(b bool)`
 
- SetPromotionCodesNil sets the value for PromotionCodes to be an explicit nil
+SetPromotionCodesNil sets the value for PromotionCodes to be an explicit nil
 
 ### UnsetPromotionCodes
+
 `func (o *StripeConfiguration) UnsetPromotionCodes()`
 
 UnsetPromotionCodes ensures that no value is present for PromotionCodes, not even an explicit nil
+
 ### GetVersion
 
 `func (o *StripeConfiguration) GetVersion() string`
@@ -183,7 +190,6 @@ and a boolean to check if the value has been set.
 `func (o *StripeConfiguration) SetVersion(v string)`
 
 SetVersion sets Version field to given value.
-
 
 ### GetWebhooks
 
@@ -214,13 +220,12 @@ HasWebhooks returns a boolean if a field has been set.
 
 `func (o *StripeConfiguration) SetWebhooksNil(b bool)`
 
- SetWebhooksNil sets the value for Webhooks to be an explicit nil
+SetWebhooksNil sets the value for Webhooks to be an explicit nil
 
 ### UnsetWebhooks
+
 `func (o *StripeConfiguration) UnsetWebhooks()`
 
 UnsetWebhooks ensures that no value is present for Webhooks, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

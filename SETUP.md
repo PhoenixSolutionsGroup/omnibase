@@ -112,20 +112,20 @@ pulled images.
 
 This brings up:
 
-| Service | URL |
-|---|---|
-| REST API | http://localhost:8080 |
-| Auth | http://localhost:4433 (public), :4434 (admin) |
-| Permissions | internal only |
-| PostgREST | http://localhost:8080/api/v1/rest |
-| Postgres | localhost:5432 |
-| PgBouncer | localhost:6432 |
-| Adminer | http://localhost:8081 |
-| Mailpit (SMTP inbox UI) | http://localhost:8025 |
-| RustFS (S3-compatible) | http://localhost:9000 (API), :9001 (console) |
-| Dashboard | http://localhost:8787 |
-| Docs | http://localhost:8788 |
-| Website | http://localhost:8789 |
+| Service                 | URL                                           |
+| ----------------------- | --------------------------------------------- |
+| REST API                | http://localhost:8080                         |
+| Auth                    | http://localhost:4433 (public), :4434 (admin) |
+| Permissions             | internal only                                 |
+| PostgREST               | http://localhost:8080/api/v1/rest             |
+| Postgres                | localhost:5432                                |
+| PgBouncer               | localhost:6432                                |
+| Adminer                 | http://localhost:8081                         |
+| Mailpit (SMTP inbox UI) | http://localhost:8025                         |
+| RustFS (S3-compatible)  | http://localhost:9000 (API), :9001 (console)  |
+| Dashboard               | http://localhost:8787                         |
+| Docs                    | http://localhost:8788                         |
+| Website                 | http://localhost:8789                         |
 
 The last three are spawned as `bun run dev` processes (one per `[[deployments]]` entry
 in `omnibase/omnibase.toml`), not Docker containers — their logs stream to the same

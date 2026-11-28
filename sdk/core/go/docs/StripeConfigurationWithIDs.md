@@ -2,13 +2,13 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Coupons** | Pointer to [**[]CouponWithStripeID**](CouponWithStripeID.md) |  | [optional] 
-**Meters** | Pointer to [**[]MeterWithStripeID**](MeterWithStripeID.md) |  | [optional] 
-**Products** | [**[]ProductWithStripeIDs**](ProductWithStripeIDs.md) |  | 
-**PromotionCodes** | Pointer to [**[]PromotionCodeWithStripeID**](PromotionCodeWithStripeID.md) |  | [optional] 
-**Version** | **string** |  | 
+| Name               | Type                                                                       | Description | Notes      |
+| ------------------ | -------------------------------------------------------------------------- | ----------- | ---------- |
+| **Coupons**        | Pointer to [**[]CouponWithStripeID**](CouponWithStripeID.md)               |             | [optional] |
+| **Meters**         | Pointer to [**[]MeterWithStripeID**](MeterWithStripeID.md)                 |             | [optional] |
+| **Products**       | [**[]ProductWithStripeIDs**](ProductWithStripeIDs.md)                      |             |
+| **PromotionCodes** | Pointer to [**[]PromotionCodeWithStripeID**](PromotionCodeWithStripeID.md) |             | [optional] |
+| **Version**        | **string**                                                                 |             |
 
 ## Methods
 
@@ -58,12 +58,14 @@ HasCoupons returns a boolean if a field has been set.
 
 `func (o *StripeConfigurationWithIDs) SetCouponsNil(b bool)`
 
- SetCouponsNil sets the value for Coupons to be an explicit nil
+SetCouponsNil sets the value for Coupons to be an explicit nil
 
 ### UnsetCoupons
+
 `func (o *StripeConfigurationWithIDs) UnsetCoupons()`
 
 UnsetCoupons ensures that no value is present for Coupons, not even an explicit nil
+
 ### GetMeters
 
 `func (o *StripeConfigurationWithIDs) GetMeters() []MeterWithStripeID`
@@ -93,12 +95,14 @@ HasMeters returns a boolean if a field has been set.
 
 `func (o *StripeConfigurationWithIDs) SetMetersNil(b bool)`
 
- SetMetersNil sets the value for Meters to be an explicit nil
+SetMetersNil sets the value for Meters to be an explicit nil
 
 ### UnsetMeters
+
 `func (o *StripeConfigurationWithIDs) UnsetMeters()`
 
 UnsetMeters ensures that no value is present for Meters, not even an explicit nil
+
 ### GetProducts
 
 `func (o *StripeConfigurationWithIDs) GetProducts() []ProductWithStripeIDs`
@@ -118,17 +122,18 @@ and a boolean to check if the value has been set.
 
 SetProducts sets Products field to given value.
 
-
 ### SetProductsNil
 
 `func (o *StripeConfigurationWithIDs) SetProductsNil(b bool)`
 
- SetProductsNil sets the value for Products to be an explicit nil
+SetProductsNil sets the value for Products to be an explicit nil
 
 ### UnsetProducts
+
 `func (o *StripeConfigurationWithIDs) UnsetProducts()`
 
 UnsetProducts ensures that no value is present for Products, not even an explicit nil
+
 ### GetPromotionCodes
 
 `func (o *StripeConfigurationWithIDs) GetPromotionCodes() []PromotionCodeWithStripeID`
@@ -158,12 +163,14 @@ HasPromotionCodes returns a boolean if a field has been set.
 
 `func (o *StripeConfigurationWithIDs) SetPromotionCodesNil(b bool)`
 
- SetPromotionCodesNil sets the value for PromotionCodes to be an explicit nil
+SetPromotionCodesNil sets the value for PromotionCodes to be an explicit nil
 
 ### UnsetPromotionCodes
+
 `func (o *StripeConfigurationWithIDs) UnsetPromotionCodes()`
 
 UnsetPromotionCodes ensures that no value is present for PromotionCodes, not even an explicit nil
+
 ### GetVersion
 
 `func (o *StripeConfigurationWithIDs) GetVersion() string`
@@ -183,8 +190,4 @@ and a boolean to check if the value has been set.
 
 SetVersion sets Version field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

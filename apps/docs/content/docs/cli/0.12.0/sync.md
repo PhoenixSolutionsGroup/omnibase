@@ -1,6 +1,6 @@
 ---
-title: "Sync"
----
+
+## title: "Sync"
 
 ## Summary
 

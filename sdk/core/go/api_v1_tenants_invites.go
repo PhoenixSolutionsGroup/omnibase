@@ -19,13 +19,12 @@ import (
 	"net/url"
 )
 
-
 // V1TenantsInvitesAPIService V1TenantsInvitesAPI service
 type V1TenantsInvitesAPIService service
 
 type ApiAcceptInviteRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsInvitesAPIService
+	ctx           context.Context
+	ApiService    *V1TenantsInvitesAPIService
 	acceptRequest *AcceptRequest
 }
 
@@ -41,24 +40,25 @@ func (r ApiAcceptInviteRequest) Execute() (*AcceptResponse, *http.Response, erro
 /*
 AcceptInvite Accept a tenant invite
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiAcceptInviteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiAcceptInviteRequest
 */
 func (a *V1TenantsInvitesAPIService) AcceptInvite(ctx context.Context) ApiAcceptInviteRequest {
 	return ApiAcceptInviteRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return AcceptResponse
+//
+//	@return AcceptResponse
 func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*AcceptResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AcceptResponse
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AcceptResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsInvitesAPIService.AcceptInvite")
@@ -165,8 +165,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -176,8 +176,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -187,8 +187,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -198,8 +198,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -209,8 +209,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -228,8 +228,8 @@ func (a *V1TenantsInvitesAPIService) AcceptInviteExecute(r ApiAcceptInviteReques
 }
 
 type ApiCreateInviteRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsInvitesAPIService
+	ctx           context.Context
+	ApiService    *V1TenantsInvitesAPIService
 	createRequest *CreateRequest
 }
 
@@ -245,24 +245,25 @@ func (r ApiCreateInviteRequest) Execute() (*CreateResponse, *http.Response, erro
 /*
 CreateInvite Create a tenant invite
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateInviteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateInviteRequest
 */
 func (a *V1TenantsInvitesAPIService) CreateInvite(ctx context.Context) ApiCreateInviteRequest {
 	return ApiCreateInviteRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateResponse
+//
+//	@return CreateResponse
 func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*CreateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsInvitesAPIService.CreateInvite")
@@ -369,8 +370,8 @@ func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -380,8 +381,8 @@ func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -391,8 +392,8 @@ func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -402,8 +403,8 @@ func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -413,8 +414,8 @@ func (a *V1TenantsInvitesAPIService) CreateInviteExecute(r ApiCreateInviteReques
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

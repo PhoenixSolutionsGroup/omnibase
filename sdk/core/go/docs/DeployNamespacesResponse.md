@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**ManagedMode** | **bool** |  | 
-**Message** | **string** |  | 
-**Path** | **string** |  | 
-**RolesBackfilled** | Pointer to **int64** |  | [optional] 
-**RolesSynced** | Pointer to **int64** |  | [optional] 
-**TenantId** | **string** |  | 
+| Name                | Type                 | Description | Notes      |
+| ------------------- | -------------------- | ----------- | ---------- |
+| **ManagedMode**     | **bool**             |             |
+| **Message**         | **string**           |             |
+| **Path**            | **string**           |             |
+| **RolesBackfilled** | Pointer to **int64** |             | [optional] |
+| **RolesSynced**     | Pointer to **int64** |             | [optional] |
+| **TenantId**        | **string**           |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetManagedMode sets ManagedMode field to given value.
 
-
 ### GetMessage
 
 `func (o *DeployNamespacesResponse) GetMessage() string`
@@ -69,7 +68,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-
 ### GetPath
 
 `func (o *DeployNamespacesResponse) GetPath() string`
@@ -88,7 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *DeployNamespacesResponse) SetPath(v string)`
 
 SetPath sets Path field to given value.
-
 
 ### GetRolesBackfilled
 
@@ -159,8 +156,4 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

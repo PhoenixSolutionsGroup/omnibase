@@ -1,16 +1,14 @@
 # \V1TenantsLifecycleAPI
 
-All URIs are relative to *https://api.omnibase.tech*
+All URIs are relative to _https://api.omnibase.tech_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CreateTenant**](V1TenantsLifecycleAPI.md#CreateTenant) | **Post** /api/v1/tenants | Create a tenant
-[**DeleteTenant**](V1TenantsLifecycleAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete the current tenant
-[**GetTenantByID**](V1TenantsLifecycleAPI.md#GetTenantByID) | **Get** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
-[**GetTenantByStripeCustomerID**](V1TenantsLifecycleAPI.md#GetTenantByStripeCustomerID) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-[**SwitchActiveTenant**](V1TenantsLifecycleAPI.md#SwitchActiveTenant) | **Put** /api/v1/tenants/switch-active | Switch the active tenant
-
-
+| Method                                                                                  | HTTP request                                                    | Description                      |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| [**CreateTenant**](V1TenantsLifecycleAPI.md#CreateTenant)                               | **Post** /api/v1/tenants                                        | Create a tenant                  |
+| [**DeleteTenant**](V1TenantsLifecycleAPI.md#DeleteTenant)                               | **Delete** /api/v1/tenants                                      | Delete the current tenant        |
+| [**GetTenantByID**](V1TenantsLifecycleAPI.md#GetTenantByID)                             | **Get** /api/v1/tenants/by-id/{tenant_id}                       | Get tenant by ID                 |
+| [**GetTenantByStripeCustomerID**](V1TenantsLifecycleAPI.md#GetTenantByStripeCustomerID) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID |
+| [**SwitchActiveTenant**](V1TenantsLifecycleAPI.md#SwitchActiveTenant)                   | **Put** /api/v1/tenants/switch-active                           | Switch the active tenant         |
 
 ## CreateTenant
 
@@ -47,16 +45,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCreateTenantRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createTenantRequest** | [**CreateTenantRequest**](CreateTenantRequest.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **createTenantRequest** | [**CreateTenantRequest**](CreateTenantRequest.md) |             |
 
 ### Return type
 
@@ -74,7 +69,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## DeleteTenant
 
@@ -116,7 +110,6 @@ This endpoint does not need any parameter.
 
 Other parameters are passed through a pointer to a apiDeleteTenantRequest struct via the builder pattern
 
-
 ### Return type
 
 [**DeleteTenantResponse**](DeleteTenantResponse.md)
@@ -133,7 +126,6 @@ Other parameters are passed through a pointer to a apiDeleteTenantRequest struct
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetTenantByID
 
@@ -170,20 +162,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**tenantId** | **string** |  | 
+| Name         | Type                | Description                                                                 | Notes |
+| ------------ | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**      | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **tenantId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetTenantByIDRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -201,7 +190,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## GetTenantByStripeCustomerID
 
@@ -238,20 +226,17 @@ func main() {
 
 ### Path Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**stripeCustomerId** | **string** |  | 
+| Name                 | Type                | Description                                                                 | Notes |
+| -------------------- | ------------------- | --------------------------------------------------------------------------- | ----- |
+| **ctx**              | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc. |
+| **stripeCustomerId** | **string**          |                                                                             |
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetTenantByStripeCustomerIDRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
+| Name | Type | Description | Notes |
+| ---- | ---- | ----------- | ----- |
 
 ### Return type
 
@@ -269,7 +254,6 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
 
 ## SwitchActiveTenant
 
@@ -306,16 +290,13 @@ func main() {
 
 ### Path Parameters
 
-
-
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiSwitchActiveTenantRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **switchActiveRequest** | [**SwitchActiveRequest**](SwitchActiveRequest.md) |  | 
+| Name                    | Type                                              | Description | Notes |
+| ----------------------- | ------------------------------------------------- | ----------- | ----- |
+| **switchActiveRequest** | [**SwitchActiveRequest**](SwitchActiveRequest.md) |             |
 
 ### Return type
 
@@ -333,4 +314,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

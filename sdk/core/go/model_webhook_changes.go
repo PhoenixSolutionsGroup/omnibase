@@ -20,10 +20,10 @@ var _ MappedNullable = &WebhookChanges{}
 
 // WebhookChanges struct for WebhookChanges
 type WebhookChanges struct {
-	Created []WebhookChange `json:"created,omitempty"`
-	Deleted []WebhookChange `json:"deleted,omitempty"`
+	Created   []WebhookChange `json:"created,omitempty"`
+	Deleted   []WebhookChange `json:"deleted,omitempty"`
 	Unchanged []WebhookChange `json:"unchanged,omitempty"`
-	Updated []WebhookChange `json:"updated,omitempty"`
+	Updated   []WebhookChange `json:"updated,omitempty"`
 }
 
 // NewWebhookChanges instantiates a new WebhookChanges object
@@ -176,7 +176,7 @@ func (o *WebhookChanges) SetUpdated(v []WebhookChange) {
 }
 
 func (o WebhookChanges) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -235,5 +235,3 @@ func (v *NullableWebhookChanges) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

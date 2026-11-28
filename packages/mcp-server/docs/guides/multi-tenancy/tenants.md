@@ -1,4 +1,5 @@
 ---
+
 title: Tenant Lifecycle
 description: Create, manage, switch, and delete tenants
 ---
@@ -16,39 +17,40 @@ OmniBase provides pre-built shadcn components for tenant management in `@omnibas
 Create new organizations or join existing ones via invite token. Auto-detects `?invite_token=` from URL.
 
 ```tsx
-import { TenantCreator } from '@omnibase/shadcn';
+import { TenantCreator } from "@omnibase/shadcn";
 
 <TenantCreator
-  config={{
-    defaultMode: 'create',
-    createOrganizationText: 'Create Organization',
-    joinOrganizationText: 'Join Organization',
-    createForm: {
-      organizationName: { label: 'Organization Name', placeholder: 'Acme Inc' },
-      billingEmail: { label: 'Billing Email', placeholder: 'billing@acme.com' },
-    },
-  }}
-  formActions={{
-    createOrganizationAction: async (formData) => {
-      await tenantsApi.createTenant({
-        createTenantRequest: {
-          name: formData.get('organizationName') as string,
-          billingEmail: formData.get('billingEmail') as string,
-        },
-      });
-      redirect('/dashboard');
-    },
-    joinOrganizationAction: async (formData) => {
-      await tenantsApi.acceptInvite({
-        acceptInviteRequest: { token: formData.get('token') as string },
-      });
-      redirect('/dashboard');
-    },
-  }}
-/>
+	config={{
+		defaultMode: "create",
+		createOrganizationText: "Create Organization",
+		joinOrganizationText: "Join Organization",
+		createForm: {
+			organizationName: { label: "Organization Name", placeholder: "Acme Inc" },
+			billingEmail: { label: "Billing Email", placeholder: "billing@acme.com" },
+		},
+	}}
+	formActions={{
+		createOrganizationAction: async (formData) => {
+			await tenantsApi.createTenant({
+				createTenantRequest: {
+					name: formData.get("organizationName") as string,
+					billingEmail: formData.get("billingEmail") as string,
+				},
+			});
+			redirect("/dashboard");
+		},
+		joinOrganizationAction: async (formData) => {
+			await tenantsApi.acceptInvite({
+				acceptInviteRequest: { token: formData.get("token") as string },
+			});
+			redirect("/dashboard");
+		},
+	}}
+/>;
 ```
 
 **Props:**
+
 - `config.defaultMode` — `'create'` or `'join'`
 - `config.createForm` — Customize organization name and billing email inputs
 - `config.joinForm` — Customize invite token input
@@ -60,25 +62,26 @@ import { TenantCreator } from '@omnibase/shadcn';
 Dropdown for switching between tenants with optional "Create Tenant" action.
 
 ```tsx
-import { SwitchActiveTenant } from '@omnibase/shadcn';
+import { SwitchActiveTenant } from "@omnibase/shadcn";
 
 <SwitchActiveTenant
-  tenants={userTenants}
-  currentTenantId={activeTenantId}
-  placeholder="Select organization..."
-  formAction={async (formData) => {
-    'use server';
-    await tenantsApi.switchActiveTenant({
-      switchTenantRequest: { tenantId: formData.get('tenant_id') as string },
-    });
-    revalidatePath('/', 'layout');
-  }}
-  onCreateTenant={() => router.push('/onboarding')}
-  createTenantLabel="Create Organization"
-/>
+	tenants={userTenants}
+	currentTenantId={activeTenantId}
+	placeholder="Select organization..."
+	formAction={async (formData) => {
+		"use server";
+		await tenantsApi.switchActiveTenant({
+			switchTenantRequest: { tenantId: formData.get("tenant_id") as string },
+		});
+		revalidatePath("/", "layout");
+	}}
+	onCreateTenant={() => router.push("/onboarding")}
+	createTenantLabel="Create Organization"
+/>;
 ```
 
 **Props:**
+
 - `tenants` — Array of `Tenant` objects
 - `currentTenantId` — Currently active tenant ID
 - `formAction` — Server action that receives `FormData` with `tenant_id`
@@ -101,24 +104,24 @@ When you create a tenant, OmniBase automatically:
 ### Basic Creation
 
 ```typescript
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
+	basePath: process.env.OMNIBASE_API_URL,
 });
 
 const tenantsApi = new V1TenantsApi(config);
 
 const { data } = await tenantsApi.createTenant({
-  createTenantRequest: {
-    name: 'Acme Corporation',
-    billingEmail: 'billing@acme.com',
-  },
+	createTenantRequest: {
+		name: "Acme Corporation",
+		billingEmail: "billing@acme.com",
+	},
 });
 
-console.log('Tenant ID:', data.data.tenant.id);
-console.log('Stripe Customer:', data.data.tenant.stripe_customer_id);
-console.log('JWT Token:', data.data.token);
+console.log("Tenant ID:", data.data.tenant.id);
+console.log("Stripe Customer:", data.data.tenant.stripe_customer_id);
+console.log("JWT Token:", data.data.token);
 ```
 
 ---
@@ -128,16 +131,16 @@ console.log('JWT Token:', data.data.token);
 Users can belong to multiple tenants. List all tenants for the current user:
 
 ```typescript
-import { V1AuthApi } from '@omnibase/core-js';
+import { V1AuthApi } from "@omnibase/core-js";
 
 const authApi = new V1AuthApi(config);
 
 const { data } = await authApi.listTenants();
 
 for (const item of data.data.tenants) {
-  console.log(`${item.tenant.name}: ${item.isActive ? 'ACTIVE' : ''}`);
-  console.log(`  Role: ${item.role}`);
-  console.log(`  Joined: ${item.joinedAt}`);
+	console.log(`${item.tenant.name}: ${item.isActive ? "ACTIVE" : ""}`);
+	console.log(`  Role: ${item.role}`);
+	console.log(`  Joined: ${item.joinedAt}`);
 }
 ```
 
@@ -156,24 +159,23 @@ The **active tenant** determines:
 
 ```typescript
 await tenantsApi.switchActiveTenant({
-  switchTenantRequest: {
-    tenantId: 'tenant_abc123',
-  },
+	switchTenantRequest: {
+		tenantId: "tenant_abc123",
+	},
 });
 
 // All subsequent requests use the new tenant context
 ```
 
-> **Note:**
-  When switching tenants, OmniBase updates the `is_active` flag in `tenant_users`, generates a new JWT token, and all subsequent database queries automatically filter by the new tenant.
+> **Note:** When switching tenants, OmniBase updates the `is_active` flag in `tenant_users`, generates a new JWT token, and all subsequent database queries automatically filter by the new tenant.
 
 ### Get Active Tenant
 
 ```typescript
 const { data } = await authApi.getActiveTenant();
 
-console.log('Active Tenant:', data.data.tenant.name);
-console.log('Your Role:', data.data.role);
+console.log("Active Tenant:", data.data.tenant.name);
+console.log("Your Role:", data.data.role);
 ```
 
 ### Tenant Switching in Next.js
@@ -182,53 +184,53 @@ console.log('Your Role:', data.data.role);
 
 ```typescript
 // app/actions.ts
-'use server';
+"use server";
 
-import { Configuration, V1TenantsApi } from '@omnibase/core-js';
-import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { Configuration, V1TenantsApi } from "@omnibase/core-js";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 export async function switchTenant(formData: FormData) {
-  const tenantId = formData.get('tenant_id') as string;
+	const tenantId = formData.get("tenant_id") as string;
 
-  const config = new Configuration({
-    basePath: process.env.OMNIBASE_API_URL,
-    // Pass cookies for authentication
-  });
+	const config = new Configuration({
+		basePath: process.env.OMNIBASE_API_URL,
+		// Pass cookies for authentication
+	});
 
-  const tenantsApi = new V1TenantsApi(config);
+	const tenantsApi = new V1TenantsApi(config);
 
-  await tenantsApi.switchActiveTenant({
-    switchTenantRequest: { tenantId },
-  });
+	await tenantsApi.switchActiveTenant({
+		switchTenantRequest: { tenantId },
+	});
 
-  // Revalidate to refresh data with new tenant context
-  revalidatePath('/', 'layout');
+	// Revalidate to refresh data with new tenant context
+	revalidatePath("/", "layout");
 
-  return { success: true };
+	return { success: true };
 }
 ```
 
 **Client Component:**
 
 ```tsx
-'use client';
+"use client";
 
-import { switchTenant } from './actions';
+import { switchTenant } from "./actions";
 
 export function TenantSwitcher({ tenants, currentTenantId }) {
-  return (
-    <form action={switchTenant}>
-      <select name="tenant_id" defaultValue={currentTenantId}>
-        {tenants.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.name}
-          </option>
-        ))}
-      </select>
-      <button type="submit">Switch</button>
-    </form>
-  );
+	return (
+		<form action={switchTenant}>
+			<select name="tenant_id" defaultValue={currentTenantId}>
+				{tenants.map((t) => (
+					<option key={t.id} value={t.id}>
+						{t.name}
+					</option>
+				))}
+			</select>
+			<button type="submit">Switch</button>
+		</form>
+	);
 }
 ```
 
@@ -242,10 +244,10 @@ For service-to-service operations, you can look up tenants by ID or Stripe custo
 
 ```typescript
 const { data } = await tenantsApi.getTenantByID({
-  tenantId: 'tenant_abc123',
+	tenantId: "tenant_abc123",
 });
 
-console.log('Tenant:', data.data.tenant.name);
+console.log("Tenant:", data.data.tenant.name);
 ```
 
 ### By Stripe Customer ID
@@ -254,14 +256,13 @@ Useful for Stripe webhook handlers:
 
 ```typescript
 const { data } = await tenantsApi.getTenantByStripeCustomerID({
-  stripeCustomerId: 'cus_abc123',
+	stripeCustomerId: "cus_abc123",
 });
 
-console.log('Tenant:', data.data.tenant.name);
+console.log("Tenant:", data.data.tenant.name);
 ```
 
-> **Note:**
-  Lookup endpoints require service key authentication (`X-Service-Key` header) and are intended for server-to-server use.
+> **Note:** Lookup endpoints require service key authentication (`X-Service-Key` header) and are intended for server-to-server use.
 
 ---
 
@@ -276,13 +277,17 @@ await tenantsApi.deleteTenant();
 ### What Happens on Deletion
 
 ### Permission Check
+
 OmniBase verifies the user has `tenant#delete_tenant` permission.
 
 ### Stripe Cleanup
+
 If a Stripe customer exists, it's archived and subscriptions are cancelled.
 
 ### Database Cascade
+
 All related records are deleted:
+
 - `auth.tenants` (primary record)
 - `auth.tenant_users` (all memberships)
 - `auth.tenant_settings`
@@ -290,13 +295,14 @@ All related records are deleted:
 - All tenant-scoped data (via foreign key cascades)
 
 ### Permission Cleanup
+
 All permission relationships for this tenant are deleted.
 
 ### User Reassignment
+
 Former members are reassigned to another tenant (if they have one) or their identity metadata is updated.
 
-> **Note:**
-  Tenant deletion is irreversible. All data associated with the tenant will be permanently deleted.
+> **Note:** Tenant deletion is irreversible. All data associated with the tenant will be permanently deleted.
 
 ---
 

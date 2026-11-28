@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Configs** | [**[]ConfigHistoryItem**](ConfigHistoryItem.md) |  | 
-**Pagination** | [**ConfigHistoryPagination**](ConfigHistoryPagination.md) |  | 
+| Name           | Type                                                      | Description | Notes |
+| -------------- | --------------------------------------------------------- | ----------- | ----- |
+| **Configs**    | [**[]ConfigHistoryItem**](ConfigHistoryItem.md)           |             |
+| **Pagination** | [**ConfigHistoryPagination**](ConfigHistoryPagination.md) |             |
 
 ## Methods
 
@@ -45,17 +45,18 @@ and a boolean to check if the value has been set.
 
 SetConfigs sets Configs field to given value.
 
-
 ### SetConfigsNil
 
 `func (o *ConfigHistoryResponse) SetConfigsNil(b bool)`
 
- SetConfigsNil sets the value for Configs to be an explicit nil
+SetConfigsNil sets the value for Configs to be an explicit nil
 
 ### UnsetConfigs
+
 `func (o *ConfigHistoryResponse) UnsetConfigs()`
 
 UnsetConfigs ensures that no value is present for Configs, not even an explicit nil
+
 ### GetPagination
 
 `func (o *ConfigHistoryResponse) GetPagination() ConfigHistoryPagination`
@@ -75,8 +76,4 @@ and a boolean to check if the value has been set.
 
 SetPagination sets Pagination field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

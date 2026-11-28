@@ -1,18 +1,18 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "main": "worker/index.ts",
-  "name": "omnibase-docs",
-  "compatibility_date": "2025-03-25",
-  "build": {
-    "command": "bun run build"
-  },
-  "assets": {
-    "directory": "out",
-    "binding": "ASSETS",
-    "html_handling": "auto-trailing-slash"
-  },
-  "observability": {
-    "enabled": true
-  },
-  "vars": {}
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": "worker/index.ts",
+	"name": "omnibase-docs",
+	"compatibility_date": "2025-03-25",
+	"build": {
+		"command": "bun run build"
+	},
+	"assets": {
+		"directory": "out",
+		"binding": "ASSETS",
+		"html_handling": "auto-trailing-slash"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {}
 }

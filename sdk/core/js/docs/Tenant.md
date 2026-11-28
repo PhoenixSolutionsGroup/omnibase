@@ -1,21 +1,20 @@
-
 # Tenant
 
 Main tenant/organization entity
 
 ## Properties
 
-Name | Type
------------- | -------------
-`id` | string
-`name` | string
-`stripeCustomerId` | string
-`enterpriseTemplate` | string
-`enterpriseId` | string
-`type` | string
-`createdAt` | Date
-`updatedAt` | Date
-`settings` | [TenantSettings](TenantSettings.md)
+| Name                 | Type                                |
+| -------------------- | ----------------------------------- |
+| `id`                 | string                              |
+| `name`               | string                              |
+| `stripeCustomerId`   | string                              |
+| `enterpriseTemplate` | string                              |
+| `enterpriseId`       | string                              |
+| `type`               | string                              |
+| `createdAt`          | Date                                |
+| `updatedAt`          | Date                                |
+| `settings`           | [TenantSettings](TenantSettings.md) |
 
 ## Example
 
@@ -47,5 +46,3 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-

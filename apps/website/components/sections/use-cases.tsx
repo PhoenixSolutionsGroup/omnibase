@@ -1,12 +1,12 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { CodeBlock } from "../code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 const useCases = [
-  {
-    key: "React",
-    logo: "/icons/react.svg",
-    language: "js",
-    code: `import { createClient } from '@supabase/supabase-js'
+	{
+		key: "React",
+		logo: "/icons/react.svg",
+		language: "js",
+		code: `import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -23,13 +23,13 @@ export default function App() {
 
   return <TodoList items={todos} />
 }`,
-  },
-  {
-    key: "Next",
-    logo: "/icons/next.svg",
-    language: "js",
+	},
+	{
+		key: "Next",
+		logo: "/icons/next.svg",
+		language: "js",
 
-    code: `import { createClient } from '@supabase/supabase-js'
+		code: `import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -43,13 +43,13 @@ export default async function Page() {
 
   return <TodoList items={todos} />
 }`,
-  },
-  {
-    key: "Svelte",
-    logo: "/icons/svelte.svg",
-    language: "js",
+	},
+	{
+		key: "Svelte",
+		logo: "/icons/svelte.svg",
+		language: "js",
 
-    code: `<script>
+		code: `<script>
   import { createClient } from '@supabase/supabase-js'
 
   const supabase = createClient(
@@ -65,13 +65,13 @@ export default async function Page() {
     todos = data
   }
 </script>`,
-  },
-  {
-    key: "Vanilla",
-    logo: "/icons/javascript.svg",
-    language: "js",
+	},
+	{
+		key: "Vanilla",
+		logo: "/icons/javascript.svg",
+		language: "js",
 
-    code: `import { createClient } from '@supabase/supabase-js'
+		code: `import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -88,13 +88,13 @@ export default function App() {
 
   return <TodoList items={todos} />
 }`,
-  },
-  {
-    key: "Vue",
-    logo: "/icons/vue.svg",
-    language: "js",
+	},
+	{
+		key: "Vue",
+		logo: "/icons/vue.svg",
+		language: "js",
 
-    code: `<script setup>
+		code: `<script setup>
 import { createClient } from '@supabase/supabase-js'
 import { ref, onMounted } from 'vue'
 
@@ -111,13 +111,13 @@ onMounted(async () => {
   todos.value = data
 })
 </script>`,
-  },
-  {
-    key: "Nuxt",
-    logo: "/icons/nuxt.svg",
-    language: "js",
+	},
+	{
+		key: "Nuxt",
+		logo: "/icons/nuxt.svg",
+		language: "js",
 
-    code: `<script setup>
+		code: `<script setup>
 const supabase = useSupabaseClient()
 
 const { data: todos } = await useAsyncData(
@@ -134,57 +134,57 @@ const { data: todos } = await useAsyncData(
 <template>
   <TodoList :items="todos" />
 </template>`,
-  },
+	},
 ];
 
 export function UseCaseSection() {
-  return (
-    <section className="py-20 bg-muted/30">
-      <div className="container mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-1 gap-10 rounded-xl p-8 md:grid-cols-2 md:p-12">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-center sm:text-left sm:text-4xl">
-              Use Omnibase with <br />
-              <span className="text-muted-foreground">your framework</span>
-            </h2>
-          </div>
+	return (
+		<section className="py-20 bg-muted/30">
+			<div className="container mx-auto max-w-6xl px-4">
+				<div className="grid grid-cols-1 gap-10 rounded-xl p-8 md:grid-cols-2 md:p-12">
+					<div>
+						<h2 className="text-3xl font-bold tracking-tight text-center sm:text-left sm:text-4xl">
+							Use Omnibase with <br />
+							<span className="text-muted-foreground">your framework</span>
+						</h2>
+					</div>
 
-          <div className="flex flex-col items-center gap-8">
-            <Tabs defaultValue="React" className="w-full">
-              <TabsList className="grid w-full grid-cols-6 min-h-16">
-                {useCases.map((item) => (
-                  <TabsTrigger
-                    value={item.key}
-                    key={item.key}
-                    aria-label={item.key}
-                    className="group cursor-pointer p-4"
-                  >
-                    <span
-                      aria-hidden
-                      className="block h-6 w-6 bg-current text-[#aaaaaa] dark:text-[#888888] transition-colors duration-200 group-data-[state=active]:text-primary dark:group-data-[state=active]:text-primary"
-                      style={{
-                        maskImage: `url(${item.logo})`,
-                        WebkitMaskImage: `url(${item.logo})`,
-                        maskRepeat: "no-repeat",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskPosition: "center",
-                        WebkitMaskPosition: "center",
-                        maskSize: "contain",
-                        WebkitMaskSize: "contain",
-                      }}
-                    />
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              {Object.values(useCases).map(({ key, code, language }) => (
-                <TabsContent key={key} value={key} className="mt-4">
-                  <CodeBlock code={code} language={language} />
-                </TabsContent>
-              ))}
-            </Tabs>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+					<div className="flex flex-col items-center gap-8">
+						<Tabs defaultValue="React" className="w-full">
+							<TabsList className="grid w-full grid-cols-6 min-h-16">
+								{useCases.map((item) => (
+									<TabsTrigger
+										value={item.key}
+										key={item.key}
+										aria-label={item.key}
+										className="group cursor-pointer p-4"
+									>
+										<span
+											aria-hidden
+											className="block h-6 w-6 bg-current text-[#aaaaaa] dark:text-[#888888] transition-colors duration-200 group-data-[state=active]:text-primary dark:group-data-[state=active]:text-primary"
+											style={{
+												maskImage: `url(${item.logo})`,
+												WebkitMaskImage: `url(${item.logo})`,
+												maskRepeat: "no-repeat",
+												WebkitMaskRepeat: "no-repeat",
+												maskPosition: "center",
+												WebkitMaskPosition: "center",
+												maskSize: "contain",
+												WebkitMaskSize: "contain",
+											}}
+										/>
+									</TabsTrigger>
+								))}
+							</TabsList>
+							{Object.values(useCases).map(({ key, code, language }) => (
+								<TabsContent key={key} value={key} className="mt-4">
+									<CodeBlock code={code} language={language} />
+								</TabsContent>
+							))}
+						</Tabs>
+					</div>
+				</div>
+			</div>
+		</section>
+	);
 }

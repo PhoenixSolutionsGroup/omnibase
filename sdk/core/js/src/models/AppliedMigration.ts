@@ -12,64 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface AppliedMigration
  */
 export interface AppliedMigration {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof AppliedMigration
-     */
-    dirty: boolean;
-    /**
-     * 
-     * @type {number}
-     * @memberof AppliedMigration
-     */
-    version: number;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof AppliedMigration
+	 */
+	dirty: boolean;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof AppliedMigration
+	 */
+	version: number;
 }
 
 /**
  * Check if a given object implements the AppliedMigration interface.
  */
-export function instanceOfAppliedMigration(value: object): value is AppliedMigration {
-    if (!('dirty' in value) || value['dirty'] === undefined) return false;
-    if (!('version' in value) || value['version'] === undefined) return false;
-    return true;
+export function instanceOfAppliedMigration(
+	value: object,
+): value is AppliedMigration {
+	if (!("dirty" in value) || value["dirty"] === undefined) return false;
+	if (!("version" in value) || value["version"] === undefined) return false;
+	return true;
 }
 
 export function AppliedMigrationFromJSON(json: any): AppliedMigration {
-    return AppliedMigrationFromJSONTyped(json, false);
+	return AppliedMigrationFromJSONTyped(json, false);
 }
 
-export function AppliedMigrationFromJSONTyped(json: any, ignoreDiscriminator: boolean): AppliedMigration {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'dirty': json['dirty'],
-        'version': json['version'],
-    };
+export function AppliedMigrationFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): AppliedMigration {
+	if (json == null) {
+		return json;
+	}
+	return {
+		dirty: json["dirty"],
+		version: json["version"],
+	};
 }
 
 export function AppliedMigrationToJSON(json: any): AppliedMigration {
-    return AppliedMigrationToJSONTyped(json, false);
+	return AppliedMigrationToJSONTyped(json, false);
 }
 
-export function AppliedMigrationToJSONTyped(value?: AppliedMigration | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function AppliedMigrationToJSONTyped(
+	value?: AppliedMigration | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'dirty': value['dirty'],
-        'version': value['version'],
-    };
+	return {
+		dirty: value["dirty"],
+		version: value["version"],
+	};
 }
-

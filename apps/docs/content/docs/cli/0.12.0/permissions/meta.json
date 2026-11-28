@@ -1,9 +1,4 @@
 {
-  "title": "Permissions",
-  "pages": [
-    "push",
-    "validate",
-    "check",
-    "set"
-  ]
+	"title": "Permissions",
+	"pages": ["push", "validate", "check", "set"]
 }

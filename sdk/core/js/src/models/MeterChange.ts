@@ -12,81 +12,85 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface MeterChange
  */
 export interface MeterChange {
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterChange
-     */
-    action: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterChange
-     */
-    displayName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterChange
-     */
-    meterId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MeterChange
-     */
-    stripeId?: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterChange
+	 */
+	action: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterChange
+	 */
+	displayName: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterChange
+	 */
+	meterId: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof MeterChange
+	 */
+	stripeId?: string;
 }
 
 /**
  * Check if a given object implements the MeterChange interface.
  */
 export function instanceOfMeterChange(value: object): value is MeterChange {
-    if (!('action' in value) || value['action'] === undefined) return false;
-    if (!('displayName' in value) || value['displayName'] === undefined) return false;
-    if (!('meterId' in value) || value['meterId'] === undefined) return false;
-    return true;
+	if (!("action" in value) || value["action"] === undefined) return false;
+	if (!("displayName" in value) || value["displayName"] === undefined)
+		return false;
+	if (!("meterId" in value) || value["meterId"] === undefined) return false;
+	return true;
 }
 
 export function MeterChangeFromJSON(json: any): MeterChange {
-    return MeterChangeFromJSONTyped(json, false);
+	return MeterChangeFromJSONTyped(json, false);
 }
 
-export function MeterChangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): MeterChange {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'action': json['action'],
-        'displayName': json['display_name'],
-        'meterId': json['meter_id'],
-        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
-    };
+export function MeterChangeFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): MeterChange {
+	if (json == null) {
+		return json;
+	}
+	return {
+		action: json["action"],
+		displayName: json["display_name"],
+		meterId: json["meter_id"],
+		stripeId: json["stripe_id"] == null ? undefined : json["stripe_id"],
+	};
 }
 
 export function MeterChangeToJSON(json: any): MeterChange {
-    return MeterChangeToJSONTyped(json, false);
+	return MeterChangeToJSONTyped(json, false);
 }
 
-export function MeterChangeToJSONTyped(value?: MeterChange | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function MeterChangeToJSONTyped(
+	value?: MeterChange | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'action': value['action'],
-        'display_name': value['displayName'],
-        'meter_id': value['meterId'],
-        'stripe_id': value['stripeId'],
-    };
+	return {
+		action: value["action"],
+		display_name: value["displayName"],
+		meter_id: value["meterId"],
+		stripe_id: value["stripeId"],
+	};
 }
-

@@ -1,6 +1,6 @@
 ---
-title: "Flow Routing"
----
+
+## title: "Flow Routing"
 
 # Flow Routing
 
@@ -22,28 +22,28 @@ authentication flow routing in Next.js applications.
 
 #### Properties
 
-| Property | Type | Default value | Description | Defined in |
-| ------ | ------ | ------ | ------ | ------ |
-| <a id="flowmap"></a> `flowMap` | [`FlowMap`](#flowmap-1) | `undefined` | Map of flow types to their corresponding React component render functions | [sdk/framework/nextjs/src/auth/flow-router.ts:144](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L144) |
-| <a id="onnotfound"></a> `onNotFound?` | `ReactNode` | `undefined` | Component to render when the requested flow type is not found or not supported | [sdk/framework/nextjs/src/auth/flow-router.ts:146](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L146) |
-| <a id="params"></a> `params` | `Promise`\<\{ `flow`: `string`[]; \}\> | `undefined` | Next.js params promise containing the flow type from dynamic route segments | [sdk/framework/nextjs/src/auth/flow-router.ts:142](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L142) |
-| <a id="returnto"></a> `returnTo?` | `string` | `"/"` | URL to redirect to after flow completion | [sdk/framework/nextjs/src/auth/flow-router.ts:155](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L155) |
-| <a id="searchparams"></a> `searchParams` | `Promise`\<\{ \[`key`: `string`\]: `string` \| `string`[] \| `undefined`; \}\> | `undefined` | Promise resolving to search parameters from the request URL | [sdk/framework/nextjs/src/auth/flow-router.ts:150](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L150) |
-| <a id="url"></a> `url` | `string` | `undefined` | Base URL path for authentication flows (e.g., '/auth') | [sdk/framework/nextjs/src/auth/flow-router.ts:148](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L148) |
+| Property                                 | Type                                                                           | Default value | Description                                                                    | Defined in                                                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------ | ------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="flowmap"></a> `flowMap`           | [`FlowMap`](#flowmap-1)                                                        | `undefined`   | Map of flow types to their corresponding React component render functions      | [sdk/framework/nextjs/src/auth/flow-router.ts:144](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L144) |
+| <a id="onnotfound"></a> `onNotFound?`    | `ReactNode`                                                                    | `undefined`   | Component to render when the requested flow type is not found or not supported | [sdk/framework/nextjs/src/auth/flow-router.ts:146](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L146) |
+| <a id="params"></a> `params`             | `Promise`\<\{ `flow`: `string`[]; \}\>                                         | `undefined`   | Next.js params promise containing the flow type from dynamic route segments    | [sdk/framework/nextjs/src/auth/flow-router.ts:142](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L142) |
+| <a id="returnto"></a> `returnTo?`        | `string`                                                                       | `"/"`         | URL to redirect to after flow completion                                       | [sdk/framework/nextjs/src/auth/flow-router.ts:155](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L155) |
+| <a id="searchparams"></a> `searchParams` | `Promise`\<\{ \[`key`: `string`\]: `string` \| `string`[] \| `undefined`; \}\> | `undefined`   | Promise resolving to search parameters from the request URL                    | [sdk/framework/nextjs/src/auth/flow-router.ts:150](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L150) |
+| <a id="url"></a> `url`                   | `string`                                                                       | `undefined`   | Base URL path for authentication flows (e.g., '/auth')                         | [sdk/framework/nextjs/src/auth/flow-router.ts:148](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L148) |
 
-***
+---
 
 ### FlowMap
 
 ```ts
 type FlowMap = {
-  error?: (error) => ReactNode;
-  login?: (flow) => ReactNode;
-  onboarding?: (flow) => ReactNode;
-  recovery?: (flow) => ReactNode;
-  registration?: (flow) => ReactNode;
-  settings?: (flow) => ReactNode;
-  verification?: (flow) => ReactNode;
+	error?: (error) => ReactNode;
+	login?: (flow) => ReactNode;
+	onboarding?: (flow) => ReactNode;
+	recovery?: (flow) => ReactNode;
+	registration?: (flow) => ReactNode;
+	settings?: (flow) => ReactNode;
+	verification?: (flow) => ReactNode;
 };
 ```
 
@@ -83,9 +83,9 @@ Function that takes a FlowError and returns a component for displaying authentic
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `error` | [`FlowError`](#flowerror) |
+| Parameter | Type                      |
+| --------- | ------------------------- |
+| `error`   | [`FlowError`](#flowerror) |
 
 ###### Returns
 
@@ -103,9 +103,9 @@ Function that takes a LoginFlow and returns a component for user authentication
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `LoginFlow` |
+| Parameter | Type        |
+| --------- | ----------- |
+| `flow`    | `LoginFlow` |
 
 ###### Returns
 
@@ -123,9 +123,9 @@ Function that takes any flow object and returns a component for custom onboardin
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `any` |
+| Parameter | Type  |
+| --------- | ----- |
+| `flow`    | `any` |
 
 ###### Returns
 
@@ -143,9 +143,9 @@ Function that takes a RecoveryFlow and returns a component for password recovery
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `RecoveryFlow` |
+| Parameter | Type           |
+| --------- | -------------- |
+| `flow`    | `RecoveryFlow` |
 
 ###### Returns
 
@@ -163,9 +163,9 @@ Function that takes a RegistrationFlow and returns a component for user registra
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `RegistrationFlow` |
+| Parameter | Type               |
+| --------- | ------------------ |
+| `flow`    | `RegistrationFlow` |
 
 ###### Returns
 
@@ -183,9 +183,9 @@ Function that takes a SettingsFlow and returns a component for user settings man
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `SettingsFlow` |
+| Parameter | Type           |
+| --------- | -------------- |
+| `flow`    | `SettingsFlow` |
 
 ###### Returns
 
@@ -203,25 +203,25 @@ Function that takes a VerificationFlow and returns a component for email/account
 
 ###### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `flow` | `VerificationFlow` |
+| Parameter | Type               |
+| --------- | ------------------ |
+| `flow`    | `VerificationFlow` |
 
 ###### Returns
 
 `ReactNode`
 
-***
+---
 
 ### FlowObject
 
 ```ts
-type FlowObject = 
-  | LoginFlow
-  | RecoveryFlow
-  | RegistrationFlow
-  | SettingsFlow
-  | VerificationFlow;
+type FlowObject =
+	| LoginFlow
+	| RecoveryFlow
+	| RegistrationFlow
+	| SettingsFlow
+	| VerificationFlow;
 ```
 
 Defined in: [sdk/framework/nextjs/src/auth/flow-router.ts:70](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L70)
@@ -235,15 +235,18 @@ by the Ory Kratos authentication system.
 
 0.5.1
 
-***
+---
 
 ### FlowRouter()
 
 ```ts
-function FlowRouter(props): Promise<
-  | ReactElement<unknown, string | JSXElementConstructor<any>>
-  | Iterable<ReactNode, any, any>
-| AwaitedReactNode>;
+function FlowRouter(
+	props,
+): Promise<
+	| ReactElement<unknown, string | JSXElementConstructor<any>>
+	| Iterable<ReactNode, any, any>
+	| AwaitedReactNode
+>;
 ```
 
 Defined in: [sdk/framework/nextjs/src/auth/flow-router.ts:213](https://github.com/PhoenixSolutionsGroup/omnibase/blob/5bdd48bbf836c6de8b4e38b50849676fbad3b40b/sdk/framework/nextjs/src/auth/flow-router.ts#L213)
@@ -260,16 +263,16 @@ retrieves the flow object, and invokes the matching render function with the flo
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `props` | [`FlowRouterProps`](#flowrouterprops) | Configuration props for the router |
+| Parameter | Type                                  | Description                        |
+| --------- | ------------------------------------- | ---------------------------------- |
+| `props`   | [`FlowRouterProps`](#flowrouterprops) | Configuration props for the router |
 
 #### Returns
 
 `Promise`\<
-  \| `ReactElement`\<`unknown`, string \| JSXElementConstructor\<any\>\>
-  \| `Iterable`\<`ReactNode`, `any`, `any`\>
-  \| `AwaitedReactNode`\>
+\| `ReactElement`\<`unknown`, string \| JSXElementConstructor\<any\>\>
+\| `Iterable`\<`ReactNode`, `any`, `any`\>
+\| `AwaitedReactNode`\>
 
 Promise resolving to the rendered component for the current flow
 
@@ -277,30 +280,34 @@ Promise resolving to the rendered component for the current flow
 
 ```tsx
 // In your app/auth/[...flow]/page.tsx
-import { FlowRouter } from '@omnibase/nextjs/auth';
-import { LoginForm, RegistrationForm, RecoveryForm } from '@omnibase/shadcn';
+import { FlowRouter } from "@omnibase/nextjs/auth";
+import { LoginForm, RegistrationForm, RecoveryForm } from "@omnibase/shadcn";
 
 export default function AuthPage({
-  params,
-  searchParams
+	params,
+	searchParams,
 }: {
-  params: Promise<{ flow: string[] }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+	params: Promise<{ flow: string[] }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  return (
-    <FlowRouter
-      params={params}
-      searchParams={searchParams}
-      url="/auth"
-      returnTo="/"
-      flowMap={{
-        login: (flow) => <LoginForm flow={flow} register_url="/auth/registration" />,
-        registration: (flow) => <RegistrationForm flow={flow} login_url="/auth/login" />,
-        recovery: (flow) => <RecoveryForm flow={flow} />,
-      }}
-      onNotFound={<div>Authentication flow not supported</div>}
-    />
-  );
+	return (
+		<FlowRouter
+			params={params}
+			searchParams={searchParams}
+			url="/auth"
+			returnTo="/"
+			flowMap={{
+				login: (flow) => (
+					<LoginForm flow={flow} register_url="/auth/registration" />
+				),
+				registration: (flow) => (
+					<RegistrationForm flow={flow} login_url="/auth/login" />
+				),
+				recovery: (flow) => <RecoveryForm flow={flow} />,
+			}}
+			onNotFound={<div>Authentication flow not supported</div>}
+		/>
+	);
 }
 ```
 
@@ -308,7 +315,7 @@ export default function AuthPage({
 
 0.5.1
 
-***
+---
 
 ### getFlow()
 
@@ -326,10 +333,10 @@ by FlowRouter but can also be used independently for custom flow handling.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `flowType` | keyof [`FlowMap`](#flowmap-1) | The type of flow to retrieve (login, registration, recovery, verification, settings, onboarding) |
-| `props` | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters |
+| Parameter  | Type                            | Description                                                                                      |
+| ---------- | ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `flowType` | keyof [`FlowMap`](#flowmap-1)   | The type of flow to retrieve (login, registration, recovery, verification, settings, onboarding) |
+| `props`    | [`GetFlowProps`](#getflowprops) | Configuration object containing URL and search parameters                                        |
 
 #### Returns
 
@@ -341,13 +348,13 @@ Promise that resolves to the corresponding flow object or null if not found/supp
 
 ```typescript
 // Retrieve a login flow
-const loginFlow = await getFlow('login', {
-  url: '/auth/login',
-  searchParams: Promise.resolve({ flow: 'abc123' })
+const loginFlow = await getFlow("login", {
+	url: "/auth/login",
+	searchParams: Promise.resolve({ flow: "abc123" }),
 });
 
 if (loginFlow) {
-  console.log('Login flow retrieved:', loginFlow.id);
+	console.log("Login flow retrieved:", loginFlow.id);
 }
 ```
 

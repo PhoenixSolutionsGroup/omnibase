@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Kind** | **string** |  | 
-**Name** | Pointer to **string** |  | [optional] 
-**Reason** | Pointer to **string** |  | [optional] 
-**State** | **string** |  | 
-**StripeId** | Pointer to **string** |  | [optional] 
+| Name         | Type                  | Description | Notes      |
+| ------------ | --------------------- | ----------- | ---------- |
+| **Id**       | **string**            |             |
+| **Kind**     | **string**            |             |
+| **Name**     | Pointer to **string** |             | [optional] |
+| **Reason**   | Pointer to **string** |             | [optional] |
+| **State**    | **string**            |             |
+| **StripeId** | Pointer to **string** |             | [optional] |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetKind
 
 `func (o *ConfigStatusEntry) GetKind() string`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *ConfigStatusEntry) SetKind(v string)`
 
 SetKind sets Kind field to given value.
-
 
 ### GetName
 
@@ -139,7 +137,6 @@ and a boolean to check if the value has been set.
 
 SetState sets State field to given value.
 
-
 ### GetStripeId
 
 `func (o *ConfigStatusEntry) GetStripeId() string`
@@ -165,7 +162,4 @@ SetStripeId sets StripeId field to given value.
 
 HasStripeId returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

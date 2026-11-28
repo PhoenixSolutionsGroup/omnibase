@@ -2,14 +2,14 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Namespace** | **string** |  | 
-**Relations** | **[]string** |  | 
-**RelationsMetadata** | [**[]RelationMetadataResponse**](RelationMetadataResponse.md) |  | 
-**SubjectRelations** | **map[string][]string** |  | 
-**UpdatedAt** | **time.Time** |  | 
+| Name                  | Type                                                          | Description | Notes |
+| --------------------- | ------------------------------------------------------------- | ----------- | ----- |
+| **Id**                | **string**                                                    |             |
+| **Namespace**         | **string**                                                    |             |
+| **Relations**         | **[]string**                                                  |             |
+| **RelationsMetadata** | [**[]RelationMetadataResponse**](RelationMetadataResponse.md) |             |
+| **SubjectRelations**  | **map[string][]string**                                       |             |
+| **UpdatedAt**         | **time.Time**                                                 |             |
 
 ## Methods
 
@@ -49,7 +49,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-
 ### GetNamespace
 
 `func (o *NamespaceDefinitionResponse) GetNamespace() string`
@@ -68,7 +67,6 @@ and a boolean to check if the value has been set.
 `func (o *NamespaceDefinitionResponse) SetNamespace(v string)`
 
 SetNamespace sets Namespace field to given value.
-
 
 ### GetRelations
 
@@ -89,17 +87,18 @@ and a boolean to check if the value has been set.
 
 SetRelations sets Relations field to given value.
 
-
 ### SetRelationsNil
 
 `func (o *NamespaceDefinitionResponse) SetRelationsNil(b bool)`
 
- SetRelationsNil sets the value for Relations to be an explicit nil
+SetRelationsNil sets the value for Relations to be an explicit nil
 
 ### UnsetRelations
+
 `func (o *NamespaceDefinitionResponse) UnsetRelations()`
 
 UnsetRelations ensures that no value is present for Relations, not even an explicit nil
+
 ### GetRelationsMetadata
 
 `func (o *NamespaceDefinitionResponse) GetRelationsMetadata() []RelationMetadataResponse`
@@ -119,17 +118,18 @@ and a boolean to check if the value has been set.
 
 SetRelationsMetadata sets RelationsMetadata field to given value.
 
-
 ### SetRelationsMetadataNil
 
 `func (o *NamespaceDefinitionResponse) SetRelationsMetadataNil(b bool)`
 
- SetRelationsMetadataNil sets the value for RelationsMetadata to be an explicit nil
+SetRelationsMetadataNil sets the value for RelationsMetadata to be an explicit nil
 
 ### UnsetRelationsMetadata
+
 `func (o *NamespaceDefinitionResponse) UnsetRelationsMetadata()`
 
 UnsetRelationsMetadata ensures that no value is present for RelationsMetadata, not even an explicit nil
+
 ### GetSubjectRelations
 
 `func (o *NamespaceDefinitionResponse) GetSubjectRelations() map[string][]string`
@@ -148,7 +148,6 @@ and a boolean to check if the value has been set.
 `func (o *NamespaceDefinitionResponse) SetSubjectRelations(v map[string][]string)`
 
 SetSubjectRelations sets SubjectRelations field to given value.
-
 
 ### GetUpdatedAt
 
@@ -169,8 +168,4 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

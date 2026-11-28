@@ -1,8 +1,6 @@
 {
-  "title": "PostgreSQL",
-  "description": "Database features, Row-Level Security, and data management",
-  "icon": "Database",
-  "pages": [
-    "rls"
-  ]
+	"title": "PostgreSQL",
+	"description": "Database features, Row-Level Security, and data management",
+	"icon": "Database",
+	"pages": ["rls"]
 }

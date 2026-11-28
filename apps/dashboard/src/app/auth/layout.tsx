@@ -1,43 +1,43 @@
 import Image from "next/image";
 
 export default function AuthLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-4 h-full">
-      <div className="absolute inset-x-0 top-0 h-1/2 lg:static lg:col-span-2 lg:h-full lg:p-4">
-        <div className="relative isolate h-full w-full overflow-hidden rounded-b-xl lg:rounded-2xl">
-          <Image
-            src="/auth-background.jpg"
-            alt=""
-            fill
-            priority
-            sizes="(min-width: 768px) 60vw, 100vw"
-            className="object-cover"
-          />
+	return (
+		<div className="relative grid grid-cols-1 lg:grid-cols-4 h-full">
+			<div className="absolute inset-x-0 top-0 h-1/2 lg:static lg:col-span-2 lg:h-full lg:p-4">
+				<div className="relative isolate h-full w-full overflow-hidden rounded-b-xl lg:rounded-2xl">
+					<Image
+						src="/auth-background.jpg"
+						alt=""
+						fill
+						priority
+						sizes="(min-width: 768px) 60vw, 100vw"
+						className="object-cover"
+					/>
 
-          <div className="absolute inset-x-0 top-0 z-10 flex justify-center p-6 lg:justify-start">
-            <span className="flex items-center text-background dark:text-foreground font-semibold text-lg">
-              <Image
-                src="/omnibase-logo-transparent.svg"
-                alt="Omnibase"
-                width={22}
-                height={22}
-                className="rounded-lg mr-1 block"
-                unoptimized
-              />
-              Omnibase
-            </span>
-          </div>
-        </div>
-      </div>
+					<div className="absolute inset-x-0 top-0 z-10 flex justify-center p-6 lg:justify-start">
+						<span className="flex items-center text-background dark:text-foreground font-semibold text-lg">
+							<Image
+								src="/omnibase-logo-transparent.svg"
+								alt="Omnibase"
+								width={22}
+								height={22}
+								className="rounded-lg mr-1 block"
+								unoptimized
+							/>
+							Omnibase
+						</span>
+					</div>
+				</div>
+			</div>
 
-      {/* Content: overlaps the image on mobile */}
-      <div className="relative z-10 flex items-center justify-center lg:col-span-2">
-        {children}
-      </div>
-    </div>
-  );
+			{/* Content: overlaps the image on mobile */}
+			<div className="relative z-10 flex items-center justify-center lg:col-span-2">
+				{children}
+			</div>
+		</div>
+	);
 }

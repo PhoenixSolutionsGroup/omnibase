@@ -12,8 +12,8 @@ Contact: support@omnibase.dev
 package omnibase
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,12 +22,12 @@ var _ MappedNullable = &RelationMetadata{}
 
 // RelationMetadata struct for RelationMetadata
 type RelationMetadata struct {
-	DisplayName string `json:"display_name"`
-	Group NullableString `json:"group"`
-	Name string `json:"name"`
-	Roles []string `json:"roles"`
-	SubGroup NullableString `json:"sub_group"`
-	Subjects []string `json:"subjects"`
+	DisplayName string         `json:"display_name"`
+	Group       NullableString `json:"group"`
+	Name        string         `json:"name"`
+	Roles       []string       `json:"roles"`
+	SubGroup    NullableString `json:"sub_group"`
+	Subjects    []string       `json:"subjects"`
 }
 
 type _RelationMetadata RelationMetadata
@@ -208,7 +208,7 @@ func (o *RelationMetadata) SetSubjects(v []string) {
 }
 
 func (o RelationMetadata) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -248,10 +248,10 @@ func (o *RelationMetadata) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -307,5 +307,3 @@ func (v *NullableRelationMetadata) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -1,8 +1,5 @@
 {
-  "title": "Deployments",
-  "description": "Deploy any Cloudflare Workers app and manage its variables",
-  "pages": [
-    "index",
-    "environment-variables"
-  ]
+	"title": "Deployments",
+	"description": "Deploy any Cloudflare Workers app and manage its variables",
+	"pages": ["index", "environment-variables"]
 }

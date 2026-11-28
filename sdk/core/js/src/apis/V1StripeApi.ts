@@ -12,310 +12,399 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
+import * as runtime from "../runtime";
 import type {
-  CalculatePriceCostRequest,
-  CalculatePriceCostResponse,
-  ErrorModel,
-  GetMeterResponse,
-  GetPriceResponse,
-  GetProductResponse,
-  ListWebhooksResponse,
-  StripeConfigResponse,
-} from '../models/index';
+	CalculatePriceCostRequest,
+	CalculatePriceCostResponse,
+	ErrorModel,
+	GetMeterResponse,
+	GetPriceResponse,
+	GetProductResponse,
+	ListWebhooksResponse,
+	StripeConfigResponse,
+} from "../models/index";
 import {
-    CalculatePriceCostRequestFromJSON,
-    CalculatePriceCostRequestToJSON,
-    CalculatePriceCostResponseFromJSON,
-    CalculatePriceCostResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    GetMeterResponseFromJSON,
-    GetMeterResponseToJSON,
-    GetPriceResponseFromJSON,
-    GetPriceResponseToJSON,
-    GetProductResponseFromJSON,
-    GetProductResponseToJSON,
-    ListWebhooksResponseFromJSON,
-    ListWebhooksResponseToJSON,
-    StripeConfigResponseFromJSON,
-    StripeConfigResponseToJSON,
-} from '../models/index';
+	CalculatePriceCostRequestFromJSON,
+	CalculatePriceCostRequestToJSON,
+	CalculatePriceCostResponseFromJSON,
+	CalculatePriceCostResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	GetMeterResponseFromJSON,
+	GetMeterResponseToJSON,
+	GetPriceResponseFromJSON,
+	GetPriceResponseToJSON,
+	GetProductResponseFromJSON,
+	GetProductResponseToJSON,
+	ListWebhooksResponseFromJSON,
+	ListWebhooksResponseToJSON,
+	StripeConfigResponseFromJSON,
+	StripeConfigResponseToJSON,
+} from "../models/index";
 
 export interface CalculatePriceCostOperationRequest {
-    priceId: string;
-    calculatePriceCostRequest: CalculatePriceCostRequest;
+	priceId: string;
+	calculatePriceCostRequest: CalculatePriceCostRequest;
 }
 
 export interface GetMeterByIDRequest {
-    meterId: string;
+	meterId: string;
 }
 
 export interface GetPriceByIDRequest {
-    priceId: string;
+	priceId: string;
 }
 
 export interface GetProductByIDRequest {
-    productId: string;
+	productId: string;
 }
 
 /**
- * 
+ *
  */
 export class V1StripeApi extends runtime.BaseAPI {
+	/**
+	 * Calculate cost for a price
+	 */
+	async calculatePriceCostRaw(
+		requestParameters: CalculatePriceCostOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
+		if (requestParameters["priceId"] == null) {
+			throw new runtime.RequiredError(
+				"priceId",
+				'Required parameter "priceId" was null or undefined when calling calculatePriceCost().',
+			);
+		}
 
-    /**
-     * Calculate cost for a price
-     */
-    async calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
-        if (requestParameters['priceId'] == null) {
-            throw new runtime.RequiredError(
-                'priceId',
-                'Required parameter "priceId" was null or undefined when calling calculatePriceCost().'
-            );
-        }
+		if (requestParameters["calculatePriceCostRequest"] == null) {
+			throw new runtime.RequiredError(
+				"calculatePriceCostRequest",
+				'Required parameter "calculatePriceCostRequest" was null or undefined when calling calculatePriceCost().',
+			);
+		}
 
-        if (requestParameters['calculatePriceCostRequest'] == null) {
-            throw new runtime.RequiredError(
-                'calculatePriceCostRequest',
-                'Required parameter "calculatePriceCostRequest" was null or undefined when calling calculatePriceCost().'
-            );
-        }
+		const queryParameters: any = {};
 
-        const queryParameters: any = {};
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		headerParameters["Content-Type"] = "application/json";
 
-        headerParameters['Content-Type'] = 'application/json';
+		let urlPath = `/api/v1/stripe/config/prices/{price_id}/calculate`;
+		urlPath = urlPath.replace(
+			`{${"price_id"}}`,
+			encodeURIComponent(String(requestParameters["priceId"])),
+		);
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: CalculatePriceCostRequestToJSON(
+					requestParameters["calculatePriceCostRequest"],
+				),
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/stripe/config/prices/{price_id}/calculate`;
-        urlPath = urlPath.replace(`{${"price_id"}}`, encodeURIComponent(String(requestParameters['priceId'])));
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			CalculatePriceCostResponseFromJSON(jsonValue),
+		);
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CalculatePriceCostRequestToJSON(requestParameters['calculatePriceCostRequest']),
-        }, initOverrides);
+	/**
+	 * Calculate cost for a price
+	 */
+	async calculatePriceCost(
+		requestParameters: CalculatePriceCostOperationRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<CalculatePriceCostResponse> {
+		const response = await this.calculatePriceCostRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CalculatePriceCostResponseFromJSON(jsonValue));
-    }
+	/**
+	 * Get meter by ID
+	 */
+	async getMeterByIDRaw(
+		requestParameters: GetMeterByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetMeterResponse>> {
+		if (requestParameters["meterId"] == null) {
+			throw new runtime.RequiredError(
+				"meterId",
+				'Required parameter "meterId" was null or undefined when calling getMeterByID().',
+			);
+		}
 
-    /**
-     * Calculate cost for a price
-     */
-    async calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCostResponse> {
-        const response = await this.calculatePriceCostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Get meter by ID
-     */
-    async getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetMeterResponse>> {
-        if (requestParameters['meterId'] == null) {
-            throw new runtime.RequiredError(
-                'meterId',
-                'Required parameter "meterId" was null or undefined when calling getMeterByID().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+		let urlPath = `/api/v1/stripe/config/meters/{meter_id}`;
+		urlPath = urlPath.replace(
+			`{${"meter_id"}}`,
+			encodeURIComponent(String(requestParameters["meterId"])),
+		);
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetMeterResponseFromJSON(jsonValue),
+		);
+	}
 
-        let urlPath = `/api/v1/stripe/config/meters/{meter_id}`;
-        urlPath = urlPath.replace(`{${"meter_id"}}`, encodeURIComponent(String(requestParameters['meterId'])));
+	/**
+	 * Get meter by ID
+	 */
+	async getMeterByID(
+		requestParameters: GetMeterByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetMeterResponse> {
+		const response = await this.getMeterByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * Get price by ID
+	 */
+	async getPriceByIDRaw(
+		requestParameters: GetPriceByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetPriceResponse>> {
+		if (requestParameters["priceId"] == null) {
+			throw new runtime.RequiredError(
+				"priceId",
+				'Required parameter "priceId" was null or undefined when calling getPriceByID().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetMeterResponseFromJSON(jsonValue));
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Get meter by ID
-     */
-    async getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetMeterResponse> {
-        const response = await this.getMeterByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get price by ID
-     */
-    async getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPriceResponse>> {
-        if (requestParameters['priceId'] == null) {
-            throw new runtime.RequiredError(
-                'priceId',
-                'Required parameter "priceId" was null or undefined when calling getPriceByID().'
-            );
-        }
+		let urlPath = `/api/v1/stripe/config/prices/{price_id}`;
+		urlPath = urlPath.replace(
+			`{${"price_id"}}`,
+			encodeURIComponent(String(requestParameters["priceId"])),
+		);
 
-        const queryParameters: any = {};
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetPriceResponseFromJSON(jsonValue),
+		);
+	}
 
+	/**
+	 * Get price by ID
+	 */
+	async getPriceByID(
+		requestParameters: GetPriceByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetPriceResponse> {
+		const response = await this.getPriceByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/stripe/config/prices/{price_id}`;
-        urlPath = urlPath.replace(`{${"price_id"}}`, encodeURIComponent(String(requestParameters['priceId'])));
+	/**
+	 * Get product by ID
+	 */
+	async getProductByIDRaw(
+		requestParameters: GetProductByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<GetProductResponse>> {
+		if (requestParameters["productId"] == null) {
+			throw new runtime.RequiredError(
+				"productId",
+				'Required parameter "productId" was null or undefined when calling getProductByID().',
+			);
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetPriceResponseFromJSON(jsonValue));
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get price by ID
-     */
-    async getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetPriceResponse> {
-        const response = await this.getPriceByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		let urlPath = `/api/v1/stripe/config/products/{product_id}`;
+		urlPath = urlPath.replace(
+			`{${"product_id"}}`,
+			encodeURIComponent(String(requestParameters["productId"])),
+		);
 
-    /**
-     * Get product by ID
-     */
-    async getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetProductResponse>> {
-        if (requestParameters['productId'] == null) {
-            throw new runtime.RequiredError(
-                'productId',
-                'Required parameter "productId" was null or undefined when calling getProductByID().'
-            );
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        const queryParameters: any = {};
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			GetProductResponseFromJSON(jsonValue),
+		);
+	}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+	/**
+	 * Get product by ID
+	 */
+	async getProductByID(
+		requestParameters: GetProductByIDRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<GetProductResponse> {
+		const response = await this.getProductByIDRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
+	/**
+	 * Get public Stripe config
+	 */
+	async getStripeConfigRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<StripeConfigResponse>> {
+		const queryParameters: any = {};
 
-        let urlPath = `/api/v1/stripe/config/products/{product_id}`;
-        urlPath = urlPath.replace(`{${"product_id"}}`, encodeURIComponent(String(requestParameters['productId'])));
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		let urlPath = `/api/v1/stripe/config`;
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetProductResponseFromJSON(jsonValue));
-    }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-    /**
-     * Get product by ID
-     */
-    async getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetProductResponse> {
-        const response = await this.getProductByIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			StripeConfigResponseFromJSON(jsonValue),
+		);
+	}
 
-    /**
-     * Get public Stripe config
-     */
-    async getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
-        const queryParameters: any = {};
+	/**
+	 * Get public Stripe config
+	 */
+	async getStripeConfig(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<StripeConfigResponse> {
+		const response = await this.getStripeConfigRaw(initOverrides);
+		return await response.value();
+	}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+	/**
+	 * Get full Stripe config (admin)
+	 */
+	async getStripeConfigAdminRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<StripeConfigResponse>> {
+		const queryParameters: any = {};
 
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        let urlPath = `/api/v1/stripe/config`;
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		let urlPath = `/api/v1/stripe/admin/config`;
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
-    }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-    /**
-     * Get public Stripe config
-     */
-    async getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
-        const response = await this.getStripeConfigRaw(initOverrides);
-        return await response.value();
-    }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			StripeConfigResponseFromJSON(jsonValue),
+		);
+	}
 
-    /**
-     * Get full Stripe config (admin)
-     */
-    async getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
-        const queryParameters: any = {};
+	/**
+	 * Get full Stripe config (admin)
+	 */
+	async getStripeConfigAdmin(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<StripeConfigResponse> {
+		const response = await this.getStripeConfigAdminRaw(initOverrides);
+		return await response.value();
+	}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+	/**
+	 * List all webhooks
+	 */
+	async listWebhooksRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ListWebhooksResponse>> {
+		const queryParameters: any = {};
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        let urlPath = `/api/v1/stripe/admin/config`;
+		let urlPath = `/api/v1/stripe/admin/webhooks`;
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
-    }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ListWebhooksResponseFromJSON(jsonValue),
+		);
+	}
 
-    /**
-     * Get full Stripe config (admin)
-     */
-    async getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
-        const response = await this.getStripeConfigAdminRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * List all webhooks
-     */
-    async listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooksResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/stripe/admin/webhooks`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListWebhooksResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * List all webhooks
-     */
-    async listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooksResponse> {
-        const response = await this.listWebhooksRaw(initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * List all webhooks
+	 */
+	async listWebhooks(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ListWebhooksResponse> {
+		const response = await this.listWebhooksRaw(initOverrides);
+		return await response.value();
+	}
 }

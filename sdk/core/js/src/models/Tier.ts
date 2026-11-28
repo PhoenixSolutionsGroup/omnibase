@@ -12,71 +12,74 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface Tier
  */
 export interface Tier {
-    /**
-     * 
-     * @type {number}
-     * @memberof Tier
-     */
-    flatAmount?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Tier
-     */
-    unitAmount?: number;
-    /**
-     * 
-     * @type {any}
-     * @memberof Tier
-     */
-    upTo: any | null;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof Tier
+	 */
+	flatAmount?: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof Tier
+	 */
+	unitAmount?: number;
+	/**
+	 *
+	 * @type {any}
+	 * @memberof Tier
+	 */
+	upTo: any | null;
 }
 
 /**
  * Check if a given object implements the Tier interface.
  */
 export function instanceOfTier(value: object): value is Tier {
-    if (!('upTo' in value) || value['upTo'] === undefined) return false;
-    return true;
+	if (!("upTo" in value) || value["upTo"] === undefined) return false;
+	return true;
 }
 
 export function TierFromJSON(json: any): Tier {
-    return TierFromJSONTyped(json, false);
+	return TierFromJSONTyped(json, false);
 }
 
-export function TierFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tier {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'flatAmount': json['flat_amount'] == null ? undefined : json['flat_amount'],
-        'unitAmount': json['unit_amount'] == null ? undefined : json['unit_amount'],
-        'upTo': json['up_to'],
-    };
+export function TierFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): Tier {
+	if (json == null) {
+		return json;
+	}
+	return {
+		flatAmount: json["flat_amount"] == null ? undefined : json["flat_amount"],
+		unitAmount: json["unit_amount"] == null ? undefined : json["unit_amount"],
+		upTo: json["up_to"],
+	};
 }
 
 export function TierToJSON(json: any): Tier {
-    return TierToJSONTyped(json, false);
+	return TierToJSONTyped(json, false);
 }
 
-export function TierToJSONTyped(value?: Tier | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function TierToJSONTyped(
+	value?: Tier | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'flat_amount': value['flatAmount'],
-        'unit_amount': value['unitAmount'],
-        'up_to': value['upTo'],
-    };
+	return {
+		flat_amount: value["flatAmount"],
+		unit_amount: value["unitAmount"],
+		up_to: value["upTo"],
+	};
 }
-

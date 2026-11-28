@@ -21,8 +21,8 @@ var _ MappedNullable = &PriceChanges{}
 // PriceChanges struct for PriceChanges
 type PriceChanges struct {
 	Archived []PriceChange `json:"archived,omitempty"`
-	Created []PriceChange `json:"created,omitempty"`
-	Updated []PriceChange `json:"updated,omitempty"`
+	Created  []PriceChange `json:"created,omitempty"`
+	Updated  []PriceChange `json:"updated,omitempty"`
 }
 
 // NewPriceChanges instantiates a new PriceChanges object
@@ -142,7 +142,7 @@ func (o *PriceChanges) SetUpdated(v []PriceChange) {
 }
 
 func (o PriceChanges) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,5 +198,3 @@ func (v *NullablePriceChanges) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

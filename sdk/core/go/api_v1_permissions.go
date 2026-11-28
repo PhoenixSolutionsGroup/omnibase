@@ -19,13 +19,12 @@ import (
 	"net/url"
 )
 
-
 // V1PermissionsAPIService V1PermissionsAPI service
 type V1PermissionsAPIService service
 
 type ApiCheckPermissionRequest struct {
-	ctx context.Context
-	ApiService *V1PermissionsAPIService
+	ctx          context.Context
+	ApiService   *V1PermissionsAPIService
 	checkRequest *CheckRequest
 }
 
@@ -41,24 +40,25 @@ func (r ApiCheckPermissionRequest) Execute() (*CheckResponse, *http.Response, er
 /*
 CheckPermission Check permission
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCheckPermissionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCheckPermissionRequest
 */
 func (a *V1PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckPermissionRequest {
 	return ApiCheckPermissionRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CheckResponse
+//
+//	@return CheckResponse
 func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CheckResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CheckResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CheckPermission")
@@ -165,8 +165,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -176,8 +176,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -187,8 +187,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -198,8 +198,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -217,8 +217,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 }
 
 type ApiCreateRelationshipRequest struct {
-	ctx context.Context
-	ApiService *V1PermissionsAPIService
+	ctx                       context.Context
+	ApiService                *V1PermissionsAPIService
 	createRelationshipRequest *CreateRelationshipRequest
 }
 
@@ -234,24 +234,25 @@ func (r ApiCreateRelationshipRequest) Execute() (*CreateRelationshipResponse, *h
 /*
 CreateRelationship Create relationship
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateRelationshipRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateRelationshipRequest
 */
 func (a *V1PermissionsAPIService) CreateRelationship(ctx context.Context) ApiCreateRelationshipRequest {
 	return ApiCreateRelationshipRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateRelationshipResponse
+//
+//	@return CreateRelationshipResponse
 func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshipRequest) (*CreateRelationshipResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateRelationshipResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateRelationshipResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CreateRelationship")
@@ -330,8 +331,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -341,8 +342,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -352,8 +353,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -363,8 +364,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -374,8 +375,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -393,8 +394,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 }
 
 type ApiDeleteRelationshipRequest struct {
-	ctx context.Context
-	ApiService *V1PermissionsAPIService
+	ctx                       context.Context
+	ApiService                *V1PermissionsAPIService
 	deleteRelationshipRequest *DeleteRelationshipRequest
 }
 
@@ -410,24 +411,25 @@ func (r ApiDeleteRelationshipRequest) Execute() (*DeleteRelationshipResponse, *h
 /*
 DeleteRelationship Delete relationship
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiDeleteRelationshipRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiDeleteRelationshipRequest
 */
 func (a *V1PermissionsAPIService) DeleteRelationship(ctx context.Context) ApiDeleteRelationshipRequest {
 	return ApiDeleteRelationshipRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return DeleteRelationshipResponse
+//
+//	@return DeleteRelationshipResponse
 func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelationshipRequest) (*DeleteRelationshipResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DeleteRelationshipResponse
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DeleteRelationshipResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.DeleteRelationship")
@@ -506,8 +508,8 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -517,8 +519,8 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -528,8 +530,8 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -539,8 +541,8 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -550,8 +552,8 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

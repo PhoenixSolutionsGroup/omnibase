@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Location** | Pointer to **string** | Where the error occurred, e.g. &#39;body.items[3].tags&#39; or &#39;path.thing-id&#39; | [optional] 
-**Message** | Pointer to **string** | Error message text | [optional] 
-**Value** | Pointer to **interface{}** |  | [optional] 
+| Name         | Type                       | Description                                                                            | Notes      |
+| ------------ | -------------------------- | -------------------------------------------------------------------------------------- | ---------- |
+| **Location** | Pointer to **string**      | Where the error occurred, e.g. &#39;body.items[3].tags&#39; or &#39;path.thing-id&#39; | [optional] |
+| **Message**  | Pointer to **string**      | Error message text                                                                     | [optional] |
+| **Value**    | Pointer to **interface{}** |                                                                                        | [optional] |
 
 ## Methods
 
@@ -106,13 +106,12 @@ HasValue returns a boolean if a field has been set.
 
 `func (o *ErrorDetail) SetValueNil(b bool)`
 
- SetValueNil sets the value for Value to be an explicit nil
+SetValueNil sets the value for Value to be an explicit nil
 
 ### UnsetValue
+
 `func (o *ErrorDetail) UnsetValue()`
 
 UnsetValue ensures that no value is present for Value, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

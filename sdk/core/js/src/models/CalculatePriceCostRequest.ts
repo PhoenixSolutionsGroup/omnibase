@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface CalculatePriceCostRequest
  */
 export interface CalculatePriceCostRequest {
-    /**
-     * 
-     * @type {number}
-     * @memberof CalculatePriceCostRequest
-     */
-    quantity: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CalculatePriceCostRequest
+	 */
+	quantity: number;
 }
 
 /**
  * Check if a given object implements the CalculatePriceCostRequest interface.
  */
-export function instanceOfCalculatePriceCostRequest(value: object): value is CalculatePriceCostRequest {
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
-    return true;
+export function instanceOfCalculatePriceCostRequest(
+	value: object,
+): value is CalculatePriceCostRequest {
+	if (!("quantity" in value) || value["quantity"] === undefined) return false;
+	return true;
 }
 
-export function CalculatePriceCostRequestFromJSON(json: any): CalculatePriceCostRequest {
-    return CalculatePriceCostRequestFromJSONTyped(json, false);
+export function CalculatePriceCostRequestFromJSON(
+	json: any,
+): CalculatePriceCostRequest {
+	return CalculatePriceCostRequestFromJSONTyped(json, false);
 }
 
-export function CalculatePriceCostRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CalculatePriceCostRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'quantity': json['quantity'],
-    };
+export function CalculatePriceCostRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): CalculatePriceCostRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		quantity: json["quantity"],
+	};
 }
 
-export function CalculatePriceCostRequestToJSON(json: any): CalculatePriceCostRequest {
-    return CalculatePriceCostRequestToJSONTyped(json, false);
+export function CalculatePriceCostRequestToJSON(
+	json: any,
+): CalculatePriceCostRequest {
+	return CalculatePriceCostRequestToJSONTyped(json, false);
 }
 
-export function CalculatePriceCostRequestToJSONTyped(value?: CalculatePriceCostRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function CalculatePriceCostRequestToJSONTyped(
+	value?: CalculatePriceCostRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'quantity': value['quantity'],
-    };
+	return {
+		quantity: value["quantity"],
+	};
 }
-

@@ -2,10 +2,10 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Contents** | **string** |  | 
-**Name** | **string** |  | 
+| Name         | Type       | Description | Notes |
+| ------------ | ---------- | ----------- | ----- |
+| **Contents** | **string** |             |
+| **Name**     | **string** |             |
 
 ## Methods
 
@@ -45,7 +45,6 @@ and a boolean to check if the value has been set.
 
 SetContents sets Contents field to given value.
 
-
 ### GetName
 
 `func (o *File) GetName() string`
@@ -65,8 +64,4 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
-
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

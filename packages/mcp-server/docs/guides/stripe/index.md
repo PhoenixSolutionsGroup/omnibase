@@ -1,4 +1,5 @@
 ---
+
 title: Stripe Integration Overview
 description: Learn how OmniBase handles billing, subscriptions, and payment processing with Stripe
 ---
@@ -10,37 +11,37 @@ OmniBase provides a comprehensive "Stripe as Code" approach to billing configura
 ## Key Features
 
 - **[Configuration as Code](/docs/guides/stripe/configuration)**
-    Version-controlled billing configuration with JSON/YAML
+  Version-controlled billing configuration with JSON/YAML
 - **[Products & Prices](/docs/guides/stripe/products-prices)**
-    Define products with multiple pricing tiers and intervals
+  Define products with multiple pricing tiers and intervals
 - **[Coupons & Promotions](/docs/guides/stripe/coupons-promotions)**
-    Create discount codes and promotional campaigns
+  Create discount codes and promotional campaigns
 - **[Webhooks](/docs/guides/stripe/webhooks)**
-    Configure webhook endpoints for event handling
+  Configure webhook endpoints for event handling
 - **[Subscriptions](/docs/guides/stripe/subscriptions)**
-    Manage recurring billing and subscription lifecycle
+  Manage recurring billing and subscription lifecycle
 - **[Usage-Based Billing](/docs/guides/stripe/metering)**
-    Implement metered billing with billing meters
+  Implement metered billing with billing meters
 - **[Checkout & Portal](/docs/guides/stripe/checkout-portal)**
-    Integrate Stripe Checkout and Customer Portal
+  Integrate Stripe Checkout and Customer Portal
 - **[Invoices](/docs/guides/stripe/invoices)**
-    Create and manage invoices programmatically
+  Create and manage invoices programmatically
 - **[Enterprise Pricing](/docs/guides/stripe/enterprise-pricing)**
-    Custom pricing templates for enterprise customers
+  Custom pricing templates for enterprise customers
 - **[UI Components](/docs/guides/stripe/ui-components)**
-    Pre-built shadcn components for pricing tables and billing UI
+  Pre-built shadcn components for pricing tables and billing UI
 
 ## The Problem with Native Stripe
 
 Stripe's configuration presents several challenges for production systems:
 
-| Challenge | Description |
-|-----------|-------------|
-| **Immutability** | Products and prices with payment history cannot be deleted |
-| **No Version Control** | No built-in rollback or history tracking |
-| **Environment Sync** | Difficult to sync configurations between dev/staging/prod |
-| **Free Tiers** | Stripe doesn't natively support $0 prices |
-| **Enterprise Pricing** | No built-in support for custom per-customer pricing |
+| Challenge              | Description                                                |
+| ---------------------- | ---------------------------------------------------------- |
+| **Immutability**       | Products and prices with payment history cannot be deleted |
+| **No Version Control** | No built-in rollback or history tracking                   |
+| **Environment Sync**   | Difficult to sync configurations between dev/staging/prod  |
+| **Free Tiers**         | Stripe doesn't natively support $0 prices                  |
+| **Enterprise Pricing** | No built-in support for custom per-customer pricing        |
 
 ## OmniBase Solution
 
@@ -61,56 +62,56 @@ Create a configuration file in your project:
 
 ```json title="omnibase/stripe/subscriptions.config.json"
 {
-  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
-  "version": "1.0.0",
-  "products": [
-    {
-      "id": "starter",
-      "name": "Starter Plan",
-      "description": "Perfect for individuals",
-      "type": "service",
-      "prices": [
-        {
-          "id": "starter_monthly",
-          "amount": 0,
-          "currency": "usd",
-          "interval": "month",
-          "public": true,
-          "ui": {
-            "display_name": "Free",
-            "price_display": { "custom_text": "Free" }
-          }
-        }
-      ]
-    },
-    {
-      "id": "pro",
-      "name": "Professional",
-      "description": "For growing businesses",
-      "type": "service",
-      "prices": [
-        {
-          "id": "pro_monthly",
-          "amount": 4900,
-          "currency": "usd",
-          "interval": "month",
-          "public": true,
-          "default": true
-        },
-        {
-          "id": "pro_yearly",
-          "amount": 49000,
-          "currency": "usd",
-          "interval": "year",
-          "public": true
-        }
-      ],
-      "ui": {
-        "highlighted": true,
-        "badge": "Most Popular"
-      }
-    }
-  ]
+	"$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+	"version": "1.0.0",
+	"products": [
+		{
+			"id": "starter",
+			"name": "Starter Plan",
+			"description": "Perfect for individuals",
+			"type": "service",
+			"prices": [
+				{
+					"id": "starter_monthly",
+					"amount": 0,
+					"currency": "usd",
+					"interval": "month",
+					"public": true,
+					"ui": {
+						"display_name": "Free",
+						"price_display": { "custom_text": "Free" }
+					}
+				}
+			]
+		},
+		{
+			"id": "pro",
+			"name": "Professional",
+			"description": "For growing businesses",
+			"type": "service",
+			"prices": [
+				{
+					"id": "pro_monthly",
+					"amount": 4900,
+					"currency": "usd",
+					"interval": "month",
+					"public": true,
+					"default": true
+				},
+				{
+					"id": "pro_yearly",
+					"amount": 49000,
+					"currency": "usd",
+					"interval": "year",
+					"public": true
+				}
+			],
+			"ui": {
+				"highlighted": true,
+				"badge": "Most Popular"
+			}
+		}
+	]
 }
 ```
 
@@ -127,6 +128,7 @@ omnibase stripe push
 ```
 
 This will:
+
 1. Validate your configuration against the JSON schema
 2. Create/update products and prices in Stripe
 3. Store the configuration version in PostgreSQL
@@ -139,73 +141,73 @@ Fetch the configuration and create checkouts:
 **Next.js:**
 
 ```tsx title="app/(dashboard)/subscriptions/page.tsx"
-import { V1StripeApi, V1PaymentsApi } from '@omnibase/core-js';
+import { V1StripeApi, V1PaymentsApi } from "@omnibase/core-js";
 
 export default async function SubscriptionsPage() {
-  const stripeApi = new V1StripeApi(config);
-  const paymentsApi = new V1PaymentsApi(config);
+	const stripeApi = new V1StripeApi(config);
+	const paymentsApi = new V1PaymentsApi(config);
 
-  // Get available plans
-  const { data: stripeConfig } = await stripeApi.getStripeConfig();
+	// Get available plans
+	const { data: stripeConfig } = await stripeApi.getStripeConfig();
 
-  async function checkout(priceId: string) {
-    'use server';
-    const { data } = await paymentsApi.createCheckout({
-      createCheckoutRequest: {
-        priceId,
-        successUrl: `${process.env.APP_URL}/subscriptions?success=true`,
-        cancelUrl: `${process.env.APP_URL}/subscriptions`,
-        trialPeriodDays: 14,
-        allowPromotionCodes: true,
-      },
-    });
-    redirect(data.url);
-  }
+	async function checkout(priceId: string) {
+		"use server";
+		const { data } = await paymentsApi.createCheckout({
+			createCheckoutRequest: {
+				priceId,
+				successUrl: `${process.env.APP_URL}/subscriptions?success=true`,
+				cancelUrl: `${process.env.APP_URL}/subscriptions`,
+				trialPeriodDays: 14,
+				allowPromotionCodes: true,
+			},
+		});
+		redirect(data.url);
+	}
 
-  return <PricingTable products={stripeConfig.products} onSelect={checkout} />;
+	return <PricingTable products={stripeConfig.products} onSelect={checkout} />;
 }
 ```
 
 **React:**
 
 ```tsx title="components/Pricing.tsx"
-import { useEffect, useState } from 'react';
-import { V1StripeApi, V1PaymentsApi, Product } from '@omnibase/core-js';
+import { useEffect, useState } from "react";
+import { V1StripeApi, V1PaymentsApi, Product } from "@omnibase/core-js";
 
 export function Pricing() {
-  const [products, setProducts] = useState<Product[]>([]);
+	const [products, setProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
-    const stripeApi = new V1StripeApi(config);
-    stripeApi.getStripeConfig().then(({ data }) => {
-      setProducts(data.products);
-    });
-  }, []);
+	useEffect(() => {
+		const stripeApi = new V1StripeApi(config);
+		stripeApi.getStripeConfig().then(({ data }) => {
+			setProducts(data.products);
+		});
+	}, []);
 
-  const handleCheckout = async (priceId: string) => {
-    const paymentsApi = new V1PaymentsApi(config);
-    const { data } = await paymentsApi.createCheckout({
-      createCheckoutRequest: {
-        priceId,
-        successUrl: `${window.location.origin}/success`,
-        cancelUrl: window.location.href,
-      },
-    });
-    window.location.href = data.url;
-  };
+	const handleCheckout = async (priceId: string) => {
+		const paymentsApi = new V1PaymentsApi(config);
+		const { data } = await paymentsApi.createCheckout({
+			createCheckoutRequest: {
+				priceId,
+				successUrl: `${window.location.origin}/success`,
+				cancelUrl: window.location.href,
+			},
+		});
+		window.location.href = data.url;
+	};
 
-  return <PricingTable products={products} onSelect={handleCheckout} />;
+	return <PricingTable products={products} onSelect={handleCheckout} />;
 }
 ```
 
 **Core API:**
 
 ```typescript title="server/checkout.ts"
-import { Configuration, V1StripeApi, V1PaymentsApi } from '@omnibase/core-js';
+import { Configuration, V1StripeApi, V1PaymentsApi } from "@omnibase/core-js";
 
 const config = new Configuration({
-  basePath: process.env.OMNIBASE_API_URL,
-  headers: { Cookie: cookieHeader },
+	basePath: process.env.OMNIBASE_API_URL,
+	headers: { Cookie: cookieHeader },
 });
 
 // Get configuration
@@ -215,14 +217,14 @@ const { data: stripeConfig } = await stripeApi.getStripeConfig();
 // Create checkout session
 const paymentsApi = new V1PaymentsApi(config);
 const { data: checkout } = await paymentsApi.createCheckout({
-  createCheckoutRequest: {
-    priceId: 'pro_monthly',
-    successUrl: 'https://example.com/success',
-    cancelUrl: 'https://example.com/pricing',
-  },
+	createCheckoutRequest: {
+		priceId: "pro_monthly",
+		successUrl: "https://example.com/success",
+		cancelUrl: "https://example.com/pricing",
+	},
 });
 
-console.log('Checkout URL:', checkout.url);
+console.log("Checkout URL:", checkout.url);
 ```
 
 ## Architecture Overview
@@ -283,61 +285,61 @@ Each file follows the same schema with optional sections:
 
 OmniBase supports 20 currencies:
 
-| Currency | Code | Currency | Code |
-|----------|------|----------|------|
-| US Dollar | `usd` | Euro | `eur` |
-| British Pound | `gbp` | Canadian Dollar | `cad` |
-| Australian Dollar | `aud` | Japanese Yen | `jpy` |
-| Indian Rupee | `inr` | Brazilian Real | `brl` |
-| Mexican Peso | `mxn` | Singapore Dollar | `sgd` |
-| Hong Kong Dollar | `hkd` | New Zealand Dollar | `nzd` |
-| Swiss Franc | `chf` | Swedish Krona | `sek` |
-| Danish Krone | `dkk` | Norwegian Krone | `nok` |
-| Polish Zloty | `pln` | Czech Koruna | `czk` |
-| Israeli Shekel | `ils` | South African Rand | `zar` |
+| Currency          | Code  | Currency           | Code  |
+| ----------------- | ----- | ------------------ | ----- |
+| US Dollar         | `usd` | Euro               | `eur` |
+| British Pound     | `gbp` | Canadian Dollar    | `cad` |
+| Australian Dollar | `aud` | Japanese Yen       | `jpy` |
+| Indian Rupee      | `inr` | Brazilian Real     | `brl` |
+| Mexican Peso      | `mxn` | Singapore Dollar   | `sgd` |
+| Hong Kong Dollar  | `hkd` | New Zealand Dollar | `nzd` |
+| Swiss Franc       | `chf` | Swedish Krona      | `sek` |
+| Danish Krone      | `dkk` | Norwegian Krone    | `nok` |
+| Polish Zloty      | `pln` | Czech Koruna       | `czk` |
+| Israeli Shekel    | `ils` | South African Rand | `zar` |
 
 ## CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `omnibase stripe push` | Push local configuration to Stripe |
-| `omnibase stripe pull` | Pull configuration from Stripe account |
-| `omnibase stripe validate` | Validate configuration without pushing |
-| `omnibase stripe history` | View configuration version history |
-| `omnibase stripe webhook secret` | Retrieve webhook signing secrets |
+| Command                          | Description                            |
+| -------------------------------- | -------------------------------------- |
+| `omnibase stripe push`           | Push local configuration to Stripe     |
+| `omnibase stripe pull`           | Pull configuration from Stripe account |
+| `omnibase stripe validate`       | Validate configuration without pushing |
+| `omnibase stripe history`        | View configuration version history     |
+| `omnibase stripe webhook secret` | Retrieve webhook signing secrets       |
 
 ## API Endpoints
 
 ### Public Endpoints (No Auth Required)
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/stripe/schema` | Get JSON schema for configuration |
-| `GET /api/v1/stripe/config` | Get public configuration (filtered) |
-| `GET /api/v1/stripe/config/prices/:id` | Get price by config ID |
-| `GET /api/v1/stripe/config/products/:id` | Get product by config ID |
-| `GET /api/v1/stripe/config/meters/:id` | Get meter by config ID |
-| `POST /api/v1/stripe/config/prices/:id/calculate` | Calculate cost for quantity |
+| Endpoint                                          | Description                         |
+| ------------------------------------------------- | ----------------------------------- |
+| `GET /api/v1/stripe/schema`                       | Get JSON schema for configuration   |
+| `GET /api/v1/stripe/config`                       | Get public configuration (filtered) |
+| `GET /api/v1/stripe/config/prices/:id`            | Get price by config ID              |
+| `GET /api/v1/stripe/config/products/:id`          | Get product by config ID            |
+| `GET /api/v1/stripe/config/meters/:id`            | Get meter by config ID              |
+| `POST /api/v1/stripe/config/prices/:id/calculate` | Calculate cost for quantity         |
 
 ### Admin Endpoints (Service Key Required)
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/stripe/admin/config` | Get full configuration (unfiltered) |
-| `POST /api/v1/stripe/admin/config` | Update configuration |
-| `GET /api/v1/stripe/admin/config/history` | Get configuration history |
-| `GET /api/v1/stripe/admin/config/pull` | Pull from Stripe |
-| `POST /api/v1/stripe/admin/config/validate` | Validate configuration |
-| `POST /api/v1/stripe/admin/config/reset` | Reset/archive all resources |
-| `GET /api/v1/stripe/admin/webhooks` | List webhooks with secrets |
+| Endpoint                                    | Description                         |
+| ------------------------------------------- | ----------------------------------- |
+| `GET /api/v1/stripe/admin/config`           | Get full configuration (unfiltered) |
+| `POST /api/v1/stripe/admin/config`          | Update configuration                |
+| `GET /api/v1/stripe/admin/config/history`   | Get configuration history           |
+| `GET /api/v1/stripe/admin/config/pull`      | Pull from Stripe                    |
+| `POST /api/v1/stripe/admin/config/validate` | Validate configuration              |
+| `POST /api/v1/stripe/admin/config/reset`    | Reset/archive all resources         |
+| `GET /api/v1/stripe/admin/webhooks`         | List webhooks with secrets          |
 
 ## What's Next?
 
 - **[Configuration Guide](/docs/guides/stripe/configuration)**
-    Deep dive into the configuration schema and options
+  Deep dive into the configuration schema and options
 - **[Products & Prices](/docs/guides/stripe/products-prices)**
-    Learn about product types, pricing models, and UI configuration
+  Learn about product types, pricing models, and UI configuration
 - **[Webhooks](/docs/guides/stripe/webhooks)**
-    Set up webhook endpoints for billing events
+  Set up webhook endpoints for billing events
 - **[Subscriptions](/docs/guides/stripe/subscriptions)**
-    Implement subscription management in your app
+  Implement subscription management in your app

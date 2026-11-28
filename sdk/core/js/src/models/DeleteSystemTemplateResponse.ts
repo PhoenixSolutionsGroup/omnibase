@@ -12,55 +12,64 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface DeleteSystemTemplateResponse
  */
 export interface DeleteSystemTemplateResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteSystemTemplateResponse
-     */
-    message: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteSystemTemplateResponse
+	 */
+	message: string;
 }
 
 /**
  * Check if a given object implements the DeleteSystemTemplateResponse interface.
  */
-export function instanceOfDeleteSystemTemplateResponse(value: object): value is DeleteSystemTemplateResponse {
-    if (!('message' in value) || value['message'] === undefined) return false;
-    return true;
+export function instanceOfDeleteSystemTemplateResponse(
+	value: object,
+): value is DeleteSystemTemplateResponse {
+	if (!("message" in value) || value["message"] === undefined) return false;
+	return true;
 }
 
-export function DeleteSystemTemplateResponseFromJSON(json: any): DeleteSystemTemplateResponse {
-    return DeleteSystemTemplateResponseFromJSONTyped(json, false);
+export function DeleteSystemTemplateResponseFromJSON(
+	json: any,
+): DeleteSystemTemplateResponse {
+	return DeleteSystemTemplateResponseFromJSONTyped(json, false);
 }
 
-export function DeleteSystemTemplateResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteSystemTemplateResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'message': json['message'],
-    };
+export function DeleteSystemTemplateResponseFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteSystemTemplateResponse {
+	if (json == null) {
+		return json;
+	}
+	return {
+		message: json["message"],
+	};
 }
 
-export function DeleteSystemTemplateResponseToJSON(json: any): DeleteSystemTemplateResponse {
-    return DeleteSystemTemplateResponseToJSONTyped(json, false);
+export function DeleteSystemTemplateResponseToJSON(
+	json: any,
+): DeleteSystemTemplateResponse {
+	return DeleteSystemTemplateResponseToJSONTyped(json, false);
 }
 
-export function DeleteSystemTemplateResponseToJSONTyped(value?: DeleteSystemTemplateResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteSystemTemplateResponseToJSONTyped(
+	value?: DeleteSystemTemplateResponse | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'message': value['message'],
-    };
+	return {
+		message: value["message"],
+	};
 }
-

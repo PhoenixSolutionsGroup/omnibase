@@ -12,100 +12,110 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface ConfigHistoryPagination
  */
 export interface ConfigHistoryPagination {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ConfigHistoryPagination
-     */
-    hasNext: boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ConfigHistoryPagination
-     */
-    hasPrev: boolean;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigHistoryPagination
-     */
-    page: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigHistoryPagination
-     */
-    perPage: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigHistoryPagination
-     */
-    total: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConfigHistoryPagination
-     */
-    totalPages: number;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof ConfigHistoryPagination
+	 */
+	hasNext: boolean;
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof ConfigHistoryPagination
+	 */
+	hasPrev: boolean;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigHistoryPagination
+	 */
+	page: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigHistoryPagination
+	 */
+	perPage: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigHistoryPagination
+	 */
+	total: number;
+	/**
+	 *
+	 * @type {number}
+	 * @memberof ConfigHistoryPagination
+	 */
+	totalPages: number;
 }
 
 /**
  * Check if a given object implements the ConfigHistoryPagination interface.
  */
-export function instanceOfConfigHistoryPagination(value: object): value is ConfigHistoryPagination {
-    if (!('hasNext' in value) || value['hasNext'] === undefined) return false;
-    if (!('hasPrev' in value) || value['hasPrev'] === undefined) return false;
-    if (!('page' in value) || value['page'] === undefined) return false;
-    if (!('perPage' in value) || value['perPage'] === undefined) return false;
-    if (!('total' in value) || value['total'] === undefined) return false;
-    if (!('totalPages' in value) || value['totalPages'] === undefined) return false;
-    return true;
+export function instanceOfConfigHistoryPagination(
+	value: object,
+): value is ConfigHistoryPagination {
+	if (!("hasNext" in value) || value["hasNext"] === undefined) return false;
+	if (!("hasPrev" in value) || value["hasPrev"] === undefined) return false;
+	if (!("page" in value) || value["page"] === undefined) return false;
+	if (!("perPage" in value) || value["perPage"] === undefined) return false;
+	if (!("total" in value) || value["total"] === undefined) return false;
+	if (!("totalPages" in value) || value["totalPages"] === undefined)
+		return false;
+	return true;
 }
 
-export function ConfigHistoryPaginationFromJSON(json: any): ConfigHistoryPagination {
-    return ConfigHistoryPaginationFromJSONTyped(json, false);
+export function ConfigHistoryPaginationFromJSON(
+	json: any,
+): ConfigHistoryPagination {
+	return ConfigHistoryPaginationFromJSONTyped(json, false);
 }
 
-export function ConfigHistoryPaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigHistoryPagination {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'hasNext': json['has_next'],
-        'hasPrev': json['has_prev'],
-        'page': json['page'],
-        'perPage': json['per_page'],
-        'total': json['total'],
-        'totalPages': json['total_pages'],
-    };
+export function ConfigHistoryPaginationFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): ConfigHistoryPagination {
+	if (json == null) {
+		return json;
+	}
+	return {
+		hasNext: json["has_next"],
+		hasPrev: json["has_prev"],
+		page: json["page"],
+		perPage: json["per_page"],
+		total: json["total"],
+		totalPages: json["total_pages"],
+	};
 }
 
-export function ConfigHistoryPaginationToJSON(json: any): ConfigHistoryPagination {
-    return ConfigHistoryPaginationToJSONTyped(json, false);
+export function ConfigHistoryPaginationToJSON(
+	json: any,
+): ConfigHistoryPagination {
+	return ConfigHistoryPaginationToJSONTyped(json, false);
 }
 
-export function ConfigHistoryPaginationToJSONTyped(value?: ConfigHistoryPagination | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ConfigHistoryPaginationToJSONTyped(
+	value?: ConfigHistoryPagination | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'has_next': value['hasNext'],
-        'has_prev': value['hasPrev'],
-        'page': value['page'],
-        'per_page': value['perPage'],
-        'total': value['total'],
-        'total_pages': value['totalPages'],
-    };
+	return {
+		has_next: value["hasNext"],
+		has_prev: value["hasPrev"],
+		page: value["page"],
+		per_page: value["perPage"],
+		total: value["total"],
+		total_pages: value["totalPages"],
+	};
 }
-

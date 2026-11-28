@@ -2,13 +2,13 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**BillingPeriod** | Pointer to **string** |  | [optional] 
-**DisplayName** | Pointer to **string** |  | [optional] 
-**Features** | Pointer to **[]string** |  | [optional] 
-**Limits** | Pointer to [**[]PriceLimit**](PriceLimit.md) |  | [optional] 
-**PriceDisplay** | Pointer to [**PriceDisplay**](PriceDisplay.md) |  | [optional] 
+| Name              | Type                                           | Description | Notes      |
+| ----------------- | ---------------------------------------------- | ----------- | ---------- |
+| **BillingPeriod** | Pointer to **string**                          |             | [optional] |
+| **DisplayName**   | Pointer to **string**                          |             | [optional] |
+| **Features**      | Pointer to **[]string**                        |             | [optional] |
+| **Limits**        | Pointer to [**[]PriceLimit**](PriceLimit.md)   |             | [optional] |
+| **PriceDisplay**  | Pointer to [**PriceDisplay**](PriceDisplay.md) |             | [optional] |
 
 ## Methods
 
@@ -108,12 +108,14 @@ HasFeatures returns a boolean if a field has been set.
 
 `func (o *PriceUI) SetFeaturesNil(b bool)`
 
- SetFeaturesNil sets the value for Features to be an explicit nil
+SetFeaturesNil sets the value for Features to be an explicit nil
 
 ### UnsetFeatures
+
 `func (o *PriceUI) UnsetFeatures()`
 
 UnsetFeatures ensures that no value is present for Features, not even an explicit nil
+
 ### GetLimits
 
 `func (o *PriceUI) GetLimits() []PriceLimit`
@@ -143,12 +145,14 @@ HasLimits returns a boolean if a field has been set.
 
 `func (o *PriceUI) SetLimitsNil(b bool)`
 
- SetLimitsNil sets the value for Limits to be an explicit nil
+SetLimitsNil sets the value for Limits to be an explicit nil
 
 ### UnsetLimits
+
 `func (o *PriceUI) UnsetLimits()`
 
 UnsetLimits ensures that no value is present for Limits, not even an explicit nil
+
 ### GetPriceDisplay
 
 `func (o *PriceUI) GetPriceDisplay() PriceDisplay`
@@ -174,7 +178,4 @@ SetPriceDisplay sets PriceDisplay field to given value.
 
 HasPriceDisplay returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -2,11 +2,11 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Identity** | [**Identity**](Identity.md) |  | 
-**Session** | [**Session**](Session.md) |  | 
-**Tenant** | Pointer to [**AuthTenant**](AuthTenant.md) |  | [optional] 
+| Name         | Type                                       | Description | Notes      |
+| ------------ | ------------------------------------------ | ----------- | ---------- |
+| **Identity** | [**Identity**](Identity.md)                |             |
+| **Session**  | [**Session**](Session.md)                  |             |
+| **Tenant**   | Pointer to [**AuthTenant**](AuthTenant.md) |             | [optional] |
 
 ## Methods
 
@@ -46,7 +46,6 @@ and a boolean to check if the value has been set.
 
 SetIdentity sets Identity field to given value.
 
-
 ### GetSession
 
 `func (o *SessionResponse) GetSession() Session`
@@ -65,7 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *SessionResponse) SetSession(v Session)`
 
 SetSession sets Session field to given value.
-
 
 ### GetTenant
 
@@ -92,7 +90,4 @@ SetTenant sets Tenant field to given value.
 
 HasTenant returns a boolean if a field has been set.
 
-
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

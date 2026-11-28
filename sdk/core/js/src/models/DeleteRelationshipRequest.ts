@@ -12,90 +12,100 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { SubjectSetRequest } from './SubjectSetRequest';
+import { mapValues } from "../runtime";
+import type { SubjectSetRequest } from "./SubjectSetRequest";
 import {
-    SubjectSetRequestFromJSON,
-    SubjectSetRequestFromJSONTyped,
-    SubjectSetRequestToJSON,
-    SubjectSetRequestToJSONTyped,
-} from './SubjectSetRequest';
+	SubjectSetRequestFromJSON,
+	SubjectSetRequestFromJSONTyped,
+	SubjectSetRequestToJSON,
+	SubjectSetRequestToJSONTyped,
+} from "./SubjectSetRequest";
 
 /**
- * 
+ *
  * @export
  * @interface DeleteRelationshipRequest
  */
 export interface DeleteRelationshipRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteRelationshipRequest
-     */
-    namespace: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteRelationshipRequest
-     */
-    object: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DeleteRelationshipRequest
-     */
-    relation: string;
-    /**
-     * 
-     * @type {SubjectSetRequest}
-     * @memberof DeleteRelationshipRequest
-     */
-    subjectSet: SubjectSetRequest;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteRelationshipRequest
+	 */
+	namespace: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteRelationshipRequest
+	 */
+	object: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof DeleteRelationshipRequest
+	 */
+	relation: string;
+	/**
+	 *
+	 * @type {SubjectSetRequest}
+	 * @memberof DeleteRelationshipRequest
+	 */
+	subjectSet: SubjectSetRequest;
 }
 
 /**
  * Check if a given object implements the DeleteRelationshipRequest interface.
  */
-export function instanceOfDeleteRelationshipRequest(value: object): value is DeleteRelationshipRequest {
-    if (!('namespace' in value) || value['namespace'] === undefined) return false;
-    if (!('object' in value) || value['object'] === undefined) return false;
-    if (!('relation' in value) || value['relation'] === undefined) return false;
-    if (!('subjectSet' in value) || value['subjectSet'] === undefined) return false;
-    return true;
+export function instanceOfDeleteRelationshipRequest(
+	value: object,
+): value is DeleteRelationshipRequest {
+	if (!("namespace" in value) || value["namespace"] === undefined) return false;
+	if (!("object" in value) || value["object"] === undefined) return false;
+	if (!("relation" in value) || value["relation"] === undefined) return false;
+	if (!("subjectSet" in value) || value["subjectSet"] === undefined)
+		return false;
+	return true;
 }
 
-export function DeleteRelationshipRequestFromJSON(json: any): DeleteRelationshipRequest {
-    return DeleteRelationshipRequestFromJSONTyped(json, false);
+export function DeleteRelationshipRequestFromJSON(
+	json: any,
+): DeleteRelationshipRequest {
+	return DeleteRelationshipRequestFromJSONTyped(json, false);
 }
 
-export function DeleteRelationshipRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeleteRelationshipRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'namespace': json['namespace'],
-        'object': json['object'],
-        'relation': json['relation'],
-        'subjectSet': SubjectSetRequestFromJSON(json['subject_set']),
-    };
+export function DeleteRelationshipRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): DeleteRelationshipRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		namespace: json["namespace"],
+		object: json["object"],
+		relation: json["relation"],
+		subjectSet: SubjectSetRequestFromJSON(json["subject_set"]),
+	};
 }
 
-export function DeleteRelationshipRequestToJSON(json: any): DeleteRelationshipRequest {
-    return DeleteRelationshipRequestToJSONTyped(json, false);
+export function DeleteRelationshipRequestToJSON(
+	json: any,
+): DeleteRelationshipRequest {
+	return DeleteRelationshipRequestToJSONTyped(json, false);
 }
 
-export function DeleteRelationshipRequestToJSONTyped(value?: DeleteRelationshipRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function DeleteRelationshipRequestToJSONTyped(
+	value?: DeleteRelationshipRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'namespace': value['namespace'],
-        'object': value['object'],
-        'relation': value['relation'],
-        'subject_set': SubjectSetRequestToJSON(value['subjectSet']),
-    };
+	return {
+		namespace: value["namespace"],
+		object: value["object"],
+		relation: value["relation"],
+		subject_set: SubjectSetRequestToJSON(value["subjectSet"]),
+	};
 }
-

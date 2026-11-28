@@ -12,263 +12,310 @@
  * Do not edit the class manually.
  */
 
-
-import * as runtime from '../runtime';
+import * as runtime from "../runtime";
 import type {
-  AppliedMigration,
-  ApplyMigrationsResponse,
-  ErrorModel,
-  MigrationsDownResponse,
-} from '../models/index';
+	AppliedMigration,
+	ApplyMigrationsResponse,
+	ErrorModel,
+	MigrationsDownResponse,
+} from "../models/index";
 import {
-    AppliedMigrationFromJSON,
-    AppliedMigrationToJSON,
-    ApplyMigrationsResponseFromJSON,
-    ApplyMigrationsResponseToJSON,
-    ErrorModelFromJSON,
-    ErrorModelToJSON,
-    MigrationsDownResponseFromJSON,
-    MigrationsDownResponseToJSON,
-} from '../models/index';
+	AppliedMigrationFromJSON,
+	AppliedMigrationToJSON,
+	ApplyMigrationsResponseFromJSON,
+	ApplyMigrationsResponseToJSON,
+	ErrorModelFromJSON,
+	ErrorModelToJSON,
+	MigrationsDownResponseFromJSON,
+	MigrationsDownResponseToJSON,
+} from "../models/index";
 
 export interface GenerateDatabaseTypesRequest {
-    language?: GenerateDatabaseTypesLanguageEnum;
-    schemas?: string;
+	language?: GenerateDatabaseTypesLanguageEnum;
+	schemas?: string;
 }
 
 export interface RollbackDatabaseMigrationsRequest {
-    migrations: Blob;
-    steps: string;
+	migrations: Blob;
+	steps: string;
 }
 
 export interface UploadDatabaseMigrationsRequest {
-    migrations: Blob;
+	migrations: Blob;
 }
 
 /**
- * 
+ *
  */
 export class V1DatabaseApi extends runtime.BaseAPI {
+	/**
+	 * Generate type definitions for the database schema
+	 */
+	async generateDatabaseTypesRaw(
+		requestParameters: GenerateDatabaseTypesRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<string>> {
+		const queryParameters: any = {};
 
-    /**
-     * Generate type definitions for the database schema
-     */
-    async generateDatabaseTypesRaw(requestParameters: GenerateDatabaseTypesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
-        const queryParameters: any = {};
+		if (requestParameters["language"] != null) {
+			queryParameters["language"] = requestParameters["language"];
+		}
 
-        if (requestParameters['language'] != null) {
-            queryParameters['language'] = requestParameters['language'];
-        }
+		if (requestParameters["schemas"] != null) {
+			queryParameters["schemas"] = requestParameters["schemas"];
+		}
 
-        if (requestParameters['schemas'] != null) {
-            queryParameters['schemas'] = requestParameters['schemas'];
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		let urlPath = `/api/v1/database/typegen`;
 
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
-        let urlPath = `/api/v1/database/typegen`;
+		if (this.isJsonMime(response.headers.get("content-type"))) {
+			return new runtime.JSONApiResponse<string>(response);
+		} else {
+			return new runtime.TextApiResponse(response) as any;
+		}
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * Generate type definitions for the database schema
+	 */
+	async generateDatabaseTypes(
+		requestParameters: GenerateDatabaseTypesRequest = {},
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<string> {
+		const response = await this.generateDatabaseTypesRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
-    }
+	/**
+	 * Get the status of applied migrations
+	 */
+	async getDatabaseMigrationStatusRaw(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<Array<AppliedMigration>>> {
+		const queryParameters: any = {};
 
-    /**
-     * Generate type definitions for the database schema
-     */
-    async generateDatabaseTypes(requestParameters: GenerateDatabaseTypesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
-        const response = await this.generateDatabaseTypesRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Get the status of applied migrations
-     */
-    async getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AppliedMigration>>> {
-        const queryParameters: any = {};
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		let urlPath = `/api/v1/database/migrations/status`;
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "GET",
+				headers: headerParameters,
+				query: queryParameters,
+			},
+			initOverrides,
+		);
 
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			jsonValue.map(AppliedMigrationFromJSON),
+		);
+	}
 
-        let urlPath = `/api/v1/database/migrations/status`;
+	/**
+	 * Get the status of applied migrations
+	 */
+	async getDatabaseMigrationStatus(
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<Array<AppliedMigration>> {
+		const response = await this.getDatabaseMigrationStatusRaw(initOverrides);
+		return await response.value();
+	}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+	/**
+	 * Roll back database migrations
+	 */
+	async rollbackDatabaseMigrationsRaw(
+		requestParameters: RollbackDatabaseMigrationsRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<MigrationsDownResponse>> {
+		if (requestParameters["migrations"] == null) {
+			throw new runtime.RequiredError(
+				"migrations",
+				'Required parameter "migrations" was null or undefined when calling rollbackDatabaseMigrations().',
+			);
+		}
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AppliedMigrationFromJSON));
-    }
+		if (requestParameters["steps"] == null) {
+			throw new runtime.RequiredError(
+				"steps",
+				'Required parameter "steps" was null or undefined when calling rollbackDatabaseMigrations().',
+			);
+		}
 
-    /**
-     * Get the status of applied migrations
-     */
-    async getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AppliedMigration>> {
-        const response = await this.getDatabaseMigrationStatusRaw(initOverrides);
-        return await response.value();
-    }
+		const queryParameters: any = {};
 
-    /**
-     * Roll back database migrations
-     */
-    async rollbackDatabaseMigrationsRaw(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationsDownResponse>> {
-        if (requestParameters['migrations'] == null) {
-            throw new runtime.RequiredError(
-                'migrations',
-                'Required parameter "migrations" was null or undefined when calling rollbackDatabaseMigrations().'
-            );
-        }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-        if (requestParameters['steps'] == null) {
-            throw new runtime.RequiredError(
-                'steps',
-                'Required parameter "steps" was null or undefined when calling rollbackDatabaseMigrations().'
-            );
-        }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-        const queryParameters: any = {};
+		const consumes: runtime.Consume[] = [
+			{ contentType: "multipart/form-data" },
+		];
+		// @ts-ignore: canConsumeForm may be unused
+		const canConsumeForm = runtime.canConsumeForm(consumes);
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		let formParams: { append(param: string, value: any): any };
+		let useForm = false;
+		// use FormData to transmit files using content-type "multipart/form-data"
+		useForm = canConsumeForm;
+		if (useForm) {
+			formParams = new FormData();
+		} else {
+			formParams = new URLSearchParams();
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		if (requestParameters["migrations"] != null) {
+			formParams.append("migrations", requestParameters["migrations"] as any);
+		}
 
-        const consumes: runtime.Consume[] = [
-            { contentType: 'multipart/form-data' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
+		if (requestParameters["steps"] != null) {
+			formParams.append("steps", requestParameters["steps"] as any);
+		}
 
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        useForm = canConsumeForm;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
+		let urlPath = `/api/v1/database/migrations/down`;
 
-        if (requestParameters['migrations'] != null) {
-            formParams.append('migrations', requestParameters['migrations'] as any);
-        }
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: formParams,
+			},
+			initOverrides,
+		);
 
-        if (requestParameters['steps'] != null) {
-            formParams.append('steps', requestParameters['steps'] as any);
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			MigrationsDownResponseFromJSON(jsonValue),
+		);
+	}
 
+	/**
+	 * Roll back database migrations
+	 */
+	async rollbackDatabaseMigrations(
+		requestParameters: RollbackDatabaseMigrationsRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<MigrationsDownResponse> {
+		const response = await this.rollbackDatabaseMigrationsRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 
-        let urlPath = `/api/v1/database/migrations/down`;
+	/**
+	 * Apply database migrations
+	 */
+	async uploadDatabaseMigrationsRaw(
+		requestParameters: UploadDatabaseMigrationsRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<runtime.ApiResponse<ApplyMigrationsResponse>> {
+		if (requestParameters["migrations"] == null) {
+			throw new runtime.RequiredError(
+				"migrations",
+				'Required parameter "migrations" was null or undefined when calling uploadDatabaseMigrations().',
+			);
+		}
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: formParams,
-        }, initOverrides);
+		const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => MigrationsDownResponseFromJSON(jsonValue));
-    }
+		const headerParameters: runtime.HTTPHeaders = {};
 
-    /**
-     * Roll back database migrations
-     */
-    async rollbackDatabaseMigrations(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationsDownResponse> {
-        const response = await this.rollbackDatabaseMigrationsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+		if (this.configuration && this.configuration.apiKey) {
+			headerParameters["X-Service-Key"] =
+				await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+		}
 
-    /**
-     * Apply database migrations
-     */
-    async uploadDatabaseMigrationsRaw(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplyMigrationsResponse>> {
-        if (requestParameters['migrations'] == null) {
-            throw new runtime.RequiredError(
-                'migrations',
-                'Required parameter "migrations" was null or undefined when calling uploadDatabaseMigrations().'
-            );
-        }
+		const consumes: runtime.Consume[] = [
+			{ contentType: "multipart/form-data" },
+		];
+		// @ts-ignore: canConsumeForm may be unused
+		const canConsumeForm = runtime.canConsumeForm(consumes);
 
-        const queryParameters: any = {};
+		let formParams: { append(param: string, value: any): any };
+		let useForm = false;
+		// use FormData to transmit files using content-type "multipart/form-data"
+		useForm = canConsumeForm;
+		if (useForm) {
+			formParams = new FormData();
+		} else {
+			formParams = new URLSearchParams();
+		}
 
-        const headerParameters: runtime.HTTPHeaders = {};
+		if (requestParameters["migrations"] != null) {
+			formParams.append("migrations", requestParameters["migrations"] as any);
+		}
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
+		let urlPath = `/api/v1/database/migrations`;
 
-        const consumes: runtime.Consume[] = [
-            { contentType: 'multipart/form-data' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
+		const response = await this.request(
+			{
+				path: urlPath,
+				method: "POST",
+				headers: headerParameters,
+				query: queryParameters,
+				body: formParams,
+			},
+			initOverrides,
+		);
 
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        useForm = canConsumeForm;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
+		return new runtime.JSONApiResponse(response, (jsonValue) =>
+			ApplyMigrationsResponseFromJSON(jsonValue),
+		);
+	}
 
-        if (requestParameters['migrations'] != null) {
-            formParams.append('migrations', requestParameters['migrations'] as any);
-        }
-
-
-        let urlPath = `/api/v1/database/migrations`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: formParams,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplyMigrationsResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Apply database migrations
-     */
-    async uploadDatabaseMigrations(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplyMigrationsResponse> {
-        const response = await this.uploadDatabaseMigrationsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+	/**
+	 * Apply database migrations
+	 */
+	async uploadDatabaseMigrations(
+		requestParameters: UploadDatabaseMigrationsRequest,
+		initOverrides?: RequestInit | runtime.InitOverrideFunction,
+	): Promise<ApplyMigrationsResponse> {
+		const response = await this.uploadDatabaseMigrationsRaw(
+			requestParameters,
+			initOverrides,
+		);
+		return await response.value();
+	}
 }
 
 /**
  * @export
  */
 export const GenerateDatabaseTypesLanguageEnum = {
-    Typescript: 'typescript',
-    Go: 'go',
-    Swift: 'swift'
+	Typescript: "typescript",
+	Go: "go",
+	Swift: "swift",
 } as const;
-export type GenerateDatabaseTypesLanguageEnum = typeof GenerateDatabaseTypesLanguageEnum[keyof typeof GenerateDatabaseTypesLanguageEnum];
+export type GenerateDatabaseTypesLanguageEnum =
+	(typeof GenerateDatabaseTypesLanguageEnum)[keyof typeof GenerateDatabaseTypesLanguageEnum];

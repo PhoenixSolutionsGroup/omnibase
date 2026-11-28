@@ -1,6 +1,6 @@
 ---
-title: "cli"
----
+
+## title: "cli"
 
 # @omnibase/cli
 

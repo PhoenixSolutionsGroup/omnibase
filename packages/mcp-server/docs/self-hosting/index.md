@@ -1,4 +1,5 @@
 ---
+
 title: Self-Hosting
 description: Deploy OmniBase on your infrastructure
 ---
@@ -6,7 +7,7 @@ description: Deploy OmniBase on your infrastructure
 # Self-Hosting
 
 > **Note:**
-**Coming Soon**
+> **Coming Soon**
 
 Comprehensive self-hosting documentation is in progress. Check back soon for detailed guides on:
 

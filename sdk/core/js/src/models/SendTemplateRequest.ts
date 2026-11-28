@@ -12,72 +12,78 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface SendTemplateRequest
  */
 export interface SendTemplateRequest {
-    /**
-     * 
-     * @type {object}
-     * @memberof SendTemplateRequest
-     */
-    data?: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendTemplateRequest
-     */
-    templateType: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendTemplateRequest
-     */
-    to: string;
+	/**
+	 *
+	 * @type {object}
+	 * @memberof SendTemplateRequest
+	 */
+	data?: object;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SendTemplateRequest
+	 */
+	templateType: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SendTemplateRequest
+	 */
+	to: string;
 }
 
 /**
  * Check if a given object implements the SendTemplateRequest interface.
  */
-export function instanceOfSendTemplateRequest(value: object): value is SendTemplateRequest {
-    if (!('templateType' in value) || value['templateType'] === undefined) return false;
-    if (!('to' in value) || value['to'] === undefined) return false;
-    return true;
+export function instanceOfSendTemplateRequest(
+	value: object,
+): value is SendTemplateRequest {
+	if (!("templateType" in value) || value["templateType"] === undefined)
+		return false;
+	if (!("to" in value) || value["to"] === undefined) return false;
+	return true;
 }
 
 export function SendTemplateRequestFromJSON(json: any): SendTemplateRequest {
-    return SendTemplateRequestFromJSONTyped(json, false);
+	return SendTemplateRequestFromJSONTyped(json, false);
 }
 
-export function SendTemplateRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SendTemplateRequest {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'data': json['data'] == null ? undefined : json['data'],
-        'templateType': json['template_type'],
-        'to': json['to'],
-    };
+export function SendTemplateRequestFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): SendTemplateRequest {
+	if (json == null) {
+		return json;
+	}
+	return {
+		data: json["data"] == null ? undefined : json["data"],
+		templateType: json["template_type"],
+		to: json["to"],
+	};
 }
 
 export function SendTemplateRequestToJSON(json: any): SendTemplateRequest {
-    return SendTemplateRequestToJSONTyped(json, false);
+	return SendTemplateRequestToJSONTyped(json, false);
 }
 
-export function SendTemplateRequestToJSONTyped(value?: SendTemplateRequest | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SendTemplateRequestToJSONTyped(
+	value?: SendTemplateRequest | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'data': value['data'],
-        'template_type': value['templateType'],
-        'to': value['to'],
-    };
+	return {
+		data: value["data"],
+		template_type: value["templateType"],
+		to: value["to"],
+	};
 }
-

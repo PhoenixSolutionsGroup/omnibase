@@ -12,64 +12,67 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues } from "../runtime";
 /**
- * 
+ *
  * @export
  * @interface IdentityName
  */
 export interface IdentityName {
-    /**
-     * 
-     * @type {string}
-     * @memberof IdentityName
-     */
-    first: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof IdentityName
-     */
-    last: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof IdentityName
+	 */
+	first: string;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof IdentityName
+	 */
+	last: string;
 }
 
 /**
  * Check if a given object implements the IdentityName interface.
  */
 export function instanceOfIdentityName(value: object): value is IdentityName {
-    if (!('first' in value) || value['first'] === undefined) return false;
-    if (!('last' in value) || value['last'] === undefined) return false;
-    return true;
+	if (!("first" in value) || value["first"] === undefined) return false;
+	if (!("last" in value) || value["last"] === undefined) return false;
+	return true;
 }
 
 export function IdentityNameFromJSON(json: any): IdentityName {
-    return IdentityNameFromJSONTyped(json, false);
+	return IdentityNameFromJSONTyped(json, false);
 }
 
-export function IdentityNameFromJSONTyped(json: any, ignoreDiscriminator: boolean): IdentityName {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'first': json['first'],
-        'last': json['last'],
-    };
+export function IdentityNameFromJSONTyped(
+	json: any,
+	ignoreDiscriminator: boolean,
+): IdentityName {
+	if (json == null) {
+		return json;
+	}
+	return {
+		first: json["first"],
+		last: json["last"],
+	};
 }
 
 export function IdentityNameToJSON(json: any): IdentityName {
-    return IdentityNameToJSONTyped(json, false);
+	return IdentityNameToJSONTyped(json, false);
 }
 
-export function IdentityNameToJSONTyped(value?: IdentityName | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function IdentityNameToJSONTyped(
+	value?: IdentityName | null,
+	ignoreDiscriminator: boolean = false,
+): any {
+	if (value == null) {
+		return value;
+	}
 
-    return {
-        
-        'first': value['first'],
-        'last': value['last'],
-    };
+	return {
+		first: value["first"],
+		last: value["last"],
+	};
 }
-
