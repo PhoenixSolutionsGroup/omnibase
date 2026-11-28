@@ -128,11 +128,11 @@ export function CreateRowDialog({
 										</div>
 									) : (
 										<Input
-											value={
+											value={String(
 												typeof formData[col.name] === "string"
 													? formData[col.name]
-													: ""
-											}
+													: "",
+											)}
 											onChange={(e) => handleChange(col.name, e.target.value)}
 											placeholder={col.format || col.type}
 											data-testid={`create-field-${col.name}`}
