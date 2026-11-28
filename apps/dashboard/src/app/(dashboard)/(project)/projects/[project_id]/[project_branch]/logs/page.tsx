@@ -34,7 +34,6 @@ export default async function LogsPage({
 
 	return (
 		<LogsClient
-			projectName={project.name}
 			projectId={project_id}
 			projectBranch={project_branch}
 			activeService={activeService}
