@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 interface CreateRowDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	columns: any[];
+	columns: { name: string; type: string; format?: string }[];
 	project: {
 		project_id: string;
 		branch_name: string;
@@ -30,7 +30,9 @@ export function CreateRowDialog({
 	schemaName,
 	onSuccess,
 }: CreateRowDialogProps) {
-	const [formData, setFormData] = useState<Record<string, any>>({});
+	const [formData, setFormData] = useState<
+		Record<string, string | boolean | null>
+	>({});
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async () => {
@@ -54,15 +56,15 @@ export function CreateRowDialog({
 			onSuccess();
 			onOpenChange(false);
 			setFormData({});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error(e);
-			toast.error(e.message);
+			toast.error(e instanceof Error ? e.message : String(e));
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleChange = (col: string, value: any) => {
+	const handleChange = (col: string, value: string | boolean | null) => {
 		setFormData((prev) => ({ ...prev, [col]: value }));
 	};
 
@@ -110,8 +112,10 @@ export function CreateRowDialog({
 									{col.type === "boolean" ? (
 										<div className="flex items-center space-x-2">
 											<Checkbox
-												checked={formData[col.name] || false}
-												onCheckedChange={(c) => handleChange(col.name, c)}
+												checked={formData[col.name] === true}
+												onCheckedChange={(c) =>
+													handleChange(col.name, c === true)
+												}
 												id={`create-field-${col.name}`}
 												data-testid={`create-field-${col.name}`}
 											/>
@@ -124,7 +128,11 @@ export function CreateRowDialog({
 										</div>
 									) : (
 										<Input
-											value={formData[col.name] || ""}
+											value={
+												typeof formData[col.name] === "string"
+													? formData[col.name]
+													: ""
+											}
 											onChange={(e) => handleChange(col.name, e.target.value)}
 											placeholder={col.format || col.type}
 											data-testid={`create-field-${col.name}`}

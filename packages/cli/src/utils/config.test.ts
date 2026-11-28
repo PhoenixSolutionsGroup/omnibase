@@ -11,8 +11,15 @@ import {
 	loadSecretsMap,
 	loadWranglerConfigFile,
 	localEnvFromConfig,
+	type OmnibaseConfig,
 	resolveStartEnv,
 } from "./config";
+
+// Tests deliberately pass partial configs; this fills in the required fields.
+const cfgOf = (c: Partial<OmnibaseConfig>): OmnibaseConfig => ({
+	deployments: [],
+	...c,
+});
 
 const SAMPLE = `project_id = "abc-123"
 
@@ -48,8 +55,8 @@ describe("loadOmnibaseConfig", () => {
 		const cfg = loadConfig(root);
 		expect(cfg.project_id).toBe("abc-123");
 		expect(cfg.auth?.website_url).toBe("http://127.0.0.1:3000");
-		expect(cfg.auth?.oidc?.[0].provider).toBe("google");
-		expect(cfg.auth?.oidc?.[0].client_secret).toBe("{GOOGLE_CLIENT_SECRET}");
+		expect(cfg.auth?.oidc?.[0]?.provider).toBe("google");
+		expect(cfg.auth?.oidc?.[0]?.client_secret).toBe("{GOOGLE_CLIENT_SECRET}");
 	});
 
 	test("parses [versions] section", () => {
@@ -86,7 +93,7 @@ describe("interpolate", () => {
 			},
 		};
 		const out = interpolateValue(cfg, { GCS: "shh" }) as typeof cfg;
-		expect(out.auth.oidc[0].client_secret).toBe("shh");
+		expect(out.auth.oidc[0]?.client_secret).toBe("shh");
 		expect(out.auth.website_url).toBe("http://127.0.0.1:3000");
 	});
 
@@ -206,9 +213,11 @@ describe("loadWranglerConfigFile", () => {
 			join(root, "wrangler.toml"),
 			'name = "dash"\nmain = "src/index.ts"\n[vars]\nFOO = "{FOO}"\n',
 		);
-		const cfg = loadWranglerConfigFile(root)!;
+		const cfg = loadWranglerConfigFile(root);
+		expect(cfg).not.toBeNull();
+		if (!cfg) throw new Error("expected wrangler config");
 		expect(cfg.name).toBe("dash");
-		expect((cfg.vars as any).FOO).toBe("{FOO}");
+		expect((cfg.vars as { FOO?: string } | undefined)?.FOO).toBe("{FOO}");
 	});
 
 	test("parses wrangler.jsonc with comments", () => {
@@ -216,8 +225,10 @@ describe("loadWranglerConfigFile", () => {
 			join(root, "wrangler.jsonc"),
 			'{ "name": "dash", "vars": { "FOO": "{FOO}" } }\n',
 		);
-		const cfg = loadWranglerConfigFile(root)!;
-		expect((cfg.vars as any).FOO).toBe("{FOO}");
+		const cfg = loadWranglerConfigFile(root);
+		expect(cfg).not.toBeNull();
+		if (!cfg) throw new Error("expected wrangler config");
+		expect((cfg.vars as { FOO?: string } | undefined)?.FOO).toBe("{FOO}");
 	});
 });
 
@@ -268,29 +279,36 @@ describe("resolveStartEnv", () => {
 
 describe("localEnvFromConfig", () => {
 	test("maps auth section to container env vars", () => {
-		const env = localEnvFromConfig({
-			auth: {
-				website_url: "http://127.0.0.1:3000",
-				cookie_secret: "shh",
-				log_level: "TRACE",
-			},
-		});
+		const env = localEnvFromConfig(
+			cfgOf({
+				auth: {
+					website_url: "http://127.0.0.1:3000",
+					cookie_secret: "shh",
+					log_level: "TRACE",
+				},
+			}),
+		);
 		expect(env.WEBSITE_URL).toBe("http://127.0.0.1:3000");
 		expect(env.COOKIE_SECRET).toBe("shh");
 		expect(env.AUTH_LOG_LEVEL).toBe("trace");
 	});
 
 	test("lowercases log_level for kratos", () => {
-		const env = localEnvFromConfig({ auth: { log_level: "INFO" } });
+		const env = localEnvFromConfig(cfgOf({ auth: { log_level: "INFO" } }));
 		expect(env.AUTH_LOG_LEVEL).toBe("info");
 	});
 
 	test("joins allowed_return_urls into a comma-separated env var", () => {
-		const env = localEnvFromConfig({
-			auth: {
-				allowed_return_urls: ["http://localhost:3000", "http://127.0.0.1:3000"],
-			},
-		});
+		const env = localEnvFromConfig(
+			cfgOf({
+				auth: {
+					allowed_return_urls: [
+						"http://localhost:3000",
+						"http://127.0.0.1:3000",
+					],
+				},
+			}),
+		);
 		expect(env.ALLOWED_RETURN_URLS).toBe(
 			"http://localhost:3000,http://127.0.0.1:3000",
 		);
@@ -298,23 +316,25 @@ describe("localEnvFromConfig", () => {
 
 	test("omits ALLOWED_RETURN_URLS when unset or empty", () => {
 		expect(
-			localEnvFromConfig({ auth: {} }).ALLOWED_RETURN_URLS,
+			localEnvFromConfig(cfgOf({ auth: {} })).ALLOWED_RETURN_URLS,
 		).toBeUndefined();
 		expect(
-			localEnvFromConfig({ auth: { allowed_return_urls: [] } })
+			localEnvFromConfig(cfgOf({ auth: { allowed_return_urls: [] } }))
 				.ALLOWED_RETURN_URLS,
 		).toBeUndefined();
 	});
 
 	test("maps oidc providers to OIDC_<P>_ENABLED and credentials", () => {
-		const env = localEnvFromConfig({
-			auth: {
-				oidc: [
-					{ provider: "google", client_id: "cid", client_secret: "csec" },
-					{ provider: "github", client_id: "gid", client_secret: "gsec" },
-				],
-			},
-		});
+		const env = localEnvFromConfig(
+			cfgOf({
+				auth: {
+					oidc: [
+						{ provider: "google", client_id: "cid", client_secret: "csec" },
+						{ provider: "github", client_id: "gid", client_secret: "gsec" },
+					],
+				},
+			}),
+		);
 		expect(env.OIDC_GOOGLE_ENABLED).toBe("true");
 		expect(env.GOOGLE_CLIENT_ID).toBe("cid");
 		expect(env.GOOGLE_CLIENT_SECRET).toBe("csec");
@@ -323,20 +343,25 @@ describe("localEnvFromConfig", () => {
 	});
 
 	test("passes [env] section through verbatim", () => {
-		const env = localEnvFromConfig({ env: { FEATURE_FLAG: "on" } } as any);
+		const env = localEnvFromConfig({
+			deployments: [],
+			env: { FEATURE_FLAG: "on" },
+		} as OmnibaseConfig);
 		expect(env.FEATURE_FLAG).toBe("on");
 	});
 
 	test("ignores [local] entirely", () => {
-		const env = localEnvFromConfig({
-			local: { stripe: { secret_key: "sk_test" } },
-		});
+		const env = localEnvFromConfig(
+			cfgOf({
+				local: { stripe: { secret_key: "sk_test" } },
+			}),
+		);
 		expect(Object.keys(env)).toHaveLength(0);
 		expect(JSON.stringify(env)).not.toContain("sk_test");
 	});
 
 	test("empty config yields no env", () => {
-		expect(localEnvFromConfig({})).toEqual({});
+		expect(localEnvFromConfig(cfgOf({}))).toEqual({});
 	});
 });
 

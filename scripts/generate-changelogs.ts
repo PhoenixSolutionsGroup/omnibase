@@ -181,7 +181,7 @@ export function cleanBody(body: string): string {
 
 export function releaseUrl(pkg: ChangelogPackage, release: Release): string {
 	const tag = release.compareUrl
-		? release.compareUrl.split("...").at(-1)!
+		? release.compareUrl.split("...").at(-1)
 		: release.date
 			? `${pkg.tagPrefix}-v${release.version}`
 			: null;

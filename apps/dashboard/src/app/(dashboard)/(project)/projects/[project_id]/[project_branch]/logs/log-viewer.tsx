@@ -22,7 +22,7 @@ interface Log {
 	source?: string;
 	service_name?: string;
 	labels?: Record<string, string>;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 }
 
 const MANAGED_HOSTING_API_URL = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
@@ -76,7 +76,6 @@ interface LogViewerProps {
 	initialLogs: Log[];
 	projectId: string;
 	serviceType: string;
-	totalCount: number;
 	limit: number;
 }
 
@@ -84,7 +83,6 @@ export function LogViewer({
 	initialLogs,
 	projectId,
 	serviceType,
-	totalCount,
 	limit,
 }: LogViewerProps) {
 	// Sort logs newest first on initial load

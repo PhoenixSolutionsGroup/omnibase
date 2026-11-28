@@ -37,8 +37,8 @@ const formatPrice = (price: Price): string => {
 	const priceUI = price.ui || {};
 	if (priceUI.priceDisplay?.customText) return priceUI.priceDisplay.customText;
 
-	if (!(price as any).amount || (price as any).amount === 0) return "Free";
-	const amount = (price as any).amount / 100;
+	if (!price.amount) return "Free";
+	const amount = price.amount / 100;
 	const currency = (price.currency || "USD").toUpperCase();
 	let formattedPrice =
 		priceUI.priceDisplay?.showCurrency !== false

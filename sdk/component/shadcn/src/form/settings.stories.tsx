@@ -1,3 +1,4 @@
+import type { SettingsFlow } from "@ory/client-fetch";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SettingsForm } from "./settings";
 import { mockSettingsFlow } from "./stories/settings";
@@ -22,7 +23,7 @@ export const Settings: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockSettingsFlow,
-		} as any,
+		} as unknown as SettingsFlow,
 		Header: "Account Settings",
 	},
 };

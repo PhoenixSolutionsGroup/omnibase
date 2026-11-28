@@ -1,3 +1,4 @@
+import type { RegistrationFlow } from "@ory/client-fetch";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RegistrationForm } from "./registration";
 import { mockRegistrationFirstFlow } from "./stories/registration_first";
@@ -27,7 +28,7 @@ export const RegistrationNonOIDC: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockRegistrationFirstFlow,
-		} as any,
+		} as unknown as RegistrationFlow,
 		Header: "Create Your Account",
 	},
 };
@@ -36,7 +37,7 @@ export const RegistrationOIDCGoogle: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockRegistrationOIDCGoogleFlow,
-		} as any,
+		} as unknown as RegistrationFlow,
 		Header: "Create Your Account",
 	},
 };
@@ -45,7 +46,7 @@ export const RegistrationPassword: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockRegistrationPasswordFlow,
-		} as any,
+		} as unknown as RegistrationFlow,
 		Header: "Set Your Password",
 	},
 };
@@ -54,7 +55,7 @@ export const RegistrationPasswordError: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockRegistrationPasswordFlowError,
-		} as any,
+		} as unknown as RegistrationFlow,
 		Header: "Set Your Password",
 	},
 };

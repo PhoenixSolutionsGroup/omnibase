@@ -124,8 +124,9 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
 					return newSet;
 				});
 			} else if (result?.error) {
-				setErrors((prev) => new Map(prev).set(key, result.error!));
-				toast.error(result.error);
+				const errorMessage = result.error;
+				setErrors((prev) => new Map(prev).set(key, errorMessage));
+				toast.error(errorMessage);
 			}
 		} catch (_error) {
 			const errorMessage = "Failed to decrypt secret";

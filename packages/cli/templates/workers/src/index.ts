@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-type EnvVars = any;
+type EnvVars = Record<string, unknown>;
 
 const app = new Hono<{ Bindings: EnvVars }>();
 

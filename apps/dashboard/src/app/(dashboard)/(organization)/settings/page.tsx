@@ -81,7 +81,7 @@ export default async function page() {
 				</div>
 				<div className="w-full">
 					<UserViewer
-						availableRoles={roles.map((r) => r.roleName!) || []}
+						availableRoles={roles.map((r) => r.roleName) || []}
 						users={users || []}
 						canEditUsers={true}
 						onRemoveUser={removeUser}

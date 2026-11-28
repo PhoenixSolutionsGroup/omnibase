@@ -14,7 +14,7 @@ interface Log {
 	source?: string;
 	service_type?: string;
 	labels?: Record<string, string>;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 }
 
 interface LogsResponse {
@@ -53,7 +53,6 @@ function getStartTime(range: string): string {
 
 interface LogsClientProps {
 	projectId: string;
-	projectName: string;
 	projectBranch: string;
 	activeService: string;
 	limit: number;
@@ -66,7 +65,6 @@ if (!MANAGED_HOSTING_API_URL)
 
 export function LogsClient({
 	projectId,
-	projectName,
 	projectBranch,
 	activeService,
 	limit,

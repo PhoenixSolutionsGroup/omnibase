@@ -7,7 +7,7 @@ interface UiMessage {
 	id: number;
 	text: string;
 	type: string;
-	context?: any;
+	context?: unknown;
 }
 
 interface FlowNode {

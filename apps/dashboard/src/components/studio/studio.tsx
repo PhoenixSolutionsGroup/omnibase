@@ -3,7 +3,10 @@
 import { AlertCircle, Database } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
-import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
+import {
+	fetchSchemaInfo,
+	type SchemaInfo,
+} from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SchemaBrowser } from "./schema-browser";
@@ -14,7 +17,7 @@ interface StudioProps {
 }
 
 export default function Studio({ project }: StudioProps) {
-	const [schemas, setSchemas] = useState<Record<string, any[]>>({});
+	const [schemas, setSchemas] = useState<SchemaInfo>({});
 	const [selectedTable, setSelectedTable] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -43,9 +46,9 @@ export default function Studio({ project }: StudioProps) {
 				}
 
 				setLoading(false);
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error(err);
-				setError(err.message);
+				setError(err instanceof Error ? err.message : String(err));
 				setLoading(false);
 			}
 		};

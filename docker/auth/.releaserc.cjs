@@ -1,5 +1,6 @@
 module.exports = {
 	branches: ["main"],
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 	tagFormat: "auth-v${version}",
 	plugins: [
 		[
@@ -26,6 +27,7 @@ module.exports = {
 		[
 			"@semantic-release/exec",
 			{
+				// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 				publishCmd: "../../scripts/release-docker.sh ${nextRelease.version}",
 			},
 		],
@@ -33,6 +35,7 @@ module.exports = {
 			"@semantic-release/git",
 			{
 				assets: ["CHANGELOG.md"],
+				// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 				message: "chore(auth): release ${nextRelease.version} [skip ci]",
 			},
 		],

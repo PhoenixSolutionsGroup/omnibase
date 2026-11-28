@@ -250,7 +250,7 @@ export class PermissionsCommand {
 			} else {
 				logger.fail("Permission DENIED");
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			logger.fail(`Failed to check permission: ${formatHttpError(error)}`);
 		}
 	}
@@ -280,7 +280,7 @@ export class PermissionsCommand {
 			logger.log(
 				`   Created relationship: ${response.data.namespace}:${response.data.object}#${response.data.relation}@${response.data.subject_id}`,
 			);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			logger.fail(`Failed to set permission: ${formatHttpError(error)}`);
 		}
 	}

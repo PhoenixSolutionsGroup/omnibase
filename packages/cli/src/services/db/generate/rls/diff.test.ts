@@ -33,7 +33,7 @@ beforeEach(() => {
 	clearRegistry();
 	loadSchema(dmmf);
 	dir = mkdtempSync(join(tmpdir(), "rls-diff-"));
-	definePolicy<any>("projects", {
+	definePolicy<Record<string, unknown>>("projects", {
 		select: { anon: { using: { published: true } } },
 	});
 });
@@ -97,7 +97,7 @@ describe("generateRlsDiffFromMigrations", () => {
 	test("adding an operation grants only the new privilege", () => {
 		migration("100_init", generateRlsSql("projects").upSQL);
 
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { anon: { using: true } },
 			insert: { anon: { check: { published: true } } },
 		});
@@ -109,13 +109,15 @@ describe("generateRlsDiffFromMigrations", () => {
 	});
 
 	test("removing an operation revokes the stale privilege and rollback restores it", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { anon: { using: true } },
 			insert: { anon: { check: { published: true } } },
 		});
 		migration("100_init", generateRlsSql("projects").upSQL);
 
-		definePolicy<any>("projects", { select: { anon: { using: true } } });
+		definePolicy<Record<string, unknown>>("projects", {
+			select: { anon: { using: true } },
+		});
 
 		const { upSQL, downSQL } = generateRlsDiffFromMigrations(dir, ["projects"]);
 		expect(upSQL).toContain("REVOKE INSERT ON projects FROM anon_user;");

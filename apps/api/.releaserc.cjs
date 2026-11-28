@@ -1,5 +1,6 @@
 module.exports = {
 	branches: ["main"],
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 	tagFormat: "api-v${version}",
 	plugins: [
 		// Filter commits to only those affecting this package
@@ -40,8 +41,10 @@ module.exports = {
 			"@semantic-release/exec",
 			{
 				prepareCmd:
+					// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 					"../../scripts/release-api-prepare.sh ${nextRelease.version}",
 				publishCmd:
+					// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 					"../../scripts/release-api-publish.sh ${nextRelease.version}",
 			},
 		],
@@ -54,6 +57,7 @@ module.exports = {
 			{
 				assets: ["CHANGELOG.md"],
 				message:
+					// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 					"chore(api): release ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
 			},
 		],

@@ -3,6 +3,7 @@ import { protectedRoute } from "@omnibase/nextjs/auth";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 import { UnifiedLayoutClient } from "@/components/layout-client";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { SIDEBAR_COOKIE } from "@/lib/sidebar-constant";
@@ -12,7 +13,11 @@ export const metadata: Metadata = {
 	description: "Manage your organization and projects",
 };
 
-export default async function ProjectLayout({ children }: { children: any }) {
+export default async function ProjectLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	await protectedRoute("/auth/login");
 
 	const config = await getOmnibaseConfiguration();

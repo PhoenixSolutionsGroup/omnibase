@@ -160,7 +160,8 @@ function resolveVersion(envName: string, tagPrefix: string): string {
 				{ cwd: ROOT, encoding: "utf-8" },
 			).trim();
 			const match = tag.match(new RegExp(`^${tagPrefix}-v(.+)$`));
-			if (match) return match[1]!;
+			const version = match?.[1];
+			if (version) return version;
 		} catch {
 			return "dev";
 		}
@@ -204,7 +205,8 @@ async function splitMarkdownByH2(filePath: string): Promise<void> {
 	let h1Title = "";
 
 	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]!;
+		const line = lines[i];
+		if (line === undefined) continue;
 		if (line.startsWith("# ") && !h1Title) {
 			h1Title = line.slice(2).trim();
 		} else if (line.startsWith("## ")) {
@@ -255,7 +257,8 @@ async function splitMarkdownByH2(filePath: string): Promise<void> {
 	}
 
 	// Extract content before first H2 as index (includes H1)
-	const firstSection = h2Sections[0]!;
+	const firstSection = h2Sections[0];
+	if (!firstSection) return;
 	const overviewLines = lines.slice(0, firstSection.startLine);
 	let indexContent = overviewLines.join("\n").trim();
 
@@ -269,7 +272,8 @@ async function splitMarkdownByH2(filePath: string): Promise<void> {
 
 	// Extract each H2 section into its own file
 	for (let i = 0; i < h2Sections.length; i++) {
-		const section = h2Sections[i]!;
+		const section = h2Sections[i];
+		if (!section) continue;
 		const nextSection = h2Sections[i + 1];
 		const endLine = nextSection ? nextSection.startLine : lines.length;
 
@@ -503,13 +507,15 @@ function collectComponentRefs(
 		const match = /^#\/components\/([^/]+)\/(.+)$/.exec(ref);
 		if (match) {
 			const [, type, name] = match;
-			const key = `${type}/${name}`;
-			if (!refs.has(key)) {
-				const target = (
-					spec.components?.[type] as Record<string, unknown> | undefined
-				)?.[name!];
-				refs.set(key, target);
-				collectComponentRefs(target, spec, refs);
+			if (type && name) {
+				const key = `${type}/${name}`;
+				if (!refs.has(key)) {
+					const target = (
+						spec.components?.[type] as Record<string, unknown> | undefined
+					)?.[name];
+					refs.set(key, target);
+					collectComponentRefs(target, spec, refs);
+				}
 			}
 		}
 	}
@@ -760,9 +766,12 @@ async function generateTypeDocs(): Promise<void> {
 		console.log(`  → ${target.name}`);
 
 		const packageDir = join(ROOT, target.packagePath);
-		const version = target.versioned
-			? resolveVersion(target.versionEnv!, target.tagPrefix!)
-			: null;
+		const versionEnv = target.versionEnv;
+		const tagPrefix = target.tagPrefix;
+		const version =
+			target.versioned && versionEnv && tagPrefix
+				? resolveVersion(versionEnv, tagPrefix)
+				: null;
 		const outputDir = version
 			? join(target.outputDir, version)
 			: target.outputDir;
@@ -1401,7 +1410,14 @@ async function generateCommandDocPage(
 	const displayName = cmdPath ? `${cmdPath} ${slug}` : slug;
 
 	const aliases = cmd.aliases();
-	const rawArgs: any[] = (cmd as any)._args ?? [];
+	type CliArg = {
+		required?: boolean;
+		argChoices?: string[];
+		defaultValue?: unknown;
+		description?: string;
+		name: () => string;
+	};
+	const rawArgs: CliArg[] = (cmd as { _args?: CliArg[] })._args ?? [];
 
 	const lines: string[] = ["---", `title: "${capitalize(slug)}"`, "---", ""];
 
@@ -1441,7 +1457,10 @@ async function generateCommandDocPage(
 	if (cmd.options.length > 0) {
 		lines.push("## Options", "");
 		for (const opt of cmd.options) {
-			const mandatory = (opt as any).mandatory ? " (required)" : "";
+			const mandatory =
+				"mandatory" in opt && (opt as { mandatory?: boolean }).mandatory
+					? " (required)"
+					: "";
 			const defaultVal =
 				opt.defaultValue !== undefined
 					? ` (default: \`${opt.defaultValue}\`)`

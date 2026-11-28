@@ -12,8 +12,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+interface SchemaTable {
+	name: string;
+	hasRlsPolicies?: boolean;
+}
+
 interface SchemaBrowserProps {
-	schemas: Record<string, any[]>; // schemaName -> definitions[]
+	schemas: Record<string, SchemaTable[]>;
 	onSelectTable: (tableName: string, schemaName: string) => void;
 	selectedTable: string | null; // format: "schema.table"
 }

@@ -14,7 +14,8 @@ test("builds override compose pinning the declared images", () => {
 		});
 
 		expect(overridePath).not.toBeNull();
-		const body = readFileSync(overridePath!, "utf-8");
+		if (!overridePath) throw new Error("expected override path");
+		const body = readFileSync(overridePath, "utf-8");
 		expect(body).toContain(
 			"  auth:\n    image: phoenixsolutionsgroup/omnibase-auth:0.4.1",
 		);

@@ -270,5 +270,8 @@ export async function resolveEnvironment(
 
 	const match = remote.find((b) => b.name === selectedValue);
 	if (!match) throw new Error(`Branch '${selectedValue}' not found`);
-	return loadBranchEnvironment(match, config.project_id!);
+	if (!config.project_id) {
+		throw new Error("project_id is required to load a branch environment");
+	}
+	return loadBranchEnvironment(match, config.project_id);
 }

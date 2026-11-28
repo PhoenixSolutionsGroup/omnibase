@@ -64,8 +64,12 @@ export const tenantCheckMiddleware = (
 
 	if (!shouldCheckTenant) return NextResponse.next();
 
-	const metadata_public = session.identity?.metadata_public as any;
-	const is_in_tenant = metadata_public?.is_in_tenant;
+	const metadataPublic = session.identity?.metadata_public;
+	const is_in_tenant =
+		typeof metadataPublic === "object" &&
+		metadataPublic !== null &&
+		"is_in_tenant" in metadataPublic &&
+		Boolean(metadataPublic.is_in_tenant);
 
 	if (!is_in_tenant) {
 		return NextResponse.redirect(new URL(tenant_check_redirect_url, req.url));

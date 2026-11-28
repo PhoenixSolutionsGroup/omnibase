@@ -13,10 +13,19 @@ import { redirect } from "next/navigation";
 import { setSessionTokenAction } from "@/app/auth/actions";
 import { getOmnibaseConfiguration } from "@/lib/server";
 
-const API_URL = process.env.NEXT_PUBLIC_OMNIBASE_API_URL!;
+const RAW_API_URL = process.env.NEXT_PUBLIC_OMNIBASE_API_URL;
+if (!RAW_API_URL) {
+	throw new Error("NEXT_PUBLIC_OMNIBASE_API_URL must be set");
+}
+const API_URL: string = RAW_API_URL;
 
-// TODO - Fix type definitions
-export default function page({ params, searchParams }: any) {
+export default function page({
+	params,
+	searchParams,
+}: {
+	params: Promise<{ flow: string[] }>;
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
 	return (
 		<div>
 			<FlowRouter
@@ -43,7 +52,7 @@ export default function page({ params, searchParams }: any) {
 					registration: (flow) => {
 						return (
 							<RegistrationForm
-								flow={flow as any}
+								flow={flow}
 								login_url="/auth/login"
 								variant="plain"
 								Header={
@@ -59,18 +68,20 @@ export default function page({ params, searchParams }: any) {
 						);
 					},
 					recovery: (flow) => {
-						return <RecoveryForm flow={flow as any} />;
+						return <RecoveryForm flow={flow} />;
 					},
 					verification: (flow) => {
-						return <VerificationForm flow={flow as any} />;
+						return <VerificationForm flow={flow} />;
 					},
 
 					error: (error) => {
-						return <ErrorForm error={error as any} login_url="/auth/login" />;
+						return <ErrorForm error={error} login_url="/auth/login" />;
 					},
 					onboarding: async () => {
 						const session = await protectedRoute("/auth/login");
-						const { token } = await searchParams;
+						const { token: inviteToken } = await searchParams;
+						const token =
+							typeof inviteToken === "string" ? inviteToken : undefined;
 						return (
 							<TenantCreator
 								config={{
@@ -145,7 +156,6 @@ export default function page({ params, searchParams }: any) {
 				searchParams={searchParams}
 				returnTo="/"
 				url="/auth"
-				onNotFound={<></>}
 			/>
 		</div>
 	);

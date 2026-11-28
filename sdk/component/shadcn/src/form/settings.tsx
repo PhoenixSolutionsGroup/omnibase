@@ -13,11 +13,11 @@ export type SettingsFormProps = {
 
 // Helper function to check if node attributes are input attributes
 function isUiNodeInputAttributes(
-	attributes: any,
+	attributes: unknown,
 ): attributes is UiNodeInputAttributes {
 	return (
-		attributes &&
 		typeof attributes === "object" &&
+		attributes !== null &&
 		"name" in attributes &&
 		"type" in attributes
 	);
@@ -107,7 +107,11 @@ export function SettingsForm({ flow }: SettingsFormProps) {
 									{/* Render image nodes (e.g., QR codes for TOTP) */}
 									{imageNodes.map((node) => {
 										if (node.type === "img" && "src" in node.attributes) {
-											const imgAttrs = node.attributes as any;
+											const imgAttrs = node.attributes as {
+												src?: string;
+												width?: number | string;
+												height?: number | string;
+											};
 											return (
 												<div
 													key={uiNodeKey(node)}

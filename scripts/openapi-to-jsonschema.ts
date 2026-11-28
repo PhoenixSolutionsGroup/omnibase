@@ -11,7 +11,7 @@ const OPENAPI_FILE = "apps/api/docs/openapi.json";
 const OUTPUT_FILE = "apps/api/internal/static/stripe-config-schema.json";
 const ROOT_SCHEMA = "StripeConfiguration";
 
-type Schema = Record<string, any>;
+type Schema = Record<string, unknown>;
 
 const spec = JSON.parse(readFileSync(OPENAPI_FILE, "utf8"));
 const schemas: Record<string, Schema> = spec.components?.schemas ?? {};

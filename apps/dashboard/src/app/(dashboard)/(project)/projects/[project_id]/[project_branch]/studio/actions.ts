@@ -4,6 +4,10 @@ import { Pool, type PoolClient } from "pg";
 import { getProjectBranch } from "@/utils/get-project";
 import { fetchDatabasePassword } from "../settings/actions";
 
+function errorMessage(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
+
 type BranchDatabase = {
 	id: string;
 	database_host: string | null;
@@ -56,9 +60,12 @@ async function branchPool(projectId: string, projectBranch: string) {
 	pool.on("error", (error) => console.error("Branch pool error:", error));
 
 	if (pools.size >= MAX_POOLS) {
-		const [oldestKey, oldestPool] = pools.entries().next().value!;
-		pools.delete(oldestKey);
-		void oldestPool.end();
+		const oldest = pools.entries().next().value;
+		if (oldest) {
+			const [oldestKey, oldestPool] = oldest;
+			pools.delete(oldestKey);
+			void oldestPool.end();
+		}
 	}
 
 	pools.set(key, pool);
@@ -92,8 +99,8 @@ export async function fetchSchemaInfo(
 	try {
 		const pool = await branchPool(projectId, projectBranch);
 		client = await pool.connect();
-	} catch (error: any) {
-		return { success: false, error: error.message };
+	} catch (error: unknown) {
+		return { success: false, error: errorMessage(error) };
 	}
 
 	try {
@@ -178,9 +185,9 @@ export async function fetchSchemaInfo(
 		await client.query("NOTIFY pgrst, 'reload schema';");
 
 		return { success: true, schemas };
-	} catch (error: any) {
-		console.error("Error fetching schema info:", error.message);
-		return { success: false, error: error.message };
+	} catch (error: unknown) {
+		console.error("Error fetching schema info:", errorMessage(error));
+		return { success: false, error: errorMessage(error) };
 	} finally {
 		client.release();
 	}
@@ -207,8 +214,8 @@ export async function fetchRLSPolicies(
 		const pool = await branchPool(projectId, projectBranch);
 
 		client = await pool.connect();
-	} catch (error: any) {
-		return { success: false, error: error.message };
+	} catch (error: unknown) {
+		return { success: false, error: errorMessage(error) };
 	}
 
 	try {
@@ -253,9 +260,9 @@ export async function fetchRLSPolicies(
 		});
 
 		return { success: true, policies };
-	} catch (error: any) {
-		console.error("Error fetching RLS policies:", error.message);
-		return { success: false, error: error.message };
+	} catch (error: unknown) {
+		console.error("Error fetching RLS policies:", errorMessage(error));
+		return { success: false, error: errorMessage(error) };
 	} finally {
 		client.release();
 	}
@@ -291,8 +298,8 @@ async function withBranchConnection<T>(
 		} finally {
 			client.release();
 		}
-	} catch (error: any) {
-		return { success: false, error: error.message };
+	} catch (error: unknown) {
+		return { success: false, error: errorMessage(error) };
 	}
 }
 

@@ -11,7 +11,7 @@ async function inviteUser(data: CreateRequest) {
 	"use server";
 	const config = await getOmnibaseConfiguration();
 	const client = new V1TenantsInvitesApi(config);
-	const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL!;
+	const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL;
 
 	await client.createInvite({
 		createRequest: {

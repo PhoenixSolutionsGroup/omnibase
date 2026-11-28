@@ -35,7 +35,10 @@ export type CompiledEntry = Partial<Record<Operation, CompiledOp>>;
 
 const registry = new Map<string, CompiledEntry>();
 
-function compileOp(def: Record<string, any>): CompiledOp {
+function compileOp(def: {
+	anon?: { using?: unknown; check?: unknown };
+	auth?: { using?: unknown; check?: unknown };
+}): CompiledOp {
 	const compiled: CompiledOp = {};
 
 	if (def.anon?.using !== undefined || def.auth?.using !== undefined) {

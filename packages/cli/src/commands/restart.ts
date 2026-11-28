@@ -82,8 +82,8 @@ async function restartLocalService(
 	try {
 		await restartDockerService(dockerService, { mode, envConfig: env });
 		return true;
-	} catch (error: any) {
-		const message = error.message || "Unknown error";
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : "Unknown error";
 		logger.warn(`   ${message}`);
 		return false;
 	}

@@ -246,13 +246,22 @@ async function logConfigChanges(
 	}
 }
 
+interface StripeIdRecord {
+	id: string;
+	[key: string]: unknown;
+}
+
+interface StripeProduct extends StripeIdRecord {
+	prices: StripeIdRecord[];
+}
+
 interface MergedConfig {
 	version: string;
 	webhooks: WebhookConfig[];
-	meters: any[];
-	products: any[];
-	coupons: any[];
-	promotion_codes: any[];
+	meters: StripeIdRecord[];
+	products: StripeProduct[];
+	coupons: StripeIdRecord[];
+	promotion_codes: StripeIdRecord[];
 }
 
 function mergeConfigs(paymentsDir: string): MergedConfig {
@@ -301,9 +310,7 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
 		}
 
 		for (const coupon of config.coupons ?? []) {
-			const existing = merged.coupons.find(
-				(item: any) => item.id === coupon.id,
-			);
+			const existing = merged.coupons.find((item) => item.id === coupon.id);
 			if (existing) {
 				Object.assign(existing, coupon);
 			} else {
@@ -314,7 +321,7 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
 		const promotionCodes = config.promotion_codes ?? config.promotionCodes;
 		for (const promo of promotionCodes ?? []) {
 			const existing = merged.promotion_codes.find(
-				(item: any) => item.id === promo.id,
+				(item) => item.id === promo.id,
 			);
 			if (existing) {
 				Object.assign(existing, promo);
@@ -325,7 +332,7 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
 
 		if (config.products) {
 			for (const product of config.products) {
-				const existing = merged.products.find((p: any) => p.id === product.id);
+				const existing = merged.products.find((p) => p.id === product.id);
 
 				if (existing) {
 					existing.prices.push(...product.prices);
@@ -339,7 +346,7 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
 	return merged;
 }
 
-function loadStripeConfig(): any {
+function loadStripeConfig(): MergedConfig {
 	const configPath = getStripeConfigPath();
 
 	if (!fs.existsSync(configPath)) {
@@ -353,7 +360,10 @@ function loadStripeConfig(): any {
 	return mergeConfigs(configPath);
 }
 
-function expandWebhookUrls(config: any, envName: string): any {
+function expandWebhookUrls(
+	config: MergedConfig,
+	envName: string,
+): MergedConfig {
 	if (!config.webhooks || !Array.isArray(config.webhooks)) {
 		return config;
 	}
@@ -455,11 +465,11 @@ export function addStripeCommands(program: Command): void {
 		.summary("Manage Stripe configuration")
 		.description(
 			"Manage Stripe products, prices, meters, coupons, promotion codes, " +
-				"and webhooks through the `*.config.json` files in `omnibase/stripe/`.\n\n" +
-				"`push` and `validate` send the merged local config to the API, `get` " +
-				"and `pull` read it back, `history` shows past config versions, and " +
-				"`webhook secret` retrieves signing secrets. `reset` archives all " +
-				"resources.",
+			"and webhooks through the `*.config.json` files in `omnibase/stripe/`.\n\n" +
+			"`push` and `validate` send the merged local config to the API, `get` " +
+			"and `pull` read it back, `history` shows past config versions, and " +
+			"`webhook secret` retrieves signing secrets. `reset` archives all " +
+			"resources.",
 		);
 
 	stripe
@@ -467,12 +477,12 @@ export function addStripeCommands(program: Command): void {
 		.summary("Validate the local Stripe config against the API")
 		.description(
 			"Load and merge the `*.config.json` files under `omnibase/stripe/` and " +
-				"ask the API to validate them.\n\n" +
-				"No resources are created or modified.\n\n" +
-				"```bash\n" +
-				"omnibase stripe validate\n" +
-				"omnibase stripe validate --env dev\n" +
-				"```",
+			"ask the API to validate them.\n\n" +
+			"No resources are created or modified.\n\n" +
+			"```bash\n" +
+			"omnibase stripe validate\n" +
+			"omnibase stripe validate --env dev\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.action(async (options) => {
@@ -505,18 +515,18 @@ export function addStripeCommands(program: Command): void {
 		.summary("Report pending changes, drift, and untracked Stripe objects")
 		.description(
 			"Compare the local `*.config.json` files, the last applied config, " +
-				"and live Stripe objects.\n\n" +
-				"`pending` means the local config differs from the last applied " +
-				"config. `drift` means live Stripe objects were changed outside " +
-				"`omnibase stripe push`. `untracked` means managed Stripe objects are " +
-				"neither in the local nor applied config.\n\n" +
-				"`--fail-on-drift` exits 1 when drift or untracked objects exist. " +
-				"Pending local changes alone do not fail.\n\n" +
-				"```bash\n" +
-				"omnibase stripe status\n" +
-				"omnibase stripe status --json\n" +
-				"omnibase stripe status --fail-on-drift\n" +
-				"```",
+			"and live Stripe objects.\n\n" +
+			"`pending` means the local config differs from the last applied " +
+			"config. `drift` means live Stripe objects were changed outside " +
+			"`omnibase stripe push`. `untracked` means managed Stripe objects are " +
+			"neither in the local nor applied config.\n\n" +
+			"`--fail-on-drift` exits 1 when drift or untracked objects exist. " +
+			"Pending local changes alone do not fail.\n\n" +
+			"```bash\n" +
+			"omnibase stripe status\n" +
+			"omnibase stripe status --json\n" +
+			"omnibase stripe status --fail-on-drift\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.option("--json", "Print the raw status response as JSON")
@@ -574,19 +584,20 @@ export function addStripeCommands(program: Command): void {
 		.summary("Push the local Stripe config to Stripe")
 		.description(
 			"Load the merged config from `omnibase/stripe/` and apply it to " +
-				"Stripe through the API, creating, updating, and archiving resources " +
-				"as needed.\n\n" +
-				"`${VAR}` references in webhook URLs are expanded from the local env " +
-				"before upload. The response reports every created/updated/archived " +
-				"product, price, meter, coupon, promotion code, and webhook. When new " +
-				"webhooks are created their signing secrets are printed — save them.\n\n" +
-				"Before: `omnibase/stripe/` must contain at least one `*.config.json` " +
-				"and the Stripe env (e.g. `STRIPE_SECRET_KEY`) must be configured for " +
-				"the environment.\n\n" +
-				"```bash\n" +
-				"omnibase stripe push\n" +
-				"omnibase stripe push --env dev\n" +
-				"```",
+			"Stripe through the API, creating, updating, and archiving resources " +
+			"as needed.\n\n" +
+			// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
+			"`${VAR}` references in webhook URLs are expanded from the local env " +
+			"before upload. The response reports every created/updated/archived " +
+			"product, price, meter, coupon, promotion code, and webhook. When new " +
+			"webhooks are created their signing secrets are printed — save them.\n\n" +
+			"Before: `omnibase/stripe/` must contain at least one `*.config.json` " +
+			"and the Stripe env (e.g. `STRIPE_SECRET_KEY`) must be configured for " +
+			"the environment.\n\n" +
+			"```bash\n" +
+			"omnibase stripe push\n" +
+			"omnibase stripe push --env dev\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.action(async (options) => {
@@ -627,12 +638,12 @@ export function addStripeCommands(program: Command): void {
 		.summary("Get the current Stripe configuration")
 		.description(
 			"Fetch the Stripe configuration currently stored in the API and print " +
-				"it (or save it with `--output <file>`).\n\n" +
-				"```bash\n" +
-				"omnibase stripe get\n" +
-				"omnibase stripe get --env dev\n" +
-				"omnibase stripe get --output stripe-current.json\n" +
-				"```",
+			"it (or save it with `--output <file>`).\n\n" +
+			"```bash\n" +
+			"omnibase stripe get\n" +
+			"omnibase stripe get --env dev\n" +
+			"omnibase stripe get --output stripe-current.json\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.option("--output <file>", "Save output to file")
@@ -676,15 +687,15 @@ export function addStripeCommands(program: Command): void {
 		.summary("Get the Stripe configuration history")
 		.description(
 			"Fetch past Stripe configuration versions with pagination, showing the " +
-				"ID, version, and timestamps of each.\n\n" +
-				"Use `--limit` and `--offset` to page through results, or `--output " +
-				"<file>` to save the raw response.\n\n" +
-				"```bash\n" +
-				"omnibase stripe history\n" +
-				"omnibase stripe history --limit 25\n" +
-				"omnibase stripe history --limit 10 --offset 10\n" +
-				"omnibase stripe history --output history.json\n" +
-				"```",
+			"ID, version, and timestamps of each.\n\n" +
+			"Use `--limit` and `--offset` to page through results, or `--output " +
+			"<file>` to save the raw response.\n\n" +
+			"```bash\n" +
+			"omnibase stripe history\n" +
+			"omnibase stripe history --limit 25\n" +
+			"omnibase stripe history --limit 10 --offset 10\n" +
+			"omnibase stripe history --output history.json\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.option(
@@ -741,8 +752,7 @@ export function addStripeCommands(program: Command): void {
 					if (historyData?.pagination?.hasNext) {
 						logger.newline();
 						logger.log(
-							`Tip: Use --offset ${
-								parseInt(options.offset, 10) + parseInt(options.limit, 10)
+							`Tip: Use --offset ${parseInt(options.offset, 10) + parseInt(options.limit, 10)
 							} to see more results`,
 						);
 					}
@@ -759,15 +769,15 @@ export function addStripeCommands(program: Command): void {
 		.summary("Pull the current Stripe configuration from Stripe")
 		.description(
 			"Pull the live Stripe configuration through the API and write it to a " +
-				"file so it can be reviewed and committed.\n\n" +
-				"The file is written to `--output <file>` if given, otherwise to " +
-				"`omnibase/stripe/pulled.config.json`, or `stripe.config.json` in the " +
-				"current directory if no `omnibase/stripe/` directory exists.\n\n" +
-				"```bash\n" +
-				"omnibase stripe pull\n" +
-				"omnibase stripe pull --env dev\n" +
-				"omnibase stripe pull --output omnibase/stripe/config.json\n" +
-				"```",
+			"file so it can be reviewed and committed.\n\n" +
+			"The file is written to `--output <file>` if given, otherwise to " +
+			"`omnibase/stripe/pulled.config.json`, or `stripe.config.json` in the " +
+			"current directory if no `omnibase/stripe/` directory exists.\n\n" +
+			"```bash\n" +
+			"omnibase stripe pull\n" +
+			"omnibase stripe pull --env dev\n" +
+			"omnibase stripe pull --output omnibase/stripe/config.json\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.option(
@@ -821,7 +831,7 @@ export function addStripeCommands(program: Command): void {
 		.summary("Manage Stripe webhook configuration")
 		.description(
 			"Inspect Stripe webhooks and retrieve their signing secrets for use in " +
-				"your environment.",
+			"your environment.",
 		);
 
 	webhook
@@ -829,14 +839,14 @@ export function addStripeCommands(program: Command): void {
 		.summary("Retrieve webhook signing secrets")
 		.description(
 			"List the configured webhooks and print each one's signing secret, " +
-				"ready to use as `STRIPE_WEBHOOK_SECRET`.\n\n" +
-				"With a single webhook the secret is shown directly; with multiple, an " +
-				"interactive multi-select chooses which to display.\n\n" +
-				"Before: webhooks must already be configured (e.g. by `stripe push`).\n\n" +
-				"```bash\n" +
-				"omnibase stripe webhook secret\n" +
-				"omnibase stripe webhook secret --env dev\n" +
-				"```",
+			"ready to use as `STRIPE_WEBHOOK_SECRET`.\n\n" +
+			"With a single webhook the secret is shown directly; with multiple, an " +
+			"interactive multi-select chooses which to display.\n\n" +
+			"Before: webhooks must already be configured (e.g. by `stripe push`).\n\n" +
+			"```bash\n" +
+			"omnibase stripe webhook secret\n" +
+			"omnibase stripe webhook secret --env dev\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.action(async (options) => {
@@ -919,17 +929,17 @@ export function addStripeCommands(program: Command): void {
 		.summary("Archive managed Stripe resources and clear local config")
 		.description(
 			"Archive Omnibase-managed Stripe resources for the environment and clear " +
-				"the local config. Objects without `metadata.omnibase_managed=true` are " +
-				"left untouched unless `--all` is passed.\n\n" +
-				"This is destructive and cannot be undone — it requires a confirmation " +
-				"prompt unless `-y, --yes` is passed. The API reports what was archived " +
-				"and any errors.\n\n" +
-				"```bash\n" +
-				"omnibase stripe reset\n" +
-				"omnibase stripe reset -y\n" +
-				"omnibase stripe reset --all -y\n" +
-				"omnibase stripe reset --env dev -y\n" +
-				"```",
+			"the local config. Objects without `metadata.omnibase_managed=true` are " +
+			"left untouched unless `--all` is passed.\n\n" +
+			"This is destructive and cannot be undone — it requires a confirmation " +
+			"prompt unless `-y, --yes` is passed. The API reports what was archived " +
+			"and any errors.\n\n" +
+			"```bash\n" +
+			"omnibase stripe reset\n" +
+			"omnibase stripe reset -y\n" +
+			"omnibase stripe reset --all -y\n" +
+			"omnibase stripe reset --env dev -y\n" +
+			"```",
 		)
 		.option("--env <environment>", "Override environment for this command")
 		.option("--all", "Also archive Stripe objects not managed by Omnibase")

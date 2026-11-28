@@ -156,7 +156,9 @@ describe("branch plan resolution", () => {
 	});
 
 	test("finds a postgres option within the plan", () => {
-		const plan = findPlanById(plans, "scaled_tier")!;
+		const plan = findPlanById(plans, "scaled_tier");
+		expect(plan).toBeDefined();
+		if (!plan) throw new Error("expected plan");
 		expect(findPostgresById(plan, "scaled_postgres_xl")?.id).toBe(
 			"scaled_postgres_xl",
 		);

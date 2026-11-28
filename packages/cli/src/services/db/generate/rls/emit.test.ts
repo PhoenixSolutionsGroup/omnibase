@@ -39,7 +39,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("emits anon and auth policies per operation in a stable order", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: {
 				anon: { using: { published: true } },
 				auth: { using: tenant },
@@ -76,7 +76,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("update emits both USING and WITH CHECK", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			update: {
 				anon: { using: false, check: false },
 				auth: { using: tenant, check: tenant },
@@ -97,7 +97,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("an operation with no policy entry is omitted", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { anon: { using: true } },
 		});
 
@@ -109,7 +109,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("grants only the privileges for operations that have a policy", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { anon: { using: true } },
 		});
 
@@ -121,7 +121,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("an auth-only policy is allowed and still grants the privilege", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { auth: { using: tenant } },
 		});
 
@@ -133,13 +133,13 @@ describe("generateRlsSql", () => {
 	});
 
 	test("an operation declaring neither anon nor auth throws", () => {
-		expect(() => definePolicy<any>("projects", { select: {} })).toThrow(
-			/must declare at least one of `anon` or `auth`/,
-		);
+		expect(() =>
+			definePolicy<Record<string, unknown>>("projects", { select: {} }),
+		).toThrow(/must declare at least one of `anon` or `auth`/);
 	});
 
 	test("downSQL drops every emitted policy, revokes grants and disables RLS", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: { anon: { using: true }, auth: { using: tenant } },
 		});
 
@@ -155,7 +155,7 @@ describe("generateRlsSql", () => {
 	});
 
 	test("uses the DMMF dbName as the table name", () => {
-		definePolicy<any>("Account", {
+		definePolicy<Record<string, unknown>>("Account", {
 			select: { anon: { using: true } },
 		});
 

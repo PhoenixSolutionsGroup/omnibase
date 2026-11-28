@@ -25,6 +25,7 @@ export function SidebarProvider({
 
 	const setIsCollapsed = React.useCallback((collapsed: boolean): void => {
 		setIsCollapsedState(collapsed);
+		// biome-ignore lint/suspicious/noDocumentCookie: first-party preference cookie; the Cookie Store API is not available in every browser
 		document.cookie = `${SIDEBAR_COOKIE}=${collapsed}; path=/; max-age=31536000; samesite=lax`;
 	}, []);
 

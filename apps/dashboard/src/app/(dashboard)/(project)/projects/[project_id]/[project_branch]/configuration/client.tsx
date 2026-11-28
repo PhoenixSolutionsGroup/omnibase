@@ -129,11 +129,12 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 
 			// Helper to get value or UNAUTHORIZED
 			const getValue = (
-				result: { success: boolean; [key: string]: any } | undefined,
+				result: { success: boolean; [key: string]: unknown } | undefined,
 				key: string,
 			) => {
-				if (result?.success && result[key]) {
-					return result[key];
+				const value = result?.[key];
+				if (result?.success && value != null && value !== "") {
+					return String(value);
 				}
 				hasUnauthorized = true;
 				return "UNAUTHORIZED";

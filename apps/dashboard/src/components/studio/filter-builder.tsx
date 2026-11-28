@@ -23,7 +23,7 @@ export interface FilterItem {
 }
 
 interface FilterBuilderProps {
-	columns: any[];
+	columns: { name: string }[];
 	onApply: (filters: FilterItem[]) => void;
 }
 

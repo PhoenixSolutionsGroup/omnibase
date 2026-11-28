@@ -8,8 +8,14 @@ import {
 	versionUrl,
 } from "./generate-changelogs";
 
-const cli = CHANGELOG_PACKAGES.find((p) => p.id === "cli")!;
-const auth = CHANGELOG_PACKAGES.find((p) => p.id === "auth")!;
+function requirePackage(id: string) {
+	const pkg = CHANGELOG_PACKAGES.find((p) => p.id === id);
+	if (!pkg) throw new Error(`missing changelog package ${id}`);
+	return pkg;
+}
+
+const cli = requirePackage("cli");
+const auth = requirePackage("auth");
 
 const sample = `# [0.12.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.11.0...cli-v0.12.0) (2026-10-29)
 

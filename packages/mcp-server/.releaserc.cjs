@@ -1,5 +1,6 @@
 module.exports = {
 	branches: ["main"],
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 	tagFormat: "mcp-server-v${version}",
 	plugins: [
 		[
@@ -26,6 +27,7 @@ module.exports = {
 			"@semantic-release/exec",
 			{
 				prepareCmd:
+					// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 					"npm pkg set version=${nextRelease.version} && npm run build",
 				publishCmd: "npm publish --access public",
 			},
@@ -34,6 +36,7 @@ module.exports = {
 			"@semantic-release/git",
 			{
 				assets: ["package.json"],
+				// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 				message: "chore(mcp-server): release ${nextRelease.version} [skip ci]",
 			},
 		],

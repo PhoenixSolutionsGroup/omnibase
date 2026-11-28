@@ -19,8 +19,8 @@ export function OrganizationDropdown({
 	currentOrganization,
 	onTenantChange,
 	formAction,
-	onCreateTenant,
-	createTenantLabel,
+	onCreateTenant: _onCreateTenant,
+	createTenantLabel: _createTenantLabel,
 }: OrganizationDropdownProps) {
 	if (tenants.length === 0 && currentOrganization) {
 		return (

@@ -53,9 +53,9 @@ export function RLSViewer({
 				throw new Error(result.error || "Failed to fetch policies");
 			}
 			setPolicies(result.policies || []);
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error("Failed to fetch policies:", e);
-			setError(e.message || "Could not fetch policies.");
+			setError(e instanceof Error ? e.message : "Could not fetch policies.");
 		} finally {
 			setLoading(false);
 		}

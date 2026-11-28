@@ -118,12 +118,10 @@ export async function exchangeSessionToken(
  * the resulting session token in the first-party cookie.
  */
 export function createSessionTokenExchangeHandler({
-	api_url,
 	success_path = "/",
 	login_path = "/auth/login",
 	cookie_domain,
 }: {
-	api_url: string;
 	success_path?: string;
 	login_path?: string;
 	cookie_domain?: string;

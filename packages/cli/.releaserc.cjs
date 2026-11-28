@@ -1,5 +1,6 @@
 module.exports = {
 	branches: ["main"],
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 	tagFormat: "cli-v${version}",
 	plugins: [
 		[
@@ -27,6 +28,7 @@ module.exports = {
 			"@semantic-release/exec",
 			{
 				prepareCmd:
+					// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 					"npm pkg set version=${nextRelease.version} && ../../scripts/stamp-core-js-version.sh && bun run build",
 				publishCmd:
 					'find dist -name "*.d.ts" | grep -q . || (echo "ERROR: No .d.ts files" && exit 1) && bun pm pack && npm publish *.tgz --access public && rm *.tgz',
@@ -36,6 +38,7 @@ module.exports = {
 			"@semantic-release/git",
 			{
 				assets: ["CHANGELOG.md", "package.json"],
+				// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 				message: "chore(cli): release ${nextRelease.version} [skip ci]",
 			},
 		],

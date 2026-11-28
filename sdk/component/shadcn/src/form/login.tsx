@@ -97,6 +97,7 @@ export function LoginForm({
 			};
 
 			if (data.session_token_exchange_code) {
+				// biome-ignore lint/suspicious/noDocumentCookie: first-party OIDC exchange cookie; the Cookie Store API is not available in every browser
 				document.cookie = `${OIDC_INIT_CODE_COOKIE}=${data.session_token_exchange_code}; path=/; samesite=lax; max-age=600`;
 			}
 

@@ -14,7 +14,14 @@ import {
 	RefreshCw,
 	Trash,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	type ComponentProps,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { toast } from "sonner";
 import {
 	deleteTableRows,
@@ -83,7 +90,11 @@ const DropdownMenuCheckboxItem = ({
 	onCheckedChange,
 	children,
 	...props
-}: any) => {
+}: {
+	checked: boolean;
+	onCheckedChange: (checked: boolean) => void;
+	children: ReactNode;
+} & Omit<ComponentProps<typeof DropdownMenuItem>, "onClick" | "children">) => {
 	return (
 		<DropdownMenuItem
 			onClick={(_e) => {
@@ -109,7 +120,7 @@ export function TableViewer({
 	tableDefinition,
 	project,
 }: TableViewerProps) {
-	const [data, setData] = useState<any[]>([]);
+	const [data, setData] = useState<Record<string, unknown>[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(0);
 	const [pageSize, setPageSize] = useState(20);
@@ -328,8 +339,10 @@ export function TableViewer({
 	const getOrderedVisibleColumns = useCallback(() => {
 		return columnOrder
 			.filter((name) => visibleColumns.has(name))
-			.map((name) => tableDefinition.columns.find((c) => c.name === name)!)
-			.filter(Boolean);
+			.flatMap((name) => {
+				const column = tableDefinition.columns.find((c) => c.name === name);
+				return column ? [column] : [];
+			});
 	}, [columnOrder, visibleColumns, tableDefinition.columns]);
 
 	const [createOpen, setCreateOpen] = useState(false);
@@ -380,8 +393,9 @@ export function TableViewer({
 
 			setData(result.rows || []);
 			setTotal(result.total || 0);
-		} catch (err: any) {
-			toast.error(`Error fetching data: ${err.message}`);
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			toast.error(`Error fetching data: ${message}`);
 		} finally {
 			inFlightRef.current = null;
 			setLoading(false);
@@ -428,7 +442,7 @@ export function TableViewer({
 		.filter((column) => column.isPrimaryKey)
 		.map((column) => column.name);
 
-	const getRowId = (row: any) => {
+	const getRowId = (row: Record<string, unknown>) => {
 		if (primaryKeys.length > 0) {
 			return primaryKeys.map((key) => String(row[key])).join("|");
 		}
@@ -462,9 +476,9 @@ export function TableViewer({
 			setSelectedRows(new Set());
 			setDeleteDialogOpen(false);
 			fetchTableData();
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error(e);
-			toast.error(e.message);
+			toast.error(e instanceof Error ? e.message : String(e));
 		} finally {
 			setLoading(false);
 		}

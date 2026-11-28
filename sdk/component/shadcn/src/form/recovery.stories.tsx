@@ -1,3 +1,4 @@
+import type { RecoveryFlow } from "@ory/client-fetch";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RecoveryForm } from "./recovery";
 import { mockRecoveryFlow } from "./stories/recovery";
@@ -20,7 +21,7 @@ export default meta;
 
 export const Recovery: StoryObj<typeof meta> = {
 	args: {
-		flow: mockRecoveryFlow as any,
+		flow: mockRecoveryFlow as unknown as RecoveryFlow,
 		Header: "Recover Your Account",
 	},
 };

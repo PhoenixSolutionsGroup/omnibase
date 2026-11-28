@@ -171,11 +171,10 @@ function fetchExistingPoliciesFromMigrations(
 		for (const [name, block] of policies) {
 			const table = tables.find((t) => name.startsWith(`${t}_`));
 			if (!table) continue;
-			const m = perTable.get(table)!;
-			if (!m.has(name)) {
-				m.set(name, block);
-				policyOrigins.set(name, dirs[i]);
-			}
+			const m = perTable.get(table);
+			if (!m || m.has(name)) continue;
+			m.set(name, block);
+			policyOrigins.set(name, dirs[i]);
 		}
 	}
 
@@ -206,7 +205,8 @@ function fetchExistingGrantsFromMigrations(
 		const sql = readFileSync(file, "utf-8");
 
 		for (const table of tables) {
-			const set = perTable.get(table)!;
+			const set = perTable.get(table);
+			if (!set) continue;
 			for (const p of parseGrantedPrivileges(sql, table)) set.add(p);
 			for (const p of parseRevokedPrivileges(sql, table)) set.delete(p);
 		}

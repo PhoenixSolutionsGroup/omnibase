@@ -35,8 +35,9 @@ import {
 import { formatHttpError, handleCommandError } from "../utils/errors";
 import { logger } from "../utils/logger";
 
-export function unwrapManagedHostingData<T>(body: any): T {
-	return (body?.data ?? body) as T;
+export function unwrapManagedHostingData<T>(body: unknown): T {
+	const record = body as { data?: T } | undefined;
+	return (record?.data ?? body) as T;
 }
 
 /**
@@ -383,7 +384,7 @@ export async function packageWorkerBundle(
 	const config = (await interpolateValue(
 		await loadWranglerConfig(workersDir),
 		secrets,
-	)) as any;
+	)) as WranglerConfig;
 	delete config.build;
 	delete config.name;
 	config.main = await resolveBundleEntry(
@@ -401,7 +402,10 @@ export async function packageWorkerBundle(
 	const assetsDir = config.assets?.directory;
 	if (assetsDir) {
 		config.assets = { ...config.assets, directory: "assets" };
-		await addDirToZip(zip.folder("assets")!, path.join(workersDir, assetsDir));
+		const assetsZip = zip.folder("assets");
+		if (!assetsZip)
+			throw new Error("Failed to create assets folder in worker zip");
+		await addDirToZip(assetsZip, path.join(workersDir, assetsDir));
 	}
 
 	zip.file("wrangler.json", JSON.stringify(config, null, 2));
@@ -439,8 +443,30 @@ export async function resolveBundleEntry(
 	);
 }
 
-async function loadWranglerConfig(workersDir: string): Promise<any> {
-	const parsers: Record<string, (text: string) => any> = {
+interface WranglerAssets {
+	directory?: string;
+	[key: string]: unknown;
+}
+
+interface WranglerConfig {
+	build?: unknown;
+	name?: unknown;
+	main?: string;
+	assets?: WranglerAssets;
+	[key: string]: unknown;
+}
+
+function isEnoent(error: unknown): boolean {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"code" in error &&
+		error.code === "ENOENT"
+	);
+}
+
+async function loadWranglerConfig(workersDir: string): Promise<WranglerConfig> {
+	const parsers: Record<string, (text: string) => WranglerConfig> = {
 		"wrangler.jsonc": stripJsonc,
 		"wrangler.json": stripJsonc,
 		"wrangler.toml": parseToml,
@@ -449,8 +475,8 @@ async function loadWranglerConfig(workersDir: string): Promise<any> {
 		const p = path.join(workersDir, name);
 		try {
 			return parse(await readFile(p, "utf-8"));
-		} catch (error: any) {
-			if (error?.code !== "ENOENT") throw error;
+		} catch (error: unknown) {
+			if (!isEnoent(error)) throw error;
 		}
 	}
 	throw new Error(
@@ -458,18 +484,18 @@ async function loadWranglerConfig(workersDir: string): Promise<any> {
 	);
 }
 
-function parseToml(text: string): any {
-	return TOML.parse(text);
+function parseToml(text: string): WranglerConfig {
+	return TOML.parse(text) as WranglerConfig;
 }
 
-function stripJsonc(text: string): any {
+function stripJsonc(text: string): WranglerConfig {
 	const noComments = text
 		.replace(
 			/\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
 			(m, comment) => (comment ? "" : m),
 		)
 		.replace(/,(\s*[}\]])/g, "$1");
-	return JSON.parse(noComments);
+	return JSON.parse(noComments) as WranglerConfig;
 }
 
 async function addDirToZip(
@@ -481,7 +507,11 @@ async function addDirToZip(
 	for (const entry of entries) {
 		const full = path.join(dir, entry.name);
 		if (entry.isDirectory()) {
-			await addDirToZip(folder.folder(entry.name)!, full, skip);
+			const child = folder.folder(entry.name);
+			if (!child) {
+				throw new Error(`Failed to create zip folder ${entry.name}`);
+			}
+			await addDirToZip(child, full, skip);
 		} else if (entry.isFile()) {
 			if (skip?.(entry.name)) continue;
 			folder.file(entry.name, await readFile(full));
@@ -803,7 +833,9 @@ async function _resolveBranch(
 			value: b.id,
 		})),
 	});
-	return branches.find((b) => b.id === id)!;
+	const branch = branches.find((b) => b.id === id);
+	if (!branch) throw new Error("Selected branch was not found");
+	return branch;
 }
 
 /**

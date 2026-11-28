@@ -115,12 +115,17 @@ export class DatabaseMigrationService {
 				migrations: migrationsFile,
 			})) as { message?: string };
 			logger.succeed(response.message || "Migrations applied successfully");
-		} catch (error: any) {
+		} catch (error: unknown) {
 			logger.fail("Failed to apply migrations");
-			if (error?.response) {
-				const text = await error.response.text().catch(() => "");
+			const response = (
+				error as {
+					response?: { status?: number; text?: () => Promise<string> };
+				}
+			)?.response;
+			if (response?.text) {
+				const text = await response.text().catch(() => "");
 				console.log("[db-debug] response", {
-					status: error.response.status,
+					status: response.status,
 					body: text,
 				});
 			}

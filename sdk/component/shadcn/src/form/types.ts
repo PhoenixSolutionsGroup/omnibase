@@ -24,11 +24,11 @@ export type NodesByGroup = Record<string, UiNode[]>;
 
 // Helper function to check if node attributes are input attributes
 export function isUiNodeInputAttributes(
-	attributes: any,
+	attributes: unknown,
 ): attributes is UiNodeInputAttributes {
 	return (
-		attributes &&
 		typeof attributes === "object" &&
+		attributes !== null &&
 		"name" in attributes &&
 		"type" in attributes
 	);

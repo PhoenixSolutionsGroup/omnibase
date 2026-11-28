@@ -48,7 +48,7 @@ export type FlowMap = {
 	/** Function that takes a SettingsFlow and returns a component for user settings management */
 	settings?: (flow: SettingsFlow) => ReactNode;
 	/** Function that takes any flow object and returns a component for custom onboarding */
-	onboarding?: (flow: any) => ReactNode;
+	onboarding?: (flow: unknown) => ReactNode;
 	/** Function that takes a FlowError and returns a component for displaying authentication errors */
 	error?: (error: FlowError) => ReactNode;
 };
@@ -214,7 +214,7 @@ export async function FlowRouter({
 	flowMap,
 	onNotFound,
 	url,
-	returnTo = "/",
+	returnTo: _returnTo = "/",
 	searchParams,
 }: FlowRouterProps) {
 	const { flow } = await params;
@@ -243,7 +243,7 @@ export async function FlowRouter({
 
 		if (flowObject) {
 			// Call the component function with the flow object
-			return componentFunction(flowObject as any);
+			return (componentFunction as (flow: unknown) => ReactNode)(flowObject);
 		}
 	}
 

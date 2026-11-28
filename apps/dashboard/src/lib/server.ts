@@ -5,7 +5,10 @@ import type { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/
 import type { Database } from "@/types/omnibase";
 
 const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL?.replace(/\/+$/, "");
-const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL!;
+const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL;
+if (!MANAGED_HOSTING_API_URL) {
+	throw new Error("MANAGED_HOSTING_API_URL must be set");
+}
 
 const OMNIBASE_POSTGREST_URL = `${OMNIBASE_API_URL}/api/v1/rest`;
 
@@ -64,8 +67,12 @@ export const getOmnibaseProjectConfiguration = async (
 
 	const { api_service_key } = await response.json();
 
+	if (!project.api_url) {
+		throw new Error("Project API URL is not configured");
+	}
+
 	return new Configuration({
-		basePath: project.api_url!,
+		basePath: project.api_url,
 		headers: {
 			"X-Service-Key": api_service_key,
 		},

@@ -25,6 +25,7 @@ const content = [
 	"",
 	"export function loadOpenAPIDocument(id: string): Promise<Document> {",
 	"  const load = openapiSpecs[id];",
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release expands this placeholder
 	"  if (!load) return Promise.reject(new Error(`Unknown OpenAPI document: ${id}`));",
 	"  return load();",
 	"}",

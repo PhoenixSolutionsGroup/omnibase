@@ -64,7 +64,7 @@ const GUARD =
 	"(auth.user_id() IS NOT NULL AND projects.tenant_id::text = auth.active_tenant_id())";
 
 const defineProjectsPolicy = () =>
-	definePolicy<any>("projects", {
+	definePolicy<Record<string, unknown>>("projects", {
 		select: { anon: { using: false }, auth: { using: tenant } },
 		insert: { anon: { check: false }, auth: { check: tenant } },
 		update: {
@@ -87,14 +87,16 @@ describe("definePolicy + RLS generation end to end", () => {
 
 	test("definePolicy allows an operation that declares only auth", () => {
 		expect(() =>
-			definePolicy<any>("projects", { select: { auth: { using: true } } }),
+			definePolicy<Record<string, unknown>>("projects", {
+				select: { auth: { using: true } },
+			}),
 		).not.toThrow();
 	});
 
 	test("definePolicy rejects an operation that declares neither anon nor auth", () => {
-		expect(() => definePolicy<any>("projects", { select: {} })).toThrow(
-			/must declare at least one of `anon` or `auth`/,
-		);
+		expect(() =>
+			definePolicy<Record<string, unknown>>("projects", { select: {} }),
+		).toThrow(/must declare at least one of `anon` or `auth`/);
 	});
 
 	test("a tenant-scoped policy compiles to the expected RLS SQL", () => {
@@ -127,7 +129,7 @@ describe("definePolicy + RLS generation end to end", () => {
 	});
 
 	test("a single-level relation join compiles to a tenant EXISTS subquery", () => {
-		definePolicy<any>("charts", {
+		definePolicy<Record<string, unknown>>("charts", {
 			select: {
 				anon: { using: false },
 				auth: {
@@ -144,7 +146,7 @@ describe("definePolicy + RLS generation end to end", () => {
 	});
 
 	test("a two-level relation join nests EXISTS subqueries", () => {
-		definePolicy<any>("points", {
+		definePolicy<Record<string, unknown>>("points", {
 			select: {
 				anon: { using: false },
 				auth: {
@@ -163,7 +165,7 @@ describe("definePolicy + RLS generation end to end", () => {
 	});
 
 	test("a comparison + LIKE predicate compiles end to end", () => {
-		definePolicy<any>("projects", {
+		definePolicy<Record<string, unknown>>("projects", {
 			select: {
 				anon: {
 					using: {

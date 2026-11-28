@@ -1,3 +1,4 @@
+import type { VerificationFlow } from "@ory/client-fetch";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { mockVerificationFlow } from "./stories/verification";
 import { mockVerificationFlowError } from "./stories/verification_error";
@@ -23,7 +24,7 @@ export const VerificationWithMessages: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockVerificationFlow,
-		} as any,
+		} as unknown as VerificationFlow,
 	},
 };
 
@@ -31,6 +32,6 @@ export const VerificationError: StoryObj<typeof meta> = {
 	args: {
 		flow: {
 			ui: mockVerificationFlowError,
-		} as any,
+		} as unknown as VerificationFlow,
 	},
 };

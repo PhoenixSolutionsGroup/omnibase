@@ -352,7 +352,7 @@ export async function restartDockerService(
 	try {
 		runDockerComposeCommand("restart", [service], options);
 		return true;
-	} catch (_error: any) {
+	} catch {
 		return false;
 	}
 }

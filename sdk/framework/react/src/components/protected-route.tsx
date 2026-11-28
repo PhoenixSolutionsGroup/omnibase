@@ -53,7 +53,7 @@ export default function ProtectedRoute({
 	onInvalidSession,
 }: {
 	children: ReactNode | ReactNode[];
-	onInvalidSession?: () => any;
+	onInvalidSession?: () => ReactNode;
 }) {
 	const { session, loading } = useSession();
 

@@ -49,7 +49,7 @@ interface LogEntry {
 	source: string;
 	service_type: string;
 	labels?: Record<string, string>;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 }
 
 interface ServiceLogs {
