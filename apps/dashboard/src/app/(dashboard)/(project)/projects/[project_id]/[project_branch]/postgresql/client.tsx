@@ -40,8 +40,8 @@ export function PostgreSQLClient({ branchId }: PostgreSQLClientProps) {
 	}, [timeRange]);
 
 	return (
-		<div className="max-w-7xl my-8 mx-auto">
-			<div className="mx-16 space-y-4">
+		<div className="max-w-7xl my-4 md:my-8 mx-auto">
+			<div className="mx-4 md:mx-16 space-y-4">
 				{/* Header Section */}
 				<div className="flex flex-col md:flex-row items-start justify-between gap-3">
 					<div>

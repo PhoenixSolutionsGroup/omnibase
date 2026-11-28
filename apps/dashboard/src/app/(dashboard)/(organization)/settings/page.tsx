@@ -69,8 +69,8 @@ export default async function page() {
 	const apiKeysResponse = await listAPIKeys();
 
 	return (
-		<div className="max-w-5xl  my-8 mx-auto">
-			<div className="mx-16 space-y-4">
+		<div className="max-w-5xl my-4 md:my-8 mx-auto">
+			<div className="mx-4 md:mx-16 space-y-4">
 				<div className="flex flex-col md:flex-row items-start justify-between gap-3">
 					<div>
 						<h1 className="text-xl font-bold tracking-tight">Settings</h1>

@@ -132,8 +132,8 @@ export function LogsClient({
 	}, [projectId, activeService, limit, timeRange, logsData, lastFetch]);
 
 	return (
-		<div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col py-8">
-			<div className="mx-16 flex min-h-0 flex-1 flex-col gap-4">
+		<div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col my-4 md:my-8">
+			<div className="mx-4 md:mx-16 flex min-h-0 flex-1 flex-col gap-4">
 				<div className="flex shrink-0 flex-col items-start justify-between gap-3 md:flex-row">
 					<div>
 						<h1 className="text-xl font-bold tracking-tight">Logs</h1>
@@ -177,8 +177,8 @@ export function LogsClient({
 
 				{/* Loading State */}
 				{isLoading && (
-					<div className="shrink-0 border rounded-lg p-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-						<Loader2 className="h-8 w-8 animate-spin" />
+					<div className="shrink-0 border rounded-lg p-8 flex items-center justify-center gap-2 text-muted-foreground text-xs">
+						<Loader2 className="h-5 w-5 animate-spin" />
 						<p>Loading logs...</p>
 					</div>
 				)}
@@ -197,7 +197,6 @@ export function LogsClient({
 							initialLogs={logsData.logs}
 							projectId={projectId}
 							serviceType={activeService}
-							totalCount={logsData.count}
 							limit={limit}
 						/>
 					</div>

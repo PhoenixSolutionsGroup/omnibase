@@ -20,13 +20,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface UserInviteProps {
 	roles: string[];
 	onInvite?: (inviteData: CreateRequest) => void | Promise<void>;
+	className?: string;
 }
 
-export function UserInvite({ roles, onInvite }: UserInviteProps) {
+export function UserInvite({ roles, onInvite, className }: UserInviteProps) {
 	const [email, setEmail] = useState("");
 	const [selectedRole, setSelectedRole] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,7 +86,7 @@ export function UserInvite({ roles, onInvite }: UserInviteProps) {
 	};
 
 	return (
-		<Card className="w-full max-w-2xl">
+		<Card className={cn("w-full max-w-2xl", className)}>
 			<CardHeader>
 				<CardTitle>Invite User</CardTitle>
 				<CardDescription>
