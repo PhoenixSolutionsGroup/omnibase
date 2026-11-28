@@ -101,7 +101,7 @@ export const getProjectNavigationItems = (
 		icon: House,
 	},
 	{
-		title: "Table Editor",
+		title: "Database Studio",
 		href: `/projects/${projectId}/${projectBranch}/studio`,
 		icon: Database,
 	},

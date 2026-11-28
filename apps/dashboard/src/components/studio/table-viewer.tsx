@@ -487,7 +487,7 @@ export function TableViewer({
 	return (
 		<div className="flex h-full flex-col" data-testid="table-viewer">
 			{/* Toolbar */}
-			<div className="flex items-center justify-between p-2 border-b gap-2 h-14 bg-background px-4">
+			<div className="flex items-center justify-between px-3 h-14 border-b gap-2">
 				<div className="flex items-center gap-2">
 					<h3 className="font-semibold text-lg">{tableName}</h3>
 					<Badge variant="outline">{total} rows</Badge>
@@ -510,11 +510,10 @@ export function TableViewer({
 					/>
 
 					<DropdownMenu>
-						<DropdownMenuTrigger
-							className={buttonOutlineSm}
-							data-testid="column-visibility-toggle"
-						>
-							Columns
+						<DropdownMenuTrigger data-testid="column-visibility-toggle">
+							<Button size="sm" variant="outline">
+								Columns
+							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
 							align="end"
@@ -644,14 +643,14 @@ export function TableViewer({
 														{col.name}
 													</span>
 													<span
-														className="text-xs text-muted-foreground font-normal ml-1 flex-shrink-0"
+														className="text-xs text-muted-foreground font-normal ml-1 shrink-0"
 														data-testid={`column-type-${col.name}`}
 													>
 														({col.type})
 													</span>
 													{col.isPrimaryKey && (
 														<span
-															className="text-[10px] text-primary font-bold ml-1 border rounded px-1 flex-shrink-0"
+															className="text-[10px] text-primary font-bold ml-1 border rounded px-1 shrink-0"
 															data-testid={`column-constraint-${col.name}`}
 														>
 															PK
@@ -684,7 +683,7 @@ export function TableViewer({
 											</div>
 										</TableHead>
 									))}
-									<TableHead className="w-[50px]"></TableHead>
+									<TableHead className="w-12.5"></TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -793,10 +792,7 @@ export function TableViewer({
 							setPage(0);
 						}}
 					>
-						<SelectTrigger
-							className="h-8 w-[100px]"
-							data-testid="page-size-select"
-						>
+						<SelectTrigger className="h-8 w-25" data-testid="page-size-select">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -816,7 +812,7 @@ export function TableViewer({
 					>
 						<ChevronLeft className="h-4 w-4" />
 					</Button>
-					<span className="min-w-[20px] text-center">{page + 1}</span>
+					<span className="min-w-5 text-center">{page + 1}</span>
 					<Button
 						variant="outline"
 						size="sm"

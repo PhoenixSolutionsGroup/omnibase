@@ -50,8 +50,7 @@ export function SchemaBrowser({
 			className="flex h-full flex-col bg-muted/10"
 			data-testid="schema-browser"
 		>
-			<div className="p-4 border-b">
-				<h2 className="text-lg font-semibold mb-2">Explorer</h2>
+			<div className="flex items-center justify-center px-3 h-14 border-b">
 				<Select value={selectedSchema} onValueChange={setSelectedSchema}>
 					<SelectTrigger className="h-8 w-full">
 						<SelectValue placeholder="Select schema" />
