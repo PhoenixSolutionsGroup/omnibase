@@ -7,11 +7,11 @@ import {
 	Check,
 	ChevronLeft,
 	ChevronRight,
+	Columns3,
 	GripVertical,
 	Loader2,
 	MoreHorizontal,
 	Plus,
-	RefreshCw,
 	Trash,
 } from "lucide-react";
 import {
@@ -493,14 +493,6 @@ export function TableViewer({
 					<Badge variant="outline">{total} rows</Badge>
 				</div>
 				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => fetchTableData()}
-						title="Refresh"
-					>
-						<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-					</Button>
 					<FilterBuilder
 						columns={tableDefinition.columns}
 						onApply={(next) => {
@@ -512,6 +504,7 @@ export function TableViewer({
 					<DropdownMenu>
 						<DropdownMenuTrigger data-testid="column-visibility-toggle">
 							<Button size="sm" variant="outline">
+								<Columns3 />
 								Columns
 							</Button>
 						</DropdownMenuTrigger>
